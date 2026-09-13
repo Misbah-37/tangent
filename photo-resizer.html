@@ -40,6 +40,12 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
 
 <style>
+  /* Eliminate scrollbar layout jump across pages */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
   /* --- Clean Minimalist Resets --- */
   * {
     box-sizing: border-box;
@@ -90,7 +96,7 @@
     gap: 28px;
     align-items: center;
     margin-left: auto; /* Guarantees right alignment across all devices */
-  }
+   flex-wrap: nowrap;}
   
   .nav-links a {
     color: #999999;
@@ -98,7 +104,7 @@
     font-size: 0.9rem;
     font-weight: 500;
     transition: color 0.2s ease;
-  }
+   white-space: nowrap;}
   
   .nav-links a:hover, .nav-links a.active {
     color: #00d2ff; /* Electric cyan hover & active indicator */
@@ -373,10 +379,11 @@
     color: #00d2ff;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 960px) {
     .global-nav {
       padding: 16px 20px;
-    }
+    box-sizing: border-box;
+  }
     
     .menu-toggle {
       display: flex;
@@ -399,7 +406,7 @@
       box-sizing: border-box;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
       margin: 0;
-    }
+     margin-left: auto; align-items: center; flex-wrap: nowrap;}
 
     .nav-links.open {
       display: flex !important;
@@ -411,7 +418,7 @@
       border-bottom: 1px solid #161616;
       width: 100%;
       text-align: left;
-    }
+     white-space: nowrap;}
 
     .nav-links a:last-child {
       border-bottom: none;
@@ -431,19 +438,23 @@
 
 <nav class="global-nav">
   <a href="index.html" class="nav-brand">
-        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-          <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-        </svg>
-        <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
-      </a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+    <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+  </a>
+
+  <!-- Hamburger Button (Mobile Only) -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="18" x2="21" y2="18"></line>
     </svg>
   </button>
+
+  <!-- Navigation Links -->
   <div class="nav-links" id="navLinks">
     <a href="pdf-redactor.html">PDF Redactor</a>
     <a href="pdf-converter.html">PDF Suite</a>

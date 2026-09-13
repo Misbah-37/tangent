@@ -453,14 +453,23 @@
       box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
     }
 
-    /* Floating Navigation Dock for Touch & Zoom Navigation */
-    .quick-nav-dock {
-      position: sticky;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      margin: -68px auto 18px auto;
+    /* Floating Navigation Dock Wrapper (Guarantees Pixel-Perfect Centering on Mobile) */
+    .dock-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: -68px;
+      margin-bottom: 24px;
+      position: relative;
       z-index: 120;
+      pointer-events: none;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    .quick-nav-dock {
+      pointer-events: auto;
       background: rgba(17, 20, 29, 0.94);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(0, 210, 255, 0.4);
@@ -468,8 +477,11 @@
       padding: 6px 12px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 210, 255, 0.2);
+      max-width: 100%;
+      flex-wrap: nowrap;
     }
 
     .dock-mode-toggle {
@@ -822,16 +834,16 @@
           <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">↔ Fit</button>
         </div>
 
-        <!-- Action Mode: Redact vs Pan -->
+        <!-- Interaction Tool: Draw Box vs Move/Pan -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">✏️ Redact</button>
-          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Pan / Scroll zoomed document with finger or mouse">🖐️ Pan</button>
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">✏️ Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">🖐️ Move / Pan</button>
         </div>
 
-        <!-- Style Mode -->
+        <!-- Box Visual Style -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black redaction box">⬛ Blackout</button>
-          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="REDACTED stamp box">🏷️ Stamp</button>
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box">⬛ Solid Black</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text">🏷️ "REDACTED" Stamp</button>
         </div>
 
         <!-- Edit & History -->
@@ -853,7 +865,7 @@
 
       <!-- Hint Bar -->
       <div class="hint-bar">
-        <span>✏️ <strong>Redact mode:</strong> Drag to blackout, tap to move/resize • 🖐️ <strong>Pan mode:</strong> Drag to scroll/adjust zoomed document</span>
+        <span>✏️ <strong>Draw Box:</strong> Drag to draw, tap box to move/resize • 🖐️ <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
         <span id="redaction-count-display">0 redactions on this page</span>
       </div>
 
@@ -879,18 +891,20 @@
       </div>
 
       <!-- Floating Quick-Action Navigation Dock -->
-      <div class="quick-nav-dock" id="quick-nav-dock">
-        <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Switch between Redacting and Panning">
-          <span id="dock-tool-icon">✏️</span>
-          <span id="dock-tool-text">Drawing Mode</span>
-        </button>
-        <div class="dock-divider"></div>
-        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, -200)" title="Scroll Up">▲</button>
-        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, 200)" title="Scroll Down">▼</button>
-        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(-200, 0)" title="Scroll Left">◄</button>
-        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(200, 0)" title="Scroll Right">►</button>
-        <div class="dock-divider"></div>
-        <button type="button" class="dock-nudge-btn" onclick="scrollToBottom()" title="Jump straight to Bottom of Page">⤓</button>
+      <div class="dock-wrapper">
+        <div class="quick-nav-dock" id="quick-nav-dock">
+          <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
+            <span id="dock-tool-icon">✏️</span>
+            <span id="dock-tool-text">Draw Box</span>
+          </button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, -200)" title="Scroll Up">▲</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, 200)" title="Scroll Down">▼</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(-200, 0)" title="Scroll Left">◄</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(200, 0)" title="Scroll Right">►</button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="scrollToBottom()" title="Jump straight to Bottom of Page">⤓</button>
+        </div>
       </div>
 
     </div>
@@ -1350,7 +1364,7 @@
       if (dockBtn && dockIcon && dockText) {
         dockBtn.classList.toggle('pan-active', tool === 'pan');
         dockIcon.textContent = tool === 'pan' ? '🖐️' : '✏️';
-        dockText.textContent = tool === 'pan' ? 'Pan Mode' : 'Drawing Mode';
+        dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
       }
 
       if (tool === 'pan') {

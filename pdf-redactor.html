@@ -756,6 +756,12 @@
       padding: 28px;
     }
 
+    .feature-icon {
+      margin-bottom: 16px;
+      color: #00d2ff;
+      display: inline-flex;
+    }
+
     .feature-card h3 {
       font-size: 1.25rem;
       margin: 0 0 12px 0;
@@ -970,10 +976,6 @@
       <!-- Floating Quick-Action Navigation Dock -->
       <div class="dock-wrapper">
         <div class="quick-nav-dock" id="quick-nav-dock">
-          <!-- Undo / Redo in Quick Dock -->
-          <button type="button" class="dock-nudge-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩</button>
-          <button type="button" class="dock-nudge-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪</button>
-          <div class="dock-divider"></div>
           <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
             <span id="dock-tool-icon">✏️</span>
             <span id="dock-tool-text">Draw Box</span>
@@ -994,15 +996,24 @@
     <div class="info-section">
       <div class="features-grid">
         <div class="feature-card">
-          <h3><span>🔒</span> True Burn-In Redaction</h3>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3>True Burn-In Redaction</h3>
           <p>Amateur tools simply place a black rectangle over text, allowing anyone to highlight and copy the secret text underneath. Tangent permanently flattens redactions into the image stream—making underlying text unrecoverable.</p>
         </div>
         <div class="feature-card">
-          <h3><span>🧼</span> Deep Metadata Scrubber</h3>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h3>Deep Metadata Scrubber</h3>
           <p>PDFs quietly store author names, company IDs, software versions, and revision history in hidden XMP streams. Tangent purges these hidden tags completely before outputting your file.</p>
         </div>
         <div class="feature-card">
-          <h3><span>⚡</span> Zero Outbound Bytes</h3>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <h3>Zero Outbound Bytes</h3>
           <p>All parsing, rendering, and rebuilding happens entirely in your local browser sandbox via WebAssembly. Disconnect your Wi-Fi and the tool will continue working with zero interruptions.</p>
         </div>
       </div>

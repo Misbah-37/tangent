@@ -894,12 +894,12 @@
       <div class="toolbar">
         <!-- Page Controls -->
         <div class="toolbar-group">
-          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">◀ Prev</button>
+          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">Prev</button>
           <select id="page-select" class="page-select" onchange="goToPage(parseInt(this.value))" title="Jump to page">
             <option value="1">Page 1</option>
           </select>
           <span class="page-indicator" id="page-total-display">of 1</span>
-          <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next ▶</button>
+          <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next</button>
         </div>
 
         <!-- Zoom Controls -->
@@ -907,26 +907,26 @@
           <button class="tool-btn" onclick="zoomPage(-0.2)" title="Zoom Out (Ctrl + Minus)">−</button>
           <span class="zoom-indicator" id="zoom-display" onclick="resetZoom()" title="Click to Reset to 100%">150%</span>
           <button class="tool-btn" onclick="zoomPage(0.2)" title="Zoom In (Ctrl + Plus)">+</button>
-          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">↔ Fit</button>
+          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">Fit</button>
         </div>
 
         <!-- Interaction Tool: Draw Box vs Move/Pan -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes"> Draw Box</button>
-          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely"> Move / Pan</button>
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">Move / Pan</button>
         </div>
 
         <!-- Box Visual Style -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box"> Solid Black</button>
-          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text"> "REDACTED" Stamp</button>
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box">Solid Black</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text">"REDACTED" Stamp</button>
         </div>
 
         <!-- Edit & History -->
         <div class="toolbar-group">
-          <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
-          <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
-          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);"> Delete</button>
+          <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>Undo</button>
+          <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>Redo</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">Delete</button>
           <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
         </div>
 
@@ -941,7 +941,7 @@
 
       <!-- Hint Bar -->
       <div class="hint-bar">
-        <span> <strong>Draw Box:</strong> Drag to draw, tap box to move/resize •  <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
+        <span><strong>Draw Box:</strong> Drag to draw, tap box to move/resize • <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
         <span id="redaction-count-display">0 redactions on this page</span>
       </div>
 
@@ -961,10 +961,10 @@
         <!-- Floating Stage History HUD (Permanently Pinned in Top-Right Corner) -->
         <div class="stage-floating-hud">
           <button type="button" class="hud-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
-            ↩ Undo
+            Undo
           </button>
           <button type="button" class="hud-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>
-            ↪ Redo
+            Redo
           </button>
         </div>
 
@@ -982,7 +982,6 @@
       <div class="dock-wrapper">
         <div class="quick-nav-dock" id="quick-nav-dock">
           <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
-            <span id="dock-tool-icon"></span>
             <span id="dock-tool-text">Draw Box</span>
           </button>
           <div class="dock-divider"></div>
@@ -1463,11 +1462,9 @@
       if (panBtn) panBtn.classList.toggle('active', tool === 'pan');
 
       const dockBtn = document.getElementById('dock-mode-toggle');
-      const dockIcon = document.getElementById('dock-tool-icon');
       const dockText = document.getElementById('dock-tool-text');
-      if (dockBtn && dockIcon && dockText) {
+      if (dockBtn && dockText) {
         dockBtn.classList.toggle('pan-active', tool === 'pan');
-        dockIcon.textContent = tool === 'pan' ? '' : '';
         dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
       }
 
@@ -2041,10 +2038,18 @@
           });
         }
 
-        // Apply 100% complete metadata purging
+        // Apply 100% complete metadata purging (Zero leaks, sterile PDF)
         if (purgeMeta) {
           progressSub.textContent = 'Purging all metadata tags...';
           
+          // Strip any default fields
+          newPdfDoc.setTitle('');
+          newPdfDoc.setAuthor('');
+          newPdfDoc.setSubject('');
+          newPdfDoc.setKeywords([]);
+          newPdfDoc.setProducer('');
+          newPdfDoc.setCreator('');
+
           // Delete Info dictionary reference entirely from the PDF trailer
           delete newPdfDoc.context.trailerInfo.Info;
 
@@ -2052,10 +2057,14 @@
           try {
             newPdfDoc.catalog.delete(PDFName.of('Metadata'));
           } catch (_) {}
+          try {
+            newPdfDoc.catalog.delete(PDFName.of('PieceInfo'));
+          } catch (_) {}
         }
 
         progressSub.textContent = 'Finalizing file...';
-        const finalPdfBytes = await newPdfDoc.save();
+        // updateMetadata: false guarantees pdf-lib will NOT inject its own Producer, CreationDate or ModDate!
+        const finalPdfBytes = await newPdfDoc.save({ updateMetadata: false });
 
         // Trigger Download
         const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });

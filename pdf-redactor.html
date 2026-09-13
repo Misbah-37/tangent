@@ -405,10 +405,10 @@
       font-weight: 600;
     }
 
-    /* Canvas Stage with Always-Available Custom Scrollbars */
+    /* Canvas Stage with Touch-Friendly High-Contrast Scrollbars */
     .stage-container {
       background: #0b0d13;
-      padding: 24px 16px;
+      padding: 24px 24px 100px 24px;
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -417,26 +417,99 @@
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
-      scrollbar-color: #00d2ff #171b26;
-      scrollbar-width: thin;
+      scrollbar-color: #00d2ff #11141d;
+      scrollbar-width: auto;
     }
 
+    /* Desktop Scrollbars: 18px Comfortable Target */
     .stage-container::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
+      width: 18px;
+      height: 18px;
     }
     .stage-container::-webkit-scrollbar-track {
       background: #11141d;
-      border-radius: 6px;
+      border-radius: 8px;
+      border: 2px solid #0b0d13;
     }
     .stage-container::-webkit-scrollbar-thumb {
       background: #2a3349;
-      border: 2px solid #11141d;
-      border-radius: 6px;
+      border: 3px solid #11141d;
+      border-radius: 10px;
+      min-height: 48px;
+      min-width: 48px;
     }
     .stage-container::-webkit-scrollbar-thumb:hover,
     .stage-container::-webkit-scrollbar-thumb:active {
       background: #00d2ff;
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+    }
+
+    /* Floating Navigation Dock for Touch & Zoom Navigation */
+    .quick-nav-dock {
+      position: sticky;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: -68px auto 18px auto;
+      z-index: 120;
+      background: rgba(17, 20, 29, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 210, 255, 0.2);
+    }
+
+    .dock-mode-toggle {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid #00d2ff;
+      color: #00d2ff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .dock-mode-toggle.pan-active {
+      background: #00d2ff;
+      color: #08090d;
+      box-shadow: 0 0 14px rgba(0, 210, 255, 0.5);
+    }
+
+    .dock-divider {
+      width: 1px;
+      height: 20px;
+      background: #2f384d;
+    }
+
+    .dock-nudge-btn {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dock-nudge-btn:hover, .dock-nudge-btn:active {
+      background: #2a3349;
+      border-color: #00d2ff;
+      color: #00d2ff;
+      transform: scale(1.1);
     }
 
     .canvas-wrapper {
@@ -504,8 +577,27 @@
         min-height: 42px;
       }
       .stage-container {
-        padding: 16px 8px;
-        min-height: 400px;
+        padding: 20px 20px 140px 20px;
+        min-height: 380px;
+        max-height: 70vh;
+      }
+      /* Extra-Thick 26px Touch Scrollbars on Mobile */
+      .stage-container::-webkit-scrollbar {
+        width: 26px;
+        height: 26px;
+      }
+      .stage-container::-webkit-scrollbar-track {
+        background: #151926;
+        border: 2px solid #08090d;
+        border-radius: 12px;
+      }
+      .stage-container::-webkit-scrollbar-thumb {
+        background: #00d2ff;
+        border: 4px solid #151926;
+        border-radius: 16px;
+        min-height: 56px;
+        min-width: 56px;
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
       }
       .hint-bar {
         font-size: 0.8rem;
@@ -774,6 +866,21 @@
           <canvas id="pdf-canvas"></canvas>
           <canvas id="draw-canvas"></canvas>
         </div>
+      </div>
+
+      <!-- Floating Quick-Action Navigation Dock -->
+      <div class="quick-nav-dock" id="quick-nav-dock">
+        <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Switch between Redacting and Panning">
+          <span id="dock-tool-icon">✏️</span>
+          <span id="dock-tool-text">Drawing Mode</span>
+        </button>
+        <div class="dock-divider"></div>
+        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, -200)" title="Scroll Up">▲</button>
+        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, 200)" title="Scroll Down">▼</button>
+        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(-200, 0)" title="Scroll Left">◄</button>
+        <button type="button" class="dock-nudge-btn" onclick="nudgeStage(200, 0)" title="Scroll Right">►</button>
+        <div class="dock-divider"></div>
+        <button type="button" class="dock-nudge-btn" onclick="scrollToBottom()" title="Jump straight to Bottom of Page">⤓</button>
       </div>
 
     </div>
@@ -1216,17 +1323,44 @@
     }
 
     // --- TOOL SWITCHER: REDACT VS PAN ---
+    function toggleActiveTool() {
+      setActiveTool(currentTool === 'redact' ? 'pan' : 'redact');
+    }
+
     function setActiveTool(tool) {
       currentTool = tool;
-      document.getElementById('btn-mode-redact').classList.toggle('active', tool === 'redact');
-      document.getElementById('btn-mode-pan').classList.toggle('active', tool === 'pan');
-      
+      const redactBtn = document.getElementById('btn-mode-redact');
+      const panBtn = document.getElementById('btn-mode-pan');
+      if (redactBtn) redactBtn.classList.toggle('active', tool === 'redact');
+      if (panBtn) panBtn.classList.toggle('active', tool === 'pan');
+
+      const dockBtn = document.getElementById('dock-mode-toggle');
+      const dockIcon = document.getElementById('dock-tool-icon');
+      const dockText = document.getElementById('dock-tool-text');
+      if (dockBtn && dockIcon && dockText) {
+        dockBtn.classList.toggle('pan-active', tool === 'pan');
+        dockIcon.textContent = tool === 'pan' ? '🖐️' : '✏️';
+        dockText.textContent = tool === 'pan' ? 'Pan Mode' : 'Drawing Mode';
+      }
+
       if (tool === 'pan') {
         selectedBoxId = null;
         redrawPageRedactions();
         drawCanvas.style.cursor = 'grab';
       } else {
         drawCanvas.style.cursor = 'crosshair';
+      }
+    }
+
+    function nudgeStage(dx, dy) {
+      if (stageContainer) {
+        stageContainer.scrollBy({ left: dx, top: dy, behavior: 'smooth' });
+      }
+    }
+
+    function scrollToBottom() {
+      if (stageContainer) {
+        stageContainer.scrollTo({ top: stageContainer.scrollHeight, behavior: 'smooth' });
       }
     }
 
@@ -1267,7 +1401,12 @@
       }
     }
 
-    // --- SMOOTH GPU PINCH-TO-ZOOM ENGINE ---
+    // --- SMOOTH GPU PINCH & TWO-FINGER PAN ENGINE ---
+    let pinchMidStartX = 0;
+    let pinchMidStartY = 0;
+    let pinchScrollStartX = 0;
+    let pinchScrollStartY = 0;
+
     function getTouchDistance(e) {
       if (e.touches && e.touches.length >= 2) {
         const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -1277,8 +1416,18 @@
       return null;
     }
 
+    function getTouchMidpoint(e) {
+      if (e.touches && e.touches.length >= 2) {
+        return {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+        };
+      }
+      return null;
+    }
+
     function handlePointerDown(e) {
-      // 1. Check for two-finger pinch gesture on mobile
+      // 1. Check for two-finger pinch & pan gesture on mobile
       if (e.touches && e.touches.length >= 2) {
         interactionMode = null;
         isDrawing = false;
@@ -1286,10 +1435,17 @@
         initialPinchDistance = getTouchDistance(e);
         initialPinchScale = currentScale;
         currentPinchRatio = 1.0;
+        const mid = getTouchMidpoint(e);
+        if (mid) {
+          pinchMidStartX = mid.x;
+          pinchMidStartY = mid.y;
+          pinchScrollStartX = stageContainer.scrollLeft;
+          pinchScrollStartY = stageContainer.scrollTop;
+        }
         return;
       }
 
-      // 2. PAN MODE: drag to scroll the zoomed viewport
+      // 2. PAN MODE: drag to scroll the zoomed viewport with 1 finger or mouse
       if (currentTool === 'pan') {
         const pt = e.touches ? e.touches[0] : e;
         isPanning = true;
@@ -1302,7 +1458,19 @@
         return;
       }
 
-      // 3. REDACT MODE: hit testing and drawing
+      // 3. Scrollbar Deadzone Protection:
+      // If single touch starts within 42px of right or bottom container edge, ignore to prevent accidental redactions
+      if (e.touches && e.touches.length === 1) {
+        const touch = e.touches[0];
+        const containerRect = stageContainer.getBoundingClientRect();
+        const distFromRight = containerRect.right - touch.clientX;
+        const distFromBottom = containerRect.bottom - touch.clientY;
+        if (distFromRight < 42 || distFromBottom < 42) {
+          return;
+        }
+      }
+
+      // 4. REDACT MODE: hit testing and drawing
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
       const pt = getCanvasCoordinates(e);
       dragStartX = pt.x;
@@ -1348,7 +1516,7 @@
     }
 
     function handlePointerMove(e) {
-      // 1. Two-finger pinch: smooth GPU hardware transform (ZERO JITTER)
+      // 1. Two-finger pinch & pan anywhere (zero jitter, simultaneous scroll)
       if (e.touches && e.touches.length >= 2 && initialPinchDistance) {
         if (e.cancelable) e.preventDefault();
         const dist = getTouchDistance(e);
@@ -1356,6 +1524,13 @@
           currentPinchRatio = dist / initialPinchDistance;
           const canvasWrapper = document.getElementById('canvas-wrapper');
           canvasWrapper.style.transform = `scale(${currentPinchRatio})`;
+        }
+        const mid = getTouchMidpoint(e);
+        if (mid) {
+          const dx = mid.x - pinchMidStartX;
+          const dy = mid.y - pinchMidStartY;
+          stageContainer.scrollLeft = pinchScrollStartX - dx;
+          stageContainer.scrollTop = pinchScrollStartY - dy;
         }
         return;
       }
@@ -1491,7 +1666,8 @@
         const w = pt.x - dragStartX;
         const h = pt.y - dragStartY;
 
-        if (Math.abs(w) >= 6 && Math.abs(h) >= 6) {
+        const minIntent = (e.type && e.type.startsWith('touch')) ? 14 : 8;
+        if (Math.abs(w) >= minIntent && Math.abs(h) >= minIntent) {
           const normCanvasX = w < 0 ? pt.x : dragStartX;
           const normCanvasY = h < 0 ? pt.y : dragStartY;
           const normCanvasW = Math.abs(w);

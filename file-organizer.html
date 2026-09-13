@@ -1031,8 +1031,22 @@
     
     <div class="faq-box">
       <details>
-        <summary>How does the in-browser file organizer work?</summary>
-        <p>The in-browser organizer uses the modern HTML5 File System Access API (supported in Edge, Chrome, and Opera) to read and structure files directly on your computer with your explicit permission. For other browsers or batch drag-and-drop, it organizes your files in browser RAM and packages them into a clean, categorized ZIP file.</p>
+        <summary>Does the in-browser folder organizer upload my files or personal data to any server?</summary>
+        <p><strong>No, absolutely zero data is uploaded.</strong> None of your files, folder names, file sizes, or contents ever leave your computer. The organizer runs 100% within your local web browser's memory. You can verify this yourself by turning off your Wi-Fi or switching to Airplane Mode—the tool will continue to work completely normally offline. You can also open your browser's Developer Tools (<kbd>F12</kbd> &rarr; Network tab) to confirm that exactly 0 bytes are transmitted.</p>
+      </details>
+    </div>
+
+    <div class="faq-box">
+      <details>
+        <summary>How can a web browser organize folders directly on my computer without the cloud?</summary>
+        <p>Modern desktop browsers (Chrome, Edge, Brave, and Opera) support a standard browser security feature called the <strong>File System Access API</strong>. When you click "Select Folder", your browser asks for your one-time permission to view that specific folder. Once approved, the browser's local JavaScript engine inspects the file extensions directly on your drive, creates the appropriate category subfolders (such as <code>Documents/</code> or <code>Images/</code>), and moves the files across folders locally on your hard disk—just like a desktop program. If your browser does not support direct disk moves, Tangent organizes your files entirely inside your computer's RAM and packages them into a clean, categorized ZIP file without touching the internet.</p>
+      </details>
+    </div>
+
+    <div class="faq-box">
+      <details>
+        <summary>What is the difference between the In-Browser Organizer and the Standalone Windows App?</summary>
+        <p>Both tools do the exact same job with 100% client-side privacy (0 bytes outbound):<br><br>&bull; <strong>In-Browser Tool:</strong> Instant and requires zero installation. Works directly in your browser using modern Web APIs.<br>&bull; <strong>Standalone Windows App:</strong> A portable desktop program (<code>file_organizer.exe</code>) you can keep on your desktop or USB drive, ideal if you prefer running native apps without keeping a browser open.</p>
       </details>
     </div>
 

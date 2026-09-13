@@ -866,15 +866,20 @@
   <div class="container">
 
     <div class="hero">
-      <div class="badge-pill">🛡️ 100% Client-Side Privacy Shield</div>
+      <div class="badge-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>100% Client-Side Privacy Shield</span>
+      </div>
       <h1>PDF Redactor & Metadata Scrubber</h1>
       <p class="lead">Permanently black out sensitive text, account numbers, and signatures. Strip hidden author, device, and GPS metadata. Guaranteed zero bytes leave your device.</p>
     </div>
 
     <!-- Upload Zone -->
     <div class="upload-box" id="drop-zone" onclick="document.getElementById('pdf-input').click()">
-      <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+      <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
       </svg>
       <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">Drop your PDF here or click to browse</div>
       <div style="color: #64748b; font-size: 0.9rem;">Runs 100% offline inside your browser RAM • Zero server uploads</div>
@@ -907,21 +912,21 @@
 
         <!-- Interaction Tool: Draw Box vs Move/Pan -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes"> Draw Box</button>
-          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely"> Move / Pan</button>
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">✏️ Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">🖐️ Move / Pan</button>
         </div>
 
         <!-- Box Visual Style -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box"> Solid Black</button>
-          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text"> "REDACTED" Stamp</button>
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box">⬛ Solid Black</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text">🏷️ "REDACTED" Stamp</button>
         </div>
 
         <!-- Edit & History -->
         <div class="toolbar-group">
           <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
           <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
-          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);"> Delete</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">🗑️ Delete</button>
           <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
         </div>
 
@@ -936,7 +941,7 @@
 
       <!-- Hint Bar -->
       <div class="hint-bar">
-        <span> <strong>Draw Box:</strong> Drag to draw, tap box to move/resize •  <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
+        <span>✏️ <strong>Draw Box:</strong> Drag to draw, tap box to move/resize • 🖐️ <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
         <span id="redaction-count-display">0 redactions on this page</span>
       </div>
 
@@ -977,7 +982,7 @@
       <div class="dock-wrapper">
         <div class="quick-nav-dock" id="quick-nav-dock">
           <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
-            <span id="dock-tool-icon"></span>
+            <span id="dock-tool-icon">✏️</span>
             <span id="dock-tool-text">Draw Box</span>
           </button>
           <div class="dock-divider"></div>
@@ -1462,7 +1467,7 @@
       const dockText = document.getElementById('dock-tool-text');
       if (dockBtn && dockIcon && dockText) {
         dockBtn.classList.toggle('pan-active', tool === 'pan');
-        dockIcon.textContent = tool === 'pan' ? '' : '';
+        dockIcon.textContent = tool === 'pan' ? '🖐️' : '✏️';
         dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
       }
 

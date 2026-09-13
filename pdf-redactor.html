@@ -419,24 +419,28 @@
       box-sizing: border-box;
     }
 
-    /* Floating History HUD inside Editing Stage (Accessible without blocking content) */
+    /* Stage Outer Wrapper: Pins floating HUD stably over the stage without scrolling */
+    .stage-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    /* Floating History HUD pinned permanently in top-right of editing stage */
     .stage-floating-hud {
-      position: sticky;
+      position: absolute;
       top: 14px;
       right: 18px;
-      float: right;
-      z-index: 110;
+      z-index: 150;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(17, 20, 29, 0.82);
+      background: rgba(17, 20, 29, 0.88);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(0, 210, 255, 0.35);
       border-radius: 999px;
       padding: 4px 8px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      margin-bottom: -46px;
       pointer-events: auto;
       transition: all 0.2s ease;
       user-select: none;
@@ -941,9 +945,9 @@
         </label>
       </div>
 
-      <!-- Canvas Stage with Floating History HUD -->
-      <div class="stage-container">
-        <!-- Floating Stage History HUD (Top-Right of Editing Area) -->
+      <!-- Canvas Stage with Pinned Floating History HUD -->
+      <div class="stage-wrapper">
+        <!-- Floating Stage History HUD (Permanently Pinned in Top-Right Corner) -->
         <div class="stage-floating-hud">
           <button type="button" class="hud-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
             ↩ Undo
@@ -953,10 +957,12 @@
           </button>
         </div>
 
-        <div class="stage-inner">
-          <div class="canvas-wrapper" id="canvas-wrapper">
-            <canvas id="pdf-canvas"></canvas>
-            <canvas id="draw-canvas"></canvas>
+        <div class="stage-container">
+          <div class="stage-inner">
+            <div class="canvas-wrapper" id="canvas-wrapper">
+              <canvas id="pdf-canvas"></canvas>
+              <canvas id="draw-canvas"></canvas>
+            </div>
           </div>
         </div>
       </div>

@@ -319,6 +319,23 @@
       padding: 0 8px;
     }
 
+    .zoom-indicator {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #00d2ff;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .zoom-indicator:hover {
+      background: rgba(0, 210, 255, 0.25);
+      border-color: #00d2ff;
+    }
+
     .export-btn {
       background: #00d2ff;
       color: #08090d;
@@ -647,33 +664,47 @@
 
       <!-- Toolbar -->
       <div class="toolbar">
+        <!-- Page Controls -->
         <div class="toolbar-group">
-          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" aria-label="Previous Page">◀ Prev</button>
+          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">◀ Prev</button>
           <span class="page-indicator" id="page-num-display">Page 1 / 1</span>
-          <button class="tool-btn" id="next-btn" onclick="changePage(1)" aria-label="Next Page">Next ▶</button>
-          <button class="tool-btn" onclick="zoomPage(-0.25)" title="Zoom Out">🔍−</button>
-          <button class="tool-btn" onclick="zoomPage(0.25)" title="Zoom In">🔍+</button>
-          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen">↔ Fit</button>
+          <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next ▶</button>
         </div>
 
+        <!-- Zoom Controls -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')">⬛ Solid Blackout</button>
-          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')">🏷️ REDACTED Stamp</button>
-          <button class="tool-btn" onclick="undoRedaction()">↩ Undo</button>
-          <button class="tool-btn" onclick="clearCurrentPageRedactions()">🗑️ Clear Page</button>
+          <button class="tool-btn" onclick="zoomPage(-0.2)" title="Zoom Out (Ctrl + Minus)">🔍−</button>
+          <span class="zoom-indicator" id="zoom-display" onclick="resetZoom()" title="Click to Reset to 100%">150%</span>
+          <button class="tool-btn" onclick="zoomPage(0.2)" title="Zoom In (Ctrl + Plus)">🔍+</button>
+          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">↔ Fit</button>
         </div>
 
+        <!-- Style Mode -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Draw solid black boxes">⬛ Blackout</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Draw REDACTED stamp boxes">🏷️ Stamp</button>
+        </div>
+
+        <!-- Edit & History -->
+        <div class="toolbar-group">
+          <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
+          <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">🗑️ Delete</button>
+          <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
+        </div>
+
+        <!-- Export -->
         <div class="toolbar-group">
           <button class="export-btn" id="export-btn" onclick="exportRedactedPdf()">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Export Redacted PDF
+            Export PDF
           </button>
         </div>
       </div>
 
       <!-- Hint Bar -->
       <div class="hint-bar">
-        <span>✏️ <strong>Click and drag</strong> anywhere on the page to draw a blackout box over sensitive text or figures.</span>
+        <span>✏️ <strong>Drag</strong> to draw • <strong>Click</strong> a box to move or resize handles • <strong>Delete / Backspace</strong> to remove</span>
         <span id="redaction-count-display">0 redactions on this page</span>
       </div>
 
@@ -770,21 +801,39 @@
     let currentScale = 1.5;
     let redactType = 'blackout'; // 'blackout' or 'stamp'
     
-    // Redaction store: pageNum -> array of { x, y, w, h, type } in canvas coordinates
+    // Store redactions in unscaled PDF points: pageNum -> array of { id, x, y, w, h, type }
     let redactions = {};
+    let selectedBoxId = null;
+    let nextBoxId = 1;
+
+    // History stack for Undo / Redo
+    let historyStack = [];
+    let historyIndex = -1;
+
+    // Interaction state
+    let interactionMode = null; // 'draw' | 'move' | 'resize'
+    let activeHandle = null;     // 'nw', 'ne', 'se', 'sw', 'n', 's', 'e', 'w'
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialBoxState = null;
 
     // DOM Elements
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('pdf-input');
     const workspace = document.getElementById('workspace');
+    const stageContainer = document.querySelector('.stage-container');
     const pdfCanvas = document.getElementById('pdf-canvas');
     const drawCanvas = document.getElementById('draw-canvas');
     const pdfCtx = pdfCanvas.getContext('2d');
     const drawCtx = drawCanvas.getContext('2d');
     const pageNumDisplay = document.getElementById('page-num-display');
+    const zoomDisplay = document.getElementById('zoom-display');
     const redactionCountDisplay = document.getElementById('redaction-count-display');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
+    const undoBtn = document.getElementById('undo-btn');
+    const redoBtn = document.getElementById('redo-btn');
+    const deleteBtn = document.getElementById('delete-btn');
     const progressOverlay = document.getElementById('progress-overlay');
     const progressText = document.getElementById('progress-text');
     const progressSub = document.getElementById('progress-sub');
@@ -822,6 +871,9 @@
         totalPages = pdfDoc.numPages;
         currentPageNum = 1;
         redactions = {};
+        selectedBoxId = null;
+        historyStack = [];
+        historyIndex = -1;
 
         // Inspect metadata
         const metadata = await pdfDoc.getMetadata().catch(() => null);
@@ -834,12 +886,13 @@
         if (window.innerWidth < 768) {
           const firstPage = await pdfDoc.getPage(1);
           const natural = firstPage.getViewport({ scale: 1.0 });
-          const screenW = Math.max(280, window.innerWidth - 32);
-          currentScale = Math.max(0.5, screenW / natural.width);
+          const screenW = Math.max(280, window.innerWidth - 48);
+          currentScale = Math.max(0.4, screenW / natural.width);
         } else {
-          currentScale = 1.5;
+          currentScale = 1.35;
         }
         
+        saveHistoryState('Initial Document Load');
         await renderCurrentPage();
       } catch (err) {
         alert('Failed to parse PDF document: ' + err.message);
@@ -873,10 +926,49 @@
       return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
+    // --- HISTORY / UNDO / REDO ENGINE ---
+    function saveHistoryState(actionName) {
+      // If we made changes after an undo, truncate forward history
+      if (historyIndex < historyStack.length - 1) {
+        historyStack = historyStack.slice(0, historyIndex + 1);
+      }
+      // Push deep clone of current redactions
+      historyStack.push(JSON.parse(JSON.stringify(redactions)));
+      historyIndex = historyStack.length - 1;
+      updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+      undoBtn.disabled = (historyIndex <= 0);
+      redoBtn.disabled = (historyIndex >= historyStack.length - 1);
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        redactions = JSON.parse(JSON.stringify(historyStack[historyIndex]));
+        selectedBoxId = null;
+        redrawPageRedactions();
+        updateUndoRedoButtons();
+      }
+    }
+
+    function redo() {
+      if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        redactions = JSON.parse(JSON.stringify(historyStack[historyIndex]));
+        selectedBoxId = null;
+        redrawPageRedactions();
+        updateUndoRedoButtons();
+      }
+    }
+
+    // --- RENDERING ENGINE ---
     async function renderCurrentPage() {
       if (!pdfDoc) return;
       
       pageNumDisplay.textContent = `Page ${currentPageNum} / ${totalPages}`;
+      zoomDisplay.textContent = `${Math.round(currentScale * 100)}%`;
       prevBtn.disabled = (currentPageNum <= 1);
       nextBtn.disabled = (currentPageNum >= totalPages);
 
@@ -894,38 +986,145 @@
       redrawPageRedactions();
     }
 
+    // Convert unscaled PDF points to current canvas pixels
+    function toCanvasCoord(val) { return val * currentScale; }
+    // Convert canvas pixels to unscaled PDF points
+    function toPdfCoord(val) { return val / currentScale; }
+
     function redrawPageRedactions() {
       drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
       const list = redactions[currentPageNum] || [];
       
       list.forEach(box => {
-        drawBox(drawCtx, box);
+        const isSelected = (box.id === selectedBoxId);
+        drawBox(drawCtx, box, currentScale, isSelected);
       });
 
       redactionCountDisplay.textContent = `${list.length} redaction${list.length === 1 ? '' : 's'} on this page`;
+      deleteBtn.style.display = selectedBoxId ? 'inline-flex' : 'none';
     }
 
-    function drawBox(ctx, box) {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(box.x, box.y, box.w, box.h);
+    function drawBox(ctx, box, scale, isSelected) {
+      const bx = box.x * scale;
+      const by = box.y * scale;
+      const bw = box.w * scale;
+      const bh = box.h * scale;
 
-      if (box.type === 'stamp' && Math.abs(box.w) > 40 && Math.abs(box.h) > 16) {
+      // Solid blackout fill
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(bx, by, bw, bh);
+
+      // Stamp text
+      if (box.type === 'stamp' && Math.abs(bw) > 36 && Math.abs(bh) > 14) {
         ctx.save();
         ctx.fillStyle = '#ffffff';
-        const fontSize = Math.min(Math.abs(box.h) * 0.55, 14);
+        const fontSize = Math.min(Math.abs(bh) * 0.52, 14 * scale);
         ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('REDACTED', box.x + box.w / 2, box.y + box.h / 2);
+        ctx.fillText('REDACTED', bx + bw / 2, by + bh / 2);
+        ctx.restore();
+      }
+
+      // Selection Outline & Resize Handles
+      if (isSelected) {
+        ctx.save();
+        // Cyan dashed bounding box
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeRect(bx, by, bw, bh);
+
+        // Draw 8 handles: corners & edge midpoints
+        const handles = getHandleCoords(bx, by, bw, bh);
+        const handleSize = 8;
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2;
+
+        for (const [key, pt] of Object.entries(handles)) {
+          ctx.fillRect(pt.x - handleSize / 2, pt.y - handleSize / 2, handleSize, handleSize);
+          ctx.strokeRect(pt.x - handleSize / 2, pt.y - handleSize / 2, handleSize, handleSize);
+        }
         ctx.restore();
       }
     }
 
-    // --- MOBILE & DESKTOP DRAWING ENGINE ---
-    let isDrawing = false;
-    let startX = 0;
-    let startY = 0;
+    function getHandleCoords(x, y, w, h) {
+      return {
+        nw: { x: x, y: y },
+        ne: { x: x + w, y: y },
+        se: { x: x + w, y: y + h },
+        sw: { x: x, y: y + h },
+        n:  { x: x + w / 2, y: y },
+        s:  { x: x + w / 2, y: y + h },
+        w:  { x: x, y: y + h / 2 },
+        e:  { x: x + w, y: y + h / 2 }
+      };
+    }
 
+    // --- INTERACTIVE HIT TESTING & SELECTION ---
+    function getBoxById(id) {
+      const list = redactions[currentPageNum] || [];
+      return list.find(b => b.id === id);
+    }
+
+    function getSelectedBox() {
+      return selectedBoxId ? getBoxById(selectedBoxId) : null;
+    }
+
+    function getHandleAtPoint(pt, box) {
+      if (!box) return null;
+      const bx = box.x * currentScale;
+      const by = box.y * currentScale;
+      const bw = box.w * currentScale;
+      const bh = box.h * currentScale;
+      const handles = getHandleCoords(bx, by, bw, bh);
+      const radius = 10; // hit radius in pixels
+
+      for (const [key, h] of Object.entries(handles)) {
+        if (Math.hypot(pt.x - h.x, pt.y - h.y) <= radius) {
+          return key;
+        }
+      }
+      return null;
+    }
+
+    function isInsideBox(pt, box) {
+      const bx = box.x * currentScale;
+      const by = box.y * currentScale;
+      const bw = box.w * currentScale;
+      const bh = box.h * currentScale;
+      const minX = Math.min(bx, bx + bw);
+      const maxX = Math.max(bx, bx + bw);
+      const minY = Math.min(by, by + bh);
+      const maxY = Math.max(by, by + bh);
+      return pt.x >= minX && pt.x <= maxX && pt.y >= minY && pt.y <= maxY;
+    }
+
+    function getBoxAtPoint(pt) {
+      const list = redactions[currentPageNum] || [];
+      // Top-most first
+      for (let i = list.length - 1; i >= 0; i--) {
+        if (isInsideBox(pt, list[i])) {
+          return list[i];
+        }
+      }
+      return null;
+    }
+
+    function getCursorForHandle(handle) {
+      switch (handle) {
+        case 'nw': case 'se': return 'nwse-resize';
+        case 'ne': case 'sw': return 'nesw-resize';
+        case 'n': case 's':   return 'ns-resize';
+        case 'w': case 'e':   return 'ew-resize';
+        default: return 'default';
+      }
+    }
+
+    // --- UNIFIED POINTER & TOUCH GESTURES ---
     function getEventPoint(e) {
       if (e.touches && e.touches.length > 0) return e.touches[0];
       if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0];
@@ -943,108 +1142,236 @@
       };
     }
 
-    function handleDrawStart(e) {
+    function handlePointerDown(e) {
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
-      const coords = getCanvasCoordinates(e);
-      isDrawing = true;
-      startX = coords.x;
-      startY = coords.y;
+      const pt = getCanvasCoordinates(e);
+      dragStartX = pt.x;
+      dragStartY = pt.y;
+
+      const selBox = getSelectedBox();
+
+      // 1. Check if clicking on a resize handle of the selected box
+      if (selBox) {
+        const handle = getHandleAtPoint(pt, selBox);
+        if (handle) {
+          interactionMode = 'resize';
+          activeHandle = handle;
+          initialBoxState = { ...selBox };
+          if (e.pointerId && drawCanvas.setPointerCapture) {
+            try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+          }
+          return;
+        }
+      }
+
+      // 2. Check if clicking inside an existing box (select / move)
+      const hitBox = getBoxAtPoint(pt);
+      if (hitBox) {
+        selectedBoxId = hitBox.id;
+        interactionMode = 'move';
+        initialBoxState = { ...hitBox };
+        redrawPageRedactions();
+        if (e.pointerId && drawCanvas.setPointerCapture) {
+          try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        return;
+      }
+
+      // 3. Otherwise, click was on empty canvas: deselect and start drawing a new box
+      selectedBoxId = null;
+      interactionMode = 'draw';
+      redrawPageRedactions();
 
       if (e.pointerId && drawCanvas.setPointerCapture) {
         try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
       }
     }
 
-    function handleDrawMove(e) {
-      if (!isDrawing) return;
+    function handlePointerMove(e) {
+      const pt = getCanvasCoordinates(e);
+
+      // Dynamic cursor updates when hovering (no mouse button down)
+      if (!interactionMode) {
+        const selBox = getSelectedBox();
+        if (selBox) {
+          const handle = getHandleAtPoint(pt, selBox);
+          if (handle) {
+            drawCanvas.style.cursor = getCursorForHandle(handle);
+            return;
+          }
+        }
+        const hitBox = getBoxAtPoint(pt);
+        if (hitBox) {
+          drawCanvas.style.cursor = (hitBox.id === selectedBoxId) ? 'move' : 'pointer';
+          return;
+        }
+        drawCanvas.style.cursor = 'crosshair';
+        return;
+      }
+
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
 
-      const coords = getCanvasCoordinates(e);
-      const currentW = coords.x - startX;
-      const currentH = coords.y - startY;
+      // Handle active interaction
+      if (interactionMode === 'draw') {
+        const currentW = pt.x - dragStartX;
+        const currentH = pt.y - dragStartY;
 
-      redrawPageRedactions();
+        redrawPageRedactions();
 
-      // Active preview rectangle
-      drawCtx.save();
-      drawCtx.strokeStyle = '#00d2ff';
-      drawCtx.lineWidth = Math.max(2 * (drawCanvas.width / 800), 2);
-      drawCtx.setLineDash([6, 6]);
-      drawCtx.strokeRect(startX, startY, currentW, currentH);
-      drawCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-      drawCtx.fillRect(startX, startY, currentW, currentH);
-      drawCtx.restore();
+        // Draw live active preview rectangle
+        drawCtx.save();
+        drawCtx.strokeStyle = '#00d2ff';
+        drawCtx.lineWidth = 2;
+        drawCtx.setLineDash([4, 4]);
+        drawCtx.strokeRect(dragStartX, dragStartY, currentW, currentH);
+        drawCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        drawCtx.fillRect(dragStartX, dragStartY, currentW, currentH);
+        drawCtx.restore();
+
+      } else if (interactionMode === 'move') {
+        const box = getSelectedBox();
+        if (!box || !initialBoxState) return;
+        const deltaX = toPdfCoord(pt.x - dragStartX);
+        const deltaY = toPdfCoord(pt.y - dragStartY);
+
+        box.x = initialBoxState.x + deltaX;
+        box.y = initialBoxState.y + deltaY;
+        redrawPageRedactions();
+
+      } else if (interactionMode === 'resize') {
+        const box = getSelectedBox();
+        if (!box || !initialBoxState) return;
+        
+        const curPdfX = toPdfCoord(pt.x);
+        const curPdfY = toPdfCoord(pt.y);
+        const startPdfX = toPdfCoord(dragStartX);
+        const startPdfY = toPdfCoord(dragStartY);
+        const deltaX = curPdfX - startPdfX;
+        const deltaY = curPdfY - startPdfY;
+
+        let newX = initialBoxState.x;
+        let newY = initialBoxState.y;
+        let newW = initialBoxState.w;
+        let newH = initialBoxState.h;
+
+        if (activeHandle.includes('e')) newW = initialBoxState.w + deltaX;
+        if (activeHandle.includes('s')) newH = initialBoxState.h + deltaY;
+        if (activeHandle.includes('w')) {
+          newX = initialBoxState.x + deltaX;
+          newW = initialBoxState.w - deltaX;
+        }
+        if (activeHandle.includes('n')) {
+          newY = initialBoxState.y + deltaY;
+          newH = initialBoxState.h - deltaY;
+        }
+
+        // Prevent inverted dimensions
+        if (newW >= 5 && newH >= 5) {
+          box.x = newX;
+          box.y = newY;
+          box.w = newW;
+          box.h = newH;
+          redrawPageRedactions();
+        }
+      }
     }
 
-    function handleDrawEnd(e) {
-      if (!isDrawing) return;
-      isDrawing = false;
+    function handlePointerUp(e) {
+      if (!interactionMode) return;
 
       if (e.pointerId && drawCanvas.releasePointerCapture) {
         try { drawCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
       }
 
-      const coords = getCanvasCoordinates(e);
-      const w = coords.x - startX;
-      const h = coords.y - startY;
+      const pt = getCanvasCoordinates(e);
 
-      // Ignore accidental tiny taps / clicks
-      if (Math.abs(w) < 6 || Math.abs(h) < 6) {
-        redrawPageRedactions();
-        return;
+      if (interactionMode === 'draw') {
+        const w = pt.x - dragStartX;
+        const h = pt.y - dragStartY;
+
+        // Ignore tiny clicks (less than 6 pixels)
+        if (Math.abs(w) >= 6 && Math.abs(h) >= 6) {
+          const normCanvasX = w < 0 ? pt.x : dragStartX;
+          const normCanvasY = h < 0 ? pt.y : dragStartY;
+          const normCanvasW = Math.abs(w);
+          const normCanvasH = Math.abs(h);
+
+          // Convert to unscaled PDF points
+          const newBox = {
+            id: 'box_' + (nextBoxId++),
+            x: toPdfCoord(normCanvasX),
+            y: toPdfCoord(normCanvasY),
+            w: toPdfCoord(normCanvasW),
+            h: toPdfCoord(normCanvasH),
+            type: redactType
+          };
+
+          if (!redactions[currentPageNum]) {
+            redactions[currentPageNum] = [];
+          }
+          redactions[currentPageNum].push(newBox);
+          selectedBoxId = newBox.id; // Select newly created box immediately
+          saveHistoryState('Add Redaction');
+        }
+      } else if (interactionMode === 'move' || interactionMode === 'resize') {
+        const box = getSelectedBox();
+        if (box && initialBoxState) {
+          // Normalize negative width/height if any
+          if (box.w < 0) { box.x += box.w; box.w = Math.abs(box.w); }
+          if (box.h < 0) { box.y += box.h; box.h = Math.abs(box.h); }
+
+          // Only save history if box position or size actually changed
+          if (box.x !== initialBoxState.x || box.y !== initialBoxState.y || box.w !== initialBoxState.w || box.h !== initialBoxState.h) {
+            saveHistoryState(interactionMode === 'move' ? 'Move Redaction' : 'Resize Redaction');
+          }
+        }
       }
 
-      const normX = w < 0 ? coords.x : startX;
-      const normY = h < 0 ? coords.y : startY;
-      const normW = Math.abs(w);
-      const normH = Math.abs(h);
-
-      if (!redactions[currentPageNum]) {
-        redactions[currentPageNum] = [];
-      }
-
-      redactions[currentPageNum].push({
-        x: normX,
-        y: normY,
-        w: normW,
-        h: normH,
-        type: redactType
-      });
-
+      interactionMode = null;
+      activeHandle = null;
+      initialBoxState = null;
       redrawPageRedactions();
     }
 
-    // Bind unified pointer events (mouse, touch screen, stylus)
-    drawCanvas.addEventListener('pointerdown', handleDrawStart, { passive: false });
-    drawCanvas.addEventListener('pointermove', handleDrawMove, { passive: false });
-    drawCanvas.addEventListener('pointerup', handleDrawEnd, { passive: false });
-    drawCanvas.addEventListener('pointercancel', handleDrawEnd, { passive: false });
+    // Attach unified pointer events
+    drawCanvas.addEventListener('pointerdown', handlePointerDown, { passive: false });
+    drawCanvas.addEventListener('pointermove', handlePointerMove, { passive: false });
+    drawCanvas.addEventListener('pointerup', handlePointerUp, { passive: false });
+    drawCanvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
 
-    // Fallback touch events for older mobile webviews
-    drawCanvas.addEventListener('touchstart', handleDrawStart, { passive: false });
-    drawCanvas.addEventListener('touchmove', handleDrawMove, { passive: false });
-    drawCanvas.addEventListener('touchend', handleDrawEnd, { passive: false });
-    drawCanvas.addEventListener('touchcancel', handleDrawEnd, { passive: false });
+    // Touch event fallbacks for older browsers
+    drawCanvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+    drawCanvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+    drawCanvas.addEventListener('touchend', handlePointerUp, { passive: false });
+    drawCanvas.addEventListener('touchcancel', handlePointerUp, { passive: false });
 
-    // Zoom & Fit Controls
-    function zoomPage(delta) {
-      currentScale = Math.max(0.5, Math.min(3.0, currentScale + delta));
-      renderCurrentPage();
+    // --- ACTIONS & KEYBOARD SHORTCUTS ---
+    function deleteSelectedBox() {
+      if (!selectedBoxId) return;
+      const list = redactions[currentPageNum] || [];
+      const idx = list.findIndex(b => b.id === selectedBoxId);
+      if (idx !== -1) {
+        list.splice(idx, 1);
+        selectedBoxId = null;
+        saveHistoryState('Delete Redaction');
+        redrawPageRedactions();
+      }
     }
 
-    async function fitPageWidth() {
-      if (!pdfDoc) return;
-      const page = await pdfDoc.getPage(currentPageNum);
-      const naturalViewport = page.getViewport({ scale: 1.0 });
-      const availableWidth = Math.max(300, workspace.clientWidth - 40);
-      currentScale = Math.max(0.4, availableWidth / naturalViewport.width);
-      renderCurrentPage();
+    function clearCurrentPageRedactions() {
+      if (redactions[currentPageNum] && redactions[currentPageNum].length > 0) {
+        redactions[currentPageNum] = [];
+        selectedBoxId = null;
+        saveHistoryState('Clear Page');
+        redrawPageRedactions();
+      }
     }
 
     function changePage(delta) {
       const target = currentPageNum + delta;
       if (target >= 1 && target <= totalPages) {
         currentPageNum = target;
+        selectedBoxId = null;
         renderCurrentPage();
       }
     }
@@ -1053,31 +1380,84 @@
       redactType = type;
       document.getElementById('mode-blackout').classList.toggle('active', type === 'blackout');
       document.getElementById('mode-stamp').classList.toggle('active', type === 'stamp');
-    }
-
-    function undoRedaction() {
-      if (redactions[currentPageNum] && redactions[currentPageNum].length > 0) {
-        redactions[currentPageNum].pop();
+      // If a box is currently selected, update its type too!
+      const selBox = getSelectedBox();
+      if (selBox) {
+        selBox.type = type;
+        saveHistoryState('Change Type');
         redrawPageRedactions();
       }
     }
 
-    function clearCurrentPageRedactions() {
-      if (redactions[currentPageNum]) {
-        redactions[currentPageNum] = [];
-        redrawPageRedactions();
-      }
+    // Zoom Functions
+    function zoomPage(delta) {
+      const newScale = Math.max(0.4, Math.min(3.5, currentScale + delta));
+      currentScale = Math.round(newScale * 100) / 100;
+      renderCurrentPage();
     }
 
-    // Ctrl+Z Undo Shortcut
-    window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    function resetZoom() {
+      currentScale = 1.0;
+      renderCurrentPage();
+    }
+
+    async function fitPageWidth() {
+      if (!pdfDoc) return;
+      const page = await pdfDoc.getPage(currentPageNum);
+      const natural = page.getViewport({ scale: 1.0 });
+      const availableWidth = Math.max(280, workspace.clientWidth - 48);
+      currentScale = Math.round((availableWidth / natural.width) * 100) / 100;
+      renderCurrentPage();
+    }
+
+    // Ctrl + Mouse Wheel Zoom
+    stageContainer.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
-        undoRedaction();
+        zoomPage(e.deltaY < 0 ? 0.15 : -0.15);
+      }
+    }, { passive: false });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      // Delete / Backspace: delete selected box
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedBoxId && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          deleteSelectedBox();
+        }
+      }
+      // Escape: deselect
+      if (e.key === 'Escape') {
+        selectedBoxId = null;
+        redrawPageRedactions();
+      }
+      // Ctrl+Z: Undo
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      // Ctrl+Y or Ctrl+Shift+Z: Redo
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault();
+        redo();
+      }
+      // Arrow keys to nudge selected box
+      if (selectedBoxId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        const selBox = getSelectedBox();
+        if (selBox) {
+          const step = e.shiftKey ? 10 : 2;
+          if (e.key === 'ArrowUp') selBox.y -= toPdfCoord(step);
+          if (e.key === 'ArrowDown') selBox.y += toPdfCoord(step);
+          if (e.key === 'ArrowLeft') selBox.x -= toPdfCoord(step);
+          if (e.key === 'ArrowRight') selBox.x += toPdfCoord(step);
+          redrawPageRedactions();
+        }
       }
     });
 
-    // --- TRUE BURN-IN EXPORT ENGINE ---
+    // --- TRUE BURN-IN EXPORT ENGINE (ZERO METADATA) ---
     async function exportRedactedPdf() {
       if (!pdfDoc) return;
 
@@ -1086,8 +1466,7 @@
       
       try {
         const { PDFDocument, PDFName } = PDFLib;
-        
-        // Pass updateMetadata: false to stop pdf-lib from auto-injecting its own producer/dates
+        // updateMetadata: false stops pdf-lib from auto-injecting its own producer/dates
         const newPdfDoc = await PDFDocument.create({ updateMetadata: false });
         const exportScale = 2.0; // High resolution 2x scale for crisp print quality
         const purgeMeta = document.getElementById('purge-meta-checkbox').checked;
@@ -1110,17 +1489,10 @@
 
           // 2. Draw burned-in redactions scaled to high DPI
           const pageBoxes = redactions[p] || [];
-          const scaleRatio = exportScale / currentScale;
 
           pageBoxes.forEach(box => {
-            const scaledBox = {
-              x: box.x * scaleRatio,
-              y: box.y * scaleRatio,
-              w: box.w * scaleRatio,
-              h: box.h * scaleRatio,
-              type: box.type
-            };
-            drawBox(offCtx, scaledBox);
+            // Draw box directly using PDF points scaled to exportScale
+            drawBox(offCtx, box, exportScale, false);
           });
 
           // 3. Compress page to high-quality JPEG

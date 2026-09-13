@@ -336,6 +336,39 @@
       border-color: #00d2ff;
     }
 
+        .document-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .current-filename {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #94a3b8;
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .tool-btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+    }
+    .tool-btn-secondary:hover {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
     .export-btn {
       background: #00d2ff;
       color: #08090d;
@@ -654,7 +687,40 @@
         flex-wrap: wrap;
         gap: 8px;
       }
-      .tool-btn, .export-btn {
+      .tool-btn,     .document-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .current-filename {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #94a3b8;
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .tool-btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+    }
+    .tool-btn-secondary:hover {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    .export-btn {
         flex: 1 1 auto;
         justify-content: center;
         padding: 10px 12px;
@@ -892,6 +958,19 @@
 
       <!-- Toolbar -->
       <div class="toolbar">
+        <!-- Document / File Actions -->
+        <div class="toolbar-group document-group">
+          <button type="button" class="tool-btn" id="open-doc-btn" onclick="openNewPdf()" title="Open another PDF document">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            <span>Open PDF</span>
+          </button>
+          <button type="button" class="tool-btn tool-btn-secondary" id="close-doc-btn" onclick="closeDocument()" title="Close current document and return to upload area">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Close</span>
+          </button>
+          <span class="current-filename" id="doc-filename-display" title="Current PDF filename">document.pdf</span>
+        </div>
+
         <!-- Page Controls -->
         <div class="toolbar-group">
           <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">Prev</button>
@@ -1135,6 +1214,26 @@
     ['dragleave', 'drop'].forEach(name => {
       dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
     });
+        // Allow dragging a new PDF directly onto the active workspace
+    ['dragenter', 'dragover'].forEach(name => {
+      workspace.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+    workspace.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0 && files[0].type === 'application/pdf') {
+        if (hasUnsavedRedactions()) {
+          const confirmed = confirm('Opening a new document will discard unsaved redactions on this file. Continue?');
+          if (!confirmed) return;
+        }
+        loadPdfFile(files[0]);
+      }
+    });
+
     dropZone.addEventListener('drop', (e) => {
       const files = e.dataTransfer.files;
       if (files && files.length > 0 && files[0].type === 'application/pdf') {
@@ -1168,8 +1267,13 @@
         const metadata = await pdfDoc.getMetadata().catch(() => null);
         displayMetadata(metadata);
 
-        workspace.style.display = 'block';
+                workspace.style.display = 'block';
         dropZone.style.display = 'none';
+        const filenameDisplay = document.getElementById('doc-filename-display');
+        if (filenameDisplay) {
+          filenameDisplay.textContent = file.name;
+          filenameDisplay.title = file.name;
+        }
 
         // Auto-fit initial scale for mobile screens
         if (window.innerWidth < 768) {
@@ -1189,6 +1293,56 @@
       }
     }
 
+    
+    function hasUnsavedRedactions() {
+      return Object.values(redactions).some(arr => Array.isArray(arr) && arr.length > 0);
+    }
+
+    function openNewPdf() {
+      if (hasUnsavedRedactions()) {
+        const confirmed = confirm('Opening a new document will discard unsaved redactions on this file. Continue?');
+        if (!confirmed) return;
+      }
+      fileInput.value = '';
+      fileInput.click();
+    }
+
+    function closeDocument() {
+      if (hasUnsavedRedactions()) {
+        const confirmed = confirm('Closing this document will discard unsaved redactions. Continue?');
+        if (!confirmed) return;
+      }
+      pdfDoc = null;
+      pdfRawBytes = null;
+      pdfFileName = 'document.pdf';
+      currentPageNum = 1;
+      totalPages = 1;
+      redactions = {};
+      selectedBoxId = null;
+      historyStack = [];
+      historyIndex = -1;
+      fileInput.value = '';
+
+      if (pdfCtx && pdfCanvas) {
+        pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+        pdfCanvas.width = 0;
+        pdfCanvas.height = 0;
+      }
+      if (drawCtx && drawCanvas) {
+        drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        drawCanvas.width = 0;
+        drawCanvas.height = 0;
+      }
+
+      if (metaSummaryText) {
+        metaSummaryText.innerHTML = '<span>Scanning document metadata...</span>';
+      }
+
+      workspace.style.display = 'none';
+      dropZone.style.display = 'block';
+      dropZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     function displayMetadata(meta) {
       if (!meta || !meta.info) {
         metaSummaryText.innerHTML = '<span class="meta-badge clean">0 Hidden Tags Found</span> <span>Clean document structure.</span>';
@@ -1204,7 +1358,7 @@
 
       if (tagsFound > 0) {
         metaSummaryText.innerHTML = `
-          <span class="meta-badge detected">⚠️ ${tagsFound} Metadata Tags Detected</span>
+          <span class="meta-badge detected"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>${tagsFound} Metadata Tags Detected</span>
           <span>${details.join(' • ')}</span>
         `;
       } else {

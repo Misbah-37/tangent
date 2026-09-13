@@ -405,17 +405,38 @@
       font-weight: 600;
     }
 
-    /* Canvas Stage */
+    /* Canvas Stage with Always-Available Custom Scrollbars */
     .stage-container {
       background: #0b0d13;
-      padding: 30px 16px;
+      padding: 24px 16px;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      min-height: 600px;
+      min-height: 480px;
+      max-height: 75vh;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-x pan-y;
+      position: relative;
+      scrollbar-color: #00d2ff #171b26;
+      scrollbar-width: thin;
+    }
+
+    .stage-container::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    .stage-container::-webkit-scrollbar-track {
+      background: #11141d;
+      border-radius: 6px;
+    }
+    .stage-container::-webkit-scrollbar-thumb {
+      background: #2a3349;
+      border: 2px solid #11141d;
+      border-radius: 6px;
+    }
+    .stage-container::-webkit-scrollbar-thumb:hover,
+    .stage-container::-webkit-scrollbar-thumb:active {
+      background: #00d2ff;
     }
 
     .canvas-wrapper {
@@ -427,7 +448,8 @@
       user-select: none;
       flex-shrink: 0;
       margin: auto;
-      transition: width 0.1s ease, height 0.1s ease;
+      transform-origin: 0 0;
+      will-change: transform;
     }
 
     #pdf-canvas {
@@ -700,10 +722,16 @@
           <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">↔ Fit</button>
         </div>
 
+        <!-- Action Mode: Redact vs Pan -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">✏️ Redact</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Pan / Scroll zoomed document with finger or mouse">🖐️ Pan</button>
+        </div>
+
         <!-- Style Mode -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Draw solid black boxes">⬛ Blackout</button>
-          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Draw REDACTED stamp boxes">🏷️ Stamp</button>
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black redaction box">⬛ Blackout</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="REDACTED stamp box">🏷️ Stamp</button>
         </div>
 
         <!-- Edit & History -->
@@ -725,7 +753,7 @@
 
       <!-- Hint Bar -->
       <div class="hint-bar">
-        <span>✏️ <strong>Drag</strong> to draw • <strong>Click</strong> a box to move or resize handles • <strong>Delete / Backspace</strong> to remove</span>
+        <span>✏️ <strong>Redact mode:</strong> Drag to blackout, tap to move/resize • 🖐️ <strong>Pan mode:</strong> Drag to scroll/adjust zoomed document</span>
         <span id="redaction-count-display">0 redactions on this page</span>
       </div>
 
@@ -826,6 +854,19 @@
     let redactions = {};
     let selectedBoxId = null;
     let nextBoxId = 1;
+    let currentTool = 'redact'; // 'redact' or 'pan'
+
+    // Pan state
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let panScrollLeft = 0;
+    let panScrollTop = 0;
+
+    // Smooth GPU Pinch State
+    let initialPinchDistance = null;
+    let initialPinchScale = 1.0;
+    let currentPinchRatio = 1.0;
 
     // History stack for Undo / Redo
     let historyStack = [];
@@ -1174,20 +1215,22 @@
       };
     }
 
-    // --- PINCH TO ZOOM & MULTI-TOUCH ENGINE ---
-    let initialPinchDistance = null;
-    let initialPinchScale = 1.0;
-
-    function getTouchDistance(e) {
-      if (e.touches && e.touches.length >= 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        return Math.hypot(dx, dy);
+    // --- TOOL SWITCHER: REDACT VS PAN ---
+    function setActiveTool(tool) {
+      currentTool = tool;
+      document.getElementById('btn-mode-redact').classList.toggle('active', tool === 'redact');
+      document.getElementById('btn-mode-pan').classList.toggle('active', tool === 'pan');
+      
+      if (tool === 'pan') {
+        selectedBoxId = null;
+        redrawPageRedactions();
+        drawCanvas.style.cursor = 'grab';
+      } else {
+        drawCanvas.style.cursor = 'crosshair';
       }
-      return null;
     }
 
-    // Multi-page helper functions
+    // --- MULTI-PAGE DOCUMENT NAVIGATION ---
     function updatePageSelectOptions() {
       const select = document.getElementById('page-select');
       if (!select) return;
@@ -1206,7 +1249,6 @@
       const select = document.getElementById('page-select');
       if (select) {
         select.value = currentPageNum;
-        // Update redaction counts in option text
         for (let i = 0; i < select.options.length; i++) {
           const pg = i + 1;
           const count = (redactions[pg] && redactions[pg].length > 0) ? ` (${redactions[pg].length} redacted)` : '';
@@ -1225,17 +1267,42 @@
       }
     }
 
+    // --- SMOOTH GPU PINCH-TO-ZOOM ENGINE ---
+    function getTouchDistance(e) {
+      if (e.touches && e.touches.length >= 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.hypot(dx, dy);
+      }
+      return null;
+    }
+
     function handlePointerDown(e) {
-      // Check for two-finger pinch gesture on mobile
+      // 1. Check for two-finger pinch gesture on mobile
       if (e.touches && e.touches.length >= 2) {
         interactionMode = null;
         isDrawing = false;
+        isPanning = false;
         initialPinchDistance = getTouchDistance(e);
         initialPinchScale = currentScale;
-        redrawPageRedactions();
+        currentPinchRatio = 1.0;
         return;
       }
 
+      // 2. PAN MODE: drag to scroll the zoomed viewport
+      if (currentTool === 'pan') {
+        const pt = e.touches ? e.touches[0] : e;
+        isPanning = true;
+        panStartX = pt.clientX;
+        panStartY = pt.clientY;
+        panScrollLeft = stageContainer.scrollLeft;
+        panScrollTop = stageContainer.scrollTop;
+        drawCanvas.style.cursor = 'grabbing';
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
+
+      // 3. REDACT MODE: hit testing and drawing
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
       const pt = getCanvasCoordinates(e);
       dragStartX = pt.x;
@@ -1243,7 +1310,7 @@
 
       const selBox = getSelectedBox();
 
-      // 1. Check if clicking on a resize handle of the selected box
+      // Check handle of selected box
       if (selBox) {
         const handle = getHandleAtPoint(pt, selBox);
         if (handle) {
@@ -1257,7 +1324,7 @@
         }
       }
 
-      // 2. Check if clicking inside an existing box (select / move)
+      // Check click inside existing box
       const hitBox = getBoxAtPoint(pt);
       if (hitBox) {
         selectedBoxId = hitBox.id;
@@ -1270,7 +1337,7 @@
         return;
       }
 
-      // 3. Otherwise, click was on empty canvas: deselect and start drawing a new box
+      // Otherwise click on canvas: start drawing new blackout box
       selectedBoxId = null;
       interactionMode = 'draw';
       redrawPageRedactions();
@@ -1281,22 +1348,34 @@
     }
 
     function handlePointerMove(e) {
-      // Handle pinch-to-zoom on mobile devices
+      // 1. Two-finger pinch: smooth GPU hardware transform (ZERO JITTER)
       if (e.touches && e.touches.length >= 2 && initialPinchDistance) {
         if (e.cancelable) e.preventDefault();
         const dist = getTouchDistance(e);
         if (dist) {
-          const factor = dist / initialPinchDistance;
-          const newScale = Math.max(0.4, Math.min(3.5, initialPinchScale * factor));
-          currentScale = Math.round(newScale * 100) / 100;
-          renderCurrentPage();
+          currentPinchRatio = dist / initialPinchDistance;
+          const canvasWrapper = document.getElementById('canvas-wrapper');
+          canvasWrapper.style.transform = `scale(${currentPinchRatio})`;
         }
         return;
       }
 
+      // 2. PAN MODE MOVE: scroll viewport smoothly
+      if (isPanning && currentTool === 'pan') {
+        const pt = e.touches ? e.touches[0] : e;
+        const dx = pt.clientX - panStartX;
+        const dy = pt.clientY - panStartY;
+        stageContainer.scrollLeft = panScrollLeft - dx;
+        stageContainer.scrollTop = panScrollTop - dy;
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
+
+      if (currentTool === 'pan') return;
+
       const pt = getCanvasCoordinates(e);
 
-      // Dynamic cursor updates when hovering (no mouse button down)
+      // Hover cursor updates
       if (!interactionMode) {
         const selBox = getSelectedBox();
         if (selBox) {
@@ -1317,14 +1396,13 @@
 
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
 
-      // Handle active interaction
+      // REDACT ACTIONS: draw, move, resize
       if (interactionMode === 'draw') {
         const currentW = pt.x - dragStartX;
         const currentH = pt.y - dragStartY;
 
         redrawPageRedactions();
 
-        // Draw live active preview rectangle
         drawCtx.save();
         drawCtx.strokeStyle = '#00d2ff';
         drawCtx.lineWidth = 2;
@@ -1371,7 +1449,6 @@
           newH = initialBoxState.h - deltaY;
         }
 
-        // Prevent inverted dimensions
         if (newW >= 5 && newH >= 5) {
           box.x = newX;
           box.y = newY;
@@ -1383,6 +1460,25 @@
     }
 
     function handlePointerUp(e) {
+      // 1. PINCH END: apply final scale and render once (high-res crisp quality)
+      if (initialPinchDistance) {
+        const canvasWrapper = document.getElementById('canvas-wrapper');
+        canvasWrapper.style.transform = '';
+        const finalScale = Math.max(0.4, Math.min(3.5, initialPinchScale * currentPinchRatio));
+        currentScale = Math.round(finalScale * 100) / 100;
+        initialPinchDistance = null;
+        currentPinchRatio = 1.0;
+        renderCurrentPage();
+        return;
+      }
+
+      // 2. PAN END
+      if (isPanning) {
+        isPanning = false;
+        drawCanvas.style.cursor = (currentTool === 'pan') ? 'grab' : 'crosshair';
+        return;
+      }
+
       if (!interactionMode) return;
 
       if (e.pointerId && drawCanvas.releasePointerCapture) {
@@ -1395,14 +1491,12 @@
         const w = pt.x - dragStartX;
         const h = pt.y - dragStartY;
 
-        // Ignore tiny clicks (less than 6 pixels)
         if (Math.abs(w) >= 6 && Math.abs(h) >= 6) {
           const normCanvasX = w < 0 ? pt.x : dragStartX;
           const normCanvasY = h < 0 ? pt.y : dragStartY;
           const normCanvasW = Math.abs(w);
           const normCanvasH = Math.abs(h);
 
-          // Convert to unscaled PDF points
           const newBox = {
             id: 'box_' + (nextBoxId++),
             x: toPdfCoord(normCanvasX),
@@ -1416,24 +1510,21 @@
             redactions[currentPageNum] = [];
           }
           redactions[currentPageNum].push(newBox);
-          selectedBoxId = newBox.id; // Select newly created box immediately
+          selectedBoxId = newBox.id;
           saveHistoryState('Add Redaction');
         }
       } else if (interactionMode === 'move' || interactionMode === 'resize') {
         const box = getSelectedBox();
         if (box && initialBoxState) {
-          // Normalize negative width/height if any
           if (box.w < 0) { box.x += box.w; box.w = Math.abs(box.w); }
           if (box.h < 0) { box.y += box.h; box.h = Math.abs(box.h); }
 
-          // Only save history if box position or size actually changed
           if (box.x !== initialBoxState.x || box.y !== initialBoxState.y || box.w !== initialBoxState.w || box.h !== initialBoxState.h) {
             saveHistoryState(interactionMode === 'move' ? 'Move Redaction' : 'Resize Redaction');
           }
         }
       }
 
-      initialPinchDistance = null;
       interactionMode = null;
       activeHandle = null;
       initialBoxState = null;

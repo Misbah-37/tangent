@@ -907,8 +907,8 @@
 
         <!-- Interaction Tool: Draw Box vs Move/Pan -->
         <div class="toolbar-group">
-          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">✏️ Draw Box</button>
-          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">🖐️ Move / Pan</button>
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes"> Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely"> Move / Pan</button>
         </div>
 
         <!-- Box Visual Style -->
@@ -1462,7 +1462,7 @@
       const dockText = document.getElementById('dock-tool-text');
       if (dockBtn && dockIcon && dockText) {
         dockBtn.classList.toggle('pan-active', tool === 'pan');
-        dockIcon.textContent = tool === 'pan' ? '🖐️' : '✏️';
+        dockIcon.textContent = tool === 'pan' ? '' : '';
         dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
       }
 

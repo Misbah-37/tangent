@@ -419,6 +419,67 @@
       box-sizing: border-box;
     }
 
+    /* Floating History HUD inside Editing Stage (Accessible without blocking content) */
+    .stage-floating-hud {
+      position: sticky;
+      top: 14px;
+      right: 18px;
+      float: right;
+      z-index: 110;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(17, 20, 29, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      border-radius: 999px;
+      padding: 4px 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      margin-bottom: -46px;
+      pointer-events: auto;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .stage-floating-hud:hover {
+      background: rgba(17, 20, 29, 0.95);
+      border-color: #00d2ff;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 210, 255, 0.25);
+    }
+
+    .hud-btn {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .hud-btn:hover:not(:disabled) {
+      background: #2a3349;
+      border-color: #00d2ff;
+      color: #00d2ff;
+      transform: translateY(-1px);
+    }
+
+    .hud-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .hud-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
     /* Inner stage ensures centered layout when small, but expands positively when zoomed in with ZERO clipping */
     .stage-inner {
       display: inline-flex;
@@ -880,8 +941,18 @@
         </label>
       </div>
 
-      <!-- Canvas Stage -->
+      <!-- Canvas Stage with Floating History HUD -->
       <div class="stage-container">
+        <!-- Floating Stage History HUD (Top-Right of Editing Area) -->
+        <div class="stage-floating-hud">
+          <button type="button" class="hud-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
+            ↩ Undo
+          </button>
+          <button type="button" class="hud-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>
+            ↪ Redo
+          </button>
+        </div>
+
         <div class="stage-inner">
           <div class="canvas-wrapper" id="canvas-wrapper">
             <canvas id="pdf-canvas"></canvas>
@@ -893,6 +964,10 @@
       <!-- Floating Quick-Action Navigation Dock -->
       <div class="dock-wrapper">
         <div class="quick-nav-dock" id="quick-nav-dock">
+          <!-- Undo / Redo in Quick Dock -->
+          <button type="button" class="dock-nudge-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩</button>
+          <button type="button" class="dock-nudge-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪</button>
+          <div class="dock-divider"></div>
           <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
             <span id="dock-tool-icon">✏️</span>
             <span id="dock-tool-text">Draw Box</span>
@@ -1133,8 +1208,15 @@
     }
 
     function updateUndoRedoButtons() {
-      undoBtn.disabled = (historyIndex <= 0);
-      redoBtn.disabled = (historyIndex >= historyStack.length - 1);
+      const canUndo = (historyIndex > 0);
+      const canRedo = (historyIndex < historyStack.length - 1);
+      
+      document.querySelectorAll('.btn-undo, #undo-btn').forEach(btn => {
+        btn.disabled = !canUndo;
+      });
+      document.querySelectorAll('.btn-redo, #redo-btn').forEach(btn => {
+        btn.disabled = !canRedo;
+      });
     }
 
     function undo() {

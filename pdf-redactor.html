@@ -411,9 +411,11 @@
       padding: 30px 16px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 600px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
     }
 
     .canvas-wrapper {
@@ -423,12 +425,28 @@
       border-radius: 4px;
       line-height: 0;
       user-select: none;
+      flex-shrink: 0;
+      margin: auto;
+      transition: width 0.1s ease, height 0.1s ease;
     }
 
     #pdf-canvas {
       display: block;
-      max-width: 100%;
-      height: auto;
+    }
+
+    .page-select {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .page-select:focus {
+      border-color: #00d2ff;
     }
 
     #draw-canvas {
@@ -667,7 +685,10 @@
         <!-- Page Controls -->
         <div class="toolbar-group">
           <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">◀ Prev</button>
-          <span class="page-indicator" id="page-num-display">Page 1 / 1</span>
+          <select id="page-select" class="page-select" onchange="goToPage(parseInt(this.value))" title="Jump to page">
+            <option value="1">Page 1</option>
+          </select>
+          <span class="page-indicator" id="page-total-display">of 1</span>
           <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next ▶</button>
         </div>
 
@@ -886,11 +907,12 @@
         if (window.innerWidth < 768) {
           const firstPage = await pdfDoc.getPage(1);
           const natural = firstPage.getViewport({ scale: 1.0 });
-          const screenW = Math.max(280, window.innerWidth - 48);
-          currentScale = Math.max(0.4, screenW / natural.width);
+          const screenW = Math.max(280, window.innerWidth - 40);
+          currentScale = Math.round((screenW / natural.width) * 100) / 100;
         } else {
           currentScale = 1.35;
         }
+        updatePageSelectOptions();
         
         saveHistoryState('Initial Document Load');
         await renderCurrentPage();
@@ -967,7 +989,7 @@
     async function renderCurrentPage() {
       if (!pdfDoc) return;
       
-      pageNumDisplay.textContent = `Page ${currentPageNum} / ${totalPages}`;
+      updatePageNavUI();
       zoomDisplay.textContent = `${Math.round(currentScale * 100)}%`;
       prevBtn.disabled = (currentPageNum <= 1);
       nextBtn.disabled = (currentPageNum >= totalPages);
@@ -975,10 +997,20 @@
       const page = await pdfDoc.getPage(currentPageNum);
       const viewport = page.getViewport({ scale: currentScale });
 
+      // Explicitly size canvases and wrapper so mobile zooming expands properly
+      const canvasWrapper = document.getElementById('canvas-wrapper');
+      canvasWrapper.style.width = viewport.width + 'px';
+      canvasWrapper.style.height = viewport.height + 'px';
+
       pdfCanvas.width = viewport.width;
       pdfCanvas.height = viewport.height;
+      pdfCanvas.style.width = viewport.width + 'px';
+      pdfCanvas.style.height = viewport.height + 'px';
+
       drawCanvas.width = viewport.width;
       drawCanvas.height = viewport.height;
+      drawCanvas.style.width = viewport.width + 'px';
+      drawCanvas.style.height = viewport.height + 'px';
 
       const renderContext = { canvasContext: pdfCtx, viewport: viewport };
       await page.render(renderContext).promise;
@@ -1142,7 +1174,68 @@
       };
     }
 
+    // --- PINCH TO ZOOM & MULTI-TOUCH ENGINE ---
+    let initialPinchDistance = null;
+    let initialPinchScale = 1.0;
+
+    function getTouchDistance(e) {
+      if (e.touches && e.touches.length >= 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.hypot(dx, dy);
+      }
+      return null;
+    }
+
+    // Multi-page helper functions
+    function updatePageSelectOptions() {
+      const select = document.getElementById('page-select');
+      if (!select) return;
+      select.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        const count = (redactions[i] && redactions[i].length > 0) ? ` (${redactions[i].length} redacted)` : '';
+        opt.textContent = `Page ${i}${count}`;
+        select.appendChild(opt);
+      }
+      document.getElementById('page-total-display').textContent = `of ${totalPages}`;
+    }
+
+    function updatePageNavUI() {
+      const select = document.getElementById('page-select');
+      if (select) {
+        select.value = currentPageNum;
+        // Update redaction counts in option text
+        for (let i = 0; i < select.options.length; i++) {
+          const pg = i + 1;
+          const count = (redactions[pg] && redactions[pg].length > 0) ? ` (${redactions[pg].length} redacted)` : '';
+          select.options[i].textContent = `Page ${pg}${count}`;
+        }
+      }
+      const totalDisplay = document.getElementById('page-total-display');
+      if (totalDisplay) totalDisplay.textContent = `of ${totalPages}`;
+    }
+
+    function goToPage(pageNum) {
+      if (pageNum >= 1 && pageNum <= totalPages) {
+        currentPageNum = pageNum;
+        selectedBoxId = null;
+        renderCurrentPage();
+      }
+    }
+
     function handlePointerDown(e) {
+      // Check for two-finger pinch gesture on mobile
+      if (e.touches && e.touches.length >= 2) {
+        interactionMode = null;
+        isDrawing = false;
+        initialPinchDistance = getTouchDistance(e);
+        initialPinchScale = currentScale;
+        redrawPageRedactions();
+        return;
+      }
+
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
       const pt = getCanvasCoordinates(e);
       dragStartX = pt.x;
@@ -1188,6 +1281,19 @@
     }
 
     function handlePointerMove(e) {
+      // Handle pinch-to-zoom on mobile devices
+      if (e.touches && e.touches.length >= 2 && initialPinchDistance) {
+        if (e.cancelable) e.preventDefault();
+        const dist = getTouchDistance(e);
+        if (dist) {
+          const factor = dist / initialPinchDistance;
+          const newScale = Math.max(0.4, Math.min(3.5, initialPinchScale * factor));
+          currentScale = Math.round(newScale * 100) / 100;
+          renderCurrentPage();
+        }
+        return;
+      }
+
       const pt = getCanvasCoordinates(e);
 
       // Dynamic cursor updates when hovering (no mouse button down)
@@ -1327,10 +1433,12 @@
         }
       }
 
+      initialPinchDistance = null;
       interactionMode = null;
       activeHandle = null;
       initialBoxState = null;
       redrawPageRedactions();
+      updatePageNavUI();
     }
 
     // Attach unified pointer events

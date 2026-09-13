@@ -1,818 +1,771 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>File Organizer | Tangent</title>
-
-<meta name="description" content="A standalone, verified Windows application designed to instantly organize messy folders on your PC into 12 clean categories. Completely secure, running entirely on your local machine.">
-
-  <!-- Foundation & Social Meta Tags -->
-
+<meta name="description" content="Organize messy folders into 12 clean categories. Use our secure in-browser organizer or download the standalone portable Windows app. 100% private.">
+<!-- Foundation & Social Meta Tags -->
 <meta property="og:type" content="website">
-
 <meta property="og:site_name" content="Tangent">
-
-<meta property="og:title" content="Tangent | Professional Client-Side Utilities">
-
-<meta property="og:description" content="Secure, fast, and 100% offline digital utilities. Process PDFs, resize photos, and organize files locally.">
-
+<meta property="og:title" content="File Organizer | Tangent">
+<meta property="og:description" content="Organize messy folders into 12 clean categories. In-browser folder sorting and portable Windows app with zero server uploads.">
 <meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
 
 <!-- Schema.org FAQ Structured Data -->
-
 <script type="application/ld+json">
-
 {
-
   "@context": "https://schema.org",
-
   "@type": "FAQPage",
-
   "mainEntity": [
-
     {
-
       "@type": "Question",
-
-      "name": "Why can't this run directly in the web browser?",
-
+      "name": "How does the in-browser file organizer work?",
       "acceptedAnswer": {
-
         "@type": "Answer",
-
-        "text": "Modern web browsers have strict security sandboxes that intentionally prevent web pages from moving, renaming, and categorizing arbitrary files across your computer directories. A standalone local desktop application is required to safely interact with your local file system."
-
+        "text": "The in-browser organizer uses the modern HTML5 File System Access API (supported in Edge, Chrome, and Opera) to read and structure files directly on your computer with your explicit permission. For other browsers or batch drag-and-drop, it organizes your files in browser RAM and packages them into a clean, categorized ZIP file."
       }
-
     },
-
     {
-
       "@type": "Question",
-
-      "name": "Is the executable file safe to run?",
-
+      "name": "Is the Windows desktop application safe to run?",
       "acceptedAnswer": {
-
         "@type": "Answer",
-
-        "text": "Yes. The Tangent File Organizer operates 100% locally with zero internet communication, no registry modifications, and verified 0/70 clean detections on VirusTotal. It simply reads file extensions in the directory you select and moves them into organized category folders."
-
+        "text": "Yes. The Tangent File Organizer operates 100% locally with zero internet communication, no registry modifications, and verified clean scans on VirusTotal (Microsoft Defender, Bitdefender, Kaspersky). It simply reads file extensions in the directory you select and moves them into organized category folders."
       }
-
+    },
+    {
+      "@type": "Question",
+      "name": "Do any files leave my device?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Never. Both the in-browser organizer and the desktop application execute 100% client-side. Zero bytes are uploaded to external servers."
+      }
     }
-
   ]
-
 }
-
 </script>
 
+<!-- JSZip for In-Browser ZIP Sorting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <style>
-  /* Eliminate scrollbar layout jump across pages */
+  :root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --success-border: rgba(16, 185, 129, 0.35);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
   html {
     overflow-y: scroll;
     scrollbar-gutter: stable;
   }
 
-
-  /* --- Clean Minimalist Resets --- */
-
   * {
-
     box-sizing: border-box;
-
   }
 
-
-
-  body, html {
-
+  body {
     margin: 0;
-
     padding: 0;
-
-    background-color: #000000;
-
-    color: #ffffff;
-
+    background-color: var(--bg-page);
+    color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
     -webkit-font-smoothing: antialiased;
-
+    line-height: 1.5;
   }
 
-
-
-  /* --- Minimalist Global Nav (Docked & Right-Aligned) --- */
-
+  /* --- Global Navigation --- */
   .global-nav {
-
     position: sticky;
-
-    top: 0; 
-
-    left: 0; 
-
+    top: 0;
+    left: 0;
     width: 100%;
-
-    padding: 18px 40px;
-
-    background-color: rgba(0, 0, 0, 0.85);
-
+    padding: 16px 40px;
+    background-color: rgba(8, 9, 13, 0.88);
     backdrop-filter: blur(12px);
-
     -webkit-backdrop-filter: blur(12px);
-
-    border-bottom: 1px solid #222222;
-
+    border-bottom: 1px solid var(--border-color);
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     box-sizing: border-box;
-
     z-index: 2000;
-
   }
 
-  
-
-    .nav-brand {
-
+  .nav-brand {
     font-size: 1.15rem;
-
     font-weight: 700;
-
     letter-spacing: -0.5px;
-
     text-decoration: none;
-
     color: #ffffff;
-
-    display: inline-flex; align-items: center; gap: 8px;
-
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
-
-  
-
-  .nav-brand span {
-
-    color: #00d2ff;
-
-  }
-
-
 
   .nav-links {
-
     display: flex;
-
-    gap: 28px;
-
+    gap: 24px;
     align-items: center;
-
-    margin-left: auto; /* Guarantees right alignment across all devices */
-
-   flex-wrap: nowrap;}
-
-  
+    margin-left: auto;
+  }
 
   .nav-links a {
-
-    color: #999999;
-
+    color: var(--text-muted);
     text-decoration: none;
-
     font-size: 0.9rem;
-
     font-weight: 500;
-
     transition: color 0.2s ease;
+    white-space: nowrap;
+  }
 
-   white-space: nowrap;}
-
-    /* --- Menu Toggle Button (Hidden on Desktop) --- */
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--accent);
+  }
 
   .menu-toggle {
-
     display: none;
-
     background: transparent;
-
     border: none;
-
     color: #ffffff;
-
     cursor: pointer;
-
     padding: 8px;
-
     margin-left: auto;
-
     border-radius: 6px;
-
     align-items: center;
-
     justify-content: center;
-
     transition: color 0.2s ease;
-
   }
 
   .menu-toggle:hover {
-
-    color: #00d2ff;
-
+    color: var(--accent);
   }
 
-  
-
-  .nav-links a:hover, .nav-links a.active {
-
-    color: #00d2ff; /* Electric cyan hover & active indicator */
-
-  }
-
-
-
-  /* --- Global Footer --- */
-
-  .global-footer {
-
-    border-top: 1px solid #222222;
-
-    padding: 40px 24px;
-
-    text-align: center;
-
-    color: #666666;
-
-    font-size: 0.9rem;
-
-    background-color: #000000;
-
-    margin-top: 60px;
-
-  }
-
-
-
-  .global-footer a {
-
-    color: #999999;
-
-    text-decoration: none;
-
-    transition: color 0.2s;
-
-    margin: 0 12px;
-
-  }
-
-
-
-  .global-footer a:hover {
-
-    color: #00d2ff;
-
-  }
-
-
-
-  /* --- The Clean Hero --- */
-
+  /* --- Hero Header --- */
   .clean-header {
-
-    max-width: 800px;
-
-    margin: 100px auto 60px auto;
-
-    padding: 0 24px;
-
     text-align: center;
-
+    padding: 56px 20px 24px 20px;
+    max-width: 860px;
+    margin: 0 auto;
   }
 
-
-
-  .icon-wrapper {
-
-  margin-bottom: 24px;
-
-  color: #00d2ff; /* Electric Cyan Blue */
-
-  display: flex;
-
-  justify-content: center;
-
-  filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.4)); /* Subtle ambient neon glow */
-
-}
-
-
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
 
   .clean-header h1 {
-
-    font-size: 3.5rem;
-
-    font-weight: 700;
-
-    letter-spacing: -0.04em;
-
-    margin: 0 0 20px 0;
-
-    line-height: 1.1;
-
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
   }
-
-
 
   .clean-header p {
-
-    font-size: 1.25rem;
-
-    color: #999999;
-
-    margin: 0 auto 40px auto;
-
-    line-height: 1.5;
-
-    max-width: 650px;
-
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 auto;
+    line-height: 1.6;
+    max-width: 680px;
   }
 
-
-
-  /* The Signature Solid Accent Button */
-
-  .btn-accent {
-
-    display: inline-block;
-
-    background-color: #1473E6; 
-
-    color: #ffffff;
-
-    border: none;
-
-    padding: 16px 36px;
-
-    border-radius: 30px; 
-
-    font-size: 1.05rem;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    text-decoration: none;
-
-    transition: background-color 0.2s;
-
+  /* --- Tabs Navigation --- */
+  .tabs-wrapper {
+    max-width: 900px;
+    margin: 28px auto 0 auto;
+    padding: 0 20px;
   }
 
-
-
-  .btn-accent:hover {
-
-    background-color: #0d66d0;
-
-  }
-
-
-
-  /* --- Tool Container & Structural Layout --- */
-
-  .app-container {
-
-    max-width: 850px;
-
-    margin: 0 auto 100px auto;
-
-    padding: 0 24px;
-
+  .tabs-container {
     display: flex;
-
-    flex-direction: column;
-
-    gap: 24px;
-
-  }
-
-
-
-  .trust-badge-container {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 12px;
-
-    justify-content: center;
-
-    margin-bottom: 16px;
-
-  }
-
-
-
-  .trust-badge {
-
-    border: 1px solid #333333;
-
-    padding: 6px 16px;
-
-    border-radius: 20px;
-
-    font-size: 0.85rem;
-
-    font-weight: 500;
-
-    color: #cccccc;
-
-  }
-
-
-
-  .platform-warning {
-
-    display: none;
-
-    align-items: flex-start;
-
-    gap: 10px;
-
-    background-color: #1a0505;
-
-    border: 1px solid #4a1515;
-
-    padding: 14px 16px;
-
-    border-radius: 8px;
-
-    font-size: 0.9rem;
-
-    color: #ff9999;
-
-    line-height: 1.5;
-
-  }
-
-  
-
-  .platform-warning strong { color: #ffcccc; }
-
-
-
-  /* Flattened Cards */
-
-  .card-panel {
-
-    background-color: #121212; 
-
-    border: 1px solid #222222;
-
+    gap: 8px;
+    background: var(--bg-card);
+    padding: 6px;
     border-radius: 12px;
-
-    padding: 32px;
-
+    border: 1px solid var(--border-color);
   }
 
-
-
-  .card-panel h3, .cert-title {
-
-    margin: 0 0 24px 0;
-
-    color: #ffffff;
-
-    font-size: 1.25rem;
-
-    border-bottom: 1px solid #222222;
-
-    padding-bottom: 16px;
-
-    font-weight: 600;
-
-  }
-
-
-
-  .content-grid {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 24px;
-
-  }
-
-
-
-  .cert-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-
-    gap: 16px;
-
-    font-size: 0.9rem;
-
-    color: #999999;
-
-  }
-
-
-
-  .cert-grid strong { color: #cccccc; }
-
-
-
-  .warning-box {
-
-    background-color: #1a1505;
-
-    border: 1px solid #4a3c15;
-
-    padding: 16px;
-
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 12px 18px;
     border-radius: 8px;
-
-    font-size: 0.9rem;
-
-    color: #ffcc66;
-
-    line-height: 1.6;
-
-    margin-top: 24px;
-
-  }
-
-  
-
-  .warning-box strong { color: #ffeeaa; }
-
-
-
-  .steps-list { margin: 0; padding-left: 20px; color: #999999; line-height: 1.8; font-size: 0.95rem; }
-
-  .features-list { list-style: none; padding: 0; margin: 0; color: #999999; line-height: 1.8; font-size: 0.95rem; }
-
-  .features-list strong { color: #cccccc; }
-
-
-
-  /* Accordion / Categories Section */
-
-  details {
-
-    background-color: #121212;
-
-    border: 1px solid #222222;
-
-    border-radius: 8px;
-
-    padding: 20px;
-
-    cursor: pointer;
-
-    color: #ffffff;
-
-    font-weight: 600;
-
-  }
-
-  
-
-  details summary { outline: none; list-style: none; }
-
-  details summary::-webkit-details-marker { display: none; }
-
-  
-
-  .categories-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-
-    gap: 12px;
-
-    margin-top: 24px;
-
-    font-weight: 400;
-
-    font-size: 0.9rem;
-
-    color: #999999;
-
-  }
-
-  
-
-  .category-item {
-
-    background-color: #000000;
-
-    padding: 14px;
-
-    border-radius: 6px;
-
-    border: 1px solid #222222;
-
-  }
-
-  
-
-  .category-item strong { color: #ffffff; display: block; margin-bottom: 6px; }
-
-  .category-item code { color: #1473E6; font-family: monospace; font-size: 0.85rem; }
-
-
-
-  /* --- SEO & Educational Content Section --- */
-
-  .seo-article {
-
-    width: 100%;
-
-    max-width: 800px;
-
-    margin: 60px auto 20px auto;
-
-    color: #999999;
-
-    line-height: 1.7;
-
-    font-size: 1rem;
-
-    border-top: 1px solid #222222;
-
-    padding-top: 40px;
-
-  }
-
-  
-
-  .seo-article h2, .seo-article h3 {
-
-    color: #ffffff;
-
-    margin-top: 2rem;
-
-    margin-bottom: 1rem;
-
-  }
-
-  
-
-  .seo-article h2 { font-size: 1.5rem; }
-
-  .seo-article h3 { font-size: 1.2rem; }
-
-  .seo-article ul { padding-left: 20px; }
-
-  .seo-article li { margin-bottom: 10px; }
-
-  
-
-  .faq-box { margin-bottom: 16px; }
-
-  .faq-box p {
-
-    margin: 16px 0 0 0;
-
     font-size: 0.95rem;
-
-    color: #999999;
-
-    line-height: 1.6;
-
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
   }
 
+  .tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+  }
 
+  .tab-btn.active {
+    background: #171b26;
+    color: var(--accent);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
 
-    /* --- Mobile Responsive Navigation & Layout --- */
+  /* --- App Container --- */
+  .app-container {
+    max-width: 900px;
+    margin: 24px auto 80px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
 
-  @media (max-width: 960px) {
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
 
-    .global-nav {
+  .tool-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
 
-      padding: 16px 20px;
+  /* --- Upload Box Drag & Drop --- */
+  .upload-box {
+    background: var(--bg-card-inner);
+    border: 2px dashed var(--border-color);
+    border-radius: 14px;
+    padding: 44px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 24px;
+  }
+
+  .upload-box:hover, .upload-box.dragover {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.03);
+    box-shadow: 0 0 24px rgba(0, 210, 255, 0.1);
+  }
+
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px auto;
+    color: var(--accent);
+    display: block;
+    opacity: 0.9;
+  }
+
+  .upload-box-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .upload-box-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .upload-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .upload-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #171b26;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .upload-btn-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .upload-btn-pill.primary {
+    background: var(--accent);
+    color: #000000;
+    border: none;
+  }
+  .upload-btn-pill.primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  }
+
+  /* --- Scanned Folder Preview Card --- */
+  .preview-card {
+    display: none;
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .preview-folder-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-stats {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .category-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .cat-badge {
+    background: #171b26;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cat-badge strong {
+    color: var(--accent);
+  }
+
+  /* --- File List Table Preview --- */
+  .files-table-wrapper {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .files-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+  }
+
+  .files-table th {
+    background: #171b26;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .files-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+  }
+
+  .files-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .target-folder-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* --- Action Buttons & Status --- */
+  .btn-accent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+    padding: 14px 28px;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
     box-sizing: border-box;
   }
 
-    
-
-    .menu-toggle {
-
-      display: flex;
-
-    }
-
-
-
-    .nav-links {
-
-      display: none;
-
-      position: absolute;
-
-      top: 100%;
-
-      left: 0;
-
-      width: 100%;
-
-      background-color: rgba(0, 0, 0, 0.96);
-
-      backdrop-filter: blur(16px);
-
-      -webkit-backdrop-filter: blur(16px);
-
-      border-bottom: 1px solid #222222;
-
-      flex-direction: column;
-
-      align-items: flex-start; /* 👈 Locks items flush to the left under OmniTools */
-
-      padding: 16px 24px;
-
-      gap: 12px;
-
-      box-sizing: border-box;
-
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
-
-      margin: 0;
-
-     margin-left: auto; align-items: center; flex-wrap: nowrap;}
-
-
-
-    .nav-links.open {
-
-      display: flex !important;
-
-    }
-
-
-
-    .nav-links a {
-
-      font-size: 1rem;
-
-      padding: 10px 0;
-
-      border-bottom: 1px solid #161616;
-
-      width: 100%;
-
-      text-align: left; /* Left-aligns text */
-
-     white-space: nowrap;}
-
-
-
-    .nav-links a:last-child {
-
-      border-bottom: none;
-
-    }
-
-
-
-    .clean-header h1 { font-size: 2.5rem; }
-
-    .content-grid { grid-template-columns: 1fr; }
-
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.35);
+    transform: translateY(-1px);
   }
 
+  .btn-secondary {
+    background: #171b26;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+  }
+  .btn-secondary:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    box-shadow: none;
+  }
+
+  .status-wrapper {
+    margin-top: 18px;
+  }
+
+  .success-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: #ffffff;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: #fca5a5;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  /* --- Standalone App Card --- */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .cert-item {
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-radius: 10px;
+  }
+
+  .cert-item strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .trust-badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .trust-badge {
+    border: 1px solid var(--border-color);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card-inner);
+  }
+
+  .trust-badge.highlight {
+    border-color: rgba(0, 210, 255, 0.4);
+    color: var(--accent);
+    background: var(--accent-glow);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .trust-badge.highlight:hover {
+    border-color: var(--accent);
+  }
+
+  .warning-box {
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 18px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #fde68a;
+    line-height: 1.6;
+    margin-top: 24px;
+  }
+
+  .warning-box strong {
+    color: #ffffff;
+  }
+
+  .steps-list {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    font-size: 0.95rem;
+  }
+
+  .steps-list strong {
+    color: #ffffff;
+  }
+
+  /* --- Categories Grid Accordion --- */
+  details {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: 600;
+    transition: border-color 0.2s ease;
+  }
+  details:hover {
+    border-color: rgba(0, 210, 255, 0.3);
+  }
+  details summary { outline: none; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .category-item {
+    background-color: var(--bg-card-inner);
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .category-item strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .category-item code {
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 0.84rem;
+  }
+
+  /* --- SEO & Educational Section --- */
+  .seo-article {
+    width: 100%;
+    margin: 40px auto 20px auto;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 0.98rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
+  }
+
+  .seo-article h2, .seo-article h3 {
+    color: #ffffff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .seo-article h2 { font-size: 1.5rem; }
+  .seo-article h3 { font-size: 1.2rem; }
+  .seo-article ul { padding-left: 20px; }
+  .seo-article li { margin-bottom: 10px; }
+
+  .faq-box { margin-bottom: 14px; }
+  .faq-box p {
+    margin: 14px 0 0 0;
+    font-size: 0.93rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* --- Global Footer --- */
+  .global-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    background-color: var(--bg-page);
+    margin-top: 60px;
+  }
+
+  .global-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    margin: 0 12px;
+  }
+
+  .global-footer a:hover {
+    color: var(--accent);
+  }
+
+  /* --- Mobile Responsive Layout --- */
+  @media (max-width: 860px) {
+    .global-nav {
+      padding: 16px 20px;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 24px;
+      gap: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0;
+    }
+
+    .nav-links.active, .nav-links.open {
+      display: flex !important;
+    }
+
+    .nav-links a {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-links a:last-child {
+      border-bottom: none;
+    }
+
+    .tool-panel {
+      padding: 20px;
+    }
+
+    .tabs-container {
+      flex-direction: column;
+    }
+
+    .preview-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 </style>
 
-  <!-- Favicon & Touch Icons with Cache Buster -->
-  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2">
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
-  <link rel="apple-touch-icon" href="favicon.png?v=2">
+<!-- Favicon & Touch Icons -->
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2">
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="apple-touch-icon" href="favicon.png?v=2">
 </head>
-
 <body>
-
-
-
-<!-- Global Navigation (Docked to the Right) -->
 
 <nav class="global-nav">
   <a href="index.html" class="nav-brand">
@@ -836,6 +789,8 @@
   <div class="nav-links" id="navLinks">
     <a href="pdf-redactor.html">PDF Redactor</a>
     <a href="pdf-converter.html">PDF Suite</a>
+    <a href="photo-scrubber.html">Photo Scrubber</a>
+    <a href="password-meter.html">Password Shield</a>
     <a href="file-organizer.html" class="active">File Organizer</a>
     <a href="photo-resizer.html">Photo Resizer</a>
     <a href="qr-generator.html">QR Generator</a>
@@ -843,352 +798,589 @@
   </div>
 </nav>
 
-
-
 <div class="clean-header">
-
-  <div class="icon-wrapper">
-
-    <!-- Inline Lucide SVG matching the new asset baseline -->
-
-    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-
-      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
-
+    100% CLIENT-SIDE PRIVACY SHIELD
   </div>
-
   <h1>File Organizer.</h1>
-
-  <p>A native application that structures messy directories into 12 clean categories instantly. Completely secure, running entirely on your local machine.</p>
-
-  
-
-      <div class="trust-badge-container">
-
-    <a href="https://www.virustotal.com/gui/file/d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18" target="_blank" rel="noopener noreferrer" class="trust-badge" style="text-decoration: none; color: #00d2ff; border-color: #00d2ff;" title="View independent scan report on VirusTotal">
-
-      🛡️ VirusTotal Verified — 0 Detections on Microsoft & Major Engines (View Report ↗)
-
-    </a>
-
-    <span class="trust-badge">100% Offline</span>
-
-    <span class="trust-badge">Portable App</span>
-
-  </div>
-
-  
-
-  <a href="File_Organizer.zip" id="downloadBtnHero" class="btn-accent" download>Download for Windows (Portable ZIP)</a>
-
+  <p>Structure messy folders into 12 clean categories in seconds. Organize directly in your browser or download our standalone portable Windows application.</p>
 </div>
 
-
+<!-- Tabs Navigation -->
+<div class="tabs-wrapper">
+  <div class="tabs-container">
+    <button type="button" class="tab-btn active" onclick="switchTab('tab-browser')" id="btnTabBrowser">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+      In-Browser Folder Organizer
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab('tab-desktop')" id="btnTabDesktop">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      Standalone Windows App (.exe)
+    </button>
+  </div>
+</div>
 
 <div class="app-container">
 
-  
+  <!-- TAB 1: IN-BROWSER ORGANIZER -->
+  <div class="tab-content active" id="tab-browser">
+    <div class="tool-panel">
+      
+      <!-- Upload / Select Drop Zone -->
+      <div class="upload-box" id="dropZone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <div class="upload-box-title">Choose a messy folder or drop files to organize</div>
+        <div class="upload-box-sub">Structures files into 12 clean categories • 100% private in-browser RAM</div>
+        
+        <div class="upload-btn-group">
+          <button type="button" class="upload-btn-pill primary" id="btnPickFolder" onclick="pickLocalDirectory()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Select Local Folder
+          </button>
+          
+          <button type="button" class="upload-btn-pill" onclick="document.getElementById('batchFileInput').click()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Select Multiple Files / ZIP
+          </button>
+        </div>
+        <input type="file" id="batchFileInput" multiple style="display:none;">
+      </div>
 
-  <div id="platformWarning" class="platform-warning">
+      <!-- Scanned Preview Card -->
+      <div class="preview-card" id="previewCard">
+        <div class="preview-header">
+          <div>
+            <div class="preview-folder-name" id="previewFolderName">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span id="folderTitle">Selected Folder</span>
+            </div>
+            <div class="preview-stats" id="previewStats">Scanned 0 files across 0 categories</div>
+          </div>
+          <button type="button" class="upload-btn-pill btn-secondary" onclick="resetOrganizer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Reset
+          </button>
+        </div>
 
-    <span id="platformWarningText"></span>
+        <!-- Detected Categories Badges -->
+        <div class="category-badges" id="categoryBadges"></div>
 
-  </div>
+        <!-- Table Preview -->
+        <div class="files-table-wrapper">
+          <table class="files-table">
+            <thead>
+              <tr>
+                <th>Original File Name</th>
+                <th>Size</th>
+                <th>Target Category Folder</th>
+              </tr>
+            </thead>
+            <tbody id="filesTableBody"></tbody>
+          </table>
+        </div>
 
+        <!-- Action Button -->
+        <button type="button" class="btn-accent" id="btnExecuteOrganize" onclick="executeOrganization()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          Organize Files Now
+        </button>
 
-
-  <div class="card-panel">
-
-    <h3 class="cert-title">Verified Application Certificate</h3>
-
-    <div class="cert-grid">
-
-      <div><strong>Application:</strong> File_Organizer.exe (Native x64)</div>
-
-      <div><strong>Publisher:</strong> Tangent Open Source</div>
-
-      <div><strong>Network Access:</strong> None (0 Bytes Outbound)</div>
-
-      <div><strong>Privacy Policy:</strong> Zero Data Collection</div>
-
-      <div><strong>Antivirus Status:</strong> Clean (Passed Microsoft Defender, Bitdefender, Kaspersky)</div>
-
-      <div><strong>System Integrity:</strong> Portable (No Registry or System Changes)</div>
-
-      <div style="grid-column: 1 / -1; margin-top: 8px; padding-top: 12px; border-top: 1px dashed #222222; word-break: break-all;">
-
-        <strong>SHA-256 Checksum:</strong> <code style="color: #00d2ff; font-family: monospace; font-size: 0.82rem;">d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18</code>
-
+        <div class="status-wrapper" id="organizeStatus"></div>
       </div>
 
     </div>
-
   </div>
 
+  <!-- TAB 2: STANDALONE WINDOWS APP -->
+  <div class="tab-content" id="tab-desktop">
+    <div class="tool-panel">
+      
+      <div class="trust-badge-container">
+        <a href="https://www.virustotal.com/gui/file/d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18" target="_blank" rel="noopener noreferrer" class="trust-badge highlight" title="View independent scan report on VirusTotal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          VirusTotal Verified — 0 Detections (View Report)
+        </a>
+        <span class="trust-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+          </svg>
+          100% Offline
+        </span>
+        <span class="trust-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          </svg>
+          Portable (No Install)
+        </span>
+      </div>
 
+      <div style="margin-bottom: 24px;">
+        <a href="File_Organizer.zip" id="downloadBtnHero" class="btn-accent" download>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download for Windows (Portable ZIP)
+        </a>
+      </div>
 
-  <div class="content-grid">
+      <!-- App Certificate -->
+      <h3 style="margin: 0 0 16px 0; font-size: 1.15rem; font-weight: 700; color: #ffffff;">Verified Application Certificate</h3>
+      <div class="cert-grid">
+        <div class="cert-item">
+          <strong>Application</strong>
+          File_Organizer.exe (Native x64)
+        </div>
+        <div class="cert-item">
+          <strong>Publisher</strong>
+          Tangent Open Source
+        </div>
+        <div class="cert-item">
+          <strong>Network Access</strong>
+          None (0 Bytes Outbound)
+        </div>
+        <div class="cert-item">
+          <strong>Antivirus Status</strong>
+          Clean (Defender, Bitdefender, Kaspersky)
+        </div>
+        <div class="cert-item" style="grid-column: 1 / -1;">
+          <strong>SHA-256 Checksum</strong>
+          <code style="color: var(--accent); font-family: monospace; font-size: 0.82rem; word-break: break-all;">d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18</code>
+        </div>
+      </div>
 
-    <div class="card-panel">
-
-      <h3>How to use</h3>
-
+      <!-- How to use -->
+      <h3 style="margin: 24px 0 14px 0; font-size: 1.15rem; font-weight: 700; color: #ffffff;">How to Use</h3>
       <ol class="steps-list">
-
         <li><strong>Download & Extract:</strong> Extract the <code>File_Organizer.zip</code> folder anywhere on your PC.</li>
-
         <li><strong>Launch:</strong> Open the extracted folder and double-click <code>file_organizer.exe</code>.</li>
-
         <li><strong>Select Directory:</strong> Click <strong>Browse</strong> to choose your messy folder (e.g., <code>Downloads</code> or <code>Desktop</code>).</li>
-
-        <li><strong>Organize:</strong> Click <strong>Organize!</strong> and watch your files get categorized in seconds.</li>
-
+        <li><strong>Organize:</strong> Click <strong>Organize!</strong> and watch your files get structured in seconds.</li>
       </ol>
 
-      <div class="warning-box" style="line-height: 1.5; font-size: 0.85rem;">
-
+      <div class="warning-box">
         <strong>Why does Windows SmartScreen show a popup?</strong><br>
-
-        As an independent open-source project, Tangent does not purchase $400/year corporate code-signing certificates. Because the binary is new, Windows SmartScreen and 3 heuristic AI engines flag unsigned binaries as "unrecognized". All major antivirus engines (Microsoft Defender, Bitdefender, Kaspersky, Sophos) verify this file as 100% clean.<br>
-
-        ➔ Click <strong>More info</strong> ➔ Click <strong>Run anyway</strong>.
-
+        As an independent open-source project, Tangent does not purchase $400/year corporate code-signing certificates. Because the binary is newly released, Windows SmartScreen flags unsigned binaries as "unrecognized". All major antivirus engines verify this file as 100% clean.<br>
+        Click <strong>More info</strong> &rarr; Click <strong>Run anyway</strong>.
       </div>
 
     </div>
-
-
-
-    <div class="card-panel">
-
-      <h3>Key Features</h3>
-
-      <ul class="features-list">
-
-        <li><strong>Native Windows Picker:</strong> Select any directory effortlessly.</li>
-
-        <li><strong>1-Click Sorting:</strong> Automatically structures files into 12 categories.</li>
-
-        <li><strong>Complete Privacy:</strong> Operates 100% locally with zero internet communication.</li>
-
-        <li><strong>Portable:</strong> Single executable file under 20MB.</li>
-
-      </ul>
-
-    </div>
-
   </div>
 
-
-
+  <!-- Supported Categories Accordion -->
   <details>
-
-    <summary>View Supported File Categories & Extensions</summary>
-
+    <summary>View Supported File Categories & Extensions (12 Types)</summary>
     <div class="categories-grid">
-
-      <div class="category-item"><strong>Data & Spreadsheets</strong> <code>.csv, .xlsx, .json, .xml, .sql</code></div>
-
-      <div class="category-item"><strong>Documents</strong> <code>.pdf, .docx, .txt, .rtf, .md</code></div>
-
-      <div class="category-item"><strong>Presentations</strong> <code>.pptx, .ppt, .key</code></div>
-
-      <div class="category-item"><strong>Images</strong> <code>.jpg, .png, .svg, .webp, .raw</code></div>
-
-      <div class="category-item"><strong>Design Files</strong> <code>.psd, .ai, .xd, .fig</code></div>
-
-      <div class="category-item"><strong>Videos</strong> <code>.mp4, .mov, .mkv, .webm</code></div>
-
-      <div class="category-item"><strong>Audio</strong> <code>.mp3, .wav, .flac, .ogg</code></div>
-
+      <div class="category-item"><strong>Documents</strong> <code>.pdf, .docx, .doc, .txt, .rtf, .md, .odt</code></div>
+      <div class="category-item"><strong>Data & Spreadsheets</strong> <code>.csv, .xlsx, .xls, .json, .xml, .sql</code></div>
+      <div class="category-item"><strong>Images</strong> <code>.jpg, .png, .svg, .webp, .gif, .raw, .bmp</code></div>
+      <div class="category-item"><strong>Videos</strong> <code>.mp4, .mov, .mkv, .webm, .avi, .flv</code></div>
+      <div class="category-item"><strong>Audio</strong> <code>.mp3, .wav, .flac, .ogg, .m4a, .aac</code></div>
+      <div class="category-item"><strong>Presentations</strong> <code>.pptx, .ppt, .key, .odp</code></div>
+      <div class="category-item"><strong>Design Files</strong> <code>.psd, .ai, .xd, .fig, .sketch</code></div>
       <div class="category-item"><strong>Archives & Zips</strong> <code>.zip, .rar, .7z, .tar, .gz</code></div>
-
-      <div class="category-item"><strong>Programming</strong> <code>.py, .js, .html, .css, .cpp, .sh</code></div>
-
-      <div class="category-item"><strong>Applications</strong> <code>.exe, .msi, .apk, .dmg</code></div>
-
-      <div class="category-item"><strong>Disc Images</strong> <code>.iso, .img</code></div>
-
-      <div class="category-item"><strong>Fonts</strong> <code>.ttf, .otf</code></div>
-
+      <div class="category-item"><strong>Programming</strong> <code>.py, .js, .ts, .html, .css, .cpp, .sh</code></div>
+      <div class="category-item"><strong>Applications</strong> <code>.exe, .msi, .apk, .dmg, .pkg</code></div>
+      <div class="category-item"><strong>Disc Images</strong> <code>.iso, .img, .vmdk</code></div>
+      <div class="category-item"><strong>Fonts</strong> <code>.ttf, .otf, .woff, .woff2</code></div>
     </div>
-
   </details>
 
-
-
+  <!-- SEO & Educational Content -->
   <article class="seo-article">
-
-    <h2>Why Use a Local Desktop File Organizer?</h2>
-
-    <p>A cluttered computer desktop can slow down your productivity and make finding important documents a nightmare. While many web-based tools offer to process individual files, managing entire messy folders safely requires a different approach. Our Desktop File Organizer is a compiled Windows application that runs entirely on your local machine, avoiding the limitations of web browser file sandboxes.</p>
-
+    <h2>Why Choose a Local Client-Side File Organizer?</h2>
+    <p>A cluttered computer desktop can slow down your daily productivity and make locating important files frustrating. While many online services ask you to upload files to their servers for processing, managing entire directories safely requires a strictly client-side architecture. Tangent provides both an instant in-browser organizer and a compiled portable Windows application that run entirely on your local machine.</p>
     
-
-    <h3>Best Practices for Digital Organization</h3>
-
+    <h3>Best Practices for Digital Workspace Hygiene</h3>
     <ul>
-
-      <li><strong>Sort Regularly:</strong> Don't wait until your <code>Downloads</code> or <code>Desktop</code> folder has thousands of files. Run the organizer weekly to maintain a clean workspace.</li>
-
-      <li><strong>Review Categories:</strong> The app automatically sorts files into 12 distinct folders (like Documents, Images, Data & Spreadsheets). Once sorted, quickly review these folders to delete old or unnecessary files.</li>
-
-      <li><strong>Keep System Files Safe:</strong> The organizer is designed for user directories (like Desktop or Downloads). Avoid running it in critical system folders (like <code>C:\Windows</code>) to prevent accidental reorganization of application dependencies.</li>
-
+      <li><strong>Organize Regularly:</strong> Don't wait until your <code>Downloads</code> folder contains thousands of unmanaged files. Run a quick weekly sweep to maintain a clean workspace.</li>
+      <li><strong>Inspect Categorized Folders:</strong> After automatic sorting, quickly review each category folder (e.g. <em>Archives & Zips</em> or <em>Installers</em>) to purge temporary files and reclaim disk space.</li>
+      <li><strong>Keep System Directories Safe:</strong> Always run the organizer on user folders (like <code>Downloads</code>, <code>Desktop</code>, or project directories) rather than core system paths (like <code>C:\Windows</code>).</li>
     </ul>
 
-
-
     <h2>Frequently Asked Questions</h2>
-
     
-
     <div class="faq-box">
-
       <details>
-
-        <summary>Why can't this run directly in the web browser?</summary>
-
-        <p>Modern web browsers have strict security sandboxes that intentionally prevent websites from reading, moving, or modifying files directly on your hard drive. To achieve instant, batch organization across your folders without uploading everything, a dedicated native desktop application is required.</p>
-
+        <summary>How does the in-browser file organizer work?</summary>
+        <p>The in-browser organizer uses the modern HTML5 File System Access API (supported in Edge, Chrome, and Opera) to read and structure files directly on your computer with your explicit permission. For other browsers or batch drag-and-drop, it organizes your files in browser RAM and packages them into a clean, categorized ZIP file.</p>
       </details>
-
     </div>
 
-
-
     <div class="faq-box">
-
       <details>
-
-        <summary>Is the executable file safe to run?</summary>
-
-        <p>Yes. The Tangent File Organizer operates 100% locally with zero internet communication. It has 0 bytes of outbound network access, meaning it physically cannot transmit your personal data anywhere. If Windows SmartScreen flags it with a blue popup upon the first launch, it is simply because it is an independent open-source tool without a corporate publisher certificate.</p>
-
+        <summary>Is the Windows desktop application safe to run?</summary>
+        <p>Yes. The Tangent File Organizer operates 100% locally with zero internet communication. It has 0 bytes of outbound network access, meaning it physically cannot transmit personal data. All major antivirus engines (Microsoft Defender, BitDefender, Kaspersky) verify this file as clean.</p>
       </details>
-
     </div>
 
     <div class="faq-box">
       <details>
         <summary>Why does the VirusTotal report show 1 detection out of 67?</summary>
-        <p>66 out of 67 major security vendors (including Microsoft Defender, BitDefender, Kaspersky, Avast, and CrowdStrike) confirm the binary is 100% clean. The lone detection from a niche scanner (Bkav Pro) is a known false positive caused by automated heuristic analysis on freshly compiled, unsigned binaries. Because Tangent is a free open-source project, we do not purchase $400/year corporate code-signing certificates. You can inspect the complete, raw Python source code directly on <a href="https://github.com/Misbah-37/tangent/blob/main/file_organizer.py" target="_blank" rel="noopener noreferrer" style="color: #00d2ff; text-decoration: underline;">our GitHub repository (file_organizer.py)</a> to verify that there are zero malicious routines.</p>
+        <p>66 out of 67 major security vendors confirm the binary is 100% clean. The single detection from a niche scanner (Bkav Pro) is a known false positive caused by automated heuristic analysis on freshly compiled, unsigned binaries. Tangent is a free open-source utility without expensive corporate signing certificates. You can inspect the complete Python source code directly on GitHub.</p>
       </details>
     </div>
-
   </article>
-
-
 
 </div>
 
-
-
-<script>
-
-  (function warnNonWindowsVisitors() {
-
-    const ua = navigator.userAgent || '';
-
-    const isWindows = /Windows/i.test(ua);
-
-    if (isWindows) return;
-
-
-
-    const isiOS = /iPhone|iPad|iPod/i.test(ua);
-
-    const isAndroid = /Android/i.test(ua);
-
-    const isMac = /Macintosh|Mac OS X/i.test(ua) && !isiOS;
-
-    const isLinux = /Linux/i.test(ua) && !isAndroid;
-
-
-
-    let device = 'device';
-
-    if (isiOS) device = 'iPhone/iPad';
-
-    else if (isAndroid) device = 'Android device';
-
-    else if (isMac) device = 'Mac';
-
-    else if (isLinux) device = 'Linux computer';
-
-    else return;
-
-
-
-    const banner = document.getElementById('platformWarning');
-
-    const bannerText = document.getElementById('platformWarningText');
-
-    const downloadBtn = document.getElementById('downloadBtnHero');
-
-
-
-    bannerText.innerHTML = `<strong>Heads up:</strong> this is a Windows-only desktop app (.exe) and won't run on your ${device}. Only download it if you plan to move the file to a Windows PC.`;
-
-    banner.style.display = 'flex';
-
-
-
-    if (isiOS || isAndroid) {
-
-      downloadBtn.textContent = 'Download Anyway (Windows Only)';
-
-    }
-
-  })();
-
-
-
-  // Mobile Menu Toggle
-
-  const menuToggle = document.getElementById('menuToggle');
-
-  const navLinks = document.getElementById('navLinks');
-
-  if (menuToggle && navLinks) {
-
-    menuToggle.addEventListener('click', () => {
-
-      const isOpen = navLinks.classList.toggle('open');
-
-      menuToggle.setAttribute('aria-expanded', isOpen);
-
-    });
-
-  }
-
-</script>
-
-
-
-<!-- Global Footer -->
-
 <footer class="global-footer">
-
   <div style="margin-bottom: 16px;">
-
     <a href="index.html">Home</a>
-
     <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
-
-    <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ Back to Top</a>
-
+    <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
   </div>
-
   <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
-
 </footer>
 
+<script>
+  // Category Extension Mappings
+  const CATEGORIES = {
+    "Documents": [".pdf", ".docx", ".doc", ".txt", ".rtf", ".md", ".odt"],
+    "Data & Spreadsheets": [".csv", ".xlsx", ".xls", ".json", ".xml", ".sql"],
+    "Images": [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".bmp", ".raw", ".tiff"],
+    "Videos": [".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv"],
+    "Audio": [".mp3", ".wav", ".aac", ".flac", ".ogg", ".m4a"],
+    "Presentations": [".pptx", ".ppt", ".key", ".odp"],
+    "Design Files": [".psd", ".ai", ".xd", ".fig", ".sketch"],
+    "Archives & Zips": [".zip", ".rar", ".7z", ".tar", ".gz"],
+    "Programming": [".py", ".js", ".ts", ".html", ".css", ".cpp", ".c", ".java", ".sh", ".rs", ".go"],
+    "Applications": [".exe", ".msi", ".dmg", ".apk", ".pkg", ".appimage"],
+    "Disc Images": [".iso", ".img", ".vmdk"],
+    "Fonts": [".ttf", ".otf", ".woff", ".woff2"]
+  };
 
+  function getCategoryForFilename(name) {
+    const ext = "." + name.split('.').pop().toLowerCase();
+    for (const [category, extensions] of Object.entries(CATEGORIES)) {
+      if (extensions.includes(ext)) {
+        return category;
+      }
+    }
+    return "Other Files";
+  }
 
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  // State
+  let scannedFiles = []; // Array of { name, size, category, fileRef, handle }
+  let currentDirHandle = null;
+  let isDirectoryPickerMode = false;
+
+  // Tab Switching
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    if (tabId === 'tab-browser') {
+      document.getElementById('btnTabBrowser').classList.add('active');
+      document.getElementById('tab-browser').classList.add('active');
+    } else {
+      document.getElementById('btnTabDesktop').classList.add('active');
+      document.getElementById('tab-desktop').classList.add('active');
+    }
+  }
+
+  // In-Browser Directory Picker (File System Access API)
+  async function pickLocalDirectory() {
+    if (!window.showDirectoryPicker) {
+      // Fallback for browsers without showDirectoryPicker
+      document.getElementById('batchFileInput').click();
+      return;
+    }
+
+    try {
+      currentDirHandle = await window.showDirectoryPicker();
+      isDirectoryPickerMode = true;
+      scannedFiles = [];
+
+      for await (const entry of currentDirHandle.values()) {
+        if (entry.kind === 'file') {
+          const file = await entry.getFile();
+          scannedFiles.push({
+            name: entry.name,
+            size: file.size,
+            category: getCategoryForFilename(entry.name),
+            fileRef: file,
+            handle: entry
+          });
+        }
+      }
+
+      displayScannedPreview(currentDirHandle.name, isDirectoryPickerMode);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error("Directory picker error:", err);
+      }
+    }
+  }
+
+  // Fallback File Input Listener
+  const batchFileInput = document.getElementById('batchFileInput');
+  batchFileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      isDirectoryPickerMode = false;
+      scannedFiles = [];
+      const files = Array.from(e.target.files);
+      for (const file of files) {
+        scannedFiles.push({
+          name: file.name,
+          size: file.size,
+          category: getCategoryForFilename(file.name),
+          fileRef: file,
+          handle: null
+        });
+      }
+      displayScannedPreview("Selected Files (" + files.length + ")", false);
+    }
+  });
+
+  // Drag and drop onto upload box
+  const dropZone = document.getElementById('dropZone');
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      isDirectoryPickerMode = false;
+      scannedFiles = [];
+      const files = Array.from(e.dataTransfer.files);
+      for (const file of files) {
+        scannedFiles.push({
+          name: file.name,
+          size: file.size,
+          category: getCategoryForFilename(file.name),
+          fileRef: file,
+          handle: null
+        });
+      }
+      displayScannedPreview("Dropped Files (" + files.length + ")", false);
+    }
+  });
+
+  function displayScannedPreview(title, isDirectDisk) {
+    if (scannedFiles.length === 0) {
+      alert("No files found to organize!");
+      return;
+    }
+
+    document.getElementById('dropZone').style.display = 'none';
+    document.getElementById('previewCard').style.display = 'block';
+    document.getElementById('folderTitle').textContent = title;
+
+    // Count categories
+    const catCounts = {};
+    for (const f of scannedFiles) {
+      catCounts[f.category] = (catCounts[f.category] || 0) + 1;
+    }
+
+    const totalCats = Object.keys(catCounts).length;
+    document.getElementById('previewStats').textContent = `Detected ${scannedFiles.length} files across ${totalCats} categories`;
+
+    // Render badges
+    const badgesContainer = document.getElementById('categoryBadges');
+    badgesContainer.innerHTML = '';
+    for (const [cat, count] of Object.entries(catCounts)) {
+      const badge = document.createElement('div');
+      badge.className = 'cat-badge';
+      badge.innerHTML = `<span>${cat}:</span> <strong>${count}</strong>`;
+      badgesContainer.appendChild(badge);
+    }
+
+    // Render table
+    const tbody = document.getElementById('filesTableBody');
+    tbody.innerHTML = '';
+    for (const f of scannedFiles) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight: 500;">${f.name}</td>
+        <td style="color: var(--text-muted);">${formatBytes(f.size)}</td>
+        <td><span class="target-folder-tag">${f.category}/</span></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    // Update Action Button label
+    const btnExecute = document.getElementById('btnExecuteOrganize');
+    if (isDirectDisk) {
+      btnExecute.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4"></polyline>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        Organize Folder In-Place on Disk
+      `;
+    } else {
+      btnExecute.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Package & Download Organized ZIP
+      `;
+    }
+
+    document.getElementById('organizeStatus').innerHTML = '';
+  }
+
+  function resetOrganizer() {
+    scannedFiles = [];
+    currentDirHandle = null;
+    isDirectoryPickerMode = false;
+    document.getElementById('batchFileInput').value = '';
+    document.getElementById('previewCard').style.display = 'none';
+    document.getElementById('dropZone').style.display = 'block';
+    document.getElementById('organizeStatus').innerHTML = '';
+  }
+
+  async function executeOrganization() {
+    const statusWrapper = document.getElementById('organizeStatus');
+    const btnExecute = document.getElementById('btnExecuteOrganize');
+    btnExecute.disabled = true;
+
+    if (isDirectoryPickerMode && currentDirHandle) {
+      // In-Place Directory Organization using File System Access API
+      statusWrapper.innerHTML = `
+        <div style="text-align:center; padding:12px; color:var(--accent); font-weight:600;">
+          Moving files into category folders on your disk...
+        </div>
+      `;
+
+      try {
+        let movedCount = 0;
+        for (const item of scannedFiles) {
+          const categoryDir = await currentDirHandle.getDirectoryHandle(item.category, { create: true });
+          // Copy content to new category folder
+          const newFileHandle = await categoryDir.getFileHandle(item.name, { create: true });
+          const writable = await newFileHandle.createWritable();
+          await writable.write(item.fileRef);
+          await writable.close();
+          // Remove old file from root
+          await currentDirHandle.removeEntry(item.name);
+          movedCount++;
+        }
+
+        statusWrapper.innerHTML = `
+          <div class="success-banner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div>
+              <strong>Success!</strong> Organized ${movedCount} files into clean category folders on your computer.
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error("Organization error:", err);
+        statusWrapper.innerHTML = `
+          <div class="error-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Permission or disk error: ${err.message}. Ensure you grant permission to modify the directory.
+          </div>
+        `;
+      } finally {
+        btnExecute.disabled = false;
+      }
+    } else {
+      // JSZip Package & Download
+      statusWrapper.innerHTML = `
+        <div style="text-align:center; padding:12px; color:var(--accent); font-weight:600;">
+          Packaging files into categorized ZIP archive...
+        </div>
+      `;
+
+      try {
+        const zip = new JSZip();
+        for (const item of scannedFiles) {
+          zip.file(`${item.category}/${item.name}`, item.fileRef);
+        }
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const downloadUrl = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = "Tangent_Organized_Files.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        statusWrapper.innerHTML = `
+          <div class="success-banner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div>
+              <strong>Success!</strong> Downloaded <strong>Tangent_Organized_Files.zip</strong> with ${scannedFiles.length} files sorted into categorized folders.
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error("ZIP creation error:", err);
+        statusWrapper.innerHTML = `
+          <div class="error-banner">
+            Failed to build ZIP archive: ${err.message}
+          </div>
+        `;
+      } finally {
+        btnExecute.disabled = false;
+      }
+    }
+  }
+
+  // Mobile Menu Toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('active');
+      navLinks.classList.toggle('open', isOpen);
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+  }
+</script>
 </body>
-
 </html>
-

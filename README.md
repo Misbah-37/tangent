@@ -41,21 +41,29 @@ Most utility websites quietly upload your sensitive photos, contracts, and finan
 - **Features:** Merge multiple PDFs, split documents, extract page ranges, and perform structural compression.
 - **Engine:** Client-side execution using [`pdf-lib`](https://pdf-lib.js.org/) and [`pdf.js`](https://mozilla.github.io/pdf.js/). Your files never leave RAM.
 
-### 3. 📁 Desktop File Organizer (`file-organizer.html`)
-- **Features:** Native standalone Windows utility that sorts cluttered directories (e.g. `Downloads`, `Desktop`) into 12 distinct categories in seconds.
+### 3. 📸 Photo EXIF & GPS Location Scrubber (`photo-scrubber.html`)
+- **Features:** Inspect hidden GPS coordinates, camera hardware serials, and timestamps. Strip all metadata via 100% in-browser Canvas re-encoding or batch clean multiple photos into a ZIP.
+- **Engine:** Client-side parsing using [`exif-js`](https://github.com/exif-js/exif-js) and [`JSZip`](https://stuk.github.io/jszip/). Zero bytes transmitted over the network.
+
+### 4. 🔐 Password Strength & Zero-Knowledge Breach Meter (`password-meter.html`)
+- **Features:** Mathematical k-Anonymity breach checking against billions of compromised records (the password never leaves local RAM), realistic entropy and crack time calculations, and multi-word diceware passphrase generator.
+- **Engine:** [`zxcvbn`](https://github.com/dropbox/zxcvbn), native Web Crypto API (`SHA-1` & `CSPRNG`), and HaveIBeenPwned range API.
+
+### 5. 📁 File Organizer (`file-organizer.html`)
+- **Features:** In-browser folder organizer using the HTML5 File System Access API / JSZip, plus a native standalone Windows utility that sorts cluttered directories into 12 distinct categories in seconds.
 - **Compiled with Nuitka:** Direct C-binary compilation with minimal heuristic profile.
 - **Integrity (SHA-256):** `d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18`
 - **VirusTotal:** [Verified Clean Report](https://www.virustotal.com/gui/file/d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18)
 
-### 4. 🖼️ Photo Resizer (`photo-resizer.html`)
-- **Features:** Scale dimensions, constrain proportions, adjust compression quality, and convert image formats (JPEG, PNG, WebP) in real time.
+### 6. 🖼️ Photo Resizer & Compressor (`photo-resizer.html`)
+- **Features:** Scale dimensions, Cropper.js aspect ratio presets (Passport, Square, Social Banner, A4), iterative binary search KB compressor, and convert image formats (JPEG, PNG, WebP) in real time.
 - **Engine:** Hardware-accelerated HTML5 Canvas 2D rasterization.
 
-### 5. 📱 QR Code Generator (`qr-generator.html`)
+### 7. 📱 QR Code Generator (`qr-generator.html`)
 - **Features:** Generate high-density, error-corrected QR codes for URLs, Wi-Fi networks, and contact cards with custom colors and instant PNG downloads.
 - **Engine:** Lightweight client-side QR generation engine.
 
-### 6. ⌨️ Typing Speed Test (`typing-test.html`)
+### 8. ⌨️ Typing Speed Test (`typing-test.html`)
 - **Features:** Clean, distraction-free typing benchmark with real-time WPM, accuracy calculation, error highlighting, and difficulty tiers.
 - **Privacy:** Best scores saved locally via `localStorage`.
 

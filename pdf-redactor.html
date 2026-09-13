@@ -421,6 +421,45 @@
       width: 100%;
       height: 100%;
       cursor: crosshair;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Mobile Responsive Controls */
+    @media (max-width: 640px) {
+      .toolbar {
+        padding: 12px 14px;
+        gap: 10px;
+      }
+      .toolbar-group {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tool-btn, .export-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 0.84rem;
+        min-height: 42px;
+      }
+      .stage-container {
+        padding: 16px 8px;
+        min-height: 400px;
+      }
+      .hint-bar {
+        font-size: 0.8rem;
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .metadata-panel {
+        padding: 12px 14px;
+      }
     }
 
     /* Instruction banner */
@@ -609,9 +648,12 @@
       <!-- Toolbar -->
       <div class="toolbar">
         <div class="toolbar-group">
-          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)">◀ Prev</button>
+          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" aria-label="Previous Page">◀ Prev</button>
           <span class="page-indicator" id="page-num-display">Page 1 / 1</span>
-          <button class="tool-btn" id="next-btn" onclick="changePage(1)">Next ▶</button>
+          <button class="tool-btn" id="next-btn" onclick="changePage(1)" aria-label="Next Page">Next ▶</button>
+          <button class="tool-btn" onclick="zoomPage(-0.25)" title="Zoom Out">🔍−</button>
+          <button class="tool-btn" onclick="zoomPage(0.25)" title="Zoom In">🔍+</button>
+          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen">↔ Fit</button>
         </div>
 
         <div class="toolbar-group">
@@ -787,6 +829,16 @@
 
         workspace.style.display = 'block';
         dropZone.style.display = 'none';
+
+        // Auto-fit initial scale for mobile screens
+        if (window.innerWidth < 768) {
+          const firstPage = await pdfDoc.getPage(1);
+          const natural = firstPage.getViewport({ scale: 1.0 });
+          const screenW = Math.max(280, window.innerWidth - 32);
+          currentScale = Math.max(0.5, screenW / natural.width);
+        } else {
+          currentScale = 1.5;
+        }
         
         await renderCurrentPage();
       } catch (err) {
@@ -869,61 +921,79 @@
       }
     }
 
-    // Interactive Drawing on Draw Canvas
+    // --- MOBILE & DESKTOP DRAWING ENGINE ---
     let isDrawing = false;
     let startX = 0;
     let startY = 0;
 
+    function getEventPoint(e) {
+      if (e.touches && e.touches.length > 0) return e.touches[0];
+      if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0];
+      return e;
+    }
+
     function getCanvasCoordinates(e) {
+      const p = getEventPoint(e);
       const rect = drawCanvas.getBoundingClientRect();
       const scaleX = drawCanvas.width / rect.width;
       const scaleY = drawCanvas.height / rect.height;
       return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY
+        x: (p.clientX - rect.left) * scaleX,
+        y: (p.clientY - rect.top) * scaleY
       };
     }
 
-    drawCanvas.addEventListener('mousedown', (e) => {
+    function handleDrawStart(e) {
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
       const coords = getCanvasCoordinates(e);
       isDrawing = true;
       startX = coords.x;
       startY = coords.y;
-    });
 
-    drawCanvas.addEventListener('mousemove', (e) => {
+      if (e.pointerId && drawCanvas.setPointerCapture) {
+        try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+    }
+
+    function handleDrawMove(e) {
       if (!isDrawing) return;
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
+
       const coords = getCanvasCoordinates(e);
       const currentW = coords.x - startX;
       const currentH = coords.y - startY;
 
       redrawPageRedactions();
 
-      // Draw active preview rectangle
+      // Active preview rectangle
       drawCtx.save();
       drawCtx.strokeStyle = '#00d2ff';
-      drawCtx.lineWidth = 2;
-      drawCtx.setLineDash([4, 4]);
+      drawCtx.lineWidth = Math.max(2 * (drawCanvas.width / 800), 2);
+      drawCtx.setLineDash([6, 6]);
       drawCtx.strokeRect(startX, startY, currentW, currentH);
       drawCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       drawCtx.fillRect(startX, startY, currentW, currentH);
       drawCtx.restore();
-    });
+    }
 
-    drawCanvas.addEventListener('mouseup', (e) => {
+    function handleDrawEnd(e) {
       if (!isDrawing) return;
       isDrawing = false;
+
+      if (e.pointerId && drawCanvas.releasePointerCapture) {
+        try { drawCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+      }
+
       const coords = getCanvasCoordinates(e);
       const w = coords.x - startX;
       const h = coords.y - startY;
 
-      // Ignore accidental tiny clicks
-      if (Math.abs(w) < 5 || Math.abs(h) < 5) {
+      // Ignore accidental tiny taps / clicks
+      if (Math.abs(w) < 6 || Math.abs(h) < 6) {
         redrawPageRedactions();
         return;
       }
 
-      // Normalize negative dimensions
       const normX = w < 0 ? coords.x : startX;
       const normY = h < 0 ? coords.y : startY;
       const normW = Math.abs(w);
@@ -942,7 +1012,34 @@
       });
 
       redrawPageRedactions();
-    });
+    }
+
+    // Bind unified pointer events (mouse, touch screen, stylus)
+    drawCanvas.addEventListener('pointerdown', handleDrawStart, { passive: false });
+    drawCanvas.addEventListener('pointermove', handleDrawMove, { passive: false });
+    drawCanvas.addEventListener('pointerup', handleDrawEnd, { passive: false });
+    drawCanvas.addEventListener('pointercancel', handleDrawEnd, { passive: false });
+
+    // Fallback touch events for older mobile webviews
+    drawCanvas.addEventListener('touchstart', handleDrawStart, { passive: false });
+    drawCanvas.addEventListener('touchmove', handleDrawMove, { passive: false });
+    drawCanvas.addEventListener('touchend', handleDrawEnd, { passive: false });
+    drawCanvas.addEventListener('touchcancel', handleDrawEnd, { passive: false });
+
+    // Zoom & Fit Controls
+    function zoomPage(delta) {
+      currentScale = Math.max(0.5, Math.min(3.0, currentScale + delta));
+      renderCurrentPage();
+    }
+
+    async function fitPageWidth() {
+      if (!pdfDoc) return;
+      const page = await pdfDoc.getPage(currentPageNum);
+      const naturalViewport = page.getViewport({ scale: 1.0 });
+      const availableWidth = Math.max(300, workspace.clientWidth - 40);
+      currentScale = Math.max(0.4, availableWidth / naturalViewport.width);
+      renderCurrentPage();
+    }
 
     function changePage(delta) {
       const target = currentPageNum + delta;
@@ -988,8 +1085,10 @@
       progressText.textContent = 'Permanently burning in redactions...';
       
       try {
-        const { PDFDocument } = PDFLib;
-        const newPdfDoc = await PDFDocument.create();
+        const { PDFDocument, PDFName } = PDFLib;
+        
+        // Pass updateMetadata: false to stop pdf-lib from auto-injecting its own producer/dates
+        const newPdfDoc = await PDFDocument.create({ updateMetadata: false });
         const exportScale = 2.0; // High resolution 2x scale for crisp print quality
         const purgeMeta = document.getElementById('purge-meta-checkbox').checked;
 
@@ -1040,17 +1139,17 @@
           });
         }
 
-        // Apply metadata scrubbing
+        // Apply 100% complete metadata purging
         if (purgeMeta) {
-          progressSub.textContent = 'Purging document metadata...';
-          newPdfDoc.setTitle('');
-          newPdfDoc.setAuthor('');
-          newPdfDoc.setSubject('');
-          newPdfDoc.setKeywords([]);
-          newPdfDoc.setProducer('Tangent (https://runtangent.com)');
-          newPdfDoc.setCreator('Tangent');
-          newPdfDoc.setCreationDate(new Date());
-          newPdfDoc.setModificationDate(new Date());
+          progressSub.textContent = 'Purging all metadata tags...';
+          
+          // Delete Info dictionary reference entirely from the PDF trailer
+          delete newPdfDoc.context.trailerInfo.Info;
+
+          // Delete XML / XMP metadata stream from catalog if present
+          try {
+            newPdfDoc.catalog.delete(PDFName.of('Metadata'));
+          } catch (_) {}
         }
 
         progressSub.textContent = 'Finalizing file...';

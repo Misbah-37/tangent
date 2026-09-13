@@ -409,9 +409,6 @@
     .stage-container {
       background: #0b0d13;
       padding: 24px 24px 100px 24px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
       min-height: 480px;
       max-height: 75vh;
       overflow: auto;
@@ -419,6 +416,18 @@
       position: relative;
       scrollbar-color: #00d2ff #11141d;
       scrollbar-width: auto;
+      box-sizing: border-box;
+    }
+
+    /* Inner stage ensures centered layout when small, but expands positively when zoomed in with ZERO clipping */
+    .stage-inner {
+      display: inline-flex;
+      min-width: 100%;
+      min-height: 100%;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 40px;
+      box-sizing: border-box;
     }
 
     /* Desktop Scrollbars: 18px Comfortable Target */
@@ -520,8 +529,7 @@
       line-height: 0;
       user-select: none;
       flex-shrink: 0;
-      margin: auto;
-      transform-origin: 0 0;
+      transform-origin: center center;
       will-change: transform;
     }
 
@@ -862,9 +870,11 @@
 
       <!-- Canvas Stage -->
       <div class="stage-container">
-        <div class="canvas-wrapper" id="canvas-wrapper">
-          <canvas id="pdf-canvas"></canvas>
-          <canvas id="draw-canvas"></canvas>
+        <div class="stage-inner">
+          <div class="canvas-wrapper" id="canvas-wrapper">
+            <canvas id="pdf-canvas"></canvas>
+            <canvas id="draw-canvas"></canvas>
+          </div>
         </div>
       </div>
 
@@ -1523,6 +1533,7 @@
         if (dist) {
           currentPinchRatio = dist / initialPinchDistance;
           const canvasWrapper = document.getElementById('canvas-wrapper');
+          canvasWrapper.style.transformOrigin = 'center center';
           canvasWrapper.style.transform = `scale(${currentPinchRatio})`;
         }
         const mid = getTouchMidpoint(e);
@@ -1635,15 +1646,25 @@
     }
 
     function handlePointerUp(e) {
-      // 1. PINCH END: apply final scale and render once (high-res crisp quality)
+      // 1. PINCH END: apply final scale and preserve viewport center (high-res crisp quality)
       if (initialPinchDistance) {
         const canvasWrapper = document.getElementById('canvas-wrapper');
         canvasWrapper.style.transform = '';
+        canvasWrapper.style.transformOrigin = '';
+        const oldScale = currentScale;
         const finalScale = Math.max(0.4, Math.min(3.5, initialPinchScale * currentPinchRatio));
         currentScale = Math.round(finalScale * 100) / 100;
+
+        const viewCenterX = stageContainer.scrollLeft + (stageContainer.clientWidth / 2);
+        const viewCenterY = stageContainer.scrollTop + (stageContainer.clientHeight / 2);
+        const ratio = currentScale / oldScale;
+
         initialPinchDistance = null;
         currentPinchRatio = 1.0;
-        renderCurrentPage();
+        renderCurrentPage().then(() => {
+          stageContainer.scrollLeft = Math.round((viewCenterX * ratio) - (stageContainer.clientWidth / 2));
+          stageContainer.scrollTop = Math.round((viewCenterY * ratio) - (stageContainer.clientHeight / 2));
+        });
         return;
       }
 
@@ -1764,28 +1785,44 @@
       }
     }
 
-    // Zoom Functions
-    function zoomPage(delta) {
+    // Zoom Functions with Center-Anchored Viewport Preservation
+    async function zoomPage(delta) {
+      if (!pdfDoc) return;
+      const oldScale = currentScale;
       const newScale = Math.max(0.4, Math.min(3.5, currentScale + delta));
       currentScale = Math.round(newScale * 100) / 100;
-      renderCurrentPage();
+      if (currentScale === oldScale) return;
+
+      // Keep viewport center point stable during zoom
+      const viewCenterX = stageContainer.scrollLeft + (stageContainer.clientWidth / 2);
+      const viewCenterY = stageContainer.scrollTop + (stageContainer.clientHeight / 2);
+      const ratio = currentScale / oldScale;
+
+      await renderCurrentPage();
+
+      stageContainer.scrollLeft = Math.round((viewCenterX * ratio) - (stageContainer.clientWidth / 2));
+      stageContainer.scrollTop = Math.round((viewCenterY * ratio) - (stageContainer.clientHeight / 2));
     }
 
-    function resetZoom() {
+    async function resetZoom() {
       currentScale = 1.0;
-      renderCurrentPage();
+      await renderCurrentPage();
+      stageContainer.scrollLeft = 0;
+      stageContainer.scrollTop = 0;
     }
 
     async function fitPageWidth() {
       if (!pdfDoc) return;
       const page = await pdfDoc.getPage(currentPageNum);
       const natural = page.getViewport({ scale: 1.0 });
-      const availableWidth = Math.max(280, workspace.clientWidth - 48);
+      const availableWidth = Math.max(280, stageContainer.clientWidth - 48);
       currentScale = Math.round((availableWidth / natural.width) * 100) / 100;
-      renderCurrentPage();
+      await renderCurrentPage();
+      stageContainer.scrollLeft = 0;
+      stageContainer.scrollTop = 0;
     }
 
-    // Ctrl + Mouse Wheel Zoom
+    // Ctrl + Mouse Wheel Zoom: anchors to current viewport center
     stageContainer.addEventListener('wheel', (e) => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();

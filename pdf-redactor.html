@@ -926,7 +926,7 @@
         <div class="toolbar-group">
           <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
           <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
-          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">🗑️ Delete</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);"> Delete</button>
           <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
         </div>
 
@@ -982,7 +982,7 @@
       <div class="dock-wrapper">
         <div class="quick-nav-dock" id="quick-nav-dock">
           <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
-            <span id="dock-tool-icon">✏️</span>
+            <span id="dock-tool-icon"></span>
             <span id="dock-tool-text">Draw Box</span>
           </button>
           <div class="dock-divider"></div>
@@ -1467,7 +1467,7 @@
       const dockText = document.getElementById('dock-tool-text');
       if (dockBtn && dockIcon && dockText) {
         dockBtn.classList.toggle('pan-active', tool === 'pan');
-        dockIcon.textContent = tool === 'pan' ? '🖐️' : '✏️';
+        dockIcon.textContent = tool === 'pan' ? '' : '';
         dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
       }
 

@@ -241,6 +241,24 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
+  /* --- Non-Windows Platform Warning --- */
+  .platform-warning {
+    display: none;
+    align-items: flex-start;
+    gap: 12px;
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: #fca5a5;
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+  .platform-warning strong {
+    color: #ffffff;
+  }
+
   /* --- App Container --- */
   .app-container {
     max-width: 900px;
@@ -840,6 +858,16 @@
 
 <div class="app-container">
 
+  <!-- Non-Windows Platform Warning Banner -->
+  <div id="platformWarning" class="platform-warning" style="display:none;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <div id="platformWarningText"></div>
+  </div>
+
   <!-- TAB 1: IN-BROWSER ORGANIZER -->
   <div class="tab-content active" id="tab-browser">
     <div class="tool-panel">
@@ -1393,6 +1421,45 @@
       }
     }
   }
+
+  // Non-Windows Detection & Warning
+  (function warnNonWindowsVisitors() {
+    const ua = navigator.userAgent || '';
+    const isWindows = /Windows/i.test(ua);
+    if (isWindows) return;
+
+    const isiOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+    const isMac = /Macintosh|Mac OS X/i.test(ua) && !isiOS;
+    const isLinux = /Linux/i.test(ua) && !isAndroid;
+
+    let device = 'device';
+    if (isiOS) device = 'iPhone/iPad';
+    else if (isAndroid) device = 'Android device';
+    else if (isMac) device = 'Mac';
+    else if (isLinux) device = 'Linux computer';
+    else return;
+
+    const banner = document.getElementById('platformWarning');
+    const bannerText = document.getElementById('platformWarningText');
+    const downloadBtn = document.getElementById('downloadBtnHero');
+
+    if (banner && bannerText) {
+      bannerText.innerHTML = `<strong>Heads up:</strong> The standalone desktop application (.exe) is built exclusively for Windows and won't run natively on your ${device}. Use our In-Browser Organizer tab above, or only download the desktop app if you plan to move the file to a Windows PC.`;
+      banner.style.display = 'flex';
+    }
+
+    if (downloadBtn) {
+      downloadBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download Anyway (Windows Only)
+      `;
+    }
+  })();
 
   // Mobile Menu Toggle
   const menuToggle = document.getElementById('menuToggle');

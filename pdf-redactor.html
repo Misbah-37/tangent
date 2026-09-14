@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="favicon.png?v=2">
 
   <!-- PDF Engine Libraries -->
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <!-- Google Structured Data -->
@@ -153,7 +153,7 @@
         box-sizing: border-box;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
         margin: 0;
-       margin-left: auto; align-items: center; flex-wrap: nowrap;}
+      }
       .nav-links.open {
         display: flex !important;
       }
@@ -687,40 +687,7 @@
         flex-wrap: wrap;
         gap: 8px;
       }
-      .tool-btn,     .document-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .current-filename {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: #94a3b8;
-      max-width: 170px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 6px 12px;
-      border-radius: 6px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .tool-btn-secondary {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.12);
-      color: #cbd5e1;
-    }
-    .tool-btn-secondary:hover {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #f87171;
-    }
-
-    .export-btn {
+      .export-btn {
         flex: 1 1 auto;
         justify-content: center;
         padding: 10px 12px;
@@ -1141,7 +1108,7 @@
     <div style="margin-bottom: 16px;">
       <a href="index.html">Home</a>
       <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ Back to Top</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
     </div>
     <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
   </footer>

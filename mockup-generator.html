@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screenshot Beautifier & Mockup Studio | Tangent</title>
+<meta name="description" content="Transform raw screenshots into stunning mockups with macOS and Windows window frames, gradient backgrounds, and 3D shadows. 100% free and in-browser.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/mockup-generator.html">
+
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Screenshot Beautifier & Mockup Studio | Tangent">
+<meta property="og:description" content="Turn plain screenshots into professional social mockups with custom frames, gradients, and soft 3D shadows. Zero watermarks, 100% private in browser memory.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Favicon & Touch Icons with Cache Buster -->
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2">
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="apple-touch-icon" href="favicon.png?v=2">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are my screenshots uploaded to any server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. All canvas rendering, image scaling, and PNG exports execute 100% client-side in your web browser RAM. Your screenshots and confidential data never leave your device."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I paste directly from my clipboard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Simply press Ctrl+V (or Cmd+V on macOS) anywhere on the page to immediately paste screenshots taken with Windows Snipping Tool or macOS Grab."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are there any watermarks or export limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tangent enforces a strict Zero-Watermark, Zero-Sign-up policy. Every exported mockup is 100% free, unwatermarked, and rendered at high-resolution 2x Retina quality."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* Eliminate scrollbar layout jump across pages */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+  /* Clean Minimalist Resets */
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-panel: #161a26;
+    --border-color: #1f2533;
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  /* --- Global Nav & Dropdown Styles --- */
+  .global-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background-color: rgba(8, 9, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #1a1f2e;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #00d2ff;
+  }
+
+  /* Toolkit Toggle Button in Navbar */
+  .toolkit-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .toolkit-toggle-btn:hover,
+  body.sidebar-open .toolkit-toggle-btn {
+    color: #ffffff;
+    background-color: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+  }
+
+  .toolkit-toggle-btn .sidebar-icon {
+    color: #00d2ff;
+    transition: transform 0.2s ease;
+  }
+
+  body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  /* Collapsible Push-Sidebar */
+  .tangent-sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: #0f131f;
+    background: linear-gradient(180deg, #131826 0%, #0c0f18 100%);
+    border-right: 1px solid rgba(0, 210, 255, 0.18);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  body.sidebar-open .tangent-sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #00d2ff;
+  }
+
+  .sidebar-close-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .sidebar-close-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .sidebar-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 12px 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sidebar-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-group-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    margin-bottom: 4px;
+    padding-left: 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #ffffff;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .sidebar-item:hover {
+    background-color: rgba(0, 210, 255, 0.08);
+    border-color: rgba(0, 210, 255, 0.2);
+    transform: translateX(2px);
+  }
+
+  .sidebar-item.active {
+    background-color: rgba(0, 210, 255, 0.12);
+    border: 1px solid rgba(0, 210, 255, 0.35);
+  }
+
+  .sidebar-item svg {
+    flex-shrink: 0;
+  }
+
+  .sidebar-item .item-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar-item .item-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-item:hover .item-title,
+  .sidebar-item.active .item-title {
+    color: #00d2ff;
+  }
+
+  .sidebar-item .item-desc {
+    font-size: 0.70rem;
+    color: #94a3b8;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* App Canvas Push (Desktop) */
+  .app-canvas {
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (min-width: 961px) {
+    body.sidebar-open .app-canvas {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+    }
+  }
+
+  /* Mobile Overlay Mode */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  @media (max-width: 960px) {
+    .tangent-sidebar {
+      top: 0;
+      width: min(300px, 85vw);
+      z-index: 2500;
+    }
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  @media (max-width: 900px) {
+    .global-nav {
+      padding: 14px 20px;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 16px 20px 24px 20px !important;
+      gap: 14px !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0 !important;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .nav-links.open, .nav-links.active {
+      display: flex !important;
+    }
+    .nav-dropdown {
+      width: 100%;
+    }
+    .nav-dropdown-trigger {
+      width: 100%;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 1rem;
+      border-bottom: 1px solid #161a24;
+    }
+    .nav-dropdown-menu {
+      position: static;
+      width: 100%;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 10px 0 0 0;
+      animation: none;
+    }
+    .dropdown-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .dropdown-group-title {
+      padding-left: 0;
+      margin-top: 8px;
+    }
+    .dropdown-item {
+      padding: 8px 6px;
+    }
+    .nav-link {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+    }
+  }
+
+  /* --- Hero Header --- */
+  .clean-header {
+    text-align: center;
+    padding: 44px 20px 20px 20px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .clean-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 14px 0;
+    line-height: 1.15;
+  }
+
+  .clean-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 auto;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  /* --- Workspace Layout --- */
+  .studio-layout {
+    max-width: 1380px;
+    margin: 0 auto 60px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 1040px) {
+    .studio-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* --- Preview Area --- */
+  .preview-wrapper {
+    background: #0d1017;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky;
+    top: 90px;
+  }
+
+  .preview-toolbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #1a202c;
+  }
+
+  .preview-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .paste-hint {
+    font-size: 0.78rem;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #1f2533;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .canvas-stage {
+    width: 100%;
+    min-height: 480px;
+    max-height: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050608;
+    background-image: 
+      linear-gradient(45deg, #090b10 25%, transparent 25%), 
+      linear-gradient(-45deg, #090b10 25%, transparent 25%), 
+      linear-gradient(45deg, transparent 75%, #090b10 75%), 
+      linear-gradient(-45deg, transparent 75%, #090b10 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    border-radius: 12px;
+    border: 1px solid #1a202c;
+    overflow: hidden;
+    position: relative;
+    padding: 20px;
+    cursor: pointer;
+  }
+
+  #mockupCanvas {
+    max-width: 100%;
+    max-height: 640px;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    display: block;
+    transition: transform 0.15s ease;
+  }
+
+  .dropzone-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 9, 13, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 2px dashed #00d2ff;
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  .dropzone-overlay.dragover {
+    display: flex;
+  }
+
+  /* --- Controls Sidebar --- */
+  .controls-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .control-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  /* Button Groups & Pills */
+  .pill-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+  }
+
+  .btn-pill-opt {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-pill-opt:hover {
+    color: #ffffff;
+    border-color: #2e384d;
+    background: #1e2436;
+  }
+
+  .btn-pill-opt.active {
+    background: rgba(0, 210, 255, 0.12);
+    border-color: #00d2ff;
+    color: #00d2ff;
+  }
+
+  /* Gradient Swatches Grid */
+  .gradient-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .grad-swatch {
+    height: 38px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    position: relative;
+  }
+
+  .grad-swatch:hover {
+    transform: scale(1.08);
+  }
+
+  .grad-swatch.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+    transform: scale(1.05);
+  }
+
+  .grad-swatch.transparent-swatch {
+    background: repeating-conic-gradient(#334155 0% 25%, #1e293b 0% 50%) 50% / 12px 12px !important;
+  }
+
+  /* Sliders */
+  .slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+  }
+
+  .slider-title {
+    color: #cbd5e1;
+    font-weight: 500;
+  }
+
+  .slider-value {
+    color: #00d2ff;
+    font-weight: 600;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #1e2533;
+    border-radius: 999px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #00d2ff;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+    transition: transform 0.1s ease;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  /* Action Buttons */
+  .action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #1f2533;
+  }
+
+  .btn-primary-action {
+    background: #00d2ff;
+    color: #08090d;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .btn-primary-action:hover {
+    background: #33dcff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 210, 255, 0.35);
+  }
+
+  .btn-secondary-action {
+    background: var(--bg-panel);
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .btn-secondary-action:hover {
+    background: #1e2436;
+    color: #ffffff;
+    border-color: #2e384d;
+  }
+
+  .btn-secondary-action.copied {
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  /* FAQ Accordion Section */
+  .faq-section {
+    max-width: 860px;
+    margin: 40px auto 80px auto;
+    padding: 0 20px;
+  }
+
+  .faq-section h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-box {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+
+  .faq-box details {
+    padding: 18px 22px;
+    border-bottom: 1px solid #1a202c;
+  }
+
+  .faq-box details:last-child {
+    border-bottom: none;
+  }
+
+  .faq-box summary {
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    color: #ffffff;
+    font-size: 1rem;
+    user-select: none;
+    list-style: none;
+  }
+
+  .faq-box summary::-webkit-details-marker { display: none; }
+
+  .faq-box p {
+    margin: 12px 0 0 0;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Global Footer */
+  .global-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 40px 24px;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    background-color: var(--bg-page);
+  }
+
+  .global-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    margin: 0 12px;
+  }
+
+  .global-footer a:hover {
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="global-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Toolkit Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Sidebar" aria-expanded="false" title="Toggle Toolkit Sidebar">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+      </svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Collapsible Push-Sidebar (Toolkit) -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="pdf-redactor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator.html" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="photo-scrubber.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+      <a href="photo-resizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <a href="password-meter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 4: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <a href="qr-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="app-canvas" id="appCanvas">
+
+<!-- Hero Header -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>Screenshot Beautifier & Mockup Studio</h1>
+  <p>Turn raw captures into presentation-ready visuals. Add macOS window frames, soft 3D shadows, and modern gradients. Zero watermarks, 100% private in browser memory.</p>
+</div>
+
+<!-- Studio Workbench Layout -->
+<div class="studio-layout">
+  
+  <!-- Left: Live Preview Stage -->
+  <div class="preview-wrapper">
+    <div class="preview-toolbar">
+      <div class="preview-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Interactive Canvas</span>
+      </div>
+      <div class="paste-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Drop file or press Ctrl+V / ⌘V</span>
+      </div>
+    </div>
+
+    <div class="canvas-stage" id="canvasStage" onclick="document.getElementById('fileInput').click()" title="Click to browse image or drag and drop">
+      <canvas id="mockupCanvas" width="1200" height="750"></canvas>
+      
+      <div class="dropzone-overlay" id="dropOverlay">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span style="font-size:1.1rem; font-weight:600; color:#ffffff;">Drop your screenshot here</span>
+        <span style="font-size:0.85rem; color:#94a3b8;">PNG, JPG, WebP supported</span>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+  </div>
+
+  <!-- Right: Customization Controls -->
+  <div class="controls-panel">
+    
+    <!-- 1. Window Frame Style -->
+    <div class="control-section">
+      <div class="control-heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg>
+        <span>Window Frame</span>
+      </div>
+      <div class="pill-group">
+        <button type="button" class="btn-pill-opt active" data-frame="macos-dark">macOS Dark</button>
+        <button type="button" class="btn-pill-opt" data-frame="macos-light">macOS Light</button>
+        <button type="button" class="btn-pill-opt" data-frame="windows-dark">Windows 11</button>
+        <button type="button" class="btn-pill-opt" data-frame="glass">Glass Card</button>
+        <button type="button" class="btn-pill-opt" data-frame="none">None</button>
+      </div>
+    </div>
+
+    <!-- 2. Background Gradients & Colors -->
+    <div class="control-section">
+      <div class="control-heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a7 7 0 0 0 0 14 7 7 0 0 1 0 14"></path></svg>
+        <span>Background</span>
+      </div>
+      <div class="gradient-grid" id="gradientGrid">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+
+    <!-- 3. Aspect Ratio Presets -->
+    <div class="control-section">
+      <div class="control-heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+        <span>Aspect Ratio</span>
+      </div>
+      <div class="pill-group">
+        <button type="button" class="btn-pill-opt active" data-ratio="auto">Auto</button>
+        <button type="button" class="btn-pill-opt" data-ratio="16:9">16:9 (X/YT)</button>
+        <button type="button" class="btn-pill-opt" data-ratio="1:1">1:1 (Square)</button>
+        <button type="button" class="btn-pill-opt" data-ratio="4:3">4:3</button>
+        <button type="button" class="btn-pill-opt" data-ratio="9:16">9:16 (Story)</button>
+      </div>
+    </div>
+
+    <!-- 4. Sliders: Padding, Radius, Shadow, Scale -->
+    <div class="control-section">
+      <div class="control-heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line></svg>
+        <span>Fine-Tuning</span>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-title">Canvas Padding</span>
+          <span class="slider-value" id="valPadding">48px</span>
+        </div>
+        <input type="range" id="sliderPadding" min="16" max="140" value="48">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-title">Corner Radius</span>
+          <span class="slider-value" id="valRadius">12px</span>
+        </div>
+        <input type="range" id="sliderRadius" min="0" max="32" value="12">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-title">3D Drop Shadow</span>
+          <span class="slider-value" id="valShadow">Medium</span>
+        </div>
+        <input type="range" id="sliderShadow" min="0" max="4" value="2">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-title">Image Scale</span>
+          <span class="slider-value" id="valScale">100%</span>
+        </div>
+        <input type="range" id="sliderScale" min="60" max="100" value="100">
+      </div>
+    </div>
+
+    <!-- 5. Action Stack -->
+    <div class="action-stack">
+      <button type="button" class="btn-primary-action" id="btnDownload">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Download High-Res PNG (2x)</span>
+      </button>
+      
+      <button type="button" class="btn-secondary-action" id="btnCopyClipboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span id="copyLabel">Copy Image to Clipboard</span>
+      </button>
+
+      <button type="button" class="btn-secondary-action" onclick="document.getElementById('fileInput').click()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span>Upload Another Image</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- FAQ Accordion -->
+<section class="faq-section">
+  <h3>Frequently Asked Questions</h3>
+  <div class="faq-box">
+    <details>
+      <summary>Are my screenshots uploaded to your servers?</summary>
+      <p>Never. Tangent tools operate 100% client-side inside your browser memory using HTML5 Canvas. Your image pixels never traverse the network or touch any backend server.</p>
+    </details>
+    <details>
+      <summary>How does clipboard paste work?</summary>
+      <p>Simply take a screenshot on your computer using Windows Snipping Tool (Win + Shift + S) or macOS Screenshot (Cmd + Shift + 4), then press Ctrl + V (or Cmd + V) anywhere on this page. The canvas will immediately load your clipboard image.</p>
+    </details>
+    <details>
+      <summary>What resolution is the exported PNG?</summary>
+      <p>The exported image is generated at high-density 2x Retina resolution (up to 3840px wide depending on aspect ratio), ensuring razor-sharp rendering on 4K displays and social media timelines.</p>
+    </details>
+    <details>
+      <summary>Can I export with a transparent background?</summary>
+      <p>Yes! Select the transparent checkerboard swatch in the background palette. Your screenshot and window frame will float on a transparent background, perfect for dropping into Figma, Keynote, or Pitch presentations.</p>
+    </details>
+  </div>
+</section>
+
+<!-- Global Footer -->
+<footer class="global-footer">
+  <div style="margin-bottom: 16px;">
+    <a href="index.html">Home</a>
+    <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+  </div>
+  <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+</footer>
+</div>
+
+<script>
+// --- Navigation menu & dropdown handler ---
+(function initNavigation() {
+    // --- Toolkit Push-Sidebar Controller ---
+  const toolkitToggle = document.getElementById('toolkitToggle');
+  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+  function setSidebarState(isOpen) {
+    if (isOpen) {
+      document.body.classList.add('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'true');
+      localStorage.setItem('tangent_sidebar_open', 'true');
+    } else {
+      document.body.classList.remove('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'false');
+      localStorage.setItem('tangent_sidebar_open', 'false');
+    }
+  }
+
+  // Restore state on load (Desktop only)
+  if (localStorage.getItem('tangent_sidebar_open') === 'true' && window.innerWidth > 1024) {
+    setSidebarState(true);
+  }
+
+  if (toolkitToggle) {
+    toolkitToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = document.body.classList.contains('sidebar-open');
+      setSidebarState(!isOpen);
+    });
+  }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', () => {
+      setSidebarState(false);
+    });
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => {
+      setSidebarState(false);
+    });
+  }
+
+  // --- Mobile Navigation Menu Toggle ---
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      setSidebarState(false);
+      if (navLinks) {
+        navLinks.classList.remove('open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+})();
+
+// --- Screenshot Beautifier Engine ---
+const GRADIENTS = [
+  { id: 'cosmic', type: 'gradient', colors: ['#00d2ff', '#3a7bd5'] },
+  { id: 'sunset', type: 'gradient', colors: ['#7928ca', '#ff0080'] },
+  { id: 'aurora', type: 'gradient', colors: ['#10b981', '#06b6d4'] },
+  { id: 'midnight', type: 'gradient', colors: ['#0f172a', '#1e293b'] },
+  { id: 'orange', type: 'gradient', colors: ['#f97316', '#ec4899'] },
+  { id: 'cyberpunk', type: 'gradient', colors: ['#8b5cf6', '#ec4899'] },
+  { id: 'emerald', type: 'gradient', colors: ['#059669', '#34d399'] },
+  { id: 'amber', type: 'gradient', colors: ['#d97706', '#f59e0b'] },
+  { id: 'ocean', type: 'gradient', colors: ['#0284c7', '#38bdf8'] },
+  { id: 'plum', type: 'gradient', colors: ['#581c87', '#3b82f6'] },
+  { id: 'dark-solid', type: 'solid', color: '#090b10' },
+  { id: 'transparent', type: 'transparent' }
+];
+
+let state = {
+  currentImage: null,
+  frameStyle: 'macos-dark',
+  backgroundIndex: 0,
+  aspectRatio: 'auto',
+  padding: 48,
+  radius: 12,
+  shadowLevel: 2,
+  scale: 100
+};
+
+const canvas = document.getElementById('mockupCanvas');
+const ctx = canvas.getContext('2d');
+
+// Build Gradient Palette
+function initPalette() {
+  const grid = document.getElementById('gradientGrid');
+  grid.innerHTML = '';
+  GRADIENTS.forEach((g, idx) => {
+    const div = document.createElement('div');
+    div.className = 'grad-swatch' + (idx === state.backgroundIndex ? ' active' : '');
+    if (g.type === 'gradient') {
+      div.style.background = `linear-gradient(135deg, ${g.colors[0]}, ${g.colors[1]})`;
+    } else if (g.type === 'solid') {
+      div.style.background = g.color;
+    } else if (g.type === 'transparent') {
+      div.className += ' transparent-swatch';
+    }
+    div.onclick = () => {
+      document.querySelectorAll('.grad-swatch').forEach(s => s.classList.remove('active'));
+      div.classList.add('active');
+      state.backgroundIndex = idx;
+      render();
+    };
+    grid.appendChild(div);
+  });
+}
+
+// Frame options selector
+document.querySelectorAll('[data-frame]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('[data-frame]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.frameStyle = btn.dataset.frame;
+    render();
+  };
+});
+
+// Aspect Ratio selector
+document.querySelectorAll('[data-ratio]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('[data-ratio]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.aspectRatio = btn.dataset.ratio;
+    render();
+  };
+});
+
+// Slider bindings
+const sliderPadding = document.getElementById('sliderPadding');
+sliderPadding.oninput = (e) => {
+  state.padding = parseInt(e.target.value, 10);
+  document.getElementById('valPadding').textContent = state.padding + 'px';
+  render();
+};
+
+const sliderRadius = document.getElementById('sliderRadius');
+sliderRadius.oninput = (e) => {
+  state.radius = parseInt(e.target.value, 10);
+  document.getElementById('valRadius').textContent = state.radius + 'px';
+  render();
+};
+
+const sliderShadow = document.getElementById('sliderShadow');
+const shadowLabels = ['None', 'Subtle', 'Medium', 'Deep 3D', 'Cyan Glow'];
+sliderShadow.oninput = (e) => {
+  state.shadowLevel = parseInt(e.target.value, 10);
+  document.getElementById('valShadow').textContent = shadowLabels[state.shadowLevel];
+  render();
+};
+
+const sliderScale = document.getElementById('sliderScale');
+sliderScale.oninput = (e) => {
+  state.scale = parseInt(e.target.value, 10);
+  document.getElementById('valScale').textContent = state.scale + '%';
+  render();
+};
+
+// Create a high-tech sleek default demo screenshot
+function createDefaultDemoImage() {
+  const demo = document.createElement('canvas');
+  demo.width = 960;
+  demo.height = 580;
+  const dctx = demo.getContext('2d');
+
+  // Background
+  dctx.fillStyle = '#0f141f';
+  dctx.fillRect(0, 0, 960, 580);
+
+  // Subtle grid
+  dctx.strokeStyle = '#182030';
+  dctx.lineWidth = 1;
+  for (let x = 0; x < 960; x += 40) {
+    dctx.beginPath(); dctx.moveTo(x, 0); dctx.lineTo(x, 580); dctx.stroke();
+  }
+  for (let y = 0; y < 580; y += 40) {
+    dctx.beginPath(); dctx.moveTo(0, y); dctx.lineTo(960, y); dctx.stroke();
+  }
+
+  // Header mockup
+  dctx.fillStyle = '#171d2b';
+  dctx.fillRect(40, 40, 880, 60);
+  dctx.fillStyle = '#00d2ff';
+  dctx.beginPath(); dctx.arc(70, 70, 12, 0, Math.PI * 2); dctx.fill();
+  dctx.fillStyle = '#ffffff';
+  dctx.font = 'bold 18px sans-serif';
+  dctx.fillText('Tangent Analytics Dashboard', 100, 76);
+
+  // Cards
+  const cards = [
+    { title: 'Total In-Memory Tasks', val: '142,850', color: '#00d2ff', x: 40, y: 130, w: 270 },
+    { title: 'Server Data Transferred', val: '0.00 KB', color: '#10b981', x: 345, y: 130, w: 270 },
+    { title: 'Privacy Integrity Score', val: '100%', color: '#a855f7', x: 650, y: 130, w: 270 }
+  ];
+  cards.forEach(c => {
+    dctx.fillStyle = '#141a27';
+    dctx.strokeStyle = '#1f2738';
+    dctx.lineWidth = 1.5;
+    dctx.beginPath(); dctx.roundRect(c.x, c.y, c.w, 110, 10); dctx.fill(); dctx.stroke();
+
+    dctx.fillStyle = '#94a3b8';
+    dctx.font = '13px sans-serif';
+    dctx.fillText(c.title, c.x + 20, c.y + 36);
+
+    dctx.fillStyle = c.color;
+    dctx.font = 'bold 28px sans-serif';
+    dctx.fillText(c.val, c.x + 20, c.y + 78);
+  });
+
+  // Chart area
+  dctx.fillStyle = '#141a27';
+  dctx.strokeStyle = '#1f2738';
+  dctx.beginPath(); dctx.roundRect(40, 270, 880, 260, 10); dctx.fill(); dctx.stroke();
+
+  // Wave line
+  dctx.strokeStyle = '#00d2ff';
+  dctx.lineWidth = 3;
+  dctx.beginPath();
+  const points = [[70, 480], [180, 420], [300, 450], [420, 360], [540, 400], [660, 320], [780, 350], [890, 300]];
+  points.forEach((pt, i) => {
+    if (i === 0) dctx.moveTo(pt[0], pt[1]);
+    else dctx.lineTo(pt[0], pt[1]);
+  });
+  dctx.stroke();
+
+  // Area fill under wave
+  dctx.lineTo(890, 500);
+  dctx.lineTo(70, 500);
+  dctx.closePath();
+  const grad = dctx.createLinearGradient(0, 300, 0, 500);
+  grad.addColorStop(0, 'rgba(0, 210, 255, 0.25)');
+  grad.addColorStop(1, 'rgba(0, 210, 255, 0.0)');
+  dctx.fillStyle = grad;
+  dctx.fill();
+
+  const img = new Image();
+  img.src = demo.toDataURL();
+  img.onload = () => {
+    state.currentImage = img;
+    render();
+  };
+}
+
+// Render Engine (High-DPI Retina 2x)
+function render() {
+  if (!state.currentImage) return;
+
+  const img = state.currentImage;
+  const scaleRatio = state.scale / 100;
+  const padding = state.padding * 2;
+  const radius = state.radius * 2;
+  const headerHeight = (state.frameStyle === 'macos-dark' || state.frameStyle === 'macos-light') ? 68 : (state.frameStyle === 'windows-dark' ? 60 : 0);
+
+  let contentW = img.width * scaleRatio;
+  let contentH = (img.height * scaleRatio) + headerHeight;
+
+  let canvasW = contentW + (padding * 2);
+  let canvasH = contentH + (padding * 2);
+
+  // Aspect ratio adjustments
+  if (state.aspectRatio === '16:9') {
+    const targetRatio = 16 / 9;
+    if (canvasW / canvasH < targetRatio) canvasW = canvasH * targetRatio;
+    else canvasH = canvasW / targetRatio;
+  } else if (state.aspectRatio === '1:1') {
+    const maxDim = Math.max(canvasW, canvasH);
+    canvasW = maxDim;
+    canvasH = maxDim;
+  } else if (state.aspectRatio === '4:3') {
+    const targetRatio = 4 / 3;
+    if (canvasW / canvasH < targetRatio) canvasW = canvasH * targetRatio;
+    else canvasH = canvasW / targetRatio;
+  } else if (state.aspectRatio === '9:16') {
+    const targetRatio = 9 / 16;
+    if (canvasW / canvasH < targetRatio) canvasW = canvasH * targetRatio;
+    else canvasH = canvasW / targetRatio;
+  }
+
+  // Set physical canvas size
+  canvas.width = Math.round(canvasW);
+  canvas.height = Math.round(canvasH);
+
+  // Clear
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 1. Draw Canvas Background
+  const bg = GRADIENTS[state.backgroundIndex];
+  if (bg.type === 'gradient') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, bg.colors[0]);
+    grad.addColorStop(1, bg.colors[1]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  } else if (bg.type === 'solid') {
+    ctx.fillStyle = bg.color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // 2. Position Content Centered
+  const drawX = Math.round((canvas.width - contentW) / 2);
+  const drawY = Math.round((canvas.height - contentH) / 2);
+
+  // 3. Draw Shadow
+  ctx.save();
+  if (state.shadowLevel > 0) {
+    if (state.shadowLevel === 1) { // Subtle
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetY = 14;
+    } else if (state.shadowLevel === 2) { // Medium
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+      ctx.shadowBlur = 60;
+      ctx.shadowOffsetY = 24;
+    } else if (state.shadowLevel === 3) { // Deep 3D
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+      ctx.shadowBlur = 90;
+      ctx.shadowOffsetY = 38;
+    } else if (state.shadowLevel === 4) { // Cyan Glow
+      ctx.shadowColor = 'rgba(0, 210, 255, 0.45)';
+      ctx.shadowBlur = 70;
+      ctx.shadowOffsetY = 16;
+    }
+  }
+
+  // Fill base rectangle under shadow
+  ctx.fillStyle = '#08090d';
+  ctx.beginPath();
+  ctx.roundRect(drawX, drawY, contentW, contentH, radius);
+  ctx.fill();
+  ctx.restore();
+
+  // 4. Clip Window & Draw Header + Content
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(drawX, drawY, contentW, contentH, radius);
+  ctx.clip();
+
+  // Draw Window Titlebar
+  if (state.frameStyle === 'macos-dark' || state.frameStyle === 'macos-light') {
+    const isDark = state.frameStyle === 'macos-dark';
+    ctx.fillStyle = isDark ? '#1a1f2c' : '#f1f5f9';
+    ctx.fillRect(drawX, drawY, contentW, headerHeight);
+
+    // Titlebar bottom border
+    ctx.fillStyle = isDark ? '#262d3d' : '#e2e8f0';
+    ctx.fillRect(drawX, drawY + headerHeight - 1, contentW, 1);
+
+    // macOS Traffic Light dots
+    const dotY = drawY + (headerHeight / 2);
+    const dotRadius = 7;
+    const startDotX = drawX + 24;
+    const spacing = 22;
+
+    const dots = ['#ff5f56', '#ffbd2e', '#27c93f'];
+    dots.forEach((color, i) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(startDotX + (i * spacing), dotY, dotRadius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  } else if (state.frameStyle === 'windows-dark') {
+    ctx.fillStyle = '#141822';
+    ctx.fillRect(drawX, drawY, contentW, headerHeight);
+
+    // Windows glyphs on top right
+    const iconY = drawY + (headerHeight / 2);
+    const rightX = drawX + contentW - 24;
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+
+    // Close 'X'
+    ctx.beginPath();
+    ctx.moveTo(rightX - 6, iconY - 6); ctx.lineTo(rightX + 6, iconY + 6);
+    ctx.moveTo(rightX + 6, iconY - 6); ctx.lineTo(rightX - 6, iconY + 6);
+    ctx.stroke();
+
+    // Maximize box
+    ctx.strokeRect(rightX - 36, iconY - 6, 12, 12);
+
+    // Minimize line
+    ctx.beginPath();
+    ctx.moveTo(rightX - 66, iconY); ctx.lineTo(rightX - 54, iconY);
+    ctx.stroke();
+  } else if (state.frameStyle === 'glass') {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(drawX, drawY, contentW, contentH);
+  }
+
+  // Draw Screenshot Image
+  const imgY = drawY + headerHeight;
+  ctx.drawImage(img, drawX, imgY, contentW, contentH - headerHeight);
+
+  ctx.restore();
+}
+
+// Image Loader Helper
+function loadImageFromFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      state.currentImage = img;
+      render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// File Input
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  if (e.target.files && e.target.files[0]) {
+    loadImageFromFile(e.target.files[0]);
+  }
+});
+
+// Drag and Drop
+const stage = document.getElementById('canvasStage');
+const dropOverlay = document.getElementById('dropOverlay');
+
+['dragenter', 'dragover'].forEach(name => {
+  window.addEventListener(name, (e) => {
+    e.preventDefault();
+    dropOverlay.classList.add('dragover');
+  });
+});
+
+['dragleave', 'drop'].forEach(name => {
+  window.addEventListener(name, (e) => {
+    e.preventDefault();
+    dropOverlay.classList.remove('dragover');
+  });
+});
+
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    loadImageFromFile(e.dataTransfer.files[0]);
+  }
+});
+
+// Clipboard Paste Listener (Ctrl+V / ⌘V anywhere on document)
+window.addEventListener('paste', (e) => {
+  const items = e.clipboardData ? e.clipboardData.items : [];
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') !== -1) {
+      const blob = items[i].getAsFile();
+      loadImageFromFile(blob);
+      break;
+    }
+  }
+});
+
+// Download High-Res PNG Button
+document.getElementById('btnDownload').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'Tangent_Mockup.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+// Copy Image to Clipboard Button
+document.getElementById('btnCopyClipboard').addEventListener('click', async () => {
+  const copyBtn = document.getElementById('btnCopyClipboard');
+  const copyLabel = document.getElementById('copyLabel');
+  try {
+    canvas.toBlob(async (blob) => {
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      copyBtn.classList.add('copied');
+      copyLabel.textContent = 'Copied to Clipboard!';
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyLabel.textContent = 'Copy Image to Clipboard';
+      }, 2500);
+    });
+  } catch (err) {
+    console.error('Clipboard error:', err);
+    alert('Could not copy directly to clipboard. Please use the Download button.');
+  }
+});
+
+// Initialize on page load
+initPalette();
+createDefaultDemoImage();
+</script>
+
+</body>
+</html>

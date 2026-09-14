@@ -266,6 +266,8 @@
     color: #000000;
     border: none;
     padding: 14px 28px;
+    min-height: 44px;
+    touch-action: manipulation;
     width: 100%;
     border-radius: 10px;
     font-weight: 700;
@@ -358,8 +360,34 @@
     letter-spacing: 0.02em;
     user-select: none;
     word-wrap: break-word;
+    white-space: pre-wrap;
     color: #475569;
     font-family: monospace, -apple-system, sans-serif;
+  }
+
+  .enter-char {
+    display: inline-block;
+    font-size: 0.82em;
+    font-weight: 700;
+    padding: 0 4px;
+    margin: 0 2px;
+    border-radius: 4px;
+    opacity: 0.45;
+  }
+  .correct.enter-char {
+    opacity: 0.75;
+    color: #38ef7d;
+  }
+  .current.enter-char {
+    opacity: 1;
+    color: var(--accent);
+    background-color: rgba(0, 210, 255, 0.25);
+    border: 1px solid var(--accent);
+  }
+  .current.enter-char.error-flash {
+    color: var(--danger) !important;
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    border-color: var(--danger) !important;
   }
 
   .correct {
@@ -579,6 +607,13 @@
       gap: 10px;
     }
   }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 </style>
 
 <!-- Favicon & Touch Icons -->
@@ -675,6 +710,9 @@
           <strong id="liveWpm">0</strong>
           <span>WPM</span>
         </div>
+        <div class="hud-stat" style="display:flex; align-items:center;">
+          <canvas id="wpmSparkline" width="130" height="28" style="background:rgba(0,210,255,0.03); border:1px solid rgba(0,210,255,0.2); border-radius:6px;" title="Real-time speed trajectory"></canvas>
+        </div>
         <div class="hud-stat">
           <span>Progress:</span>
           <strong id="progress">Round 1</strong>
@@ -720,6 +758,15 @@
         </div>
 
         <div id="highScoreContainer"></div>
+
+        <!-- Accuracy Text Heatmap Review -->
+        <div style="margin-top: 20px; text-align: left;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Accuracy Text Review</span>
+            <span style="font-size: 0.74rem; font-weight: 500;"><span style="color:#34d399;">●</span> Clean Hit &nbsp; <span style="color:#f87171;">●</span> Typo</span>
+          </div>
+          <div id="accuracyReviewBox" style="padding: 14px 16px; background: var(--bg-card-inner); border: 1px solid var(--border-color); border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; line-height: 1.8; max-height: 160px; overflow-y: auto;"></div>
+        </div>
       </div>
 
       <button type="button" class="btn-accent btn-secondary" id="endBtn" onclick="endTest()">
@@ -803,17 +850,135 @@
     "Five quacking zephyrs jolt my wax bed.",
     "The five boxing wizards jump quickly.",
     "Bright vixens jump; dozy fowl quack.",
-    "Programming is not about memorizing syntax; it is about solving problems.",
+    "Jackdaws love my big sphinx of quartz.",
+    "A quick movement of the enemy will jeopardize six gunboats.",
+    "Crazy Frederick bought many very exquisite opal jewels.",
+    "Sixty zips were quickly picked from the woven jute bag.",
+    "We promptly judged antique ivory buckles for the next prize.",
+    "Waxy and quivering, jiffs flock together from the pending zoo.",
+    "A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent.",
+    "Programming is not about memorizing syntax; it is about solving complex problems.",
     "Artificial Intelligence works directly inside modern client-side browsers.",
-    "Cybersecurity is the practice of protecting devices, networks, and data.",
-    "Software engineering is the disciplined craftsmanship of building reliable tools.",
-    "Tangent tools run entirely locally in your device RAM with zero cloud uploads."
-  ];
+    "Cybersecurity is the disciplined practice of protecting devices, networks, and data.",
+    "Software engineering is the craftsmanship of building resilient and reliable tools.",
+    "Tangent tools run entirely locally in your device RAM with zero cloud uploads.",
+    "Zero-knowledge architecture ensures that sensitive secrets never leave your machine.",
+    "Client-side processing eliminates server latency and preserves user privacy.",
+    "Modern browsers provide powerful sandboxed environments for web applications.",
+    "Local encryption transforms plain text into unreadable ciphertext before storage.",
+    "Open source software empowers developers worldwide to inspect and improve code.",
+    "A clean interface removes unnecessary friction and lets users focus on their work.",
+    "Data privacy is a fundamental human right that technology must safeguard.",
+    "Cryptographic hash functions produce unique fixed-size digests from arbitrary data.",
+    "Hardware acceleration enables smooth rendering even on resource-constrained devices.",
+    "WebAssembly brings near-native execution performance to web applications.",
+    "Deterministic algorithms consistently return identical outputs for the same inputs.",
+    "Memory safety prevents catastrophic vulnerabilities like buffer overflow exploits.",
+    "Clean code reads like well-written prose and explains itself without clutter.",
+    "Decentralized protocols distribute power rather than concentrating it in single servers.",
+    "Minimalist design prioritizes function, clarity, and uncompromising speed.",
+    "The universe is under no obligation to make sense to our intuitive perceptions.",
+    "Light from distant galaxies travels for billions of years before striking our retinas.",
+    "Atoms forged inside ancient dying stars compose every molecule of our bodies.",
+    "Gravity bends the fabric of spacetime, dictating the dance of orbiting planets.",
+    "The James Webb Space Telescope reveals infant structures near the dawn of time.",
+    "Quantum mechanics demonstrates that particles can exist in superpositions of states.",
+    "Earth is a tiny pale blue dot suspended within a vast cosmic ocean.",
+    "Photosynthesis converts sunlight and carbon dioxide into oxygen and life.",
+    "Plate tectonics continuously reshape continents and ocean basins over eons.",
+    "Black holes warp spacetime so severely that even photons cannot escape their pull.",
+    "Thermodynamics dictates that entropy in closed systems inexorably increases.",
+    "The double helix structure of DNA carries the chemical blueprint for biological life.",
+    "Sound waves require a physical medium to propagate, leaving outer space silent.",
+    "Supernovas scatter heavy elements across the cosmos to seed future solar systems.",
+    "The speed of light in a vacuum remains absolute across all inertial frames.",
+    "Telescopes are essentially time machines looking backwards into cosmic history.",
+    "Ecosystems thrive on delicate balances of biodiversity and energy flow.",
+    "Water expands when freezing, a rare property that preserves aquatic life beneath ice.",
+    "Auroras paint polar night skies when solar winds collide with atmospheric gases.",
+    "Radio astronomy detects faint whispers from pulsars spinning hundreds of times per second.",
+    "We are what we repeatedly do; excellence, then, is not an act, but a habit.",
+    "Simplicity is the prerequisite for reliability in all engineering disciplines.",
+    "Small daily improvements over time compound into staggering lifelong mastery.",
+    "The impediment to action advances action; what stands in the way becomes the way.",
+    "Patience and deliberate practice will outshine unguided natural talent every time.",
+    "Focus is the art of knowing what to consciously ignore in a noisy world.",
+    "Perfection is achieved not when there is nothing more to add, but nothing left to take away.",
+    "The best way to predict the future is to design and build it yourself.",
+    "Calmness of mind is one of the beautiful jewels of seasoned wisdom.",
+    "Curiosity is the engine of human progress and the compass for lifelong learning.",
+    "A craftsperson respects their tools and hones their foundational skills relentlessly.",
+    "Deep work requires uninterrupted concentration and intentional digital silence.",
+    "True mastery is the quiet confidence that comes from repeated thorough preparation.",
+    "Resilience is learning how to navigate unforeseen storms with composure and resolve.",
+    "Clarity of thought produces concise speech and elegant, maintainable code.",
+    "Every master was once a clumsy beginner who refused to abandon the craft.",
+    "Measure twice, cut once, and verify assumptions with rigorous real-world tests.",
+    "The greatest obstacle to discovery is not ignorance, but the illusion of knowledge.",
+    "Wisdom begins with the honest admission of how little we truly understand.",
+    "A journey of a thousand leagues begins beneath a single deliberate stride.",
+    "Anchor your fingers on the home row bumps to build unshakable muscle memory.",
+    "Rhythm and fluid cadence consistently yield higher speeds than rushed keystrokes.",
+    "Keep your wrists straight and floating gently above the desk while typing.",
+    "Typing without looking at the keyboard liberates your creative cognitive flow.",
+    "Speed is a natural byproduct that follows precision, relaxation, and steady practice.",
+    "Correcting repeated errors with backspaces slows down your benchmark tenfold.",
+    "Touch typing transforms the physical keyboard into an invisible extension of thought.",
+    "Smooth transitions between adjacent keys minimize finger strain and fatigue.",
+    "Maintain an upright posture and let your forearms rest parallel to the floor.",
+    "Fast typists read several words ahead of their fingers to maintain uninterrupted rhythm.",
+    "Deliberate practice on tricky letter combinations eliminates subtle micro-hesitations.",
+    "Mechanical switches provide tactile feedback that confirms every actuation cleanly.",
+    "Consistent daily practice for fifteen minutes beats erratic marathon sessions.",
+    "Relax your shoulders and release tension in your hands between rapid sentences.",
+    "The home row keys A, S, D, F and J, K, L, semicolon are your anchor points.",
+    "Accuracy above ninety-eight percent is the foundation for sustaining high velocities.",
+    "Touch typing allows software developers to write and edit code at the speed of thought.",
+    "Ergonomic keyboards split key clusters to promote a natural shoulder-width alignment.",
+    "Typing fluency enables effortless note-taking during meetings and fast lectures.",
+    "Regular breaks and wrist stretches protect your tendons during long coding sprints.",
+    "Each finger has a designated column of responsibility across the keyboard matrix.",
+    "Confidence comes from trusting muscle memory rather than second-guessing fingers.",
+    "A lightweight mechanical actuation switch reduces finger impact shock over time.",
+    "Mastering punctuation symbols alongside letters is essential for versatile speed.",
+    "Consistent typing practice sharpens reflexes, concentration, and digital dexterity."
+];
+
   const paragraphs = [
-    "The morning sun cast a gentle golden glow across the quiet streets as the city slowly woke up. A cool breeze carried the sweet aroma of freshly brewed coffee from the corner bakery, welcoming early commuters on their way to work.",
-    "Consistency is the secret ingredient behind mastering any new skill in life. When you dedicate even ten minutes each day to focused practice, the compound effect over months produces remarkable results that talent alone cannot match.",
-    "In the modern digital era, learning how to touch type quickly and accurately is an essential superpower. It allows your thoughts to flow seamlessly onto the screen without interruption, elevating your productivity and daily focus."
-  ];
+    "The morning sun cast a gentle golden glow across the quiet avenues as the city woke up.\nA cool breeze carried the sweet aroma of freshly ground coffee from the corner bakery.\nCommuters stepped briskly toward the station, ready to embrace the promise of a new day.",
+    "Consistency is the secret ingredient behind mastering any complex skill in life.\nWhen you dedicate even fifteen minutes each day to focused practice, habits solidify.\nOver months and years, the compound effect produces results that talent alone cannot match.",
+    "In the modern digital era, learning how to touch type is an essential superpower.\nIt allows your thoughts to flow directly onto the screen without mechanical friction.\nOnce your fingers move autonomously, cognitive energy is preserved entirely for creative thinking.",
+    "Software architecture is fundamentally about managing complexity and change.\nGreat engineers design systems with decoupled components that communicate through clear interfaces.\nWhen each module does one job well, maintaining and testing the codebase becomes effortless.",
+    "The night sky offers a humbling glimpse into the staggering scale of the cosmos.\nBillions of distant suns illuminate galaxies whose light began traveling before humans walked Earth.\nStanding beneath the stars reminds us of both our cosmic fragility and our boundless curiosity.",
+    "Data privacy is not a luxury or an afterthought; it is a foundational human right.\nWhen software operates entirely inside local device memory, users retain complete sovereignty.\nZero-knowledge architecture proves that utility and absolute privacy can coexist harmoniously.",
+    "Writing clean code resembles the disciplined craftsmanship of fine woodworking.\nEvery function must be cut with intention, smoothed with care, and joined with precision.\nFuture developers who read your source code will appreciate the clarity and respect you left behind.",
+    "Ergonomics plays a crucial role in sustaining high performance over long computing sessions.\nPosition your monitor at eye level, keep your elbows at right angles, and let your wrists float.\nSmall adjustments to your physical workspace prevent strain and preserve physical well-being.",
+    "Artificial intelligence is rapidly reshaping the landscape of software and design.\nYet the heart of meaningful engineering remains empathy for the end user and sound judgment.\nTools will evolve, but the ability to solve authentic human challenges will never lose value.",
+    "Deep concentration has become one of the rarest and most valuable commodities in society.\nNotifications, tabs, and endless feeds fragment attention into fragile, scattered shards.\nReclaiming your ability to focus deeply for hours is like discovering a hidden reservoir of strength.",
+    "The journey of mastering touch typing begins on the tactile bumps of F and J.\nBy establishing these two home keys as your perpetual anchors, your fingers map the entire matrix.\nWith patience, the physical boundary between mind and keyboard dissolves into fluid expression.",
+    "Open source communities represent one of the finest demonstrations of human collaboration.\nContributors from opposite sides of the globe unite to build tools that anyone can freely use.\nShared knowledge accelerates innovation and ensures that technology serves the collective good.",
+    "Cryptographic algorithms protect the modern world through the beauty of pure mathematics.\nOne-way hash functions and public-key pairs secure trillions of dollars in daily transactions.\nBehind every encrypted connection lies decades of rigorous theoretical breakthroughs.",
+    "The ocean depths remain more mysterious to humanity than the surface of the moon.\nBizarre bioluminescent creatures glide through perpetual midnight under crushing hydrostatic pressure.\nExploring these alien underwater trenches expands our understanding of where life can thrive.",
+    "High velocity typing requires maintaining a relaxed, metronomic cadence.\nRushing through familiar words only to stumble on tricky punctuation ruins your overall rhythm.\nBreathe steadily, trust your muscle memory, and let speed emerge naturally as a byproduct of control.",
+    "Debugging complex software requires the detached curiosity of a seasoned detective.\nInstead of guessing wildly, form a falsifiable hypothesis and verify it with repeatable logs.\nEvery bug has a rational root cause waiting patiently to be uncovered through systematic deduction.",
+    "Forests are not mere collections of isolated trees, but interconnected living networks.\nUnderground fungal mycorrhizae transmit chemical signals and vital nutrients between trunks.\nNature reminds us that resilience emerges through cooperative interdependence rather than isolation.",
+    "Minimalism is the intentional pursuit of what truly matters by eliminating everything else.\nIn user interfaces, stripping away superfluous chrome and aggressive banners restores peace.\nA clean, dark workspace honors the user's attention and invites uninterrupted focus.",
+    "The invention of the printing press transformed the trajectory of human civilization.\nFor the first time in history, ideas could be duplicated and distributed across continents rapidly.\nToday, client-side web technologies democratize the creation and sharing of software worldwide.",
+    "Building resilient software systems requires anticipating failure at every layer.\nNetworks drop packets, hardware drives fail, and input data occasionally violates assumptions.\nDefensive programming and graceful degradation guarantee that applications survive real-world chaos.",
+    "Patience is often the difference between superficial understanding and genuine mastery.\nWhen learning a new programming paradigm or musical instrument, initial plateaus can feel daunting.\nTrusting the neurological process of deliberate practice ensures continuous breakthrough.",
+    "Client-side web applications leverage the immense computing horsepower resting on users' desks.\nModern browsers compile bytecode, render hardware-accelerated canvases, and process audio in RAM.\nBy executing tasks locally, applications remain blisteringly fast and immune to server outages.",
+    "The human brain contains roughly eighty-six billion neurons forming trillions of synaptic connections.\nEvery memory, insight, and emotional nuance arises from coordinated electrochemical cascades.\nNeuroscience continues to marvel at the adaptive plasticity that allows us to master new skills.",
+    "Great writers understand that clarity of expression reflects clarity of internal thought.\nTrimming bloated adjectives and passive verbs energizes prose and commands reader attention.\nWhether drafting technical specifications or compelling stories, simplicity remains supreme.",
+    "A mechanical keyboard transforms daily computer interaction into an enjoyable tactile ritual.\nEach smooth actuation provides auditory and tactile confirmation before the key reaches bottom.\nCustomizing switches, keycaps, and stabilizers turns a mundane utility into personal craftsmanship.",
+    "Cyber resilience begins with cultivating vigilant personal digital hygiene.\nUtilizing unique passphrases, enabling hardware security keys, and auditing app permissions matter.\nWhen individuals take proactive ownership of their security, collective ecosystems grow stronger.",
+    "The history of computing is filled with visionary pioneers who dared to dream boldly.\nFrom Ada Lovelace conceptualizing algorithmic loops to modern open-source maintainers.\nWe stand on the shoulders of brilliant thinkers who transformed mathematical theory into reality.",
+    "A productive workday is built upon deliberate boundaries and mindful energy management.\nScheduling deep work blocks in the morning protects your peak cognitive clarity from distraction.\nClosing your laptop at sunset allows your mind to rest, reflect, and recharge for tomorrow.",
+    "Quantum computing promises to revolutionize fields ranging from materials science to cryptography.\nBy harnessing superposition and entanglement, quantum bits explore vast solution spaces at once.\nThe transition toward post-quantum encryption standards is already underway across global networks.",
+    "The art of storytelling connects human hearts across centuries, cultures, and languages.\nStories help us contextualize tragedy, celebrate triumph, and imagine alternative futures.\nIn a world dominated by raw metrics and analytics, narrative remains our most powerful teacher.",
+    "Speed in typing is not measured by erratic sprints, but by sustained, effortless accuracy.\nWhen you type at eighty words per minute with ninety-nine percent accuracy, thoughts glide.\nEvery keystroke lands cleanly on its intended mark, creating a rhythm that feels almost musical.",
+    "Sustainable engineering considers the long-term ecological footprint of our digital footprint.\nOptimizing algorithms to consume fewer CPU cycles directly reduces datacenter thermal waste.\nLightweight, efficient code is not only faster for users; it is also kinder to our planet.",
+    "Tangent was conceived on the principle that powerful utilities should respect human dignity.\nNo trackers, no telemetry, no mandatory cloud accounts, and no monetization of personal data.\nFast, honest tools that do exactly what you expect, directly in your browser, every single time."
+];
 
   let currentDifficulty = "easy";
   let pool = [];
@@ -826,6 +991,10 @@
   let errors = 0;
   let isTestActive = false;
   let lastComposition = "";
+  let wpmHistory = [];
+  let wpmTimer = null;
+  let charReviewHistory = [];
+  let currentTargetErrors = new Set();
 
   const setupScreen = document.getElementById("setup-screen");
   const testScreen = document.getElementById("test-screen");
@@ -845,14 +1014,60 @@
     document.getElementById(`card-${diff}`).classList.add("active");
   }
 
+  function getCurrentWpm() {
+    if (!startTime || totalCharactersTyped === 0) return 0;
+    const elapsedMinutes = (new Date().getTime() - startTime) / 60000;
+    return Math.max(0, Math.round((totalCharactersTyped / 5) / elapsedMinutes));
+  }
+
   function updateLiveWpm() {
-    if (!startTime || totalCharactersTyped === 0) {
-      liveWpmEl.innerText = "0";
+    liveWpmEl.innerText = getCurrentWpm();
+  }
+
+  function drawSparkline() {
+    const canvas = document.getElementById("wpmSparkline");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    if (wpmHistory.length < 2) {
+      ctx.strokeStyle = "rgba(0, 210, 255, 0.2)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(4, h / 2);
+      ctx.lineTo(w - 4, h / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
       return;
     }
-    const elapsedMinutes = (new Date().getTime() - startTime) / 60000;
-    const currentWpm = Math.max(0, Math.round((totalCharactersTyped / 5) / elapsedMinutes));
-    liveWpmEl.innerText = currentWpm;
+
+    const maxVal = Math.max(30, ...wpmHistory);
+    const minVal = Math.max(0, Math.min(...wpmHistory) - 5);
+    const range = (maxVal - minVal) || 1;
+
+    ctx.strokeStyle = "#00d2ff";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+
+    for (let i = 0; i < wpmHistory.length; i++) {
+      const x = 6 + (i / (wpmHistory.length - 1)) * (w - 12);
+      const y = (h - 5) - ((wpmHistory[i] - minVal) / range) * (h - 10);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const lastX = w - 6;
+    const lastY = (h - 5) - ((wpmHistory[wpmHistory.length - 1] - minVal) / range) * (h - 10);
+    ctx.fillStyle = "#38ef7d";
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   function flashError() {
@@ -870,18 +1085,35 @@
     updateLiveWpm();
     let html = "";
     for (let i = 0; i < currentTarget.length; i++) {
-      if (i < currentIndex) {
-        html += `<span class="correct">${currentTarget[i]}</span>`;
-      } else if (i === currentIndex) {
-        html += `<span class="current">${currentTarget[i]}</span>`;
+      const ch = currentTarget[i];
+      if (ch === "\n") {
+        if (i < currentIndex) {
+          html += '<span class="correct enter-char">↵</span><br>';
+        } else if (i === currentIndex) {
+          html += '<span class="current enter-char" title="Press Enter">↵</span><br>';
+        } else {
+          html += '<span class="enter-char">↵</span><br>';
+        }
       } else {
-        html += `<span>${currentTarget[i]}</span>`;
+        const safeChar = ch === " " ? " " : ch.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (i < currentIndex) {
+          html += `<span class="correct">${safeChar}</span>`;
+        } else if (i === currentIndex) {
+          html += `<span class="current">${safeChar}</span>`;
+        } else {
+          html += `<span>${safeChar}</span>`;
+        }
       }
     }
     display.innerHTML = html;
   }
 
   function finishTest() {
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
+
     let endTime = new Date().getTime();
     let elapsedSeconds = Math.max(1, (endTime - startTime) / 1000);
     let wpm = Math.round((totalCharactersTyped / 5) / (elapsedSeconds / 60));
@@ -895,6 +1127,32 @@
     finalWpm.innerText = wpm;
     finalAccuracy.innerText = `${accuracy}%`;
     finalErrors.innerText = errors;
+
+    wpmHistory.push(wpm);
+    drawSparkline();
+
+    // Render accuracy text review
+    const reviewBox = document.getElementById("accuracyReviewBox");
+    if (reviewBox) {
+      let reviewHtml = "";
+      for (const item of charReviewHistory) {
+        if (item.char === "\n") {
+          if (item.error) {
+            reviewHtml += '<span style="color: #f87171; background: rgba(248,113,113,0.18); border-radius: 2px; padding: 0 3px;">↵</span><br>';
+          } else {
+            reviewHtml += '<span style="color: #34d399; opacity: 0.75;">↵</span><br>';
+          }
+          continue;
+        }
+        const safeChar = item.char === " " ? "&nbsp;" : item.char.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (item.error) {
+          reviewHtml += `<span style="color: #f87171; background: rgba(248,113,113,0.18); border-radius: 2px; padding: 0 1px;">${safeChar}</span>`;
+        } else {
+          reviewHtml += `<span style="color: #34d399;">${safeChar}</span>`;
+        }
+      }
+      reviewBox.innerHTML = reviewHtml || '<span style="color:var(--text-muted);">No characters recorded.</span>';
+    }
 
     const storageKey = `tangent_typing_best_${currentDifficulty}`;
     const previousBest = parseInt(localStorage.getItem(storageKey) || "0", 10);
@@ -923,13 +1181,27 @@
   function processChar(char) {
     if (!isTestActive) return;
     if (roundsCompleted >= targetCount) return;
-    if (startTime === null) startTime = new Date().getTime();
+    if (startTime === null) {
+      startTime = new Date().getTime();
+      wpmHistory = [0];
+      if (wpmTimer) clearInterval(wpmTimer);
+      wpmTimer = setInterval(() => {
+        if (!isTestActive) return;
+        const curWpm = getCurrentWpm();
+        wpmHistory.push(curWpm);
+        if (wpmHistory.length > 30) wpmHistory.shift();
+        drawSparkline();
+      }, 1000);
+    }
 
     if (char === currentTarget[currentIndex]) {
+      const hadError = currentTargetErrors.has(currentIndex);
+      charReviewHistory.push({ char: currentTarget[currentIndex], error: hadError });
       currentIndex++;
       totalCharactersTyped++;
     } else {
       errors++;
+      currentTargetErrors.add(currentIndex);
       flashError();
       return;
     }
@@ -942,10 +1214,19 @@
       } else {
         currentTarget = pool[Math.floor(Math.random() * pool.length)];
         currentIndex = 0;
+        currentTargetErrors.clear();
       }
     }
     render();
   }
+
+  hiddenInput.addEventListener("keydown", (e) => {
+    if (!isTestActive) return;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      processChar("\n");
+    }
+  });
 
   hiddenInput.addEventListener("beforeinput", (e) => {
     if (!isTestActive) {
@@ -953,6 +1234,11 @@
       return;
     }
     e.preventDefault();
+
+    if (e.inputType === "insertLineBreak" || e.inputType === "insertParagraph") {
+      processChar("\n");
+      return;
+    }
 
     const insertingTypes = ["insertText", "insertCompositionText", "insertReplacementText"];
     if (!insertingTypes.includes(e.inputType)) return;
@@ -1007,6 +1293,14 @@
     errors = 0;
     isTestActive = true;
     lastComposition = "";
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
+    wpmHistory = [];
+    charReviewHistory = [];
+    currentTargetErrors.clear();
+    drawSparkline();
 
     resultsCard.style.display = "none";
     liveWpmEl.innerText = "0";
@@ -1020,6 +1314,10 @@
 
   function endTest() {
     isTestActive = false;
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
     hiddenInput.blur();
     testScreen.style.display = "none";
     setupScreen.style.display = "block";

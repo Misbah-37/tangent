@@ -167,7 +167,7 @@
     margin: 0 auto 100px auto;
     padding: 0 24px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 24px;
     scroll-margin-top: 100px;
   }
@@ -179,21 +179,73 @@
     padding: 36px 30px;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+    transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    position: relative;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    padding: 3px 9px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgba(0, 210, 255, 0.12);
+    border: 1px solid rgba(0, 210, 255, 0.35);
+    color: #00d2ff;
   }
 
   .tool-card:hover {
-    border-color: #444444;
-    background-color: #161616;
-    transform: translateY(-2px);
+    border-color: rgba(0, 210, 255, 0.4);
+    background-color: #151820;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.08);
   }
 
   .card-icon {
     margin-bottom: 20px;
     color: #00d2ff;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tool-card:hover .card-icon {
+    transform: scale(1.08);
+  }
+
+  /* --- Hero Trust Micro-Badges --- */
+  .hero-trust-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .hero-badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #222222;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   .tool-card h3 {
@@ -355,12 +407,33 @@
   <h1>Local execution.<br>Absolute privacy.</h1>
   <p>A professional collection of client-side utilities. Compress images, split PDFs, and organize files securely in your browser without ever transmitting your files to an external server.</p>
   <a href="#tools" class="btn-accent">Explore the Toolkit</a>
+
+  <!-- Trust Micro-Badges (100% Vector SVGs, Zero Emojis) -->
+  <div class="hero-trust-bar">
+    <span class="hero-badge-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      100% Client-Side
+    </span>
+    <span class="hero-badge-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0-4 7h1.26a5 5 0 0 0 9.04 3.03"></path></svg>
+      Zero Server Uploads
+    </span>
+    <span class="hero-badge-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      In-Browser RAM Speed
+    </span>
+    <span class="hero-badge-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+      100% Free Forever
+    </span>
+  </div>
 </section>
 
 <!-- Tools Grid -->
 <section id="tools" class="grid-container">
   
   <a href="pdf-redactor.html" class="tool-card">
+    <span class="card-badge">NEW</span>
     <div class="card-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
     </div>
@@ -377,6 +450,7 @@
   </a>
 
   <a href="photo-scrubber.html" class="tool-card">
+    <span class="card-badge">NEW</span>
     <div class="card-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
     </div>
@@ -385,6 +459,7 @@
   </a>
 
   <a href="password-meter.html" class="tool-card">
+    <span class="card-badge">UPDATED</span>
     <div class="card-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
     </div>
@@ -393,6 +468,7 @@
   </a>
 
   <a href="file-organizer.html" class="tool-card">
+    <span class="card-badge">UPDATED</span>
     <div class="card-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
     </div>

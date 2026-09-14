@@ -415,6 +415,8 @@
     background-color: var(--accent);
     color: #000000;
     border: none;
+    min-height: 44px;
+    touch-action: manipulation;
     padding: 12px 20px;
     width: 100%;
     border-radius: 8px;
@@ -564,6 +566,15 @@
 
     .tool-panel {
       padding: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 </style>

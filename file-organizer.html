@@ -365,18 +365,6 @@
     transition: opacity 0.2s ease;
   }
 
-  @media (max-width: 960px) {
-    .tangent-sidebar {
-      top: 0;
-      width: min(300px, 85vw);
-      z-index: 2500;
-    }
-    body.sidebar-open .sidebar-backdrop {
-      display: block;
-      opacity: 1;
-    }
-  }
-
   .menu-toggle {
     display: none;
     background: transparent;
@@ -395,7 +383,17 @@
     color: #00d2ff;
   }
 
-  @media (max-width: 900px) {
+  /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
+  @media (max-width: 960px) {
+    .tangent-sidebar {
+      top: 0;
+      width: min(300px, 85vw);
+      z-index: 2500;
+    }
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
     .global-nav {
       padding: 14px 20px;
     }
@@ -425,36 +423,6 @@
     }
     .nav-links.open, .nav-links.active {
       display: flex !important;
-    }
-    .nav-dropdown {
-      width: 100%;
-    }
-    .nav-dropdown-trigger {
-      width: 100%;
-      justify-content: space-between;
-      padding: 10px 0;
-      font-size: 1rem;
-      border-bottom: 1px solid #161a24;
-    }
-    .nav-dropdown-menu {
-      position: static;
-      width: 100%;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      padding: 10px 0 0 0;
-      animation: none;
-    }
-    .dropdown-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .dropdown-group-title {
-      padding-left: 0;
-      margin-top: 8px;
-    }
-    .dropdown-item {
-      padding: 8px 6px;
     }
     .nav-link {
       font-size: 1rem;
@@ -1164,6 +1132,7 @@
 </nav>
 
 <!-- Collapsible Push-Sidebar (Toolkit) -->
+<!-- TANGENT_SIDEBAR_START -->
 <aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
   <div class="sidebar-header">
     <span class="sidebar-title">Toolkit</span>
@@ -1179,18 +1148,18 @@
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Documents & PDF</div>
-      <a href="pdf-converter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        <div class="item-text">
-          <div class="item-title">PDF Suite</div>
-          <div class="item-desc">Merge, split, compress, & convert</div>
-        </div>
-      </a>
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
           <div class="item-title">PDF Redactor</div>
           <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
         </div>
       </a>
     </div>
@@ -1258,7 +1227,7 @@
         </div>
       </a>
       <a href="typing-test.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
         <div class="item-text">
           <div class="item-title">Typing Test</div>
           <div class="item-desc">100 sentences & paragraphs</div>
@@ -1267,6 +1236,7 @@
     </div>
   </div>
 </aside>
+<!-- TANGENT_SIDEBAR_END -->
 
 <!-- Backdrop Overlay for Mobile -->
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>

@@ -93,6 +93,23 @@ Open `http://localhost:8000` in your browser.
 
 ---
 
+## 🛠️ Tool Suite Automation CLI
+
+Tangent includes a zero-dependency Python tool manager (`scripts/manage_tools.py`) to keep sidebars, homepage cards, and sitemaps in sync, and scaffold new tools in seconds:
+
+```bash
+# List all registered tools
+python scripts/manage_tools.py list
+
+# Synchronize sidebars, homepage grid, and sitemap across all pages
+python scripts/manage_tools.py sync
+
+# Scaffold a new tool instantly from template and sync the entire site
+python scripts/manage_tools.py new audio-converter --title "Audio Converter" --category "Media & Video"
+```
+
+---
+
 ## 🔒 Security & Architecture
 
 | Feature | Tangent Implementation |

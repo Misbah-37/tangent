@@ -10,13 +10,13 @@
 
   <!-- Documents & PDF -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/pdf-converter.html</loc>
+    <loc>https://misbah-37.github.io/tangent/pdf-redactor.html</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/pdf-redactor.html</loc>
+    <loc>https://misbah-37.github.io/tangent/pdf-converter.html</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -75,4 +75,5 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
 </urlset>

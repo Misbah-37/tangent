@@ -1,0 +1,1413 @@
+<!-- --- HEAD_META --- -->
+<title>Photo EXIF & GPS Scrubber | Tangent</title>
+<meta name="description" content="Inspect and strip hidden GPS coordinates, camera serial numbers, and device timestamps from photos before sharing online. 100% client-side privacy tool.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/photo-scrubber.html">
+
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Photo EXIF & GPS Scrubber | Tangent">
+<meta property="og:description" content="Inspect and wipe hidden GPS coordinates, camera serial numbers, and device timestamps from photos in browser memory. Zero server uploads.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Favicon & Touch Icons with Cache Buster -->
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is EXIF metadata and why is it dangerous?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "EXIF metadata is hidden technical information recorded automatically by your smartphone or camera every time you snap a picture. It frequently includes your exact GPS coordinates (latitude and longitude accurate to your home address), camera model, and timestamp."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do social media sites and marketplaces remove EXIF data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "While some platforms like Instagram strip metadata upon upload, many classified sites, forums, chat apps, and email clients preserve full original EXIF tags, exposing your private location to anyone who downloads the image."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool upload my photos to an external server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The Photo EXIF & GPS Scrubber operates 100% inside your web browser using HTML5 Canvas rasterization and client-side JavaScript. Zero bytes are ever transmitted over the network."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does scrubbing metadata degrade photo quality?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No noticeable loss occurs. The scrubber re-encodes pure image pixels at 95% quality (or your custom selected quality) while permanently omitting all hidden binary metadata blocks."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Required Client-Side Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+:root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --danger: #ef4444;
+    --danger-bg: rgba(239, 68, 68, 0.12);
+    --danger-border: rgba(239, 68, 68, 0.35);
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --success-border: rgba(16, 185, 129, 0.35);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+
+
+  /* --- Hero Header --- */
+  .clean-header {
+    text-align: center;
+    padding: 56px 20px 24px 20px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .clean-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+  }
+
+  .clean-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 auto;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  /* --- Tab Switcher Navigation --- */
+  .tabs-wrapper {
+    max-width: 960px;
+    margin: 32px auto 0 auto;
+    padding: 0 20px;
+  }
+
+  .tabs-container {
+    display: flex;
+    gap: 10px;
+    background-color: var(--bg-card);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs-container::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    touch-action: manipulation;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+    text-align: center;
+  }
+
+  .tab-btn svg {
+    flex-shrink: 0;
+  }
+
+  .tab-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .tab-btn.active {
+    background-color: #171b26;
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+  }
+
+  /* --- Tool Workspace Container --- */
+  .tool-wrapper {
+    max-width: 960px;
+    margin: 24px auto 0 auto;
+    padding: 0 20px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .tool-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .tool-container h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tool-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0 0 28px 0;
+    line-height: 1.5;
+  }
+
+  /* --- Modern Drag & Drop Upload Zone --- */
+  .upload-box {
+    background: var(--bg-card-inner);
+    border: 2px dashed var(--border-color);
+    border-radius: 14px;
+    padding: 44px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 24px;
+  }
+
+  .upload-box:hover, .upload-box.dragover {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.03);
+    box-shadow: 0 0 24px rgba(0, 210, 255, 0.1);
+  }
+
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px auto;
+    color: var(--accent);
+    display: block;
+    opacity: 0.9;
+  }
+
+  .upload-box-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .upload-box-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .upload-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #171b26;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .upload-box:hover .upload-btn-pill {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* --- Active File Card (With Reset Option) --- */
+  .active-file-card {
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .active-file-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .thumb-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    background: #000;
+    flex-shrink: 0;
+  }
+
+  .active-file-name {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .active-file-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .btn-remove-file {
+    background: #171b26;
+    color: #e2e8f0;
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn-remove-file:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #f87171;
+  }
+
+  /* --- GPS Status Alert Banner --- */
+  .gps-banner {
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .gps-banner.danger {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: #fecaca;
+  }
+
+  .gps-banner.clean {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: #a7f3d0;
+  }
+
+  .gps-banner-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .gps-banner h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .gps-banner p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .gps-banner-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-osm-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, 0.25);
+    color: #ffffff;
+    border: 1px solid rgba(239, 68, 68, 0.6);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-osm-link:hover {
+    background: rgba(239, 68, 68, 0.45);
+  }
+
+  /* --- Metadata Cards Grid --- */
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .meta-card {
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .meta-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1a202c;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 5px 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .meta-row:last-child { border-bottom: none; }
+
+  .meta-label {
+    color: var(--text-muted);
+    font-weight: 500;
+    flex: 1;
+    padding-right: 12px;
+  }
+
+  .meta-value {
+    color: #ffffff;
+    font-weight: 600;
+    text-align: right;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+
+  .meta-value.highlight {
+    color: #f87171;
+  }
+
+  /* --- Options & Controls --- */
+  .options-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .options-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .options-col label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  select, input[type="range"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-card-inner);
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* --- Action Buttons (100% Emoji-Free) --- */
+  .btn-accent {
+    width: 100%;
+    background: var(--accent);
+    color: #040810;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 14px rgba(0, 210, 255, 0.3);
+  }
+
+  .btn-accent:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+  }
+
+  .btn-accent:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .download-btn {
+    display: none;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #10b981;
+    color: #10b981;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 14px;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .download-btn:hover {
+    background: #10b981;
+    color: #040810;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  }
+
+  .status-text {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 14px;
+    min-height: 20px;
+    line-height: 1.5;
+  }
+
+  /* --- Batch Mode Queue & Items --- */
+  .queue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0 10px 0;
+    padding: 0 4px;
+  }
+
+  .queue-count {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .btn-clear-queue {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: #94a3b8;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn-clear-queue:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+  }
+
+  .batch-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  .batch-item {
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .batch-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .batch-item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .batch-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .batch-tag.gps {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+
+  .batch-tag.ok {
+    background: rgba(0, 210, 255, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+  }
+
+  .btn-item-delete {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .btn-item-delete:hover {
+    color: #f87171;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 860px) {
+    .metadata-grid { grid-template-columns: 1fr; }
+    .options-row { flex-direction: column; }
+    .tool-container { padding: 20px; }
+  }
+
+  @media (max-width: 640px) {
+    .tabs-container {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tab-btn {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .active-file-card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+    }
+    .btn-remove-file {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<!-- Hero Header -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>Photo EXIF & GPS Scrubber</h1>
+  <p>Inspect hidden GPS location tags, camera models, and timestamps embedded in your photos—and permanently strip them before sharing online.</p>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tabs-wrapper">
+  <div class="tabs-container">
+    <button type="button" class="tab-btn active" id="tabBtnInspect" onclick="switchTab('tab-inspect')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Inspect & Scrub Photo</span>
+    </button>
+    <button type="button" class="tab-btn" id="tabBtnBatch" onclick="switchTab('tab-batch')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>Batch Scrubber</span>
+    </button>
+  </div>
+</div>
+
+<div class="tool-wrapper">
+
+  <!-- TAB 1: INSPECT & SCRUB (SINGLE PHOTO) -->
+  <div id="tab-inspect" class="tab-content active">
+    <div class="tool-container">
+      <h3>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <span>Metadata Inspector & Cleaner</span>
+      </h3>
+      <p class="tool-desc">Reveal all hidden EXIF and location tags embedded in your image, then strip them completely with one click.</p>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-box" id="inspectDropZone" onclick="document.getElementById('inspectInput').click()">
+        <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <div class="upload-box-title">Drop your photo here or click to browse</div>
+        <div class="upload-box-sub">Supports JPG, JPEG, PNG, WebP • 100% private in-browser RAM execution</div>
+        <div class="upload-btn-pill">Select Photo</div>
+        <input type="file" id="inspectInput" accept="image/jpeg, image/png, image/webp" style="display:none;">
+      </div>
+
+      <!-- Active File Card (Initially Hidden) -->
+      <div class="active-file-card" id="inspectFileCard" style="display:none;">
+        <div class="active-file-info">
+          <img id="inspectThumb" class="thumb-preview" alt="Preview">
+          <div style="min-width:0;">
+            <div class="active-file-name" id="inspectFileName">photo.jpg</div>
+            <div class="active-file-meta" id="inspectFileMeta">Detecting metadata...</div>
+          </div>
+        </div>
+        <button type="button" class="btn-remove-file" id="changePhotoBtn" onclick="resetSingleFile()" title="Change photo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>Change Photo</span>
+        </button>
+      </div>
+
+      <!-- GPS Status Alert Banner (Shown after inspection) -->
+      <div id="gpsBanner" style="display:none;"></div>
+
+      <!-- Metadata Breakdown Grid (Shown after inspection) -->
+      <div class="metadata-grid" id="metadataGrid" style="display:none;">
+        <!-- Card 1: Location & Coordinates -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Location & GPS Geotag</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Latitude</span>
+            <span class="meta-value" id="metaLat">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Longitude</span>
+            <span class="meta-value" id="metaLon">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Altitude</span>
+            <span class="meta-value" id="metaAlt">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">GPS Timestamp</span>
+            <span class="meta-value" id="metaGpsTime">None</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Camera & Hardware -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            <span>Device & Camera Model</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Manufacturer</span>
+            <span class="meta-value" id="metaMake">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Model</span>
+            <span class="meta-value" id="metaModel">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Lens Info</span>
+            <span class="meta-value" id="metaLens">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Software / OS</span>
+            <span class="meta-value" id="metaSoftware">Unknown</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Date & Capture Times -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Capture Timestamps</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Original Date</span>
+            <span class="meta-value" id="metaDateOrig">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Digitized Date</span>
+            <span class="meta-value" id="metaDateDig">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Orientation</span>
+            <span class="meta-value" id="metaOrientation">Normal (1)</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Shooting Parameters -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Technical Parameters</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Exposure Time</span>
+            <span class="meta-value" id="metaExposure">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">F-Number (Aperture)</span>
+            <span class="meta-value" id="metaFNumber">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">ISO Speed</span>
+            <span class="meta-value" id="metaIso">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Focal Length</span>
+            <span class="meta-value" id="metaFocal">Unknown</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrub Options & Action (Shown after photo selected) -->
+      <div id="inspectActionArea" style="display:none;">
+        <div class="options-row">
+          <div class="options-col">
+            <label for="outputFormat">Output Image Format</label>
+            <select id="outputFormat">
+              <option value="keep">Preserve Original Format</option>
+              <option value="image/jpeg">JPEG (.jpg)</option>
+              <option value="image/png">PNG (.png)</option>
+              <option value="image/webp">WebP (.webp)</option>
+            </select>
+          </div>
+          <div class="options-col">
+            <label for="outputQuality">Image Quality: <span id="qualityVal">95%</span></label>
+            <input type="range" id="outputQuality" min="70" max="100" value="95" oninput="document.getElementById('qualityVal').innerText = this.value + '%'">
+          </div>
+        </div>
+
+        <button type="button" class="btn-accent" id="btnScrubSingle" onclick="scrubSinglePhoto()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          <span>Strip All Metadata & Download</span>
+        </button>
+        <div id="statusSingle" class="status-text"></div>
+        <a id="downloadBtnSingle" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Cleaned Photo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: BATCH SCRUBBER (MULTIPLE PHOTOS) -->
+  <div id="tab-batch" class="tab-content">
+    <div class="tool-container">
+      <h3>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>Batch Metadata Scrubber</span>
+      </h3>
+      <p class="tool-desc">Drop multiple photos at once. Every file is sanitized simultaneously in browser memory and packaged into a single clean ZIP download.</p>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-box" id="batchDropZone" onclick="document.getElementById('batchInput').click()">
+        <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <div class="upload-box-title">Drop your photos here or click to browse</div>
+        <div class="upload-box-sub">Select multiple JPG, PNG, or WebP files • 100% offline batch processing</div>
+        <div class="upload-btn-pill">Select Multiple Photos</div>
+        <input type="file" id="batchInput" accept="image/jpeg, image/png, image/webp" multiple style="display:none;">
+      </div>
+
+      <!-- Queue Header & File List -->
+      <div class="queue-header" id="batchQueueHeader" style="display:none;">
+        <span class="queue-count" id="batchQueueCount">0 photos in queue</span>
+        <button type="button" class="btn-clear-queue" id="clearBatchBtn" onclick="clearBatchQueue()" title="Clear all photos">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Clear Queue</span>
+        </button>
+      </div>
+
+      <ul class="batch-list" id="batchFileList"></ul>
+
+      <div id="batchActionArea" style="display:none;">
+        <button type="button" class="btn-accent" id="btnScrubBatch" onclick="scrubBatchPhotos()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Strip All Photos & Download ZIP</span>
+        </button>
+        <div id="statusBatch" class="status-text"></div>
+        <a id="downloadBtnBatch" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Cleaned_Photos.zip</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      </div>
+      <h3>GPS Geolocation Scrubbing</h3>
+      <p>Smartphones embed exact latitude, longitude, and altitude coordinates in photos. Tangent completely purges raw EXIF GPS blocks.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      </div>
+      <h3>Hardware Fingerprint Wipe</h3>
+      <p>Strip camera serial numbers, iPhone/Android lens models, exposure timestamps, and embedded thumbnail previews before sharing.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h3>Zero-Recompression Stripping</h3>
+      <p>Purges metadata headers without degrading visual sharpness or introducing compression artifacts, keeping your pictures pristine.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>What is EXIF metadata and why is it dangerous?</summary>
+      <p>EXIF metadata is hidden technical information recorded automatically by your smartphone or camera every time you snap a picture. It frequently includes your exact GPS coordinates (latitude and longitude accurate to your home address), camera model, and timestamp.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Do social media sites and marketplaces remove EXIF data?</summary>
+      <p>While some platforms like Instagram strip metadata upon upload, many classified sites, forums, chat apps, and email clients preserve full original EXIF tags, exposing your private location to anyone who downloads the image.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Does scrubbing metadata degrade photo quality?</summary>
+      <p>No noticeable loss occurs. The scrubber re-encodes pure image pixels at 95% quality (or your custom selected quality) while permanently omitting all hidden binary metadata blocks.</p>
+    </details>
+  </div>
+</div>
+
+<!-- Global Footer -->
+
+<!-- --- SCRIPTS --- -->
+<script>
+// --- Tab Switching Logic ---
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+
+  if (tabId === 'tab-inspect') {
+    document.getElementById('tabBtnInspect').classList.add('active');
+    document.getElementById('tab-inspect').classList.add('active');
+  } else {
+    document.getElementById('tabBtnBatch').classList.add('active');
+    document.getElementById('tab-batch').classList.add('active');
+  }
+}
+
+// --- Drag and Drop Helper ---
+function setupDragAndDrop(boxId, inputId, onFiles) {
+  const box = document.getElementById(boxId);
+  const input = document.getElementById(inputId);
+  if (!box || !input) return;
+
+  ['dragenter', 'dragover'].forEach(eName => {
+    box.addEventListener(eName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      box.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eName => {
+    box.addEventListener(eName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      box.classList.remove('dragover');
+    });
+  });
+
+  box.addEventListener('drop', (e) => {
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) onFiles(files);
+  });
+
+  input.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) onFiles(files);
+  });
+}
+
+// Convert GPS rational coords to Decimal Degrees
+function convertDMSToDD(degrees, minutes, seconds, direction) {
+  let dd = degrees + (minutes / 60) + (seconds / 3600);
+  if (direction === 'S' || direction === 'W') {
+    dd = dd * -1;
+  }
+  return dd;
+}
+
+// --- TAB 1: Single Photo Inspector & Cleaner ---
+let singleSelectedFile = null;
+let singleImageElement = null;
+let singleDetectedTagsCount = 0;
+
+setupDragAndDrop('inspectDropZone', 'inspectInput', (files) => {
+  const imgFile = files.find(f => f.type.startsWith('image/'));
+  if (imgFile) handleSinglePhoto(imgFile);
+});
+
+function resetSingleFile() {
+  singleSelectedFile = null;
+  singleImageElement = null;
+  singleDetectedTagsCount = 0;
+  document.getElementById('inspectInput').value = '';
+  document.getElementById('inspectFileCard').style.display = 'none';
+  document.getElementById('inspectDropZone').style.display = 'block';
+  document.getElementById('gpsBanner').style.display = 'none';
+  document.getElementById('metadataGrid').style.display = 'none';
+  document.getElementById('inspectActionArea').style.display = 'none';
+  document.getElementById('statusSingle').innerText = '';
+  document.getElementById('downloadBtnSingle').style.display = 'none';
+}
+
+function handleSinglePhoto(file) {
+  singleSelectedFile = file;
+  document.getElementById('inspectDropZone').style.display = 'none';
+  const card = document.getElementById('inspectFileCard');
+  card.style.display = 'flex';
+  document.getElementById('inspectFileName').innerText = file.name;
+  document.getElementById('inspectFileMeta').innerText = `Reading EXIF data... (${(file.size / 1024).toFixed(1)} KB)`;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      singleImageElement = img;
+      document.getElementById('inspectThumb').src = e.target.result;
+      document.getElementById('inspectFileMeta').innerText = `${img.naturalWidth} x ${img.naturalHeight} px • ${(file.size / 1024).toFixed(1)} KB`;
+      inspectExifData(img, file);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function inspectExifData(img, file) {
+  EXIF.getData(img, function() {
+    const allTags = EXIF.getAllTags(this);
+    const tagKeys = Object.keys(allTags);
+    singleDetectedTagsCount = tagKeys.length;
+
+    // GPS Parsing
+    const lat = EXIF.getTag(this, 'GPSLatitude');
+    const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+    const lon = EXIF.getTag(this, 'GPSLongitude');
+    const lonRef = EXIF.getTag(this, 'GPSLongitudeRef');
+    const alt = EXIF.getTag(this, 'GPSAltitude');
+    const gpsTime = EXIF.getTag(this, 'GPSTimeStamp');
+    const gpsDate = EXIF.getTag(this, 'GPSDateStamp');
+
+    let decimalLat = null;
+    let decimalLon = null;
+
+    if (lat && latRef && lon && lonRef) {
+      decimalLat = convertDMSToDD(lat[0], lat[1], lat[2], latRef);
+      decimalLon = convertDMSToDD(lon[0], lon[1], lon[2], lonRef);
+    }
+
+    renderGpsBanner(decimalLat, decimalLon);
+    renderMetadataFields(this, decimalLat, decimalLon, alt, gpsDate, gpsTime);
+
+    document.getElementById('metadataGrid').style.display = 'grid';
+    document.getElementById('inspectActionArea').style.display = 'block';
+  });
+}
+
+function renderGpsBanner(lat, lon) {
+  const banner = document.getElementById('gpsBanner');
+  banner.style.display = 'flex';
+
+  if (lat !== null && lon !== null) {
+    const osmUrl = `https://www.openstreetmap.org/?mlat=${lat.toFixed(5)}&mlon=${lon.toFixed(5)}#map=16/${lat.toFixed(5)}/${lon.toFixed(5)}`;
+    banner.className = 'gps-banner danger';
+    banner.innerHTML = `
+      <div class="gps-banner-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <div style="flex:1;">
+        <h4>Sensitive GPS Location Detected</h4>
+        <p>This photo contains exact geographic coordinates: <strong>${lat.toFixed(6)}°, ${lon.toFixed(6)}°</strong>. Anyone who downloads this image can pinpoint the location where it was taken.</p>
+        <div class="gps-banner-actions">
+          <a href="${osmUrl}" target="_blank" rel="noopener noreferrer" class="btn-osm-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>View on OpenStreetMap</span>
+          </a>
+        </div>
+      </div>`;
+  } else {
+    banner.className = 'gps-banner clean';
+    banner.innerHTML = `
+      <div class="gps-banner-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <div>
+        <h4>No GPS Coordinates Found</h4>
+        <p>This photo does not contain embedded geolocation tags. Other hardware or timestamp metadata may still be present below.</p>
+      </div>`;
+  }
+}
+
+function renderMetadataFields(img, lat, lon, alt, gpsDate, gpsTime) {
+  // GPS
+  document.getElementById('metaLat').innerText = lat !== null ? `${lat.toFixed(6)}°` : 'None';
+  document.getElementById('metaLon').innerText = lon !== null ? `${lon.toFixed(6)}°` : 'None';
+  if (lat !== null) {
+    document.getElementById('metaLat').classList.add('highlight');
+    document.getElementById('metaLon').classList.add('highlight');
+  } else {
+    document.getElementById('metaLat').classList.remove('highlight');
+    document.getElementById('metaLon').classList.remove('highlight');
+  }
+
+  document.getElementById('metaAlt').innerText = alt ? `${Math.round(alt)} meters` : 'None';
+  let formattedGpsTime = 'None';
+  if (gpsTime && gpsTime.length === 3) {
+    formattedGpsTime = `${gpsTime[0]}:${gpsTime[1]}:${Math.round(gpsTime[2])} UTC`;
+    if (gpsDate) formattedGpsTime = `${gpsDate} ${formattedGpsTime}`;
+  }
+  document.getElementById('metaGpsTime').innerText = formattedGpsTime;
+
+  // Hardware
+  document.getElementById('metaMake').innerText = EXIF.getTag(img, 'Make') || 'Unknown';
+  document.getElementById('metaModel').innerText = EXIF.getTag(img, 'Model') || 'Unknown';
+  document.getElementById('metaLens').innerText = EXIF.getTag(img, 'LensModel') || EXIF.getTag(img, 'LensInfo') || 'Unknown';
+  document.getElementById('metaSoftware').innerText = EXIF.getTag(img, 'Software') || 'Unknown';
+
+  // Date
+  document.getElementById('metaDateOrig').innerText = EXIF.getTag(img, 'DateTimeOriginal') || 'Unknown';
+  document.getElementById('metaDateDig').innerText = EXIF.getTag(img, 'DateTimeDigitized') || 'Unknown';
+  const orientation = EXIF.getTag(img, 'Orientation');
+  document.getElementById('metaOrientation').innerText = orientation ? `Orientation ${orientation}` : 'Normal (1)';
+
+  // Shooting
+  const exp = EXIF.getTag(img, 'ExposureTime');
+  document.getElementById('metaExposure').innerText = exp ? (exp.numerator ? `${exp.numerator}/${exp.denominator}s` : `${exp}s`) : 'Unknown';
+  const fnum = EXIF.getTag(img, 'FNumber');
+  document.getElementById('metaFNumber').innerText = fnum ? `f/${fnum}` : 'Unknown';
+  document.getElementById('metaIso').innerText = EXIF.getTag(img, 'ISOSpeedRatings') || 'Unknown';
+  const focal = EXIF.getTag(img, 'FocalLength');
+  document.getElementById('metaFocal').innerText = focal ? `${focal}mm` : 'Unknown';
+}
+
+function cleanImageWithCanvas(img, mimeType, quality) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    canvas.toBlob((blob) => {
+      resolve(blob);
+    }, mimeType, quality);
+  });
+}
+
+async function scrubSinglePhoto() {
+  if (!singleSelectedFile || !singleImageElement) return;
+
+  const btn = document.getElementById('btnScrubSingle');
+  const status = document.getElementById('statusSingle');
+  const dlBtn = document.getElementById('downloadBtnSingle');
+
+  btn.disabled = true;
+  status.innerText = "Sanitizing image in browser RAM...";
+  status.style.color = "#94a3b8";
+  dlBtn.style.display = "none";
+
+  try {
+    let targetMime = document.getElementById('outputFormat').value;
+    if (targetMime === 'keep') {
+      targetMime = singleSelectedFile.type || 'image/jpeg';
+    }
+    const quality = parseFloat(document.getElementById('outputQuality').value) / 100;
+
+    const cleanedBlob = await cleanImageWithCanvas(singleImageElement, targetMime, quality);
+
+    const origKb = (singleSelectedFile.size / 1024).toFixed(1);
+    const newKb = (cleanedBlob.size / 1024).toFixed(1);
+
+    let ext = '.jpg';
+    if (targetMime === 'image/png') ext = '.png';
+    else if (targetMime === 'image/webp') ext = '.webp';
+    const baseName = singleSelectedFile.name.replace(/\.[^/.]+$/, "");
+    const cleanFileName = `${baseName}_clean${ext}`;
+
+    dlBtn.href = URL.createObjectURL(cleanedBlob);
+    dlBtn.download = cleanFileName;
+    dlBtn.style.display = "inline-flex";
+
+    status.innerHTML = `<span style="color:#34d399; font-weight:600;">Sanitization complete!</span> All EXIF, GPS, and device markers removed. Size: ${origKb} KB &rarr; ${newKb} KB.`;
+  } catch (err) {
+    status.innerText = "Error scrubbing image: " + err.message;
+    status.style.color = "#f87171";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// --- TAB 2: Batch Scrubber ---
+let batchFiles = [];
+
+setupDragAndDrop('batchDropZone', 'batchInput', (files) => {
+  const imgFiles = files.filter(f => f.type.startsWith('image/'));
+  if (imgFiles.length > 0) {
+    batchFiles = batchFiles.concat(imgFiles);
+    document.getElementById('batchInput').value = '';
+    renderBatchList();
+  }
+});
+
+function clearBatchQueue() {
+  batchFiles = [];
+  document.getElementById('batchInput').value = '';
+  renderBatchList();
+  document.getElementById('statusBatch').innerText = '';
+  document.getElementById('downloadBtnBatch').style.display = 'none';
+}
+
+function removeBatchFile(index) {
+  batchFiles.splice(index, 1);
+  renderBatchList();
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderBatchList() {
+  const header = document.getElementById('batchQueueHeader');
+  const countSpan = document.getElementById('batchQueueCount');
+  const list = document.getElementById('batchFileList');
+  const actionArea = document.getElementById('batchActionArea');
+
+  list.innerHTML = '';
+
+  if (batchFiles.length === 0) {
+    header.style.display = 'none';
+    actionArea.style.display = 'none';
+    return;
+  }
+
+  header.style.display = 'flex';
+  countSpan.innerText = `${batchFiles.length} photo${batchFiles.length > 1 ? 's' : ''} in queue`;
+  actionArea.style.display = 'block';
+
+  batchFiles.forEach((file, index) => {
+    const li = document.createElement('li');
+    li.className = 'batch-item';
+    li.innerHTML = `
+      <div class="batch-item-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span class="batch-item-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+        <span style="font-size:0.8rem; color:#64748b; flex-shrink:0;">(${(file.size / 1024).toFixed(1)} KB)</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="btn-item-delete" onclick="removeBatchFile(${index})" title="Remove photo" aria-label="Remove photo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>`;
+    list.appendChild(li);
+  });
+}
+
+async function scrubBatchPhotos() {
+  if (batchFiles.length === 0) return;
+
+  const btn = document.getElementById('btnScrubBatch');
+  const status = document.getElementById('statusBatch');
+  const dlBtn = document.getElementById('downloadBtnBatch');
+
+  btn.disabled = true;
+  status.style.color = "#94a3b8";
+  dlBtn.style.display = "none";
+
+  try {
+    const zip = new JSZip();
+
+    for (let i = 0; i < batchFiles.length; i++) {
+      const file = batchFiles[i];
+      status.innerText = `Sanitizing photo ${i + 1} of ${batchFiles.length}: ${file.name}...`;
+
+      const img = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const mime = file.type || 'image/jpeg';
+      const cleanBlob = await cleanImageWithCanvas(img, mime, 0.95);
+
+      let ext = '.jpg';
+      if (mime === 'image/png') ext = '.png';
+      else if (mime === 'image/webp') ext = '.webp';
+      const base = file.name.replace(/\.[^/.]+$/, "");
+      zip.file(`${base}_clean${ext}`, cleanBlob);
+    }
+
+    status.innerText = "Compressing sanitized photos into ZIP...";
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+    dlBtn.href = URL.createObjectURL(zipBlob);
+    dlBtn.download = "Tangent_Cleaned_Photos.zip";
+    dlBtn.style.display = "inline-flex";
+
+    status.innerHTML = `<span style="color:#34d399; font-weight:600;">Batch sanitization complete!</span> Cleaned ${batchFiles.length} photo(s). All GPS and EXIF data stripped.`;
+  } catch (err) {
+    status.innerText = "Error in batch processing: " + err.message;
+    status.style.color = "#f87171";
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>

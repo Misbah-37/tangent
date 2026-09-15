@@ -1,0 +1,1107 @@
+<!-- --- HEAD_META --- -->
+<title>QR Code Generator | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/qr-generator.html">
+<meta name="description" content="Generate customizable, high-resolution QR codes offline in your browser. URL, Wi-Fi, and contact vCard support with instant PNG and SVG export.">
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="QR Code Generator | Tangent">
+<meta property="og:description" content="Create high-resolution QR codes offline with zero server tracking. Instant PNG/SVG downloads and Wi-Fi presets.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do these QR codes expire?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, they never expire. The QR codes generated here are static, meaning your text, URL, or Wi-Fi credentials are mathematically embedded directly into the matrix pattern. They work permanently without reliance on third-party redirection servers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my data stored or tracked?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The QR Code Generator executes 100% client-side in your web browser using JavaScript. No URLs, Wi-Fi passwords, or contact info are ever sent across the network."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the Wi-Fi QR code work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It uses the universal standard WIFI: syntax recognized natively by iOS and Android cameras. When guests scan the code, their phone prompts them to join the Wi-Fi network instantly without typing the password."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- QRious Library for Client-Side QR Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+
+
+<!-- Favicon & Touch Icons -->
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+:root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --danger: #ef4444;
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --success-border: rgba(16, 185, 129, 0.35);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+    /* --- Global Navigation & Dropdown --- */
+  .global-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background-color: rgba(8, 9, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #1a1f2e;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #00d2ff;
+  }
+
+  /* Toolkit Toggle Button in Navbar */
+  .toolkit-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .toolkit-toggle-btn:hover,
+  body.sidebar-open .toolkit-toggle-btn {
+    color: #ffffff;
+    background-color: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+  }
+
+  .toolkit-toggle-btn .sidebar-icon {
+    color: #00d2ff;
+    transition: transform 0.2s ease;
+  }
+
+  body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-item:hover .item-title,
+  
+
+  
+
+  /* App Canvas Push (Desktop) */
+  .app-canvas {
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (min-width: 961px) {
+    body.sidebar-open .app-canvas {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+    }
+  }
+
+  /* Mobile Overlay Mode */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
+  @media (max-width: 960px) {
+    
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+    .global-nav {
+      padding: 14px 20px;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 16px 20px 24px 20px !important;
+      gap: 14px !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0 !important;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .nav-links.open, .nav-links.active {
+      display: flex !important;
+    }
+    .nav-link {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: var(--accent);
+  }
+
+  /* --- Hero Header --- */
+  .clean-header {
+    text-align: center;
+    padding: 56px 20px 24px 20px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .clean-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+  }
+
+  .clean-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 auto;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  /* --- Tool Container & Split Layout --- */
+  .app-container {
+    max-width: 960px;
+    margin: 24px auto 80px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .tool-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .split-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  /* --- Mode Selector Pills --- */
+  .mode-selector {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-card-inner);
+    padding: 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  .mode-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .mode-btn:hover {
+    color: #ffffff;
+  }
+
+  .mode-btn.active {
+    background: #171b26;
+    color: var(--accent);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* --- Form Inputs --- */
+  .input-group {
+    margin-bottom: 18px;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+  }
+
+  textarea, input[type="text"], input[type="password"], select {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: var(--bg-card-inner);
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  textarea:focus, input[type="text"]:focus, input[type="password"]:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  /* Color Pickers & Presets */
+  .color-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .color-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  input[type="color"] {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type="color"]::-webkit-color-swatch { border-radius: 6px; border: 1px solid var(--border-color); }
+
+  .color-hex {
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: var(--text-muted);
+  }
+
+  .palette-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .palette-chip {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+  }
+
+  .palette-chip:hover {
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  /* --- Output Preview Section --- */
+  .output-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 28px 20px;
+    min-height: 340px;
+  }
+
+  .canvas-wrapper {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  canvas {
+    display: block;
+    max-width: 240px;
+    max-height: 240px;
+    width: 100%;
+    height: auto;
+  }
+
+  .placeholder-info {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    text-align: center;
+    line-height: 1.6;
+    padding: 30px 10px;
+  }
+
+  /* Export Button Group */
+  .export-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btn-accent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+    min-height: 44px;
+    touch-action: manipulation;
+    padding: 12px 20px;
+    width: 100%;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+    box-shadow: 0 0 18px rgba(0, 210, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: #171b26;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: none;
+  }
+
+  /* --- SEO & Educational Content --- */
+  .seo-article {
+    width: 100%;
+    margin: 40px auto 20px auto;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 0.98rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
+  }
+
+  .seo-article h2, .seo-article h3 {
+    color: #ffffff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .seo-article h2 { font-size: 1.5rem; }
+  .seo-article h3 { font-size: 1.2rem; }
+  .seo-article ul { padding-left: 20px; }
+  .seo-article li { margin-bottom: 10px; }
+
+  .faq-box { margin-bottom: 14px; }
+  details {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: 600;
+    transition: border-color 0.2s ease;
+  }
+  details:hover {
+    border-color: rgba(0, 210, 255, 0.3);
+  }
+  details summary { outline: none; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  .faq-box p {
+    margin: 14px 0 0 0;
+    font-size: 0.93rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* --- Global Footer --- */
+  .global-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    background-color: var(--bg-page);
+    margin-top: 60px;
+  }
+
+  .global-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    margin: 0 12px;
+  }
+
+  .global-footer a:hover {
+    color: var(--accent);
+  }
+
+  /* --- Mobile Responsive Layout --- */
+  @media (max-width: 860px) {
+    .global-nav {
+      padding: 16px 20px;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 24px;
+      gap: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0;
+    }
+
+    .nav-links.active, .nav-links.open {
+      display: flex !important;
+    }
+
+    .nav-links a {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-links a:last-child {
+      border-bottom: none;
+    }
+
+    .split-layout {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .tool-panel {
+      padding: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    100% CLIENT-SIDE PRIVACY SHIELD
+  </div>
+  <h1>QR Generator.</h1>
+  <p>Create, customize, and download high-resolution QR codes locally in your browser. Complete support for URLs, Wi-Fi networks, and contact cards with zero tracking.</p>
+</div>
+
+<div class="app-container">
+  
+  <div class="tool-panel">
+    
+    <!-- Type Mode Selector -->
+    <div class="mode-selector">
+      <button type="button" class="mode-btn active" onclick="setMode('url')" id="mode-url">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        URL / Link
+      </button>
+      <button type="button" class="mode-btn" onclick="setMode('wifi')" id="mode-wifi">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+          <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+          <line x1="12" y1="20" x2="12.01" y2="20"></line>
+        </svg>
+        Wi-Fi Login
+      </button>
+      <button type="button" class="mode-btn" onclick="setMode('vcard')" id="mode-vcard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Contact Card
+      </button>
+      <button type="button" class="mode-btn" onclick="setMode('text')" id="mode-text">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="21" y1="6" x2="3" y2="6"></line>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+          <line x1="21" y1="18" x2="7" y2="18"></line>
+        </svg>
+        Plain Text
+      </button>
+    </div>
+
+    <div class="split-layout">
+      <!-- Input Configuration -->
+      <div class="input-section">
+        
+        <!-- URL Mode -->
+        <div id="fields-url" class="mode-fields">
+          <div class="input-group">
+            <label for="urlInput">Target URL</label>
+            <input type="text" id="urlInput" placeholder="https://example.com" value="https://misbah-37.github.io/tangent/">
+          </div>
+        </div>
+
+        <!-- Wi-Fi Mode -->
+        <div id="fields-wifi" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="wifiSsid">Network Name (SSID)</label>
+            <input type="text" id="wifiSsid" placeholder="Home or Office Wi-Fi">
+          </div>
+          <div class="input-group">
+            <label for="wifiPassword">Password</label>
+            <input type="text" id="wifiPassword" placeholder="Network password">
+          </div>
+          <div class="input-group">
+            <label for="wifiEncryption">Security Type</label>
+            <select id="wifiEncryption">
+              <option value="WPA">WPA / WPA2 / WPA3 (Standard)</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">None (Open Network)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- vCard Mode -->
+        <div id="fields-vcard" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="vcardName">Full Name</label>
+            <input type="text" id="vcardName" placeholder="Alex Rivera">
+          </div>
+          <div class="input-group">
+            <label for="vcardPhone">Phone Number</label>
+            <input type="text" id="vcardPhone" placeholder="+1 (555) 019-2834">
+          </div>
+          <div class="input-group">
+            <label for="vcardEmail">Email Address</label>
+            <input type="text" id="vcardEmail" placeholder="alex@example.com">
+          </div>
+        </div>
+
+        <!-- Plain Text Mode -->
+        <div id="fields-text" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="rawTextInput">Plain Text or Note</label>
+            <textarea id="rawTextInput" placeholder="Enter any text, instructions, or keys to encode..."></textarea>
+          </div>
+        </div>
+
+        <!-- Colors & Palettes -->
+        <div class="color-controls">
+          <div class="color-group">
+            <label>QR Foreground</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="fgColor" value="#000000">
+              <span class="color-hex" id="fgHex">#000000</span>
+            </div>
+          </div>
+          <div class="color-group">
+            <label>Background</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="bgColor" value="#FFFFFF">
+              <span class="color-hex" id="bgHex">#FFFFFF</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color Palette Quick Chips -->
+        <div class="palette-chips">
+          <button type="button" class="palette-chip" onclick="applyPalette('#000000', '#FFFFFF')">Monochrome</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#00d2ff', '#08090d')">Tangent Cyan</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#0f172a', '#f1f5f9')">Midnight</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#059669', '#FFFFFF')">Emerald</button>
+        </div>
+
+        <!-- Resolution Selector -->
+        <div class="input-group">
+          <label for="sizeSelect">Resolution</label>
+          <select id="sizeSelect" onchange="generateQR()">
+            <option value="300">Standard (300 × 300 px)</option>
+            <option value="600">High-Res Print (600 × 600 px)</option>
+            <option value="1200">Ultra HD (1200 × 1200 px)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- QR Code Output Preview -->
+      <div class="output-section">
+        <div class="canvas-wrapper">
+          <canvas id="qrCanvas"></canvas>
+        </div>
+        
+        <div class="export-group">
+          <button type="button" id="downloadPngBtn" class="btn-accent" onclick="downloadPNG()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download PNG
+          </button>
+          
+          <button type="button" id="copyImgBtn" class="btn-accent btn-secondary" onclick="copyQRImage()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copyBtnText">Copy to Clipboard</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Educational & SEO Content -->
+  <!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      </div>
+      <h3>Permanent Static QR Codes</h3>
+      <p>Direct matrix encoding means your QR codes never expire and require no intermediary URL redirection services or subscription fees.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+      </div>
+      <h3>One-Tap Wi-Fi & vCard Formats</h3>
+      <p>Create Wi-Fi login codes that connect guests instantly without typing passwords, plus digital business cards and geo-bookmarks.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      </div>
+      <h3>Vector SVG & High-DPI PNG</h3>
+      <p>Download infinite-resolution vector SVGs for print billboards, packaging, and t-shirts, or high-res PNGs for websites and menus.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Do these QR codes expire?</summary>
+      <p>No, they never expire. The QR codes generated here are static, meaning your text, URL, or Wi-Fi credentials are mathematically embedded directly into the matrix pattern. They work permanently without reliance on third-party redirection servers.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can the QR codes be scanned when printed on physical materials?</summary>
+      <p>Yes. With standard error correction (up to 30%), the generated QR codes scan reliably on business cards, menus, packaging, and outdoor banners.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Is my Wi-Fi password or personal info stored when generating?</summary>
+      <p>No. All QR matrix computation happens in your browser using local JavaScript. Your Wi-Fi network keys and contacts are never transmitted or logged.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script>
+  let activeMode = 'url';
+  const qrCanvas = document.getElementById('qrCanvas');
+  const fgColorInput = document.getElementById('fgColor');
+  const bgColorInput = document.getElementById('bgColor');
+  const sizeSelect = document.getElementById('sizeSelect');
+
+  // Initialize QRious instance
+  const qr = new QRious({
+    element: qrCanvas,
+    size: 600,
+    level: 'H' // High 30% error correction
+  });
+
+  function setMode(mode) {
+    activeMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`mode-${mode}`).classList.add('active');
+
+    document.querySelectorAll('.mode-fields').forEach(f => f.style.display = 'none');
+    document.getElementById(`fields-${mode}`).style.display = 'block';
+
+    generateQR();
+  }
+
+  function getPayload() {
+    if (activeMode === 'url') {
+      return document.getElementById('urlInput').value.trim() || 'https://misbah-37.github.io/tangent/';
+    } else if (activeMode === 'wifi') {
+      const ssid = document.getElementById('wifiSsid').value.trim();
+      const pass = document.getElementById('wifiPassword').value.trim();
+      const enc = document.getElementById('wifiEncryption').value;
+      if (!ssid) return 'WIFI:S:MyNetwork;T:WPA;P:Password;;';
+      return `WIFI:S:${ssid};T:${enc};P:${pass};;`;
+    } else if (activeMode === 'vcard') {
+      const name = document.getElementById('vcardName').value.trim() || 'Alex Rivera';
+      const phone = document.getElementById('vcardPhone').value.trim();
+      const email = document.getElementById('vcardEmail').value.trim();
+      return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+    } else {
+      return document.getElementById('rawTextInput').value.trim() || 'Tangent Client-Side Utilities';
+    }
+  }
+
+  function generateQR() {
+    const payload = getPayload();
+    const size = parseInt(sizeSelect.value) || 600;
+    const fg = fgColorInput.value;
+    const bg = bgColorInput.value;
+
+    document.getElementById('fgHex').textContent = fg.toUpperCase();
+    document.getElementById('bgHex').textContent = bg.toUpperCase();
+
+    qr.set({
+      value: payload,
+      size: size,
+      foreground: fg,
+      background: bg,
+      level: 'H'
+    });
+  }
+
+  function applyPalette(fg, bg) {
+    fgColorInput.value = fg;
+    bgColorInput.value = bg;
+    generateQR();
+  }
+
+  function downloadPNG() {
+    const link = document.createElement('a');
+    link.download = `Tangent_QR_${activeMode}.png`;
+    link.href = qrCanvas.toDataURL('image/png');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function copyQRImage() {
+    const btnText = document.getElementById('copyBtnText');
+    try {
+      qrCanvas.toBlob(async (blob) => {
+        const item = new ClipboardItem({ "image/png": blob });
+        await navigator.clipboard.write([item]);
+        btnText.textContent = "Copied to Clipboard!";
+        setTimeout(() => {
+          btnText.textContent = "Copy to Clipboard";
+        }, 2000);
+      });
+    } catch (err) {
+      console.warn("Direct clipboard copy failed:", err);
+      btnText.textContent = "Right-click QR to copy";
+      setTimeout(() => {
+        btnText.textContent = "Copy to Clipboard";
+      }, 2500);
+    }
+  }
+
+  // Real-time Event Listeners
+  ['urlInput', 'wifiSsid', 'wifiPassword', 'wifiEncryption', 'vcardName', 'vcardPhone', 'vcardEmail', 'rawTextInput'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', generateQR);
+      el.addEventListener('change', generateQR);
+    }
+  });
+
+  fgColorInput.addEventListener('input', generateQR);
+  bgColorInput.addEventListener('input', generateQR);
+
+  // Initial Generation
+  generateQR();
+</script>

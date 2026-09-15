@@ -1,0 +1,1793 @@
+<!-- --- HEAD_META --- -->
+<title>PDF Suite | Tangent</title>
+<meta name="description" content="Merge, split, extract pages, compress, and convert documents to and from PDF seamlessly. 100% offline, zero server uploads.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/pdf-converter.html">
+
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="PDF Suite | Tangent">
+<meta property="og:description" content="Merge, split, extract pages, compress, and convert documents to and from PDF seamlessly with zero bytes leaving your device.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Favicon & Touch Icons with Cache Buster -->
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is it safe to upload secure forms and bank statements here?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You aren't actually uploading anything. All the code that powers this PDF tool runs entirely within your web browser on your device using WebAssembly and client-side JavaScript. Your documents never travel across the internet or touch any external server."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why didn't my PDF compress very much?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because this tool runs in the browser, it focuses on structural compression—removing duplicate objects, unused fonts, and metadata without re-encoding and degrading your high-resolution images."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use the PDF Suite offline?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Once loaded, the page runs 100% offline in browser memory. You can disconnect your device from the internet and continue merging, splitting, and converting files without interruption."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Required PDF Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+/* Eliminate scrollbar layout jump across pages */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+  /* --- Clean Minimalist Resets --- */
+  * {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    background-color: #08090d;
+    color: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+    /* --- Global Navigation & Dropdown --- */
+  .global-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background-color: rgba(8, 9, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #1a1f2e;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #00d2ff;
+  }
+
+  /* Toolkit Toggle Button in Navbar */
+  .toolkit-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .toolkit-toggle-btn:hover,
+  body.sidebar-open .toolkit-toggle-btn {
+    color: #ffffff;
+    background-color: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+  }
+
+  .toolkit-toggle-btn .sidebar-icon {
+    color: #00d2ff;
+    transition: transform 0.2s ease;
+  }
+
+  body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-item:hover .item-title,
+  
+
+  
+
+  /* App Canvas Push (Desktop) */
+  .app-canvas {
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (min-width: 961px) {
+    body.sidebar-open .app-canvas {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+    }
+  }
+
+  /* Mobile Overlay Mode */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
+  @media (max-width: 960px) {
+    
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+    .global-nav {
+      padding: 14px 20px;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 16px 20px 24px 20px !important;
+      gap: 14px !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0 !important;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .nav-links.open, .nav-links.active {
+      display: flex !important;
+    }
+    .nav-link {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+    }
+  }
+
+  /* Menu Toggle Button (Mobile) */
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  @media (max-width: 960px) {
+    .global-nav {
+      padding: 16px 20px;
+      box-sizing: border-box;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 24px;
+      gap: 12px;
+      box-sizing: border-box;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0;
+    }
+    .nav-links.open {
+      display: flex !important;
+    }
+    .nav-links a {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-links a:last-child {
+      border-bottom: none;
+    }
+  }
+
+  /* --- Hero Header --- */
+  .clean-header {
+    text-align: center;
+    padding: 40px 20px 24px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 999px;
+    color: #00d2ff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .clean-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+    color: #ffffff;
+  }
+
+  .clean-header p {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 680px;
+  }
+
+  /* --- Modern Tabs Bar --- */
+  .tabs-wrapper {
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto 32px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .tabs-container {
+    display: flex;
+    background: #11141d;
+    border: 1px solid #1f2533;
+    border-radius: 12px;
+    padding: 6px;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    flex: 1 1 auto;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .tab-btn.active {
+    background: #202636;
+    color: #00d2ff;
+    border-color: rgba(0, 210, 255, 0.35);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* --- Tool Workspace Container --- */
+  .tool-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+  }
+
+  .tab-content { 
+    display: none; 
+    width: 100%; 
+    max-width: 780px; 
+    margin: 0 auto; 
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  
+  .tab-content.active { 
+    display: block; 
+  }
+
+  .tool-container {
+    background-color: #11141d;
+    border: 1px solid #1f2533;
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .tool-container h3 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    color: #ffffff;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tool-desc {
+    color: #94a3b8;
+    font-size: 0.92rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  label { 
+    display: block; 
+    font-size: 0.88rem; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    color: #cbd5e1; 
+  }
+
+  /* --- Modern Drag & Drop Upload Zone --- */
+  .upload-box {
+    background: #0b0d13;
+    border: 2px dashed rgba(0, 210, 255, 0.35);
+    border-radius: 16px;
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 20px;
+  }
+
+  .upload-box:hover, .upload-box.dragover {
+    border-color: #00d2ff;
+    background: rgba(0, 210, 255, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    color: #00d2ff;
+  }
+
+  .upload-box-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #f1f5f9;
+  }
+
+  .upload-box-sub {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+  }
+
+  .upload-btn-pill {
+    display: inline-block;
+    background: #202636;
+    border: 1px solid #2f384d;
+    color: #f1f5f9;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    pointer-events: none;
+    transition: all 0.2s;
+  }
+
+  .upload-box:hover .upload-btn-pill {
+    background: #00d2ff;
+    color: #08090d;
+    border-color: #00d2ff;
+  }
+
+  /* --- Active Single-File Card --- */
+  .active-file-card {
+    background: #0b0d13;
+    border: 1px solid #1f2533;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .active-file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .active-file-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .active-file-meta {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  .btn-remove-file {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .btn-remove-file:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #f87171;
+  }
+
+  /* --- Queue Header & Sortable List --- */
+  .queue-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+
+  .queue-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00d2ff;
+  }
+
+  .btn-clear-queue {
+    background: transparent;
+    border: 1px solid #2f384d;
+    color: #94a3b8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn-clear-queue:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+  }
+
+  ul.sortable-list { 
+    padding: 0; 
+    margin: 0 0 24px 0; 
+    list-style: none; 
+  }
+  
+  .sortable-item {
+    background: #0b0d13; 
+    border: 1px solid #1f2533; 
+    padding: 12px 16px;
+    margin-top: 8px; 
+    border-radius: 8px; 
+    color: #e2e8f0;
+    font-size: 0.92rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  
+  .sortable-item:hover {
+    border-color: rgba(0, 210, 255, 0.3);
+  }
+
+  .item-name {
+    flex: 1 1 auto; 
+    min-width: 0; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  
+  .item-actions { 
+    flex: 0 0 auto; 
+    display: flex; 
+    gap: 6px; 
+  }
+  
+  .icon-btn {
+    width: 32px; 
+    height: 32px; 
+    flex: 0 0 auto;
+    background: #171b26; 
+    color: #cbd5e1; 
+    border: 1px solid #283245;
+    border-radius: 6px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .icon-btn:hover:not(:disabled) { 
+    background: #222a3a; 
+    border-color: #00d2ff;
+    color: #00d2ff; 
+  }
+
+  .icon-btn-delete:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #f87171;
+  }
+  
+  .icon-btn:disabled { 
+    opacity: 0.3; 
+    cursor: not-allowed; 
+  }
+
+  /* Options Form Controls */
+  input[type="text"], select { 
+    width: 100%; 
+    padding: 12px 16px; 
+    background-color: #0b0d13; 
+    color: #ffffff; 
+    border: 1px solid #1f2533; 
+    border-radius: 8px; 
+    box-sizing: border-box; 
+    margin-bottom: 20px; 
+    font-family: inherit;
+    font-size: 0.95rem; 
+    transition: border-color 0.2s;
+  }
+  
+  input[type="text"]:focus, select:focus { 
+    outline: none; 
+    border-color: #00d2ff; 
+    box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.3);
+  }
+
+  .options-row { 
+    display: flex; 
+    gap: 16px; 
+    margin-bottom: 8px; 
+  }
+  .options-col { flex: 1; min-width: 0; }
+
+  /* --- Action Buttons (100% Emoji-Free) --- */
+  .btn-accent {
+    background: #00d2ff;
+    color: #08090d;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-accent:hover {
+    background: #33ddff;
+    box-shadow: 0 4px 16px rgba(0, 210, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .download-btn { 
+    display: none; 
+    background-color: #ffffff; 
+    color: #08090d;
+    text-align: center; 
+    text-decoration: none; 
+    padding: 14px 28px; 
+    border-radius: 10px; 
+    font-weight: 700; 
+    margin-top: 16px; 
+    transition: all 0.2s;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .download-btn:hover { 
+    background-color: #e2e8f0; 
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+  }
+  
+  .status-text { 
+    text-align: center; 
+    margin-top: 14px; 
+    font-size: 0.92rem; 
+    font-weight: 600; 
+    color: #94a3b8; 
+  }
+
+  /* --- SEO & Educational Section --- */
+  .seo-article {
+    width: 100%;
+    max-width: 780px;
+    margin: 40px auto 20px auto;
+    color: #94a3b8;
+    line-height: 1.7;
+    font-size: 0.98rem;
+    border-top: 1px solid #1f2533;
+    padding-top: 40px;
+  }
+  
+  .seo-article h2, .seo-article h3 {
+    color: #ffffff;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .seo-article h2 { font-size: 1.4rem; font-weight: 800; }
+  .seo-article h3 { font-size: 1.1rem; font-weight: 700; }
+  .seo-article ul { padding-left: 20px; }
+  .seo-article li { margin-bottom: 10px; }
+  
+  .faq-box { margin-bottom: 16px; }
+  .faq-box details {
+    background-color: #11141d;
+    border: 1px solid #1f2533;
+    border-radius: 12px;
+    padding: 18px 24px;
+    cursor: pointer;
+  }
+  
+  .faq-box summary {
+    font-weight: 600;
+    color: #ffffff;
+    outline: none;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq-box summary::-webkit-details-marker { display: none; }
+  
+  .faq-box p {
+    margin: 14px 0 0 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+
+  /* Global Footer */
+  .global-footer {
+    border-top: 1px solid #1f2533;
+    padding: 40px 24px;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.88rem;
+  }
+  .global-footer a {
+    color: #94a3b8;
+    text-decoration: none;
+    margin: 0 12px;
+    transition: color 0.2s;
+  }
+  .global-footer a:hover { color: #00d2ff; }
+
+  @media (max-width: 640px) {
+    .clean-header h1 { font-size: 2rem; }
+    .tool-container { padding: 24px 18px; }
+    .options-row { flex-direction: column; gap: 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<!-- Hero Header -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>PDF Suite</h1>
+  <p>Merge, split, extract, and compress PDF documents securely in your browser RAM. 100% offline execution with zero server uploads.</p>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tabs-wrapper">
+  <div class="tabs-container">
+    <button type="button" class="tab-btn active" onclick="switchTab(event, 'tab-img2pdf')">
+      <span>Images to PDF</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-merge')">
+      <span>Merge PDFs</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-split')">
+      <span>Split / Extract</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-compress')">
+      <span>Compress PDF</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-extract')">
+      <span>Extract Text</span>
+    </button>
+  </div>
+</div>
+
+<div class="tool-wrapper">
+
+  <!-- TAB 1: IMAGES TO PDF -->
+  <div id="tab-img2pdf" class="tab-content active">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>Images to Standardized PDF</span>
+        </h3>
+        <p class="tool-desc">Convert JPG, PNG, and WebP images into a standardized document. Reorder pages prior to compilation.</p>
+        
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="img-drop-zone" onclick="document.getElementById('imgInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your images here or click to browse</div>
+          <div class="upload-box-sub">Supports PNG, JPG, WebP • 100% private in-browser execution</div>
+          <div class="upload-btn-pill">Select Images</div>
+          <input type="file" id="imgInput" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;">
+        </div>
+
+        <!-- Queue Header & Sortable List -->
+        <div class="queue-header" id="img-queue-header" style="display:none;">
+          <span class="queue-count" id="img-queue-count">0 images in queue</span>
+          <button type="button" class="btn-clear-queue" onclick="clearImgQueue()" title="Clear all images">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear Queue</span>
+          </button>
+        </div>
+        <ul id="sortable-image-list" class="sortable-list"></ul>
+        
+        <div class="options-row">
+            <div class="options-col">
+                <label>Page Size</label>
+                <select id="pageSize">
+                    <option value="a4">A4 (Standard)</option>
+                    <option value="letter">US Letter</option>
+                    <option value="fit">Fit to Image</option>
+                </select>
+            </div>
+            <div class="options-col">
+                <label>Orientation</label>
+                <select id="orientation">
+                    <option value="auto">Auto Detect</option>
+                    <option value="p">Portrait</option>
+                    <option value="l">Landscape</option>
+                </select>
+            </div>
+            <div class="options-col">
+                <label>Margins</label>
+                <select id="margins">
+                    <option value="28">Small (10mm)</option>
+                    <option value="0">None (Bleed)</option>
+                    <option value="56">Medium (20mm)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button type="button" class="btn-accent" onclick="convertImages()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          <span>Compile PDF</span>
+        </button>
+        <div id="status1" class="status-text"></div>
+        <a id="downloadBtn1" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Compiled PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 2: MERGE PDFS -->
+  <div id="tab-merge" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg>
+          <span>Merge Multiple PDFs</span>
+        </h3>
+        <p class="tool-desc">Combine 2 or more PDF documents into a single consolidated file in the exact order you choose.</p>
+        
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="merge-drop-zone" onclick="document.getElementById('mergeInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF files here or click to browse</div>
+          <div class="upload-box-sub">Select 2 or more PDFs to combine • Runs 100% offline</div>
+          <div class="upload-btn-pill">Select PDF Files</div>
+          <input type="file" id="mergeInput" accept=".pdf" multiple style="display:none;">
+        </div>
+
+        <!-- Queue Header & Sortable List -->
+        <div class="queue-header" id="merge-queue-header" style="display:none;">
+          <span class="queue-count" id="merge-queue-count">0 files in queue</span>
+          <button type="button" class="btn-clear-queue" onclick="clearMergeQueue()" title="Clear all files">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear Queue</span>
+          </button>
+        </div>
+        <ul id="sortable-file-list" class="sortable-list"></ul>
+        
+        <button type="button" class="btn-accent" onclick="mergePdfs()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          <span>Merge Documents</span>
+        </button>
+        <div id="status2" class="status-text"></div>
+        <a id="downloadBtn2" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Merged PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 3: SPLIT PDF -->
+  <div id="tab-split" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+          <span>Extract Pages</span>
+        </h3>
+        <p class="tool-desc">Extract specific sheets or custom page ranges into a brand new standalone document.</p>
+        
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="split-drop-zone" onclick="document.getElementById('splitInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Runs 100% offline inside your browser RAM</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="splitInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="split-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="split-file-name">document.pdf</div>
+              <div class="active-file-meta" id="split-file-meta">Detecting pages...</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetSplitFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+
+        <label for="rangeInput">Pages to extract (e.g., 1, 3-5, 8):</label>
+        <input type="text" id="rangeInput" placeholder="e.g. 1-3">
+        
+        <button type="button" class="btn-accent" onclick="splitPdf()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg>
+          <span>Extract Pages</span>
+        </button>
+        <div id="status3" class="status-text"></div>
+        <a id="downloadBtn3" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Extracted PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 4: COMPRESS PDF -->
+  <div id="tab-compress" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span>Compress & Optimize PDF</span>
+        </h3>
+        <p class="tool-desc">Strips out invisible bloat, deleted objects, and excess metadata while preserving visual clarity.</p>
+        
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="compress-drop-zone" onclick="document.getElementById('compressInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Reduces file size without degrading text • Runs 100% offline</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="compressInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="compress-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="compress-file-name">document.pdf</div>
+              <div class="active-file-meta" id="compress-file-meta">Detecting size...</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetCompressFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+        
+        <button type="button" class="btn-accent" onclick="compressPdf()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span>Compress File</span>
+        </button>
+        <div id="status5" class="status-text"></div>
+        <a id="downloadBtn5" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Compressed PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 5: EXTRACT TEXT -->
+  <div id="tab-extract" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Extract Raw Text</span>
+        </h3>
+        <p class="tool-desc">Extract all textual contents from your PDF document without formatting artifacts.</p>
+        
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="extract-drop-zone" onclick="document.getElementById('textInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Parses entire document into plain text • Runs 100% offline</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="textInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="extract-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="extract-file-name">document.pdf</div>
+              <div class="active-file-meta" id="extract-file-meta">Ready to read</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetExtractFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+        
+        <button type="button" class="btn-accent" onclick="extractText()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          <span>Read Text</span>
+        </button>
+        <div id="status4" class="status-text"></div>
+        <textarea id="outputArea" style="display:none; width:100%; height:220px; background:#0b0d13; color:#e2e8f0; border:1px solid #1f2533; border-radius:10px; margin-top:1.5rem; padding:16px; font-family:ui-monospace, monospace; box-sizing:border-box; line-height: 1.6;" readonly></textarea>
+        <a id="downloadBtn4" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Text File (.txt)</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- SEO & Educational Content -->
+  <!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+      </div>
+      <h3>In-Browser PDF Assembly</h3>
+      <p>Merge contracts, split specific page ranges, and rotate pages using client-side WebAssembly with zero network latency.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      </div>
+      <h3>Lossless Page Rasterization</h3>
+      <p>Convert individual PDF pages into high-resolution PNG or JPG images at 2x Retina density directly inside local memory.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h3>Confidential Document Isolation</h3>
+      <p>Tax filings, bank statements, and legal agreements are parsed exclusively in browser RAM and destroyed when you close the tab.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Is it safe to upload secure forms and bank statements here?</summary>
+      <p>You aren't actually 'uploading' anything. All the code that powers this PDF tool is downloaded to your browser the moment you visit the page. When you select a file, processing happens directly in your computer's memory. No data is transmitted over the internet.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can I merge password-protected PDFs?</summary>
+      <p>Encrypted PDFs require decryption before assembly. If your PDF has an open password, unlock it before merging. Permissions-locked documents can be processed directly.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>What happens to my PDF files when I close the tab?</summary>
+      <p>All memory buffers allocated for your PDF are freed immediately by the browser's garbage collector. Zero files are retained on disk or cached on remote servers.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script>
+// --- Navigation Toggle (Mobile) ---
+// --- Tab Switching Logic ---
+function switchTab(evt, tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+
+// Escapes a filename before dropping it into innerHTML
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Helper: Wire Drag and Drop on an upload-box
+function setupDragAndDrop(boxId, inputId, onFiles) {
+    const box = document.getElementById(boxId);
+    const input = document.getElementById(inputId);
+    if (!box || !input) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        box.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            box.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        box.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            box.classList.remove('dragover');
+        });
+    });
+
+    box.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 0) onFiles(files);
+    });
+
+    input.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) onFiles(files);
+    });
+}
+
+// SVG Icons for List Actions (100% Emoji Free)
+const SVG_UP = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+const SVG_DOWN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+const SVG_DELETE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+// --- TAB 1: Images to PDF Logic ---
+let imgSelectedFiles = [];
+const imgUploader = document.getElementById('imgInput');
+const imgListContainer = document.getElementById('sortable-image-list');
+const imgQueueHeader = document.getElementById('img-queue-header');
+const imgQueueCount = document.getElementById('img-queue-count');
+
+setupDragAndDrop('img-drop-zone', 'imgInput', (files) => {
+    imgSelectedFiles = imgSelectedFiles.concat(files);
+    imgUploader.value = '';
+    renderImgList();
+});
+
+function clearImgQueue() {
+    imgSelectedFiles = [];
+    imgUploader.value = '';
+    renderImgList();
+    document.getElementById('status1').innerText = '';
+    document.getElementById('downloadBtn1').style.display = 'none';
+}
+
+function renderImgList() {
+    imgListContainer.innerHTML = '';
+    if (imgSelectedFiles.length > 0) {
+        imgQueueHeader.style.display = 'flex';
+        imgQueueCount.innerText = `${imgSelectedFiles.length} image${imgSelectedFiles.length > 1 ? 's' : ''} in queue`;
+    } else {
+        imgQueueHeader.style.display = 'none';
+    }
+
+    imgSelectedFiles.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.className = 'sortable-item';
+        li.dataset.index = index;
+        const isFirst = index === 0;
+        const isLast = index === imgSelectedFiles.length - 1;
+        li.innerHTML = `
+            <span class="item-name">${escapeHtml(file.name)}</span>
+            <span class="item-actions">
+                <button type="button" class="icon-btn" data-action="up" title="Move up" aria-label="Move up" ${isFirst ? 'disabled' : ''}>${SVG_UP}</button>
+                <button type="button" class="icon-btn" data-action="down" title="Move down" aria-label="Move down" ${isLast ? 'disabled' : ''}>${SVG_DOWN}</button>
+                <button type="button" class="icon-btn icon-btn-delete" data-action="remove" title="Remove" aria-label="Remove">${SVG_DELETE}</button>
+            </span>`;
+        imgListContainer.appendChild(li);
+    });
+}
+
+imgListContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.icon-btn');
+    if (!btn || btn.disabled) return;
+    const index = +btn.closest('.sortable-item').dataset.index;
+    const action = btn.dataset.action;
+    if (action === 'up' && index > 0) {
+        [imgSelectedFiles[index - 1], imgSelectedFiles[index]] = [imgSelectedFiles[index], imgSelectedFiles[index - 1]];
+    } else if (action === 'down' && index < imgSelectedFiles.length - 1) {
+        [imgSelectedFiles[index + 1], imgSelectedFiles[index]] = [imgSelectedFiles[index], imgSelectedFiles[index + 1]];
+    } else if (action === 'remove') {
+        imgSelectedFiles.splice(index, 1);
+    }
+    renderImgList();
+});
+
+const loadImage = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => resolve({ img, dataUrl: e.target.result, type: file.type });
+        img.onerror = reject;
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+async function convertImages() {
+    const files = imgSelectedFiles;
+    const status = document.getElementById('status1');
+    const btn = document.getElementById('downloadBtn1');
+    const pageSize = document.getElementById('pageSize').value;
+    const orientPref = document.getElementById('orientation').value;
+    const margin = parseInt(document.getElementById('margins').value);
+    
+    if (files.length === 0) { alert('Please select at least one image.'); return; }
+    
+    status.innerText = "Processing images...";
+    btn.style.display = "none";
+    
+    try {
+        const { jsPDF } = window.jspdf;
+        let pdf = null;
+        const sizes = { 'a4': [595.28, 841.89], 'letter': [612, 792] };
+        
+        for (let i = 0; i < files.length; i++) {
+            status.innerText = `Processing image ${i + 1} of ${files.length}...`;
+            const { img, dataUrl, type } = await loadImage(files[i]);
+            
+            let isLand = false;
+            if (orientPref === 'auto') isLand = img.width > img.height;
+            else if (orientPref === 'l') isLand = true;
+            
+            let format = sizes[pageSize];
+            let finalW, finalH;
+            
+            if (pageSize === 'fit') {
+                format = [img.width, img.height];
+                isLand = img.width > img.height;
+                finalW = img.width;
+                finalH = img.height;
+            } else {
+                const baseW = isLand ? format[1] : format[0];
+                const baseH = isLand ? format[0] : format[1];
+                format = [baseW, baseH];
+                
+                const availW = baseW - (margin * 2);
+                const availH = baseH - (margin * 2);
+                const imgAspect = img.width / img.height;
+                const targetAspect = availW / availH;
+                
+                if (imgAspect > targetAspect) {
+                    finalW = availW;
+                    finalH = availW / imgAspect;
+                } else {
+                    finalH = availH;
+                    finalW = availH * imgAspect;
+                }
+            }
+            
+            const orientation = isLand ? 'l' : 'p';
+            if (i === 0) {
+                pdf = new jsPDF({ orientation: orientation, unit: 'pt', format: format });
+            } else {
+                pdf.addPage(format, orientation);
+            }
+            
+            let x = pageSize === 'fit' ? 0 : margin + ((format[0] - (margin * 2) - finalW) / 2);
+            let y = pageSize === 'fit' ? 0 : margin + ((format[1] - (margin * 2) - finalH) / 2);
+            
+            const imgType = type === 'image/png' ? 'PNG' : (type === 'image/webp' ? 'WEBP' : 'JPEG');
+            pdf.addImage(dataUrl, imgType, x, y, finalW, finalH);
+        }
+        
+        // Zero metadata injection
+        pdf.setProperties({ title: '', subject: '', author: '', keywords: '', creator: '' });
+
+        const pdfBlob = pdf.output('blob');
+        btn.href = URL.createObjectURL(pdfBlob);
+        btn.download = "Tangent_Compiled_Images.pdf";
+        btn.style.display = "inline-flex";
+        status.innerText = `Successfully compiled ${files.length} image(s) into PDF.`;
+        status.style.color = "#34d399";
+    } catch (e) {
+        status.innerText = "Error: " + e.message;
+        status.style.color = "#f87171";
+    }
+}
+
+// --- TAB 2: Merge PDFs Logic ---
+let mergeSelectedFiles = [];
+const mergeUploader = document.getElementById('mergeInput');
+const mergeListContainer = document.getElementById('sortable-file-list');
+const mergeQueueHeader = document.getElementById('merge-queue-header');
+const mergeQueueCount = document.getElementById('merge-queue-count');
+
+setupDragAndDrop('merge-drop-zone', 'mergeInput', (files) => {
+    mergeSelectedFiles = mergeSelectedFiles.concat(files.filter(f => f.name.toLowerCase().endsWith('.pdf')));
+    mergeUploader.value = '';
+    renderMergeList();
+});
+
+function clearMergeQueue() {
+    mergeSelectedFiles = [];
+    mergeUploader.value = '';
+    renderMergeList();
+    document.getElementById('status2').innerText = '';
+    document.getElementById('downloadBtn2').style.display = 'none';
+}
+
+function renderMergeList() {
+    mergeListContainer.innerHTML = '';
+    if (mergeSelectedFiles.length > 0) {
+        mergeQueueHeader.style.display = 'flex';
+        mergeQueueCount.innerText = `${mergeSelectedFiles.length} file${mergeSelectedFiles.length > 1 ? 's' : ''} in queue`;
+    } else {
+        mergeQueueHeader.style.display = 'none';
+    }
+
+    mergeSelectedFiles.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.className = 'sortable-item';
+        li.dataset.index = index;
+        const isFirst = index === 0;
+        const isLast = index === mergeSelectedFiles.length - 1;
+        li.innerHTML = `
+            <span class="item-name">${escapeHtml(file.name)}</span>
+            <span class="item-actions">
+                <button type="button" class="icon-btn" data-action="up" title="Move up" aria-label="Move up" ${isFirst ? 'disabled' : ''}>${SVG_UP}</button>
+                <button type="button" class="icon-btn" data-action="down" title="Move down" aria-label="Move down" ${isLast ? 'disabled' : ''}>${SVG_DOWN}</button>
+                <button type="button" class="icon-btn icon-btn-delete" data-action="remove" title="Remove" aria-label="Remove">${SVG_DELETE}</button>
+            </span>`;
+        mergeListContainer.appendChild(li);
+    });
+}
+
+mergeListContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.icon-btn');
+    if (!btn || btn.disabled) return;
+    const index = +btn.closest('.sortable-item').dataset.index;
+    const action = btn.dataset.action;
+    if (action === 'up' && index > 0) {
+        [mergeSelectedFiles[index - 1], mergeSelectedFiles[index]] = [mergeSelectedFiles[index], mergeSelectedFiles[index - 1]];
+    } else if (action === 'down' && index < mergeSelectedFiles.length - 1) {
+        [mergeSelectedFiles[index + 1], mergeSelectedFiles[index]] = [mergeSelectedFiles[index], mergeSelectedFiles[index + 1]];
+    } else if (action === 'remove') {
+        mergeSelectedFiles.splice(index, 1);
+    }
+    renderMergeList();
+});
+
+async function mergePdfs() {
+    const status = document.getElementById('status2');
+    const btn = document.getElementById('downloadBtn2');
+    
+    if (mergeSelectedFiles.length < 2) { alert('Please select at least 2 PDF files to merge.'); return; }
+    
+    status.innerText = "Merging documents in browser RAM...";
+    btn.style.display = "none";
+    
+    try {
+        const mergedPdf = await PDFLib.PDFDocument.create();
+        for (let i = 0; i < mergeSelectedFiles.length; i++) {
+            status.innerText = `Merging document ${i + 1} of ${mergeSelectedFiles.length}...`;
+            const arrayBuffer = await mergeSelectedFiles[i].arrayBuffer();
+            const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            copiedPages.forEach((page) => mergedPdf.addPage(page));
+        }
+        
+        // Zero metadata leak: delete Info, Metadata, and PieceInfo
+        delete mergedPdf.context.trailerInfo.Info;
+        try { mergedPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
+        try { mergedPdf.catalog.delete(PDFLib.PDFName.of('PieceInfo')); } catch (_) {}
+
+        const pdfBytes = await mergedPdf.save({ updateMetadata: false, useObjectStreams: false });
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        btn.href = URL.createObjectURL(blob);
+        btn.download = "Tangent_Merged.pdf";
+        btn.style.display = "inline-flex";
+        status.innerText = `Successfully merged ${mergeSelectedFiles.length} documents.`;
+        status.style.color = "#34d399";
+    } catch (e) {
+        status.innerText = "Error: " + e.message;
+        status.style.color = "#f87171";
+    }
+}
+
+// --- TAB 3: Split PDF Logic ---
+let splitSelectedFile = null;
+
+setupDragAndDrop('split-drop-zone', 'splitInput', async (files) => {
+    const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
+    if (!f) return;
+    splitSelectedFile = f;
+    
+    document.getElementById('split-drop-zone').style.display = 'none';
+    const card = document.getElementById('split-file-card');
+    card.style.display = 'flex';
+    document.getElementById('split-file-name').innerText = f.name;
+    document.getElementById('split-file-meta').innerText = `${(f.size / 1024).toFixed(1)} KB`;
+    
+    try {
+        const buf = await f.arrayBuffer();
+        const doc = await PDFLib.PDFDocument.load(buf);
+        document.getElementById('split-file-meta').innerText = `${doc.getPageCount()} pages • ${(f.size / 1024).toFixed(1)} KB`;
+    } catch (_) {}
+});
+
+function resetSplitFile() {
+    splitSelectedFile = null;
+    document.getElementById('splitInput').value = '';
+    document.getElementById('split-file-card').style.display = 'none';
+    document.getElementById('split-drop-zone').style.display = 'block';
+    document.getElementById('status3').innerText = '';
+    document.getElementById('downloadBtn3').style.display = 'none';
+}
+
+async function splitPdf() {
+    const file = splitSelectedFile;
+    const rangeStr = document.getElementById('rangeInput').value;
+    const status = document.getElementById('status3');
+    const btn = document.getElementById('downloadBtn3');
+    
+    if (!file) { alert('Please select a PDF file first.'); return; }
+    if (!rangeStr) { alert('Please enter a page range to extract (e.g. 1-3 or 1,4,7).'); return; }
+    
+    status.innerText = "Extracting pages in browser RAM...";
+    btn.style.display = "none";
+    
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const totalPages = pdf.getPageCount();
+        
+        let pagesToExtract = new Set();
+        const parts = rangeStr.split(',');
+        for (let part of parts) {
+            part = part.trim();
+            if (part.includes('-')) {
+                let [start, end] = part.split('-');
+                start = parseInt(start); end = parseInt(end);
+                for (let p = start; p <= end; p++) {
+                    if (p >= 1 && p <= totalPages) pagesToExtract.add(p - 1);
+                }
+            } else {
+                let p = parseInt(part);
+                if (p >= 1 && p <= totalPages) pagesToExtract.add(p - 1);
+            }
+        }
+        
+        if (pagesToExtract.size === 0) throw new Error(`No valid pages found in range. (Document has ${totalPages} pages)`);
+        
+        const newPdf = await PDFLib.PDFDocument.create();
+        const indices = Array.from(pagesToExtract).sort((a,b) => a-b);
+        const copiedPages = await newPdf.copyPages(pdf, indices);
+        copiedPages.forEach((page) => newPdf.addPage(page));
+        
+        // Zero metadata leak
+        delete newPdf.context.trailerInfo.Info;
+        try { newPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
+        try { newPdf.catalog.delete(PDFLib.PDFName.of('PieceInfo')); } catch (_) {}
+
+        const pdfBytes = await newPdf.save({ updateMetadata: false, useObjectStreams: false });
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        btn.href = URL.createObjectURL(blob);
+        btn.download = "Extracted_" + file.name;
+        btn.style.display = "inline-flex";
+        status.innerText = `Extracted ${indices.length} page(s) successfully.`;
+        status.style.color = "#34d399";
+    } catch (e) {
+        status.innerText = "Error: " + e.message;
+        status.style.color = "#f87171";
+    }
+}
+
+// --- TAB 4: Compress PDF Logic ---
+let compressSelectedFile = null;
+
+setupDragAndDrop('compress-drop-zone', 'compressInput', (files) => {
+    const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
+    if (!f) return;
+    compressSelectedFile = f;
+    
+    document.getElementById('compress-drop-zone').style.display = 'none';
+    const card = document.getElementById('compress-file-card');
+    card.style.display = 'flex';
+    document.getElementById('compress-file-name').innerText = f.name;
+    document.getElementById('compress-file-meta').innerText = `Current Size: ${(f.size / 1024).toFixed(1)} KB`;
+});
+
+function resetCompressFile() {
+    compressSelectedFile = null;
+    document.getElementById('compressInput').value = '';
+    document.getElementById('compress-file-card').style.display = 'none';
+    document.getElementById('compress-drop-zone').style.display = 'block';
+    document.getElementById('status5').innerText = '';
+    document.getElementById('downloadBtn5').style.display = 'none';
+}
+
+async function compressPdf() {
+    const file = compressSelectedFile;
+    const status = document.getElementById('status5');
+    const btn = document.getElementById('downloadBtn5');
+    
+    if (!file) { alert('Please select a PDF file to compress.'); return; }
+    
+    status.innerText = "Optimizing document structure...";
+    btn.style.display = "none";
+    
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const newPdf = await PDFLib.PDFDocument.create();
+        const copiedPages = await newPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => newPdf.addPage(page));
+        
+        // Zero metadata leak
+        delete newPdf.context.trailerInfo.Info;
+        try { newPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
+        try { newPdf.catalog.delete(PDFLib.PDFName.of('PieceInfo')); } catch (_) {}
+
+        const pdfBytes = await newPdf.save({ updateMetadata: false, useObjectStreams: true });
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        btn.href = URL.createObjectURL(blob);
+        btn.download = "Compressed_" + file.name;
+        btn.style.display = "inline-flex";
+        
+        const originalKB = (file.size / 1024).toFixed(1);
+        const newKB = (blob.size / 1024).toFixed(1);
+        
+        if (blob.size < file.size) {
+            status.innerText = `Compression successful: Reduced from ${originalKB} KB to ${newKB} KB.`;
+        } else {
+            status.innerText = `File processed. (Document was already structurally optimal: ${newKB} KB).`;
+        }
+        
+        status.style.color = "#34d399";
+    } catch (e) {
+        status.innerText = "Error: " + e.message;
+        status.style.color = "#f87171";
+    }
+}
+
+// --- TAB 5: Extract Text Logic ---
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+let extractSelectedFile = null;
+
+setupDragAndDrop('extract-drop-zone', 'textInput', (files) => {
+    const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
+    if (!f) return;
+    extractSelectedFile = f;
+    
+    document.getElementById('extract-drop-zone').style.display = 'none';
+    const card = document.getElementById('extract-file-card');
+    card.style.display = 'flex';
+    document.getElementById('extract-file-name').innerText = f.name;
+    document.getElementById('extract-file-meta').innerText = `${(f.size / 1024).toFixed(1)} KB • Ready to read`;
+});
+
+function resetExtractFile() {
+    extractSelectedFile = null;
+    document.getElementById('textInput').value = '';
+    document.getElementById('extract-file-card').style.display = 'none';
+    document.getElementById('extract-drop-zone').style.display = 'block';
+    document.getElementById('outputArea').style.display = 'none';
+    document.getElementById('status4').innerText = '';
+    document.getElementById('downloadBtn4').style.display = 'none';
+}
+
+async function extractText() {
+    const file = extractSelectedFile;
+    const status = document.getElementById('status4');
+    const textArea = document.getElementById('outputArea');
+    const btn = document.getElementById('downloadBtn4');
+    
+    if (!file) { alert('Please select a PDF file first.'); return; }
+    
+    status.innerText = "Reading document in browser memory...";
+    textArea.style.display = "none";
+    btn.style.display = "none";
+    
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({data: new Uint8Array(arrayBuffer)});
+        const pdf = await loadingTask.promise;
+        let fullText = "";
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+            status.innerText = `Extracting page ${i} of ${pdf.numPages}...`;
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(" ");
+            fullText += `=== PAGE ${i} ===\n${pageText}\n\n`;
+        }
+        
+        textArea.value = fullText;
+        textArea.style.display = "block";
+        
+        const blob = new Blob([fullText], { type: 'text/plain' });
+        btn.href = URL.createObjectURL(blob);
+        btn.download = file.name.replace(/\.pdf$/i, '') + '_extracted.txt';
+        btn.style.display = "inline-flex";
+        
+        status.innerText = `Successfully extracted text from ${pdf.numPages} page(s).`;
+        status.style.color = "#34d399";
+    } catch (e) {
+        status.innerText = "Error reading PDF: " + e.message;
+        status.style.color = "#f87171";
+    }
+}
+</script>

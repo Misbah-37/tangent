@@ -41,29 +41,41 @@ Most utility websites quietly upload your sensitive photos, contracts, and finan
 - **Features:** Merge multiple PDFs, split documents, extract page ranges, and perform structural compression.
 - **Engine:** Client-side execution using [`pdf-lib`](https://pdf-lib.js.org/) and [`pdf.js`](https://mozilla.github.io/pdf.js/). Your files never leave RAM.
 
-### 3. 📸 Photo EXIF & GPS Location Scrubber (`photo-scrubber.html`)
+### 3. 🔍 Client-Side Document OCR (`document-ocr.html`)
+- **Features:** Optical Character Recognition extracting text from images, photos, receipts, and multi-page scanned PDFs. Auto-contrast preprocessing, multi-language support, and side-by-side verification.
+- **Engine:** Client-side WebAssembly execution using [`Tesseract.js v5`](https://github.com/naptha/tesseract.js) and [`pdf.js`](https://mozilla.github.io/pdf.js/). 100% in-browser RAM.
+
+### 4. 🎥 Screen & Audio Recorder (`screen-recorder.html`)
+- **Features:** Full HD screen, app window, or tab recording with mixed microphone and system audio. No time limit, zero watermarks, and Safari MP4 fallback.
+- **Engine:** HTML5 `MediaRecorder` API and Web Audio API with hardware-accelerated VP9/WebM and H.264/MP4 encoding.
+
+### 5. 💻 Screenshot Beautifier & Mockup Studio (`mockup-generator.html`)
+- **Features:** Transform raw screenshots into production mockups with macOS/Windows frames, gradient backdrops, soft 3D shadows, and high-res 4K export with 4096px safety rail.
+- **Engine:** Client-side HTML5 Canvas 2D rasterizer with Retina 2x rendering.
+
+### 6. 📸 Photo EXIF & GPS Location Scrubber (`photo-scrubber.html`)
 - **Features:** Inspect hidden GPS coordinates, camera hardware serials, and timestamps. Strip all metadata via 100% in-browser Canvas re-encoding or batch clean multiple photos into a ZIP.
 - **Engine:** Client-side parsing using [`exif-js`](https://github.com/exif-js/exif-js) and [`JSZip`](https://stuk.github.io/jszip/). Zero bytes transmitted over the network.
 
-### 4. 🔐 Password Strength & Zero-Knowledge Breach Meter (`password-meter.html`)
+### 7. 🔐 Password Strength & Zero-Knowledge Breach Meter (`password-meter.html`)
 - **Features:** Mathematical k-Anonymity breach checking against billions of compromised records (the password never leaves local RAM), realistic entropy and crack time calculations, and multi-word diceware passphrase generator.
 - **Engine:** [`zxcvbn`](https://github.com/dropbox/zxcvbn), native Web Crypto API (`SHA-1` & `CSPRNG`), and HaveIBeenPwned range API.
 
-### 5. 📁 File Organizer (`file-organizer.html`)
+### 8. 📁 File Organizer (`file-organizer.html`)
 - **Features:** In-browser folder organizer using the HTML5 File System Access API / JSZip, plus a native standalone Windows utility that sorts cluttered directories into 12 distinct categories in seconds.
 - **Compiled with Nuitka:** Direct C-binary compilation with minimal heuristic profile.
 - **Integrity (SHA-256):** `d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18`
 - **VirusTotal:** [Verified Clean Report](https://www.virustotal.com/gui/file/d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18)
 
-### 6. 🖼️ Photo Resizer & Compressor (`photo-resizer.html`)
+### 9. 🖼️ Photo Resizer & Compressor (`photo-resizer.html`)
 - **Features:** Scale dimensions, Cropper.js aspect ratio presets (Passport, Square, Social Banner, A4), iterative binary search KB compressor, and convert image formats (JPEG, PNG, WebP) in real time.
 - **Engine:** Hardware-accelerated HTML5 Canvas 2D rasterization.
 
-### 7. 📱 QR Code Generator (`qr-generator.html`)
+### 10. 📱 QR Code Generator (`qr-generator.html`)
 - **Features:** Generate high-density, error-corrected QR codes for URLs, Wi-Fi networks, and contact cards with custom colors and instant PNG downloads.
 - **Engine:** Lightweight client-side QR generation engine.
 
-### 8. ⌨️ Typing Speed Test (`typing-test.html`)
+### 11. ⌨️ Typing Speed Test (`typing-test.html`)
 - **Features:** Clean, distraction-free typing benchmark with real-time WPM, accuracy calculation, error highlighting, and difficulty tiers.
 - **Privacy:** Best scores saved locally via `localStorage`.
 
@@ -93,19 +105,19 @@ Open `http://localhost:8000` in your browser.
 
 ---
 
-## 🛠️ Tool Suite Automation CLI
+## 🏗️ Static Site Generator (SSG) & Master Shell Architecture
 
-Tangent includes a zero-dependency Python tool manager (`scripts/manage_tools.py`) to keep sidebars, homepage cards, and sitemaps in sync, and scaffold new tools in seconds:
+Tangent uses a lightweight, zero-dependency Python template compiler (`build.py`) with a single master shell (`templates/shell.html`):
+- **Single Source of Truth**: The global navigation, push-sidebar, and 2-line footer are defined once in `templates/shell.html`.
+- **Modular Tool Fragments**: Tool workspaces, styles, and scripts live cleanly in `src/tools/` without repetitive boilerplate.
+- **Zero-Flicker Static Output**: Running `python build.py` compiles pure static HTML files with 0ms Cumulative Layout Shift (CLS) and 100% crawlable SEO markup.
 
 ```bash
-# List all registered tools
+# Compile all 13 HTML pages, regenerate sitemap, and run the 9-check pre-flight audit
+python build.py
+
+# Manage tools (list, sync, scaffold new tools)
 python scripts/manage_tools.py list
-
-# Synchronize sidebars, homepage grid, and sitemap across all pages
-python scripts/manage_tools.py sync
-
-# Scaffold a new tool instantly from template and sync the entire site
-python scripts/manage_tools.py new audio-converter --title "Audio Converter" --category "Media & Video"
 ```
 
 ---

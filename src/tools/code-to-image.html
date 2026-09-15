@@ -1,0 +1,861 @@
+<!-- --- HEAD_META --- -->
+<title>Code-to-Image & Developer Snippet Studio | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/code-to-image.html">
+<meta name="description" content="Generate beautiful, presentation-ready code snippets with customizable gradient backgrounds, macOS window chrome, and syntax themes. 100% client-side privacy.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Code-to-Image & Developer Snippet Studio | Tangent">
+<meta property="og:description" content="Turn code snippets into high-resolution screenshots with custom gradients, window chrome, and syntax highlighting in your browser.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- PrismJS for Syntax Highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is my proprietary code uploaded to any third-party server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Code-to-Image Studio operates 100% locally inside your browser memory using HTML5 Canvas and client-side rendering. Your code, proprietary algorithms, and tokens are never uploaded or tracked."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I export high-resolution (Retina) images?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The export engine natively renders the snippet at 2x Retina resolution onto an HTML5 Canvas, ensuring crisp typography and razor-sharp gradients for slides, documentation, and social media."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I copy the generated screenshot directly to my clipboard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Simply click 'Copy Image' to copy the formatted PNG directly into your operating system clipboard for pasting into Slack, Notion, Discord, or Figma."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+  :root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .studio-layout {
+    max-width: 1560px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* Control Panel */
+  .control-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .panel-section {
+    margin-bottom: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1a2233;
+  }
+
+  .panel-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+  }
+
+  .field-label span.value-hint {
+    color: var(--text-dim);
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+  }
+
+  .custom-input, .custom-select {
+    width: 100%;
+    background: #0b0e14;
+    border: 1px solid #242c3d;
+    color: #fff;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .custom-input:focus, .custom-select:focus {
+    border-color: var(--accent);
+  }
+
+  /* Gradient Palette Selector */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .palette-btn {
+    width: 100%;
+    height: 36px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .palette-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .palette-btn.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+  }
+
+  /* Action Buttons */
+  .action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #08090d;
+  }
+
+  .btn-primary:hover {
+    background: #33dcff;
+    box-shadow: 0 0 18px rgba(0, 210, 255, 0.4);
+  }
+
+  .btn-secondary {
+    background: #19202f;
+    border: 1px solid #2b364d;
+    color: #f1f5f9;
+  }
+
+  .btn-secondary:hover {
+    background: #232c40;
+    border-color: var(--accent);
+  }
+
+  /* Stage & Card Canvas Preview */
+  .canvas-stage-wrapper {
+    background: #0a0d14;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 48px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 680px;
+    overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .snippet-card {
+    border-radius: 16px;
+    padding: 48px;
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    transition: padding 0.2s ease, width 0.2s ease;
+    display: inline-flex;
+    justify-content: center;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .window-container {
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 20px 68px rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    width: 640px;
+    min-width: 520px;
+    max-width: 1000px;
+    box-sizing: border-box;
+    transition: width 0.2s ease;
+  }
+
+  .window-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: #181818;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    user-select: none;
+  }
+
+  .window-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+
+  .window-title {
+    font-size: 13px;
+    color: #94a3b8;
+    font-family: ui-monospace, monospace;
+    font-weight: 500;
+    outline: none;
+    border: 1px dashed transparent;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .window-title:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+
+  .window-spacer {
+    width: 52px;
+  }
+
+  /* Code Content Area */
+  .code-body-wrapper {
+    display: flex;
+    padding: 22px 24px;
+    background: #1e1e1e;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .line-numbers {
+    display: flex;
+    flex-direction: column;
+    padding-right: 18px;
+    margin-right: 14px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    color: #52525b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    user-select: none;
+    text-align: right;
+  }
+
+  .code-input-area {
+    flex: 1;
+    width: 100%;
+    min-width: 420px;
+    background: transparent;
+    border: none;
+    color: #e4e4e7;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    outline: none;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    overflow: hidden; /* No scrollbars inside the code card! Auto-expands height! */
+    resize: none;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  /* Hidden Canvas for High-Res PNG Generation */
+  #renderCanvas {
+    display: none;
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 960px) {
+    .studio-layout {
+      grid-template-columns: 1fr;
+    }
+    .window-container {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+    .code-input-area {
+      min-width: 100% !important;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>Code-to-Image Studio.</h1>
+  <p>Turn source code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, macOS window chrome, and syntax themes.</p>
+</div>
+
+<div class="studio-layout">
+  
+  <!-- Left Controls Column -->
+  <div class="control-panel">
+    
+    <div class="panel-section">
+      <div class="section-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+        Canvas Aesthetics
+      </div>
+      
+      <div class="form-group">
+        <div class="field-label">Background Backdrop</div>
+        <div class="palette-grid">
+          <button type="button" class="palette-btn active" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);" data-gradient="linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)" title="Hyper Cyan"></button>
+          <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);" data-gradient="linear-gradient(135deg, #f12711 0%, #f5af19 100%)" title="Sunset Glow"></button>
+          <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%);" data-gradient="linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%)" title="Midnight Neon"></button>
+          <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);" data-gradient="linear-gradient(135deg, #11998e 0%, #38ef7d 100%)" title="Deep Emerald"></button>
+          <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #141e30 0%, #243b55 100%);" data-gradient="linear-gradient(135deg, #141e30 0%, #243b55 100%)" title="Slate Minimal"></button>
+          <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);" data-gradient="linear-gradient(135deg, #654ea3 0%, #eaafc8 100%)" title="Lavender Mist"></button>
+          <button type="button" class="palette-btn" style="background: #08090d;" data-gradient="#08090d" title="Onyx Dark"></button>
+          <button type="button" class="palette-btn" style="background: transparent; border: 1px dashed #64748b;" data-gradient="transparent" title="Transparent"></button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="field-label">
+          <span>Canvas Padding</span>
+          <span class="value-hint" id="paddingVal">48px</span>
+        </div>
+        <input type="range" id="paddingSlider" min="16" max="80" step="8" value="48" style="width: 100%; accent-color: #00d2ff;">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg>
+        Window & Typography
+      </div>
+
+      <div class="form-group">
+        <div class="field-label">File Tab / Title</div>
+        <input type="text" id="fileNameInput" class="custom-input" value="stream_pipeline.rs">
+      </div>
+
+      <div class="form-group">
+        <div class="field-label">Window Width</div>
+        <select id="widthSelect" class="custom-select">
+          <option value="640px" selected>Comfortable (640px)</option>
+          <option value="760px">Spacious (760px)</option>
+          <option value="880px">Wide (880px)</option>
+          <option value="100%">Full Stage Width (100%)</option>
+          <option value="auto">Auto-Fit Content</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="field-label">Window Chrome</div>
+        <select id="chromeSelect" class="custom-select">
+          <option value="mac">macOS Traffic Lights</option>
+          <option value="windows">Windows Style</option>
+          <option value="minimal">Minimal Header</option>
+          <option value="none">Borderless (No Header)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="field-label">
+          <span>Font Size</span>
+          <span class="value-hint" id="fontSizeVal">14px</span>
+        </div>
+        <input type="range" id="fontSizeSlider" min="12" max="20" step="1" value="14" style="width: 100%; accent-color: #00d2ff;">
+      </div>
+
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+        <label for="lineNumbersToggle" style="font-size: 13px; font-weight: 600; color: #cbd5e1; cursor: pointer;">Show Line Numbers</label>
+        <input type="checkbox" id="lineNumbersToggle" checked style="width: 18px; height: 18px; accent-color: #00d2ff; cursor: pointer;">
+      </div>
+    </div>
+
+    <!-- Export Actions -->
+    <div class="action-stack">
+      <button type="button" class="btn-action btn-primary" id="downloadPngBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download PNG (2x Retina)
+      </button>
+      <button type="button" class="btn-action btn-secondary" id="copyPngBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span id="copyBtnText">Copy Image to Clipboard</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Right Canvas Preview Stage -->
+  <div class="canvas-stage-wrapper">
+    <div class="snippet-card" id="snippetCard">
+      <div class="window-container" id="windowContainer">
+        
+        <div class="window-header" id="windowHeader">
+          <div class="window-controls" id="windowControls">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="window-title" id="windowTitleDisplay" contenteditable="true" spellcheck="false">stream_pipeline.rs</div>
+          <div class="window-spacer" id="windowSpacer"></div>
+        </div>
+
+        <div class="code-body-wrapper">
+          <div class="line-numbers" id="lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
+          <textarea id="codeEditor" class="code-input-area" spellcheck="false">// Async streaming telemetry parser
+pub async fn process_metrics<S>(mut stream: S) -> Result<Summary, Error> 
+where 
+    S: Stream<Item = Bytes> + Unpin,
+{
+    let mut total_packets = 0;
+    while let Some(chunk) = stream.next().await {
+        let frame = Frame::decode(chunk)?;
+        total_packets += frame.count();
+    }
+    Ok(Summary::new(total_packets))
+}</textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Hidden Canvas used for high-DPI rasterization -->
+<canvas id="renderCanvas"></canvas>
+
+<!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h3>Zero Outbound Code</h3>
+      <p>Your confidential code snippets, API tokens, and internal algorithms are rendered 100% locally in browser memory with zero external requests.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      </div>
+      <h3>2x Retina Vector Sharpness</h3>
+      <p>Rendered at double device pixel ratio with sub-pixel font anti-aliasing. Produces razor-sharp typography for slides, documentation, and social posts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </div>
+      <h3>Native Clipboard Pipeline</h3>
+      <p>Copies high-resolution binary PNGs directly into your operating system clipboard for instant pasting into Slack, Notion, Discord, or Figma.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Is my proprietary code uploaded to any third-party server?</summary>
+      <p>No. Code-to-Image Studio operates 100% locally inside your browser memory using HTML5 Canvas and client-side rendering. Your code, proprietary algorithms, and tokens are never uploaded or tracked.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>How do I export high-resolution (Retina) images?</summary>
+      <p>The export engine natively renders the snippet at 2x Retina resolution onto an HTML5 Canvas, ensuring crisp typography and razor-sharp gradients for slides, documentation, and social media.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can I copy the generated screenshot directly to my clipboard?</summary>
+      <p>Yes. Simply click 'Copy Image to Clipboard' to write the high-resolution PNG directly into your operating system clipboard for instant pasting into Slack, Notion, Discord, or Figma.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script>
+  const snippetCard = document.getElementById('snippetCard');
+  const windowContainer = document.getElementById('windowContainer');
+  const windowHeader = document.getElementById('windowHeader');
+  const windowControls = document.getElementById('windowControls');
+  const windowTitleDisplay = document.getElementById('windowTitleDisplay');
+  const fileNameInput = document.getElementById('fileNameInput');
+  const chromeSelect = document.getElementById('chromeSelect');
+  const widthSelect = document.getElementById('widthSelect');
+  const paddingSlider = document.getElementById('paddingSlider');
+  const paddingVal = document.getElementById('paddingVal');
+  const fontSizeSlider = document.getElementById('fontSizeSlider');
+  const fontSizeVal = document.getElementById('fontSizeVal');
+  const lineNumbersToggle = document.getElementById('lineNumbersToggle');
+  const lineNumbers = document.getElementById('lineNumbers');
+  const codeEditor = document.getElementById('codeEditor');
+  const downloadPngBtn = document.getElementById('downloadPngBtn');
+  const copyPngBtn = document.getElementById('copyPngBtn');
+  const copyBtnText = document.getElementById('copyBtnText');
+  const renderCanvas = document.getElementById('renderCanvas');
+  const paletteBtns = document.querySelectorAll('.palette-btn');
+
+  let activeGradient = "linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)";
+
+  // Palette Selector
+  paletteBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      paletteBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeGradient = btn.dataset.gradient;
+      if (activeGradient === 'transparent') {
+        snippetCard.style.background = 'repeating-conic-gradient(#1a202c 0% 25%, #111827 0% 50%) 50% / 16px 16px';
+      } else {
+        snippetCard.style.background = activeGradient;
+      }
+    });
+  });
+
+  // Padding
+  paddingSlider.addEventListener('input', (e) => {
+    const val = e.target.value + 'px';
+    paddingVal.textContent = val;
+    snippetCard.style.padding = val;
+  });
+
+  // Width selector
+  widthSelect.addEventListener('change', (e) => {
+    const mode = e.target.value;
+    if (mode === 'auto') {
+      windowContainer.style.width = 'auto';
+      windowContainer.style.minWidth = '520px';
+    } else {
+      windowContainer.style.width = mode;
+      windowContainer.style.minWidth = mode;
+    }
+    syncEditorDimensions();
+  });
+
+  // Font Size
+  fontSizeSlider.addEventListener('input', (e) => {
+    const val = e.target.value + 'px';
+    fontSizeVal.textContent = val;
+    codeEditor.style.fontSize = val;
+    lineNumbers.style.fontSize = val;
+    syncEditorDimensions();
+  });
+
+  // Filename Sync
+  fileNameInput.addEventListener('input', (e) => {
+    windowTitleDisplay.textContent = e.target.value || 'untitled';
+  });
+  windowTitleDisplay.addEventListener('input', (e) => {
+    fileNameInput.value = windowTitleDisplay.textContent;
+  });
+
+  // Window Chrome Selector
+  chromeSelect.addEventListener('change', (e) => {
+    const mode = e.target.value;
+    if (mode === 'none') {
+      windowHeader.style.display = 'none';
+    } else {
+      windowHeader.style.display = 'flex';
+      if (mode === 'mac') {
+        windowControls.innerHTML = '<span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>';
+      } else if (mode === 'windows') {
+        windowControls.innerHTML = '<span style="color:#94a3b8; font-size:11px; font-family:monospace;">&#x2014; &#x25A1; &#x2715;</span>';
+      } else if (mode === 'minimal') {
+        windowControls.innerHTML = '';
+      }
+    }
+  });
+
+  // Auto-resize editor and line numbers with zero scrollbars
+  function syncEditorDimensions() {
+    const lines = codeEditor.value.split('\n');
+    let numbersHtml = '';
+    for (let i = 1; i <= lines.length; i++) {
+      numbersHtml += i + '<br>';
+    }
+    lineNumbers.innerHTML = numbersHtml;
+
+    // Reset height then set to scrollHeight to fit all content cleanly
+    codeEditor.style.height = 'auto';
+    codeEditor.style.height = (codeEditor.scrollHeight) + 'px';
+  }
+
+  codeEditor.addEventListener('input', syncEditorDimensions);
+
+  // Line Numbers Toggle
+  lineNumbersToggle.addEventListener('change', (e) => {
+    lineNumbers.style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  // Tab key handler in textarea
+  codeEditor.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = codeEditor.selectionStart;
+      const end = codeEditor.selectionEnd;
+      codeEditor.value = codeEditor.value.substring(0, start) + '    ' + codeEditor.value.substring(end);
+      codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+      syncEditorDimensions();
+    }
+  });
+
+  // High-Resolution 2x Rasterizer using Canvas
+  function generateCanvasBlob() {
+    return new Promise((resolve) => {
+      const scale = 2; // 2x Retina
+      const cardRect = snippetCard.getBoundingClientRect();
+      const width = Math.round(cardRect.width * scale);
+      const height = Math.round(cardRect.height * scale);
+
+      renderCanvas.width = width;
+      renderCanvas.height = height;
+      const ctx = renderCanvas.getContext('2d');
+      ctx.scale(scale, scale);
+
+      const svgXml = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${cardRect.width}" height="${cardRect.height}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml">
+              <style>
+                * { box-sizing: border-box; }
+                .snippet-card { border-radius: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: inline-flex; justify-content: center; }
+                .window-container { background: #1e1e1e; border-radius: 10px; box-shadow: 0 20px 68px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; width: ${windowContainer.offsetWidth}px; }
+                .window-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #181818; border-bottom: 1px solid rgba(255,255,255,0.06); }
+                .window-controls { display: flex; align-items: center; gap: 8px; }
+                .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+                .dot-red { background: #ff5f56; }
+                .dot-yellow { background: #ffbd2e; }
+                .dot-green { background: #27c93f; }
+                .window-title { font-size: 13px; color: #94a3b8; font-family: ui-monospace, monospace; }
+                .code-body-wrapper { display: flex; padding: 22px 24px; background: #1e1e1e; }
+                .line-numbers { padding-right: 18px; margin-right: 14px; border-right: 1px solid rgba(255,255,255,0.08); color: #52525b; font-size: ${fontSizeSlider.value}px; line-height: 1.65; text-align: right; }
+                pre { margin: 0; color: #e4e4e7; font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }
+              </style>
+              <div class="snippet-card" style="padding: ${paddingSlider.value}px; background: ${activeGradient === 'transparent' ? 'transparent' : activeGradient};">
+                <div class="window-container">
+                  ${windowHeader.style.display !== 'none' ? `
+                  <div class="window-header">
+                    <div class="window-controls">
+                      <span class="dot dot-red"></span>
+                      <span class="dot dot-yellow"></span>
+                      <span class="dot dot-green"></span>
+                    </div>
+                    <div class="window-title">${windowTitleDisplay.textContent}</div>
+                    <div style="width: 52px;"></div>
+                  </div>` : ''}
+                  <div class="code-body-wrapper">
+                    ${lineNumbersToggle.checked ? `<div class="line-numbers">${lineNumbers.innerHTML}</div>` : ''}
+                    <pre><code>${codeEditor.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </foreignObject>
+        </svg>
+      `;
+
+      const img = new Image();
+      const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        renderCanvas.toBlob(blob => {
+          resolve(blob);
+        }, 'image/png');
+      };
+      img.src = url;
+    });
+  }
+
+  // Download PNG Action
+  downloadPngBtn.addEventListener('click', async () => {
+    downloadPngBtn.disabled = true;
+    const blob = await generateCanvasBlob();
+    const link = document.createElement('a');
+    link.download = `${fileNameInput.value || 'code-snippet'}.png`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    downloadPngBtn.disabled = false;
+  });
+
+  // Copy PNG to Clipboard Action
+  copyPngBtn.addEventListener('click', async () => {
+    try {
+      copyBtnText.textContent = "Rendering...";
+      const blob = await generateCanvasBlob();
+      const item = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([item]);
+      copyBtnText.textContent = "Copied to Clipboard!";
+      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2000);
+    } catch (err) {
+      console.warn("Clipboard write failed:", err);
+      copyBtnText.textContent = "Right-click download instead";
+      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2500);
+    }
+  });
+
+  // Initialize
+  syncEditorDimensions();
+  window.addEventListener('load', syncEditorDimensions);
+</script>

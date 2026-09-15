@@ -1,0 +1,2361 @@
+<!-- --- HEAD_META --- -->
+<title>PDF Redactor & Metadata Scrubber | Tangent</title>
+  <meta name="description" content="Permanently black out sensitive text, account numbers, and signatures from PDFs with guaranteed visual burn-in flattening. 100% offline, zero server uploads.">
+  <meta name="keywords" content="pdf redactor, redact pdf online, black out text in pdf, remove pdf metadata, sanitize pdf, client side pdf editor, private pdf redactor">
+  
+  <!-- Canonical & Social Meta -->
+  <link rel="canonical" href="https://misbah-37.github.io/tangent/pdf-redactor.html">
+  <meta property="og:title" content="PDF Redactor & Metadata Scrubber | Tangent">
+  <meta property="og:description" content="Permanently black out sensitive information and strip hidden metadata with 0 bytes leaving your browser.">
+  <meta property="og:url" content="https://misbah-37.github.io/tangent/pdf-redactor.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+  <meta property="og:site_name" content="Tangent">
+  
+  <!-- Favicon & Icons -->
+  <!-- PDF Engine Libraries -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <!-- Google Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tangent PDF Redactor & Metadata Scrubber",
+    "url": "https://misbah-37.github.io/tangent/pdf-redactor.html",
+    "description": "Permanently black out sensitive text, account numbers, and signatures from PDFs with guaranteed visual burn-in flattening and metadata purging.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+/* Eliminate scrollbar layout jump across pages */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+    * { box-sizing: border-box; }
+    body, html {
+      margin: 0;
+      padding: 0;
+      background-color: #08090d;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+      /* --- Global Navigation & Dropdown --- */
+  .global-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background-color: rgba(8, 9, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #1a1f2e;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #00d2ff;
+  }
+
+  /* Toolkit Toggle Button in Navbar */
+  .toolkit-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .toolkit-toggle-btn:hover,
+  body.sidebar-open .toolkit-toggle-btn {
+    color: #ffffff;
+    background-color: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+  }
+
+  .toolkit-toggle-btn .sidebar-icon {
+    color: #00d2ff;
+    transition: transform 0.2s ease;
+  }
+
+  body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-item:hover .item-title,
+  
+
+  
+
+  /* App Canvas Push (Desktop) */
+  .app-canvas {
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (min-width: 961px) {
+    body.sidebar-open .app-canvas {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+    }
+  }
+
+  /* Mobile Overlay Mode */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
+  @media (max-width: 960px) {
+    
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+    .global-nav {
+      padding: 14px 20px;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 16px 20px 24px 20px !important;
+      gap: 14px !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0 !important;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .nav-links.open, .nav-links.active {
+      display: flex !important;
+    }
+    .nav-link {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+    }
+  }
+
+    /* Menu Toggle Button (Mobile Only) */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      padding: 8px;
+      margin-left: auto;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+    .menu-toggle:hover {
+      color: #00d2ff;
+    }
+
+    @media (max-width: 960px) {
+      .global-nav {
+        padding: 16px 20px;
+    box-sizing: border-box;
+  }
+      .menu-toggle {
+        display: flex;
+      }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(8, 9, 13, 0.98);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid #1f2533;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 24px;
+        gap: 12px;
+        box-sizing: border-box;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+        margin: 0;
+      }
+      .nav-links.open {
+        display: flex !important;
+      }
+      .nav-links a {
+        font-size: 1rem;
+        padding: 10px 0;
+        border-bottom: 1px solid #161a24;
+        width: 100%;
+        text-align: left;
+       white-space: nowrap;}
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 40px 20px 80px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      border-radius: 999px;
+      color: #00d2ff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 12px 0;
+      line-height: 1.2;
+    }
+
+    p.lead {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      max-width: 720px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Upload Box */
+    .upload-box {
+      background: #11141d;
+      border: 2px dashed rgba(0, 210, 255, 0.35);
+      border-radius: 20px;
+      padding: 50px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 32px;
+    }
+
+    .upload-box:hover, .upload-box.dragover {
+      border-color: #00d2ff;
+      background: rgba(0, 210, 255, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 16px;
+      color: #00d2ff;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: #00d2ff;
+      color: #08090d;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    /* Workspace */
+    .workspace {
+      display: none;
+      background: #11141d;
+      border: 1px solid #1f2533;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Control Toolbar */
+    .toolbar {
+      background: #171b26;
+      border-bottom: 1px solid #232a3b;
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      background: #2a3349;
+      border-color: #00d2ff;
+      color: #00d2ff;
+    }
+
+    .tool-btn.active {
+      background: rgba(0, 210, 255, 0.15);
+      border-color: #00d2ff;
+      color: #00d2ff;
+    }
+
+    .tool-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    .page-indicator {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      padding: 0 8px;
+    }
+
+    .zoom-indicator {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #00d2ff;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .zoom-indicator:hover {
+      background: rgba(0, 210, 255, 0.25);
+      border-color: #00d2ff;
+    }
+
+        .document-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .current-filename {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #94a3b8;
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .tool-btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+    }
+    .tool-btn-secondary:hover {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    .export-btn {
+      background: #00d2ff;
+      color: #08090d;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .export-btn:hover {
+      background: #4ae0ff;
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+    }
+
+    /* Metadata Inspection Box */
+    .metadata-panel {
+      padding: 14px 24px;
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid #1f2533;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 0.88rem;
+    }
+
+    .meta-summary {
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .meta-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .meta-badge.detected {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    .meta-badge.clean {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ade80;
+    }
+
+    .meta-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    /* Canvas Stage with Touch-Friendly High-Contrast Scrollbars */
+    .stage-container {
+      background: #0b0d13;
+      padding: 24px 24px 100px 24px;
+      min-height: 480px;
+      max-height: 75vh;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      scrollbar-color: #00d2ff #11141d;
+      scrollbar-width: auto;
+      box-sizing: border-box;
+    }
+
+    /* Stage Outer Wrapper: Pins floating HUD stably over the stage without scrolling */
+    .stage-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    /* Floating History HUD pinned permanently in top-right of editing stage */
+    .stage-floating-hud {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      z-index: 150;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(17, 20, 29, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      border-radius: 999px;
+      padding: 4px 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .stage-floating-hud:hover {
+      background: rgba(17, 20, 29, 0.95);
+      border-color: #00d2ff;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 210, 255, 0.25);
+    }
+
+    .hud-btn {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .hud-btn:hover:not(:disabled) {
+      background: #2a3349;
+      border-color: #00d2ff;
+      color: #00d2ff;
+      transform: translateY(-1px);
+    }
+
+    .hud-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .hud-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    /* Inner stage ensures centered layout when small, but expands positively when zoomed in with ZERO clipping */
+    .stage-inner {
+      display: inline-flex;
+      min-width: 100%;
+      min-height: 100%;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 40px;
+      box-sizing: border-box;
+    }
+
+    /* Desktop Scrollbars: 18px Comfortable Target */
+    .stage-container::-webkit-scrollbar {
+      width: 18px;
+      height: 18px;
+    }
+    .stage-container::-webkit-scrollbar-track {
+      background: #11141d;
+      border-radius: 8px;
+      border: 2px solid #0b0d13;
+    }
+    .stage-container::-webkit-scrollbar-thumb {
+      background: #2a3349;
+      border: 3px solid #11141d;
+      border-radius: 10px;
+      min-height: 48px;
+      min-width: 48px;
+    }
+    .stage-container::-webkit-scrollbar-thumb:hover,
+    .stage-container::-webkit-scrollbar-thumb:active {
+      background: #00d2ff;
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+    }
+
+    /* Floating Navigation Dock Wrapper (Guarantees Pixel-Perfect Centering on Mobile) */
+    .dock-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: -68px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 120;
+      pointer-events: none;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    .quick-nav-dock {
+      pointer-events: auto;
+      background: rgba(17, 20, 29, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 210, 255, 0.2);
+      max-width: 100%;
+      flex-wrap: nowrap;
+    }
+
+    .dock-mode-toggle {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid #00d2ff;
+      color: #00d2ff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .dock-mode-toggle.pan-active {
+      background: #00d2ff;
+      color: #08090d;
+      box-shadow: 0 0 14px rgba(0, 210, 255, 0.5);
+    }
+
+    .dock-divider {
+      width: 1px;
+      height: 20px;
+      background: #2f384d;
+    }
+
+    .dock-nudge-btn {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dock-nudge-btn:hover, .dock-nudge-btn:active {
+      background: #2a3349;
+      border-color: #00d2ff;
+      color: #00d2ff;
+      transform: scale(1.1);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      background: #ffffff;
+      border-radius: 4px;
+      line-height: 0;
+      user-select: none;
+      flex-shrink: 0;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    #pdf-canvas {
+      display: block;
+    }
+
+    .page-select {
+      background: #202636;
+      border: 1px solid #2f384d;
+      color: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .page-select:focus {
+      border-color: #00d2ff;
+    }
+
+    #draw-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Mobile Responsive Controls */
+    @media (max-width: 640px) {
+      .toolbar {
+        padding: 12px 14px;
+        gap: 10px;
+      }
+      .toolbar-group {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .export-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 0.84rem;
+        min-height: 42px;
+      }
+      .stage-container {
+        padding: 20px 20px 140px 20px;
+        min-height: 380px;
+        max-height: 70vh;
+      }
+      /* Extra-Thick 26px Touch Scrollbars on Mobile */
+      .stage-container::-webkit-scrollbar {
+        width: 26px;
+        height: 26px;
+      }
+      .stage-container::-webkit-scrollbar-track {
+        background: #151926;
+        border: 2px solid #08090d;
+        border-radius: 12px;
+      }
+      .stage-container::-webkit-scrollbar-thumb {
+        background: #00d2ff;
+        border: 4px solid #151926;
+        border-radius: 16px;
+        min-height: 56px;
+        min-width: 56px;
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+      }
+      .hint-bar {
+        font-size: 0.8rem;
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .metadata-panel {
+        padding: 12px 14px;
+      }
+    }
+
+    /* Instruction banner */
+    .hint-bar {
+      padding: 10px 24px;
+      background: rgba(0, 210, 255, 0.06);
+      border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+      color: #94a3b8;
+      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hint-bar span strong { color: #00d2ff; }
+
+    /* Progress overlay */
+    .progress-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 9, 13, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(0, 210, 255, 0.2);
+      border-top-color: #00d2ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Content & FAQs */
+    .info-section {
+      margin-top: 60px;
+      border-top: 1px solid #1f2533;
+      padding-top: 50px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    .feature-card {
+      background: #11141d;
+      border: 1px solid #1f2533;
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .feature-icon {
+      margin-bottom: 16px;
+      color: #00d2ff;
+      display: inline-flex;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin: 0 0 12px 0;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-card h3 span { color: #00d2ff; }
+    .feature-card p {
+      color: #94a3b8;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .faq-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .faq-box {
+      background: #11141d;
+      border: 1px solid #1f2533;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .faq-box summary {
+      padding: 18px 24px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.05rem;
+      color: #f1f5f9;
+      outline: none;
+      list-style: none;
+    }
+    .faq-box summary::-webkit-details-marker { display: none; }
+
+    .faq-box p {
+      padding: 0 24px 20px 24px;
+      margin: 0;
+      color: #94a3b8;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    .global-footer {
+      border-top: 1px solid #1f2533;
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .global-footer a {
+      color: #94a3b8;
+      text-decoration: none;
+      margin: 0 12px;
+    }
+    .global-footer a:hover { color: #00d2ff; }
+    
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="container">
+
+    <div class="hero">
+      <div class="badge-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+      </div>
+      <h1>PDF Redactor & Metadata Scrubber</h1>
+      <p class="lead">Permanently black out sensitive text, account numbers, and signatures. Strip hidden author, device, and GPS metadata. Guaranteed zero bytes leave your device.</p>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-box" id="drop-zone" onclick="document.getElementById('pdf-input').click()">
+      <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+      </svg>
+      <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">Drop your PDF here or click to browse</div>
+      <div style="color: #64748b; font-size: 0.9rem;">Runs 100% offline inside your browser RAM • Zero server uploads</div>
+      <div class="upload-btn">Select PDF Document</div>
+      <input type="file" id="pdf-input" accept="application/pdf" style="display: none;">
+    </div>
+
+    <!-- Redaction Workspace -->
+    <div class="workspace" id="workspace">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <!-- Document / File Actions -->
+        <div class="toolbar-group document-group">
+          <button type="button" class="tool-btn" id="open-doc-btn" onclick="openNewPdf()" title="Open another PDF document">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            <span>Open PDF</span>
+          </button>
+          <button type="button" class="tool-btn tool-btn-secondary" id="close-doc-btn" onclick="closeDocument()" title="Close current document and return to upload area">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Close</span>
+          </button>
+          <span class="current-filename" id="doc-filename-display" title="Current PDF filename">document.pdf</span>
+        </div>
+
+        <!-- Page Controls -->
+        <div class="toolbar-group">
+          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">Prev</button>
+          <select id="page-select" class="page-select" onchange="goToPage(parseInt(this.value))" title="Jump to page">
+            <option value="1">Page 1</option>
+          </select>
+          <span class="page-indicator" id="page-total-display">of 1</span>
+          <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next</button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="toolbar-group">
+          <button class="tool-btn" onclick="zoomPage(-0.2)" title="Zoom Out (Ctrl + Minus)">−</button>
+          <span class="zoom-indicator" id="zoom-display" onclick="resetZoom()" title="Click to Reset to 100%">150%</span>
+          <button class="tool-btn" onclick="zoomPage(0.2)" title="Zoom In (Ctrl + Plus)">+</button>
+          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">Fit</button>
+        </div>
+
+        <!-- Interaction Tool: Draw Box vs Move/Pan -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">Move / Pan</button>
+        </div>
+
+        <!-- Box Visual Style -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box">Solid Black</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text">"REDACTED" Stamp</button>
+        </div>
+
+        <!-- Edit & History -->
+        <div class="toolbar-group">
+          <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>Undo</button>
+          <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>Redo</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">Delete</button>
+          <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
+        </div>
+
+        <!-- Export -->
+        <div class="toolbar-group">
+          <button class="export-btn" id="export-btn" onclick="exportRedactedPdf()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Hint Bar -->
+      <div class="hint-bar">
+        <span><strong>Draw Box:</strong> Drag to draw, tap box to move/resize • <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
+        <span id="redaction-count-display">0 redactions on this page</span>
+      </div>
+
+      <!-- Metadata Inspector -->
+      <div class="metadata-panel">
+        <div class="meta-summary" id="meta-summary-text">
+          <span>Scanning document metadata...</span>
+        </div>
+        <label class="meta-toggle">
+          <input type="checkbox" id="purge-meta-checkbox" checked>
+          <span>Purge All Hidden Metadata on Export</span>
+        </label>
+      </div>
+
+      <!-- Canvas Stage with Pinned Floating History HUD -->
+      <div class="stage-wrapper">
+        <!-- Floating Stage History HUD (Permanently Pinned in Top-Right Corner) -->
+        <div class="stage-floating-hud">
+          <button type="button" class="hud-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
+            Undo
+          </button>
+          <button type="button" class="hud-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>
+            Redo
+          </button>
+        </div>
+
+        <div class="stage-container">
+          <div class="stage-inner">
+            <div class="canvas-wrapper" id="canvas-wrapper">
+              <canvas id="pdf-canvas"></canvas>
+              <canvas id="draw-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Quick-Action Navigation Dock -->
+      <div class="dock-wrapper">
+        <div class="quick-nav-dock" id="quick-nav-dock">
+          <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
+            <span id="dock-tool-text">Draw Box</span>
+          </button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, -200)" title="Scroll Up">▲</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, 200)" title="Scroll Down">▼</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(-200, 0)" title="Scroll Left">◄</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(200, 0)" title="Scroll Right">►</button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="scrollToBottom()" title="Jump straight to Bottom of Page">⤓</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Educational & Security Architecture Section -->
+    <div class="info-section">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3>True Burn-In Redaction</h3>
+          <p>Amateur tools simply place a black rectangle over text, allowing anyone to highlight and copy the secret text underneath. Tangent permanently flattens redactions into the image stream—making underlying text unrecoverable.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h3>Deep Metadata Scrubber</h3>
+          <p>PDFs quietly store author names, company IDs, software versions, and revision history in hidden XMP streams. Tangent purges these hidden tags completely before outputting your file.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <h3>Zero Outbound Bytes</h3>
+          <p>All parsing, rendering, and rebuilding happens entirely in your local browser sandbox via WebAssembly. Disconnect your Wi-Fi and the tool will continue working with zero interruptions.</p>
+        </div>
+      </div>
+
+      <div class="faq-title">Frequently Asked Questions</div>
+
+      <div class="faq-box">
+        <details>
+          <summary>Can someone remove the black boxes to see my redacted text?</summary>
+          <p><strong>No.</strong> Unlike standard PDF editors that merely place a graphic shape layer over live text, Tangent uses <em>raster burn-in flattening</em>. The text characters beneath the black box are permanently destroyed and replaced by solid black pixels in the rendered document stream. It is mathematically impossible to uncover.</p>
+        </details>
+      </div>
+
+      <div class="faq-box">
+        <details>
+          <summary>What hidden metadata gets wiped during export?</summary>
+          <p>When the "Purge Metadata" option is active, Tangent strips the Title, Author, Subject, Keywords, Creator application, PDF Producer, and both Creation and Modification timestamps, as well as unformatted XMP XML packets.</p>
+        </details>
+      </div>
+
+      <div class="faq-box">
+        <details>
+          <summary>Is it safe to redact bank statements and medical documents here?</summary>
+          <p>Yes. Your document never leaves your machine. The entire process runs locally in your device's memory using client-side JavaScript. No document is ever uploaded or cached on an external server.</p>
+        </details>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Progress Overlay -->
+  <div class="progress-overlay" id="progress-overlay">
+    <div class="spinner"></div>
+    <div id="progress-text" style="font-weight: 700; font-size: 1.15rem; color: #ffffff;">Flattening and burning redactions...</div>
+    <div id="progress-sub" style="font-size: 0.9rem; color: #94a3b8; margin-top: 8px;">Processing Page 1...</div>
+  </div>
+
+  <!-- Global Footer -->
+
+<!-- --- SCRIPTS --- -->
+<script>
+    // Setup PDF.js Worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    let pdfDoc = null;
+    let pdfRawBytes = null;
+    let pdfFileName = 'document.pdf';
+    let currentPageNum = 1;
+    let totalPages = 1;
+    let currentScale = 1.5;
+    let redactType = 'blackout'; // 'blackout' or 'stamp'
+    
+    // Store redactions in unscaled PDF points: pageNum -> array of { id, x, y, w, h, type }
+    let redactions = {};
+    let selectedBoxId = null;
+    let nextBoxId = 1;
+    let currentTool = 'redact'; // 'redact' or 'pan'
+
+    // Pan state
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let panScrollLeft = 0;
+    let panScrollTop = 0;
+
+    // Smooth GPU Pinch State
+    let initialPinchDistance = null;
+    let initialPinchScale = 1.0;
+    let currentPinchRatio = 1.0;
+
+    // History stack for Undo / Redo
+    let historyStack = [];
+    let historyIndex = -1;
+
+    // Interaction state
+    let interactionMode = null; // 'draw' | 'move' | 'resize'
+    let activeHandle = null;     // 'nw', 'ne', 'se', 'sw', 'n', 's', 'e', 'w'
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialBoxState = null;
+
+    // DOM Elements
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('pdf-input');
+    const workspace = document.getElementById('workspace');
+    const stageContainer = document.querySelector('.stage-container');
+    const pdfCanvas = document.getElementById('pdf-canvas');
+    const drawCanvas = document.getElementById('draw-canvas');
+    const pdfCtx = pdfCanvas.getContext('2d');
+    const drawCtx = drawCanvas.getContext('2d');
+    const pageNumDisplay = document.getElementById('page-num-display');
+    const zoomDisplay = document.getElementById('zoom-display');
+    const redactionCountDisplay = document.getElementById('redaction-count-display');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const undoBtn = document.getElementById('undo-btn');
+    const redoBtn = document.getElementById('redo-btn');
+    const deleteBtn = document.getElementById('delete-btn');
+    const progressOverlay = document.getElementById('progress-overlay');
+    const progressText = document.getElementById('progress-text');
+    const progressSub = document.getElementById('progress-sub');
+    const metaSummaryText = document.getElementById('meta-summary-text');
+
+    // Drag & Drop
+    ['dragenter', 'dragover'].forEach(name => {
+      dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+    });
+        // Allow dragging a new PDF directly onto the active workspace
+    ['dragenter', 'dragover'].forEach(name => {
+      workspace.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+    workspace.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0 && files[0].type === 'application/pdf') {
+        if (hasUnsavedRedactions()) {
+          const confirmed = confirm('Opening a new document will discard unsaved redactions on this file. Continue?');
+          if (!confirmed) return;
+        }
+        loadPdfFile(files[0]);
+      }
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0 && files[0].type === 'application/pdf') {
+        loadPdfFile(files[0]);
+      } else {
+        alert('Please drop a valid PDF file.');
+      }
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        loadPdfFile(e.target.files[0]);
+      }
+    });
+
+    async function loadPdfFile(file) {
+      pdfFileName = file.name;
+      const arrayBuffer = await file.arrayBuffer();
+      pdfRawBytes = new Uint8Array(arrayBuffer);
+      
+      try {
+        const loadingTask = pdfjsLib.getDocument({ data: pdfRawBytes });
+        pdfDoc = await loadingTask.promise;
+        totalPages = pdfDoc.numPages;
+        currentPageNum = 1;
+        redactions = {};
+        selectedBoxId = null;
+        historyStack = [];
+        historyIndex = -1;
+
+        // Inspect metadata
+        const metadata = await pdfDoc.getMetadata().catch(() => null);
+        displayMetadata(metadata);
+
+                workspace.style.display = 'block';
+        dropZone.style.display = 'none';
+        const filenameDisplay = document.getElementById('doc-filename-display');
+        if (filenameDisplay) {
+          filenameDisplay.textContent = file.name;
+          filenameDisplay.title = file.name;
+        }
+
+        // Auto-fit initial scale for mobile screens
+        if (window.innerWidth < 768) {
+          const firstPage = await pdfDoc.getPage(1);
+          const natural = firstPage.getViewport({ scale: 1.0 });
+          const screenW = Math.max(280, window.innerWidth - 40);
+          currentScale = Math.round((screenW / natural.width) * 100) / 100;
+        } else {
+          currentScale = 1.35;
+        }
+        updatePageSelectOptions();
+        
+        saveHistoryState('Initial Document Load');
+        await renderCurrentPage();
+      } catch (err) {
+        alert('Failed to parse PDF document: ' + err.message);
+      }
+    }
+
+    
+    function hasUnsavedRedactions() {
+      return Object.values(redactions).some(arr => Array.isArray(arr) && arr.length > 0);
+    }
+
+    function openNewPdf() {
+      if (hasUnsavedRedactions()) {
+        const confirmed = confirm('Opening a new document will discard unsaved redactions on this file. Continue?');
+        if (!confirmed) return;
+      }
+      fileInput.value = '';
+      fileInput.click();
+    }
+
+    function closeDocument() {
+      if (hasUnsavedRedactions()) {
+        const confirmed = confirm('Closing this document will discard unsaved redactions. Continue?');
+        if (!confirmed) return;
+      }
+      pdfDoc = null;
+      pdfRawBytes = null;
+      pdfFileName = 'document.pdf';
+      currentPageNum = 1;
+      totalPages = 1;
+      redactions = {};
+      selectedBoxId = null;
+      historyStack = [];
+      historyIndex = -1;
+      fileInput.value = '';
+
+      if (pdfCtx && pdfCanvas) {
+        pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+        pdfCanvas.width = 0;
+        pdfCanvas.height = 0;
+      }
+      if (drawCtx && drawCanvas) {
+        drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        drawCanvas.width = 0;
+        drawCanvas.height = 0;
+      }
+
+      if (metaSummaryText) {
+        metaSummaryText.innerHTML = '<span>Scanning document metadata...</span>';
+      }
+
+      workspace.style.display = 'none';
+      dropZone.style.display = 'block';
+      dropZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function displayMetadata(meta) {
+      if (!meta || !meta.info) {
+        metaSummaryText.innerHTML = '<span class="meta-badge clean">0 Hidden Tags Found</span> <span>Clean document structure.</span>';
+        return;
+      }
+      const info = meta.info;
+      let tagsFound = 0;
+      let details = [];
+      if (info.Author) { tagsFound++; details.push(`Author: <strong>${escapeHtml(info.Author)}</strong>`); }
+      if (info.Producer) { tagsFound++; details.push(`App: <strong>${escapeHtml(info.Producer)}</strong>`); }
+      if (info.Creator) { tagsFound++; details.push(`Creator: <strong>${escapeHtml(info.Creator)}</strong>`); }
+      if (info.CreationDate) { tagsFound++; details.push('Created: ' + info.CreationDate.substring(2, 10)); }
+
+      if (tagsFound > 0) {
+        metaSummaryText.innerHTML = `
+          <span class="meta-badge detected"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>${tagsFound} Metadata Tags Detected</span>
+          <span>${details.join(' • ')}</span>
+        `;
+      } else {
+        metaSummaryText.innerHTML = '<span class="meta-badge clean">0 Hidden Tags Found</span> <span>Clean document structure.</span>';
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    // --- HISTORY / UNDO / REDO ENGINE ---
+    function saveHistoryState(actionName) {
+      // If we made changes after an undo, truncate forward history
+      if (historyIndex < historyStack.length - 1) {
+        historyStack = historyStack.slice(0, historyIndex + 1);
+      }
+      // Push deep clone of current redactions
+      historyStack.push(JSON.parse(JSON.stringify(redactions)));
+      historyIndex = historyStack.length - 1;
+      updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+      const canUndo = (historyIndex > 0);
+      const canRedo = (historyIndex < historyStack.length - 1);
+      
+      document.querySelectorAll('.btn-undo, #undo-btn').forEach(btn => {
+        btn.disabled = !canUndo;
+      });
+      document.querySelectorAll('.btn-redo, #redo-btn').forEach(btn => {
+        btn.disabled = !canRedo;
+      });
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        redactions = JSON.parse(JSON.stringify(historyStack[historyIndex]));
+        selectedBoxId = null;
+        redrawPageRedactions();
+        updateUndoRedoButtons();
+      }
+    }
+
+    function redo() {
+      if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        redactions = JSON.parse(JSON.stringify(historyStack[historyIndex]));
+        selectedBoxId = null;
+        redrawPageRedactions();
+        updateUndoRedoButtons();
+      }
+    }
+
+    // --- RENDERING ENGINE ---
+    async function renderCurrentPage() {
+      if (!pdfDoc) return;
+      
+      updatePageNavUI();
+      zoomDisplay.textContent = `${Math.round(currentScale * 100)}%`;
+      prevBtn.disabled = (currentPageNum <= 1);
+      nextBtn.disabled = (currentPageNum >= totalPages);
+
+      const page = await pdfDoc.getPage(currentPageNum);
+      const viewport = page.getViewport({ scale: currentScale });
+
+      // Explicitly size canvases and wrapper so mobile zooming expands properly
+      const canvasWrapper = document.getElementById('canvas-wrapper');
+      canvasWrapper.style.width = viewport.width + 'px';
+      canvasWrapper.style.height = viewport.height + 'px';
+
+      pdfCanvas.width = viewport.width;
+      pdfCanvas.height = viewport.height;
+      pdfCanvas.style.width = viewport.width + 'px';
+      pdfCanvas.style.height = viewport.height + 'px';
+
+      drawCanvas.width = viewport.width;
+      drawCanvas.height = viewport.height;
+      drawCanvas.style.width = viewport.width + 'px';
+      drawCanvas.style.height = viewport.height + 'px';
+
+      const renderContext = { canvasContext: pdfCtx, viewport: viewport };
+      await page.render(renderContext).promise;
+
+      redrawPageRedactions();
+    }
+
+    // Convert unscaled PDF points to current canvas pixels
+    function toCanvasCoord(val) { return val * currentScale; }
+    // Convert canvas pixels to unscaled PDF points
+    function toPdfCoord(val) { return val / currentScale; }
+
+    function redrawPageRedactions() {
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      const list = redactions[currentPageNum] || [];
+      
+      list.forEach(box => {
+        const isSelected = (box.id === selectedBoxId);
+        drawBox(drawCtx, box, currentScale, isSelected);
+      });
+
+      redactionCountDisplay.textContent = `${list.length} redaction${list.length === 1 ? '' : 's'} on this page`;
+      deleteBtn.style.display = selectedBoxId ? 'inline-flex' : 'none';
+    }
+
+    function drawBox(ctx, box, scale, isSelected) {
+      const bx = box.x * scale;
+      const by = box.y * scale;
+      const bw = box.w * scale;
+      const bh = box.h * scale;
+
+      // Solid blackout fill
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(bx, by, bw, bh);
+
+      // Stamp text
+      if (box.type === 'stamp' && Math.abs(bw) > 36 && Math.abs(bh) > 14) {
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        const fontSize = Math.min(Math.abs(bh) * 0.52, 14 * scale);
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('REDACTED', bx + bw / 2, by + bh / 2);
+        ctx.restore();
+      }
+
+      // Selection Outline & Resize Handles
+      if (isSelected) {
+        ctx.save();
+        // Cyan dashed bounding box
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeRect(bx, by, bw, bh);
+
+        // Draw 8 handles: corners & edge midpoints
+        const handles = getHandleCoords(bx, by, bw, bh);
+        const handleSize = 8;
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2;
+
+        for (const [key, pt] of Object.entries(handles)) {
+          ctx.fillRect(pt.x - handleSize / 2, pt.y - handleSize / 2, handleSize, handleSize);
+          ctx.strokeRect(pt.x - handleSize / 2, pt.y - handleSize / 2, handleSize, handleSize);
+        }
+        ctx.restore();
+      }
+    }
+
+    function getHandleCoords(x, y, w, h) {
+      return {
+        nw: { x: x, y: y },
+        ne: { x: x + w, y: y },
+        se: { x: x + w, y: y + h },
+        sw: { x: x, y: y + h },
+        n:  { x: x + w / 2, y: y },
+        s:  { x: x + w / 2, y: y + h },
+        w:  { x: x, y: y + h / 2 },
+        e:  { x: x + w, y: y + h / 2 }
+      };
+    }
+
+    // --- INTERACTIVE HIT TESTING & SELECTION ---
+    function getBoxById(id) {
+      const list = redactions[currentPageNum] || [];
+      return list.find(b => b.id === id);
+    }
+
+    function getSelectedBox() {
+      return selectedBoxId ? getBoxById(selectedBoxId) : null;
+    }
+
+    function getHandleAtPoint(pt, box) {
+      if (!box) return null;
+      const bx = box.x * currentScale;
+      const by = box.y * currentScale;
+      const bw = box.w * currentScale;
+      const bh = box.h * currentScale;
+      const handles = getHandleCoords(bx, by, bw, bh);
+      const radius = 10; // hit radius in pixels
+
+      for (const [key, h] of Object.entries(handles)) {
+        if (Math.hypot(pt.x - h.x, pt.y - h.y) <= radius) {
+          return key;
+        }
+      }
+      return null;
+    }
+
+    function isInsideBox(pt, box) {
+      const bx = box.x * currentScale;
+      const by = box.y * currentScale;
+      const bw = box.w * currentScale;
+      const bh = box.h * currentScale;
+      const minX = Math.min(bx, bx + bw);
+      const maxX = Math.max(bx, bx + bw);
+      const minY = Math.min(by, by + bh);
+      const maxY = Math.max(by, by + bh);
+      return pt.x >= minX && pt.x <= maxX && pt.y >= minY && pt.y <= maxY;
+    }
+
+    function getBoxAtPoint(pt) {
+      const list = redactions[currentPageNum] || [];
+      // Top-most first
+      for (let i = list.length - 1; i >= 0; i--) {
+        if (isInsideBox(pt, list[i])) {
+          return list[i];
+        }
+      }
+      return null;
+    }
+
+    function getCursorForHandle(handle) {
+      switch (handle) {
+        case 'nw': case 'se': return 'nwse-resize';
+        case 'ne': case 'sw': return 'nesw-resize';
+        case 'n': case 's':   return 'ns-resize';
+        case 'w': case 'e':   return 'ew-resize';
+        default: return 'default';
+      }
+    }
+
+    // --- UNIFIED POINTER & TOUCH GESTURES ---
+    function getEventPoint(e) {
+      if (e.touches && e.touches.length > 0) return e.touches[0];
+      if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0];
+      return e;
+    }
+
+    function getCanvasCoordinates(e) {
+      const p = getEventPoint(e);
+      const rect = drawCanvas.getBoundingClientRect();
+      const scaleX = drawCanvas.width / rect.width;
+      const scaleY = drawCanvas.height / rect.height;
+      return {
+        x: (p.clientX - rect.left) * scaleX,
+        y: (p.clientY - rect.top) * scaleY
+      };
+    }
+
+    // --- TOOL SWITCHER: REDACT VS PAN ---
+    function toggleActiveTool() {
+      setActiveTool(currentTool === 'redact' ? 'pan' : 'redact');
+    }
+
+    function setActiveTool(tool) {
+      currentTool = tool;
+      const redactBtn = document.getElementById('btn-mode-redact');
+      const panBtn = document.getElementById('btn-mode-pan');
+      if (redactBtn) redactBtn.classList.toggle('active', tool === 'redact');
+      if (panBtn) panBtn.classList.toggle('active', tool === 'pan');
+
+      const dockBtn = document.getElementById('dock-mode-toggle');
+      const dockText = document.getElementById('dock-tool-text');
+      if (dockBtn && dockText) {
+        dockBtn.classList.toggle('pan-active', tool === 'pan');
+        dockText.textContent = tool === 'pan' ? 'Move / Pan' : 'Draw Box';
+      }
+
+      if (tool === 'pan') {
+        selectedBoxId = null;
+        redrawPageRedactions();
+        drawCanvas.style.cursor = 'grab';
+      } else {
+        drawCanvas.style.cursor = 'crosshair';
+      }
+    }
+
+    function nudgeStage(dx, dy) {
+      if (stageContainer) {
+        stageContainer.scrollBy({ left: dx, top: dy, behavior: 'smooth' });
+      }
+    }
+
+    function scrollToBottom() {
+      if (stageContainer) {
+        stageContainer.scrollTo({ top: stageContainer.scrollHeight, behavior: 'smooth' });
+      }
+    }
+
+    // --- MULTI-PAGE DOCUMENT NAVIGATION ---
+    function updatePageSelectOptions() {
+      const select = document.getElementById('page-select');
+      if (!select) return;
+      select.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        const count = (redactions[i] && redactions[i].length > 0) ? ` (${redactions[i].length} redacted)` : '';
+        opt.textContent = `Page ${i}${count}`;
+        select.appendChild(opt);
+      }
+      document.getElementById('page-total-display').textContent = `of ${totalPages}`;
+    }
+
+    function updatePageNavUI() {
+      const select = document.getElementById('page-select');
+      if (select) {
+        select.value = currentPageNum;
+        for (let i = 0; i < select.options.length; i++) {
+          const pg = i + 1;
+          const count = (redactions[pg] && redactions[pg].length > 0) ? ` (${redactions[pg].length} redacted)` : '';
+          select.options[i].textContent = `Page ${pg}${count}`;
+        }
+      }
+      const totalDisplay = document.getElementById('page-total-display');
+      if (totalDisplay) totalDisplay.textContent = `of ${totalPages}`;
+    }
+
+    function goToPage(pageNum) {
+      if (pageNum >= 1 && pageNum <= totalPages) {
+        currentPageNum = pageNum;
+        selectedBoxId = null;
+        renderCurrentPage();
+      }
+    }
+
+    // --- SMOOTH GPU PINCH & TWO-FINGER PAN ENGINE ---
+    let pinchMidStartX = 0;
+    let pinchMidStartY = 0;
+    let pinchScrollStartX = 0;
+    let pinchScrollStartY = 0;
+
+    function getTouchDistance(e) {
+      if (e.touches && e.touches.length >= 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.hypot(dx, dy);
+      }
+      return null;
+    }
+
+    function getTouchMidpoint(e) {
+      if (e.touches && e.touches.length >= 2) {
+        return {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+        };
+      }
+      return null;
+    }
+
+    function handlePointerDown(e) {
+      // 1. Check for two-finger pinch & pan gesture on mobile
+      if (e.touches && e.touches.length >= 2) {
+        interactionMode = null;
+        isDrawing = false;
+        isPanning = false;
+        initialPinchDistance = getTouchDistance(e);
+        initialPinchScale = currentScale;
+        currentPinchRatio = 1.0;
+        const mid = getTouchMidpoint(e);
+        if (mid) {
+          pinchMidStartX = mid.x;
+          pinchMidStartY = mid.y;
+          pinchScrollStartX = stageContainer.scrollLeft;
+          pinchScrollStartY = stageContainer.scrollTop;
+        }
+        return;
+      }
+
+      // 2. PAN MODE: drag to scroll the zoomed viewport with 1 finger or mouse
+      if (currentTool === 'pan') {
+        const pt = e.touches ? e.touches[0] : e;
+        isPanning = true;
+        panStartX = pt.clientX;
+        panStartY = pt.clientY;
+        panScrollLeft = stageContainer.scrollLeft;
+        panScrollTop = stageContainer.scrollTop;
+        drawCanvas.style.cursor = 'grabbing';
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
+
+      // 3. Scrollbar Deadzone Protection:
+      // If single touch starts within 42px of right or bottom container edge, ignore to prevent accidental redactions
+      if (e.touches && e.touches.length === 1) {
+        const touch = e.touches[0];
+        const containerRect = stageContainer.getBoundingClientRect();
+        const distFromRight = containerRect.right - touch.clientX;
+        const distFromBottom = containerRect.bottom - touch.clientY;
+        if (distFromRight < 42 || distFromBottom < 42) {
+          return;
+        }
+      }
+
+      // 4. REDACT MODE: hit testing and drawing
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
+      const pt = getCanvasCoordinates(e);
+      dragStartX = pt.x;
+      dragStartY = pt.y;
+
+      const selBox = getSelectedBox();
+
+      // Check handle of selected box
+      if (selBox) {
+        const handle = getHandleAtPoint(pt, selBox);
+        if (handle) {
+          interactionMode = 'resize';
+          activeHandle = handle;
+          initialBoxState = { ...selBox };
+          if (e.pointerId && drawCanvas.setPointerCapture) {
+            try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+          }
+          return;
+        }
+      }
+
+      // Check click inside existing box
+      const hitBox = getBoxAtPoint(pt);
+      if (hitBox) {
+        selectedBoxId = hitBox.id;
+        interactionMode = 'move';
+        initialBoxState = { ...hitBox };
+        redrawPageRedactions();
+        if (e.pointerId && drawCanvas.setPointerCapture) {
+          try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        return;
+      }
+
+      // Otherwise click on canvas: start drawing new blackout box
+      selectedBoxId = null;
+      interactionMode = 'draw';
+      redrawPageRedactions();
+
+      if (e.pointerId && drawCanvas.setPointerCapture) {
+        try { drawCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+    }
+
+    function handlePointerMove(e) {
+      // 1. Two-finger pinch & pan anywhere (zero jitter, simultaneous scroll)
+      if (e.touches && e.touches.length >= 2 && initialPinchDistance) {
+        if (e.cancelable) e.preventDefault();
+        const dist = getTouchDistance(e);
+        if (dist) {
+          currentPinchRatio = dist / initialPinchDistance;
+          const canvasWrapper = document.getElementById('canvas-wrapper');
+          canvasWrapper.style.transformOrigin = 'center center';
+          canvasWrapper.style.transform = `scale(${currentPinchRatio})`;
+        }
+        const mid = getTouchMidpoint(e);
+        if (mid) {
+          const dx = mid.x - pinchMidStartX;
+          const dy = mid.y - pinchMidStartY;
+          stageContainer.scrollLeft = pinchScrollStartX - dx;
+          stageContainer.scrollTop = pinchScrollStartY - dy;
+        }
+        return;
+      }
+
+      // 2. PAN MODE MOVE: scroll viewport smoothly
+      if (isPanning && currentTool === 'pan') {
+        const pt = e.touches ? e.touches[0] : e;
+        const dx = pt.clientX - panStartX;
+        const dy = pt.clientY - panStartY;
+        stageContainer.scrollLeft = panScrollLeft - dx;
+        stageContainer.scrollTop = panScrollTop - dy;
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
+
+      if (currentTool === 'pan') return;
+
+      const pt = getCanvasCoordinates(e);
+
+      // Hover cursor updates
+      if (!interactionMode) {
+        const selBox = getSelectedBox();
+        if (selBox) {
+          const handle = getHandleAtPoint(pt, selBox);
+          if (handle) {
+            drawCanvas.style.cursor = getCursorForHandle(handle);
+            return;
+          }
+        }
+        const hitBox = getBoxAtPoint(pt);
+        if (hitBox) {
+          drawCanvas.style.cursor = (hitBox.id === selectedBoxId) ? 'move' : 'pointer';
+          return;
+        }
+        drawCanvas.style.cursor = 'crosshair';
+        return;
+      }
+
+      if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
+
+      // REDACT ACTIONS: draw, move, resize
+      if (interactionMode === 'draw') {
+        const currentW = pt.x - dragStartX;
+        const currentH = pt.y - dragStartY;
+
+        redrawPageRedactions();
+
+        drawCtx.save();
+        drawCtx.strokeStyle = '#00d2ff';
+        drawCtx.lineWidth = 2;
+        drawCtx.setLineDash([4, 4]);
+        drawCtx.strokeRect(dragStartX, dragStartY, currentW, currentH);
+        drawCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        drawCtx.fillRect(dragStartX, dragStartY, currentW, currentH);
+        drawCtx.restore();
+
+      } else if (interactionMode === 'move') {
+        const box = getSelectedBox();
+        if (!box || !initialBoxState) return;
+        const deltaX = toPdfCoord(pt.x - dragStartX);
+        const deltaY = toPdfCoord(pt.y - dragStartY);
+
+        box.x = initialBoxState.x + deltaX;
+        box.y = initialBoxState.y + deltaY;
+        redrawPageRedactions();
+
+      } else if (interactionMode === 'resize') {
+        const box = getSelectedBox();
+        if (!box || !initialBoxState) return;
+        
+        const curPdfX = toPdfCoord(pt.x);
+        const curPdfY = toPdfCoord(pt.y);
+        const startPdfX = toPdfCoord(dragStartX);
+        const startPdfY = toPdfCoord(dragStartY);
+        const deltaX = curPdfX - startPdfX;
+        const deltaY = curPdfY - startPdfY;
+
+        let newX = initialBoxState.x;
+        let newY = initialBoxState.y;
+        let newW = initialBoxState.w;
+        let newH = initialBoxState.h;
+
+        if (activeHandle.includes('e')) newW = initialBoxState.w + deltaX;
+        if (activeHandle.includes('s')) newH = initialBoxState.h + deltaY;
+        if (activeHandle.includes('w')) {
+          newX = initialBoxState.x + deltaX;
+          newW = initialBoxState.w - deltaX;
+        }
+        if (activeHandle.includes('n')) {
+          newY = initialBoxState.y + deltaY;
+          newH = initialBoxState.h - deltaY;
+        }
+
+        if (newW >= 5 && newH >= 5) {
+          box.x = newX;
+          box.y = newY;
+          box.w = newW;
+          box.h = newH;
+          redrawPageRedactions();
+        }
+      }
+    }
+
+    function handlePointerUp(e) {
+      // 1. PINCH END: apply final scale and preserve viewport center (high-res crisp quality)
+      if (initialPinchDistance) {
+        const canvasWrapper = document.getElementById('canvas-wrapper');
+        canvasWrapper.style.transform = '';
+        canvasWrapper.style.transformOrigin = '';
+        const oldScale = currentScale;
+        const finalScale = Math.max(0.4, Math.min(3.5, initialPinchScale * currentPinchRatio));
+        currentScale = Math.round(finalScale * 100) / 100;
+
+        const viewCenterX = stageContainer.scrollLeft + (stageContainer.clientWidth / 2);
+        const viewCenterY = stageContainer.scrollTop + (stageContainer.clientHeight / 2);
+        const ratio = currentScale / oldScale;
+
+        initialPinchDistance = null;
+        currentPinchRatio = 1.0;
+        renderCurrentPage().then(() => {
+          stageContainer.scrollLeft = Math.round((viewCenterX * ratio) - (stageContainer.clientWidth / 2));
+          stageContainer.scrollTop = Math.round((viewCenterY * ratio) - (stageContainer.clientHeight / 2));
+        });
+        return;
+      }
+
+      // 2. PAN END
+      if (isPanning) {
+        isPanning = false;
+        drawCanvas.style.cursor = (currentTool === 'pan') ? 'grab' : 'crosshair';
+        return;
+      }
+
+      if (!interactionMode) return;
+
+      if (e.pointerId && drawCanvas.releasePointerCapture) {
+        try { drawCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+      }
+
+      const pt = getCanvasCoordinates(e);
+
+      if (interactionMode === 'draw') {
+        const w = pt.x - dragStartX;
+        const h = pt.y - dragStartY;
+
+        const minIntent = (e.type && e.type.startsWith('touch')) ? 14 : 8;
+        if (Math.abs(w) >= minIntent && Math.abs(h) >= minIntent) {
+          const normCanvasX = w < 0 ? pt.x : dragStartX;
+          const normCanvasY = h < 0 ? pt.y : dragStartY;
+          const normCanvasW = Math.abs(w);
+          const normCanvasH = Math.abs(h);
+
+          const newBox = {
+            id: 'box_' + (nextBoxId++),
+            x: toPdfCoord(normCanvasX),
+            y: toPdfCoord(normCanvasY),
+            w: toPdfCoord(normCanvasW),
+            h: toPdfCoord(normCanvasH),
+            type: redactType
+          };
+
+          if (!redactions[currentPageNum]) {
+            redactions[currentPageNum] = [];
+          }
+          redactions[currentPageNum].push(newBox);
+          selectedBoxId = newBox.id;
+          saveHistoryState('Add Redaction');
+        }
+      } else if (interactionMode === 'move' || interactionMode === 'resize') {
+        const box = getSelectedBox();
+        if (box && initialBoxState) {
+          if (box.w < 0) { box.x += box.w; box.w = Math.abs(box.w); }
+          if (box.h < 0) { box.y += box.h; box.h = Math.abs(box.h); }
+
+          if (box.x !== initialBoxState.x || box.y !== initialBoxState.y || box.w !== initialBoxState.w || box.h !== initialBoxState.h) {
+            saveHistoryState(interactionMode === 'move' ? 'Move Redaction' : 'Resize Redaction');
+          }
+        }
+      }
+
+      interactionMode = null;
+      activeHandle = null;
+      initialBoxState = null;
+      redrawPageRedactions();
+      updatePageNavUI();
+    }
+
+    // Attach unified pointer events
+    drawCanvas.addEventListener('pointerdown', handlePointerDown, { passive: false });
+    drawCanvas.addEventListener('pointermove', handlePointerMove, { passive: false });
+    drawCanvas.addEventListener('pointerup', handlePointerUp, { passive: false });
+    drawCanvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
+
+    // Touch event fallbacks for older browsers
+    drawCanvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+    drawCanvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+    drawCanvas.addEventListener('touchend', handlePointerUp, { passive: false });
+    drawCanvas.addEventListener('touchcancel', handlePointerUp, { passive: false });
+
+    // --- ACTIONS & KEYBOARD SHORTCUTS ---
+    function deleteSelectedBox() {
+      if (!selectedBoxId) return;
+      const list = redactions[currentPageNum] || [];
+      const idx = list.findIndex(b => b.id === selectedBoxId);
+      if (idx !== -1) {
+        list.splice(idx, 1);
+        selectedBoxId = null;
+        saveHistoryState('Delete Redaction');
+        redrawPageRedactions();
+      }
+    }
+
+    function clearCurrentPageRedactions() {
+      if (redactions[currentPageNum] && redactions[currentPageNum].length > 0) {
+        redactions[currentPageNum] = [];
+        selectedBoxId = null;
+        saveHistoryState('Clear Page');
+        redrawPageRedactions();
+      }
+    }
+
+    function changePage(delta) {
+      const target = currentPageNum + delta;
+      if (target >= 1 && target <= totalPages) {
+        currentPageNum = target;
+        selectedBoxId = null;
+        renderCurrentPage();
+      }
+    }
+
+    function setRedactType(type) {
+      redactType = type;
+      document.getElementById('mode-blackout').classList.toggle('active', type === 'blackout');
+      document.getElementById('mode-stamp').classList.toggle('active', type === 'stamp');
+      // If a box is currently selected, update its type too!
+      const selBox = getSelectedBox();
+      if (selBox) {
+        selBox.type = type;
+        saveHistoryState('Change Type');
+        redrawPageRedactions();
+      }
+    }
+
+    // Zoom Functions with Center-Anchored Viewport Preservation
+    async function zoomPage(delta) {
+      if (!pdfDoc) return;
+      const oldScale = currentScale;
+      const newScale = Math.max(0.4, Math.min(3.5, currentScale + delta));
+      currentScale = Math.round(newScale * 100) / 100;
+      if (currentScale === oldScale) return;
+
+      // Keep viewport center point stable during zoom
+      const viewCenterX = stageContainer.scrollLeft + (stageContainer.clientWidth / 2);
+      const viewCenterY = stageContainer.scrollTop + (stageContainer.clientHeight / 2);
+      const ratio = currentScale / oldScale;
+
+      await renderCurrentPage();
+
+      stageContainer.scrollLeft = Math.round((viewCenterX * ratio) - (stageContainer.clientWidth / 2));
+      stageContainer.scrollTop = Math.round((viewCenterY * ratio) - (stageContainer.clientHeight / 2));
+    }
+
+    async function resetZoom() {
+      currentScale = 1.0;
+      await renderCurrentPage();
+      stageContainer.scrollLeft = 0;
+      stageContainer.scrollTop = 0;
+    }
+
+    async function fitPageWidth() {
+      if (!pdfDoc) return;
+      const page = await pdfDoc.getPage(currentPageNum);
+      const natural = page.getViewport({ scale: 1.0 });
+      const availableWidth = Math.max(280, stageContainer.clientWidth - 48);
+      currentScale = Math.round((availableWidth / natural.width) * 100) / 100;
+      await renderCurrentPage();
+      stageContainer.scrollLeft = 0;
+      stageContainer.scrollTop = 0;
+    }
+
+    // Ctrl + Mouse Wheel Zoom: anchors to current viewport center
+    stageContainer.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        zoomPage(e.deltaY < 0 ? 0.15 : -0.15);
+      }
+    }, { passive: false });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      // Delete / Backspace: delete selected box
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedBoxId && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          deleteSelectedBox();
+        }
+      }
+      // Escape: deselect
+      if (e.key === 'Escape') {
+        selectedBoxId = null;
+        redrawPageRedactions();
+      }
+      // Ctrl+Z: Undo
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      // Ctrl+Y or Ctrl+Shift+Z: Redo
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault();
+        redo();
+      }
+      // Arrow keys to nudge selected box
+      if (selectedBoxId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        const selBox = getSelectedBox();
+        if (selBox) {
+          const step = e.shiftKey ? 10 : 2;
+          if (e.key === 'ArrowUp') selBox.y -= toPdfCoord(step);
+          if (e.key === 'ArrowDown') selBox.y += toPdfCoord(step);
+          if (e.key === 'ArrowLeft') selBox.x -= toPdfCoord(step);
+          if (e.key === 'ArrowRight') selBox.x += toPdfCoord(step);
+          redrawPageRedactions();
+        }
+      }
+    });
+
+    // --- TRUE BURN-IN EXPORT ENGINE (ZERO METADATA) ---
+    async function exportRedactedPdf() {
+      if (!pdfDoc) return;
+
+      progressOverlay.style.display = 'flex';
+      progressText.textContent = 'Permanently burning in redactions...';
+      
+      try {
+        const { PDFDocument, PDFName } = PDFLib;
+        // updateMetadata: false stops pdf-lib from auto-injecting its own producer/dates
+        const newPdfDoc = await PDFDocument.create({ updateMetadata: false });
+        const exportScale = 2.0; // High resolution 2x scale for crisp print quality
+        const purgeMeta = document.getElementById('purge-meta-checkbox').checked;
+
+        // Render each page with burn-in flattening
+        for (let p = 1; p <= totalPages; p++) {
+          progressSub.textContent = `Processing Page ${p} of ${totalPages}...`;
+          
+          const page = await pdfDoc.getPage(p);
+          const viewport = page.getViewport({ scale: exportScale });
+          
+          // Offscreen render canvas
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = viewport.width;
+          offCanvas.height = viewport.height;
+          const offCtx = offCanvas.getContext('2d');
+
+          // 1. Render original page
+          await page.render({ canvasContext: offCtx, viewport: viewport }).promise;
+
+          // 2. Draw burned-in redactions scaled to high DPI
+          const pageBoxes = redactions[p] || [];
+
+          pageBoxes.forEach(box => {
+            // Draw box directly using PDF points scaled to exportScale
+            drawBox(offCtx, box, exportScale, false);
+          });
+
+          // 3. Compress page to high-quality JPEG
+          const pageDataUrl = offCanvas.toDataURL('image/jpeg', 0.90);
+          const pageImgBytes = await fetch(pageDataUrl).then(res => res.arrayBuffer());
+          const embeddedImage = await newPdfDoc.embedJpg(pageImgBytes);
+
+          // 4. Create new PDF page with original point dimensions
+          const originalViewport = page.getViewport({ scale: 1.0 });
+          const newPage = newPdfDoc.addPage([originalViewport.width, originalViewport.height]);
+          newPage.drawImage(embeddedImage, {
+            x: 0,
+            y: 0,
+            width: originalViewport.width,
+            height: originalViewport.height
+          });
+        }
+
+        // Apply 100% complete metadata purging (Zero leaks, sterile PDF)
+        if (purgeMeta) {
+          progressSub.textContent = 'Purging all metadata tags...';
+          
+          // Strip any default fields
+          newPdfDoc.setTitle('');
+          newPdfDoc.setAuthor('');
+          newPdfDoc.setSubject('');
+          newPdfDoc.setKeywords([]);
+          newPdfDoc.setProducer('');
+          newPdfDoc.setCreator('');
+
+          // Delete Info dictionary reference entirely from the PDF trailer
+          delete newPdfDoc.context.trailerInfo.Info;
+
+          // Delete XML / XMP metadata stream from catalog if present
+          try {
+            newPdfDoc.catalog.delete(PDFName.of('Metadata'));
+          } catch (_) {}
+          try {
+            newPdfDoc.catalog.delete(PDFName.of('PieceInfo'));
+          } catch (_) {}
+        }
+
+        progressSub.textContent = 'Finalizing file...';
+        // updateMetadata: false guarantees pdf-lib will NOT inject its own Producer, CreationDate or ModDate!
+        const finalPdfBytes = await newPdfDoc.save({ updateMetadata: false });
+
+        // Trigger Download
+        const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const cleanName = pdfFileName.replace(/\.pdf$/i, '');
+        link.download = `Tangent_Redacted_${cleanName}.pdf`;
+        link.href = downloadUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+
+      } catch (err) {
+        alert('Export failed: ' + err.message);
+      } finally {
+        progressOverlay.style.display = 'none';
+      }
+    }
+
+    // Mobile Navigation Toggle
+</script>

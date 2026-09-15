@@ -1,0 +1,1480 @@
+<!-- --- HEAD_META --- -->
+<title>Typing Speed Test | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/typing-test.html">
+<meta name="description" content="Test and improve your typing speed (WPM) and accuracy in real-time. 100% offline, privacy-first benchmark right in your browser.">
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Typing Speed Test | Tangent">
+<meta property="og:description" content="Test your typing speed and accuracy in real-time. 100% private in-browser benchmark.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a good typing speed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The average typing speed is around 40 WPM. A speed of 60 WPM is considered good and is often required for professional administrative jobs. Programmers and writers frequently average between 70 and 90 WPM."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is WPM calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Words Per Minute (WPM) is standardized based on characters typed, not literal words. One word is calculated as 5 keystrokes. We take your total keystrokes, divide by 5, and adjust for the time elapsed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my keystrokes recorded or logged?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The typing test runs entirely client-side in your device's memory. Zero keystrokes, timing data, or personal metrics are ever transmitted over the internet."
+      }
+    }
+  ]
+}
+</script>
+
+
+
+<!-- Favicon & Touch Icons -->
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+:root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --danger: #ef4444;
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --success-border: rgba(16, 185, 129, 0.35);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+    /* --- Global Navigation & Dropdown --- */
+  .global-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background-color: rgba(8, 9, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #1a1f2e;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #00d2ff;
+  }
+
+  /* Toolkit Toggle Button in Navbar */
+  .toolkit-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .toolkit-toggle-btn:hover,
+  body.sidebar-open .toolkit-toggle-btn {
+    color: #ffffff;
+    background-color: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+  }
+
+  .toolkit-toggle-btn .sidebar-icon {
+    color: #00d2ff;
+    transition: transform 0.2s ease;
+  }
+
+  body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 4px;
+  }
+  .sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  .sidebar-item:hover .item-title,
+  
+
+  
+
+  /* App Canvas Push (Desktop) */
+  .app-canvas {
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (min-width: 961px) {
+    body.sidebar-open .app-canvas {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+    }
+  }
+
+  /* Mobile Overlay Mode */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: #00d2ff;
+  }
+
+  /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
+  @media (max-width: 960px) {
+    
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+      opacity: 1;
+    }
+    .global-nav {
+      padding: 14px 20px;
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1f2533;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 16px 20px 24px 20px !important;
+      gap: 14px !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0 !important;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .nav-links.open, .nav-links.active {
+      display: flex !important;
+    }
+    .nav-link {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid #161a24;
+      width: 100%;
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    color: var(--accent);
+  }
+
+  /* --- Hero Header --- */
+  .clean-header {
+    text-align: center;
+    padding: 56px 20px 24px 20px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .clean-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+  }
+
+  .clean-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 auto;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  /* --- Tool Container & Panel --- */
+  .app-container {
+    max-width: 820px;
+    margin: 24px auto 80px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .tool-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  /* --- Difficulty Selector Chips --- */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .diff-card {
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    position: relative;
+    user-select: none;
+  }
+
+  .diff-card:hover {
+    border-color: rgba(0, 210, 255, 0.3);
+    background: rgba(0, 210, 255, 0.02);
+  }
+
+  .diff-card.active {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.15);
+  }
+
+  .diff-card-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .diff-card.active .diff-card-title {
+    color: var(--accent);
+  }
+
+  .diff-card-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* --- Action Buttons --- */
+  .btn-accent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+    padding: 14px 28px;
+    min-height: 44px;
+    touch-action: manipulation;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: #171b26;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    margin-top: 20px;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    box-shadow: none;
+    transform: translateY(-1px);
+  }
+
+  /* --- Typing Box & Display --- */
+  .typing-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .hud-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+
+  .hud-stat strong {
+    font-size: 1.15rem;
+    color: var(--accent);
+    font-family: monospace;
+  }
+
+  .typing-box {
+    background-color: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    cursor: text;
+    transition: border-color 0.2s ease;
+  }
+
+  .typing-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
+  }
+
+  #hiddenInput {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    caret-color: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sentence {
+    font-size: clamp(1.15rem, 4vw, 1.4rem);
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+    user-select: none;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    color: #475569;
+    font-family: monospace, -apple-system, sans-serif;
+  }
+
+  .enter-char {
+    display: inline-block;
+    font-size: 0.82em;
+    font-weight: 700;
+    padding: 0 4px;
+    margin: 0 2px;
+    border-radius: 4px;
+    opacity: 0.45;
+  }
+  .correct.enter-char {
+    opacity: 0.75;
+    color: #38ef7d;
+  }
+  .current.enter-char {
+    opacity: 1;
+    color: var(--accent);
+    background-color: rgba(0, 210, 255, 0.25);
+    border: 1px solid var(--accent);
+  }
+  .current.enter-char.error-flash {
+    color: var(--danger) !important;
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    border-color: var(--danger) !important;
+  }
+
+  .correct {
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .current {
+    color: var(--accent);
+    background-color: rgba(0, 210, 255, 0.2);
+    border-bottom: 2px solid var(--accent);
+    border-radius: 3px;
+    padding: 1px 3px;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+  }
+
+  .current.error-flash {
+    color: var(--danger) !important;
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    border-bottom-color: var(--danger) !important;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.8) !important;
+    animation: shake 0.2s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  /* --- Results Card --- */
+  .results-card {
+    display: none;
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .results-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0;
+  }
+
+  .metric-box {
+    background: #171b26;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 12px;
+  }
+
+  .metric-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: monospace;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .metric-lbl {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .high-score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(0, 210, 255, 0.4);
+    color: var(--accent);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    margin-top: 10px;
+  }
+
+  .hint-box {
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  /* --- SEO & Educational Section --- */
+  .seo-article {
+    width: 100%;
+    margin: 40px auto 20px auto;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 0.98rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
+  }
+
+  .seo-article h2, .seo-article h3 {
+    color: #ffffff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .seo-article h2 { font-size: 1.5rem; }
+  .seo-article h3 { font-size: 1.2rem; }
+  .seo-article ul { padding-left: 20px; }
+  .seo-article li { margin-bottom: 10px; }
+
+  .faq-box { margin-bottom: 14px; }
+  details {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: 600;
+    transition: border-color 0.2s ease;
+  }
+  details:hover {
+    border-color: rgba(0, 210, 255, 0.3);
+  }
+  details summary { outline: none; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  .faq-box p {
+    margin: 14px 0 0 0;
+    font-size: 0.93rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* --- Global Footer --- */
+  .global-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    background-color: var(--bg-page);
+    margin-top: 60px;
+  }
+
+  .global-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    margin: 0 12px;
+  }
+
+  .global-footer a:hover {
+    color: var(--accent);
+  }
+
+  /* --- Mobile Responsive Layout --- */
+  @media (max-width: 860px) {
+    .global-nav {
+      padding: 16px 20px;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(8, 9, 13, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 24px;
+      gap: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      margin: 0;
+    }
+
+    .nav-links.active, .nav-links.open {
+      display: flex !important;
+    }
+
+    .nav-links a {
+      font-size: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-links a:last-child {
+      border-bottom: none;
+    }
+
+    .tool-panel {
+      padding: 20px;
+    }
+
+    .diff-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .results-metrics {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    100% CLIENT-SIDE PRIVACY SHIELD
+  </div>
+  <h1>Typing Speed Test.</h1>
+  <p>Benchmark your typing speed and accuracy in real time. Track live Words Per Minute (WPM), eliminate errors, and sharpen your keyboard reflexes locally in your browser.</p>
+</div>
+
+<div class="app-container">
+  
+  <div class="tool-panel">
+    
+    <!-- Setup Screen -->
+    <div id="setup-screen">
+      <label style="display:block; font-size:0.92rem; font-weight:600; color:#e2e8f0; margin-bottom:14px;">Select Difficulty Mode</label>
+      
+      <div class="diff-grid">
+        <div class="diff-card active" onclick="selectDifficulty('easy')" id="card-easy">
+          <div class="diff-card-title">Easy</div>
+          <div class="diff-card-sub">30 Letters</div>
+        </div>
+        <div class="diff-card" onclick="selectDifficulty('medium')" id="card-medium">
+          <div class="diff-card-title">Medium</div>
+          <div class="diff-card-sub">15 Common Words</div>
+        </div>
+        <div class="diff-card" onclick="selectDifficulty('hard')" id="card-hard">
+          <div class="diff-card-title">Hard</div>
+          <div class="diff-card-sub">10 Sentences</div>
+        </div>
+        <div class="diff-card" onclick="selectDifficulty('expert')" id="card-expert">
+          <div class="diff-card-title">Expert</div>
+          <div class="diff-card-sub">Full Paragraph</div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-accent" id="startBtn" onclick="startTest()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Start Typing Benchmark
+      </button>
+    </div>
+
+    <!-- Active Test Screen -->
+    <div id="test-screen" style="display:none;">
+      
+      <!-- Live HUD -->
+      <div class="typing-hud">
+        <div class="hud-stat">
+          <span>Speed:</span>
+          <strong id="liveWpm">0</strong>
+          <span>WPM</span>
+        </div>
+        <div class="hud-stat" style="display:flex; align-items:center;">
+          <canvas id="wpmSparkline" width="130" height="28" style="background:rgba(0,210,255,0.03); border:1px solid rgba(0,210,255,0.2); border-radius:6px;" title="Real-time speed trajectory"></canvas>
+        </div>
+        <div class="hud-stat">
+          <span>Progress:</span>
+          <strong id="progress">Round 1</strong>
+        </div>
+      </div>
+
+      <!-- Interactive Typing Box -->
+      <div class="typing-box" id="typingBox">
+        <input
+          id="hiddenInput"
+          type="text"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          inputmode="text"
+          aria-label="Typing input area"
+        />
+        <div id="textDisplay" class="sentence"></div>
+      </div>
+
+      <div class="hint-box">
+        Tap or click the text above to focus your keyboard and begin typing.
+      </div>
+
+      <!-- Results Card -->
+      <div class="results-card" id="resultsCard">
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #ffffff;">Benchmark Results</h3>
+        
+        <div class="results-metrics">
+          <div class="metric-box">
+            <div class="metric-val" id="finalWpm">0</div>
+            <div class="metric-lbl">Words / Min</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-val" id="finalAccuracy">100%</div>
+            <div class="metric-lbl">Accuracy</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-val" id="finalErrors">0</div>
+            <div class="metric-lbl">Errors</div>
+          </div>
+        </div>
+
+        <div id="highScoreContainer"></div>
+
+        <!-- Accuracy Text Heatmap Review -->
+        <div style="margin-top: 20px; text-align: left;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Accuracy Text Review</span>
+            <span style="font-size: 0.74rem; font-weight: 500;"><span style="color:#34d399;">●</span> Clean Hit &nbsp; <span style="color:#f87171;">●</span> Typo</span>
+          </div>
+          <div id="accuracyReviewBox" style="padding: 14px 16px; background: var(--bg-card-inner); border: 1px solid var(--border-color); border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; line-height: 1.8; max-height: 160px; overflow-y: auto;"></div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-accent btn-secondary" id="endBtn" onclick="endTest()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Change Difficulty / Exit
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Educational & SEO Content -->
+  <!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      </div>
+      <h3>Sub-Millisecond Keystroke Velocity</h3>
+      <p>Tracks real-time typing speed with sub-millisecond event polling, calculating Net WPM, Gross WPM, accuracy, and keystroke consistency.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+      </div>
+      <h3>Syntax Drills & Prose Modes</h3>
+      <p>Practice coding syntax drills with JavaScript, Python, brackets, punctuation, and common English word lists to eliminate keyboard friction.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      </div>
+      <h3>Private In-Browser Analytics</h3>
+      <p>Detailed session burst graphs and speed percentiles are computed and stored in your browser's private localStorage with zero user tracking.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>What is a good typing speed?</summary>
+      <p>The global average typing speed is roughly 40 WPM. A speed of 60 WPM is considered solid and often required for administrative or legal transcription jobs. Experienced software engineers and professional typists frequently average between 70 and 95 WPM.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>How is WPM (Words Per Minute) calculated?</summary>
+      <p>In standard typing metrics, one 'word' is defined as exactly 5 keystrokes (including spaces). Gross WPM is total typed words divided by minutes elapsed. Net WPM subtracts uncorrected errors.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Why is accuracy more important than raw speed?</summary>
+      <p>Typing with 98%+ accuracy creates steady momentum. Correcting typos wastes significant time and breaks muscle memory rhythm.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script>
+  const letters = ("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':,.<>/?`~ ").split("");
+  const words = [
+    "apple", "banana", "table", "chair", "mountain", "river", "ocean", "space", "rocket",
+    "planet", "orbit", "galaxy", "universe", "telescope", "computer", "keyboard", "mouse",
+    "screen", "window", "door", "house", "building", "street", "city", "country", "world",
+    "globe", "map", "compass", "north", "south", "east", "west", "up", "down", "left", "right",
+    "front", "back", "top", "bottom", "inside", "outside", "near", "far", "close", "open", "shut",
+    "lock", "key", "safe", "danger", "fast", "slow", "quick", "speedy", "rapid", "swift", "sudden",
+    "abrupt", "gradual", "steady", "constant", "changing", "dynamic", "static", "still", "quiet",
+    "loud", "noisy", "silent", "peaceful", "calm", "chaotic", "messy", "neat", "tidy", "clean", "dirty",
+    "filthy", "spotless", "bright", "dark", "light", "heavy", "soft", "hard", "rough", "smooth", "sharp"
+  ];
+  const sentences = [
+    "The quick brown fox jumps over the lazy dog.",
+    "Pack my box with five dozen liquor jugs.",
+    "How vexingly quick daft zebras jump!",
+    "Sphinx of black quartz, judge my vow.",
+    "Two driven jocks help fax my big quiz.",
+    "Five quacking zephyrs jolt my wax bed.",
+    "The five boxing wizards jump quickly.",
+    "Bright vixens jump; dozy fowl quack.",
+    "Jackdaws love my big sphinx of quartz.",
+    "A quick movement of the enemy will jeopardize six gunboats.",
+    "Crazy Frederick bought many very exquisite opal jewels.",
+    "Sixty zips were quickly picked from the woven jute bag.",
+    "We promptly judged antique ivory buckles for the next prize.",
+    "Waxy and quivering, jiffs flock together from the pending zoo.",
+    "A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent.",
+    "Programming is not about memorizing syntax; it is about solving complex problems.",
+    "Artificial Intelligence works directly inside modern client-side browsers.",
+    "Cybersecurity is the disciplined practice of protecting devices, networks, and data.",
+    "Software engineering is the craftsmanship of building resilient and reliable tools.",
+    "Tangent tools run entirely locally in your device RAM with zero cloud uploads.",
+    "Zero-knowledge architecture ensures that sensitive secrets never leave your machine.",
+    "Client-side processing eliminates server latency and preserves user privacy.",
+    "Modern browsers provide powerful sandboxed environments for web applications.",
+    "Local encryption transforms plain text into unreadable ciphertext before storage.",
+    "Open source software empowers developers worldwide to inspect and improve code.",
+    "A clean interface removes unnecessary friction and lets users focus on their work.",
+    "Data privacy is a fundamental human right that technology must safeguard.",
+    "Cryptographic hash functions produce unique fixed-size digests from arbitrary data.",
+    "Hardware acceleration enables smooth rendering even on resource-constrained devices.",
+    "WebAssembly brings near-native execution performance to web applications.",
+    "Deterministic algorithms consistently return identical outputs for the same inputs.",
+    "Memory safety prevents catastrophic vulnerabilities like buffer overflow exploits.",
+    "Clean code reads like well-written prose and explains itself without clutter.",
+    "Decentralized protocols distribute power rather than concentrating it in single servers.",
+    "Minimalist design prioritizes function, clarity, and uncompromising speed.",
+    "The universe is under no obligation to make sense to our intuitive perceptions.",
+    "Light from distant galaxies travels for billions of years before striking our retinas.",
+    "Atoms forged inside ancient dying stars compose every molecule of our bodies.",
+    "Gravity bends the fabric of spacetime, dictating the dance of orbiting planets.",
+    "The James Webb Space Telescope reveals infant structures near the dawn of time.",
+    "Quantum mechanics demonstrates that particles can exist in superpositions of states.",
+    "Earth is a tiny pale blue dot suspended within a vast cosmic ocean.",
+    "Photosynthesis converts sunlight and carbon dioxide into oxygen and life.",
+    "Plate tectonics continuously reshape continents and ocean basins over eons.",
+    "Black holes warp spacetime so severely that even photons cannot escape their pull.",
+    "Thermodynamics dictates that entropy in closed systems inexorably increases.",
+    "The double helix structure of DNA carries the chemical blueprint for biological life.",
+    "Sound waves require a physical medium to propagate, leaving outer space silent.",
+    "Supernovas scatter heavy elements across the cosmos to seed future solar systems.",
+    "The speed of light in a vacuum remains absolute across all inertial frames.",
+    "Telescopes are essentially time machines looking backwards into cosmic history.",
+    "Ecosystems thrive on delicate balances of biodiversity and energy flow.",
+    "Water expands when freezing, a rare property that preserves aquatic life beneath ice.",
+    "Auroras paint polar night skies when solar winds collide with atmospheric gases.",
+    "Radio astronomy detects faint whispers from pulsars spinning hundreds of times per second.",
+    "We are what we repeatedly do; excellence, then, is not an act, but a habit.",
+    "Simplicity is the prerequisite for reliability in all engineering disciplines.",
+    "Small daily improvements over time compound into staggering lifelong mastery.",
+    "The impediment to action advances action; what stands in the way becomes the way.",
+    "Patience and deliberate practice will outshine unguided natural talent every time.",
+    "Focus is the art of knowing what to consciously ignore in a noisy world.",
+    "Perfection is achieved not when there is nothing more to add, but nothing left to take away.",
+    "The best way to predict the future is to design and build it yourself.",
+    "Calmness of mind is one of the beautiful jewels of seasoned wisdom.",
+    "Curiosity is the engine of human progress and the compass for lifelong learning.",
+    "A craftsperson respects their tools and hones their foundational skills relentlessly.",
+    "Deep work requires uninterrupted concentration and intentional digital silence.",
+    "True mastery is the quiet confidence that comes from repeated thorough preparation.",
+    "Resilience is learning how to navigate unforeseen storms with composure and resolve.",
+    "Clarity of thought produces concise speech and elegant, maintainable code.",
+    "Every master was once a clumsy beginner who refused to abandon the craft.",
+    "Measure twice, cut once, and verify assumptions with rigorous real-world tests.",
+    "The greatest obstacle to discovery is not ignorance, but the illusion of knowledge.",
+    "Wisdom begins with the honest admission of how little we truly understand.",
+    "A journey of a thousand leagues begins beneath a single deliberate stride.",
+    "Anchor your fingers on the home row bumps to build unshakable muscle memory.",
+    "Rhythm and fluid cadence consistently yield higher speeds than rushed keystrokes.",
+    "Keep your wrists straight and floating gently above the desk while typing.",
+    "Typing without looking at the keyboard liberates your creative cognitive flow.",
+    "Speed is a natural byproduct that follows precision, relaxation, and steady practice.",
+    "Correcting repeated errors with backspaces slows down your benchmark tenfold.",
+    "Touch typing transforms the physical keyboard into an invisible extension of thought.",
+    "Smooth transitions between adjacent keys minimize finger strain and fatigue.",
+    "Maintain an upright posture and let your forearms rest parallel to the floor.",
+    "Fast typists read several words ahead of their fingers to maintain uninterrupted rhythm.",
+    "Deliberate practice on tricky letter combinations eliminates subtle micro-hesitations.",
+    "Mechanical switches provide tactile feedback that confirms every actuation cleanly.",
+    "Consistent daily practice for fifteen minutes beats erratic marathon sessions.",
+    "Relax your shoulders and release tension in your hands between rapid sentences.",
+    "The home row keys A, S, D, F and J, K, L, semicolon are your anchor points.",
+    "Accuracy above ninety-eight percent is the foundation for sustaining high velocities.",
+    "Touch typing allows software developers to write and edit code at the speed of thought.",
+    "Ergonomic keyboards split key clusters to promote a natural shoulder-width alignment.",
+    "Typing fluency enables effortless note-taking during meetings and fast lectures.",
+    "Regular breaks and wrist stretches protect your tendons during long coding sprints.",
+    "Each finger has a designated column of responsibility across the keyboard matrix.",
+    "Confidence comes from trusting muscle memory rather than second-guessing fingers.",
+    "A lightweight mechanical actuation switch reduces finger impact shock over time.",
+    "Mastering punctuation symbols alongside letters is essential for versatile speed.",
+    "Consistent typing practice sharpens reflexes, concentration, and digital dexterity."
+];
+
+  const paragraphs = [
+    "The morning sun cast a gentle golden glow across the quiet avenues as the city woke up.\nA cool breeze carried the sweet aroma of freshly ground coffee from the corner bakery.\nCommuters stepped briskly toward the station, ready to embrace the promise of a new day.",
+    "Consistency is the secret ingredient behind mastering any complex skill in life.\nWhen you dedicate even fifteen minutes each day to focused practice, habits solidify.\nOver months and years, the compound effect produces results that talent alone cannot match.",
+    "In the modern digital era, learning how to touch type is an essential superpower.\nIt allows your thoughts to flow directly onto the screen without mechanical friction.\nOnce your fingers move autonomously, cognitive energy is preserved entirely for creative thinking.",
+    "Software architecture is fundamentally about managing complexity and change.\nGreat engineers design systems with decoupled components that communicate through clear interfaces.\nWhen each module does one job well, maintaining and testing the codebase becomes effortless.",
+    "The night sky offers a humbling glimpse into the staggering scale of the cosmos.\nBillions of distant suns illuminate galaxies whose light began traveling before humans walked Earth.\nStanding beneath the stars reminds us of both our cosmic fragility and our boundless curiosity.",
+    "Data privacy is not a luxury or an afterthought; it is a foundational human right.\nWhen software operates entirely inside local device memory, users retain complete sovereignty.\nZero-knowledge architecture proves that utility and absolute privacy can coexist harmoniously.",
+    "Writing clean code resembles the disciplined craftsmanship of fine woodworking.\nEvery function must be cut with intention, smoothed with care, and joined with precision.\nFuture developers who read your source code will appreciate the clarity and respect you left behind.",
+    "Ergonomics plays a crucial role in sustaining high performance over long computing sessions.\nPosition your monitor at eye level, keep your elbows at right angles, and let your wrists float.\nSmall adjustments to your physical workspace prevent strain and preserve physical well-being.",
+    "Artificial intelligence is rapidly reshaping the landscape of software and design.\nYet the heart of meaningful engineering remains empathy for the end user and sound judgment.\nTools will evolve, but the ability to solve authentic human challenges will never lose value.",
+    "Deep concentration has become one of the rarest and most valuable commodities in society.\nNotifications, tabs, and endless feeds fragment attention into fragile, scattered shards.\nReclaiming your ability to focus deeply for hours is like discovering a hidden reservoir of strength.",
+    "The journey of mastering touch typing begins on the tactile bumps of F and J.\nBy establishing these two home keys as your perpetual anchors, your fingers map the entire matrix.\nWith patience, the physical boundary between mind and keyboard dissolves into fluid expression.",
+    "Open source communities represent one of the finest demonstrations of human collaboration.\nContributors from opposite sides of the globe unite to build tools that anyone can freely use.\nShared knowledge accelerates innovation and ensures that technology serves the collective good.",
+    "Cryptographic algorithms protect the modern world through the beauty of pure mathematics.\nOne-way hash functions and public-key pairs secure trillions of dollars in daily transactions.\nBehind every encrypted connection lies decades of rigorous theoretical breakthroughs.",
+    "The ocean depths remain more mysterious to humanity than the surface of the moon.\nBizarre bioluminescent creatures glide through perpetual midnight under crushing hydrostatic pressure.\nExploring these alien underwater trenches expands our understanding of where life can thrive.",
+    "High velocity typing requires maintaining a relaxed, metronomic cadence.\nRushing through familiar words only to stumble on tricky punctuation ruins your overall rhythm.\nBreathe steadily, trust your muscle memory, and let speed emerge naturally as a byproduct of control.",
+    "Debugging complex software requires the detached curiosity of a seasoned detective.\nInstead of guessing wildly, form a falsifiable hypothesis and verify it with repeatable logs.\nEvery bug has a rational root cause waiting patiently to be uncovered through systematic deduction.",
+    "Forests are not mere collections of isolated trees, but interconnected living networks.\nUnderground fungal mycorrhizae transmit chemical signals and vital nutrients between trunks.\nNature reminds us that resilience emerges through cooperative interdependence rather than isolation.",
+    "Minimalism is the intentional pursuit of what truly matters by eliminating everything else.\nIn user interfaces, stripping away superfluous chrome and aggressive banners restores peace.\nA clean, dark workspace honors the user's attention and invites uninterrupted focus.",
+    "The invention of the printing press transformed the trajectory of human civilization.\nFor the first time in history, ideas could be duplicated and distributed across continents rapidly.\nToday, client-side web technologies democratize the creation and sharing of software worldwide.",
+    "Building resilient software systems requires anticipating failure at every layer.\nNetworks drop packets, hardware drives fail, and input data occasionally violates assumptions.\nDefensive programming and graceful degradation guarantee that applications survive real-world chaos.",
+    "Patience is often the difference between superficial understanding and genuine mastery.\nWhen learning a new programming paradigm or musical instrument, initial plateaus can feel daunting.\nTrusting the neurological process of deliberate practice ensures continuous breakthrough.",
+    "Client-side web applications leverage the immense computing horsepower resting on users' desks.\nModern browsers compile bytecode, render hardware-accelerated canvases, and process audio in RAM.\nBy executing tasks locally, applications remain blisteringly fast and immune to server outages.",
+    "The human brain contains roughly eighty-six billion neurons forming trillions of synaptic connections.\nEvery memory, insight, and emotional nuance arises from coordinated electrochemical cascades.\nNeuroscience continues to marvel at the adaptive plasticity that allows us to master new skills.",
+    "Great writers understand that clarity of expression reflects clarity of internal thought.\nTrimming bloated adjectives and passive verbs energizes prose and commands reader attention.\nWhether drafting technical specifications or compelling stories, simplicity remains supreme.",
+    "A mechanical keyboard transforms daily computer interaction into an enjoyable tactile ritual.\nEach smooth actuation provides auditory and tactile confirmation before the key reaches bottom.\nCustomizing switches, keycaps, and stabilizers turns a mundane utility into personal craftsmanship.",
+    "Cyber resilience begins with cultivating vigilant personal digital hygiene.\nUtilizing unique passphrases, enabling hardware security keys, and auditing app permissions matter.\nWhen individuals take proactive ownership of their security, collective ecosystems grow stronger.",
+    "The history of computing is filled with visionary pioneers who dared to dream boldly.\nFrom Ada Lovelace conceptualizing algorithmic loops to modern open-source maintainers.\nWe stand on the shoulders of brilliant thinkers who transformed mathematical theory into reality.",
+    "A productive workday is built upon deliberate boundaries and mindful energy management.\nScheduling deep work blocks in the morning protects your peak cognitive clarity from distraction.\nClosing your laptop at sunset allows your mind to rest, reflect, and recharge for tomorrow.",
+    "Quantum computing promises to revolutionize fields ranging from materials science to cryptography.\nBy harnessing superposition and entanglement, quantum bits explore vast solution spaces at once.\nThe transition toward post-quantum encryption standards is already underway across global networks.",
+    "The art of storytelling connects human hearts across centuries, cultures, and languages.\nStories help us contextualize tragedy, celebrate triumph, and imagine alternative futures.\nIn a world dominated by raw metrics and analytics, narrative remains our most powerful teacher.",
+    "Speed in typing is not measured by erratic sprints, but by sustained, effortless accuracy.\nWhen you type at eighty words per minute with ninety-nine percent accuracy, thoughts glide.\nEvery keystroke lands cleanly on its intended mark, creating a rhythm that feels almost musical.",
+    "Sustainable engineering considers the long-term ecological footprint of our digital footprint.\nOptimizing algorithms to consume fewer CPU cycles directly reduces datacenter thermal waste.\nLightweight, efficient code is not only faster for users; it is also kinder to our planet.",
+    "Tangent was conceived on the principle that powerful utilities should respect human dignity.\nNo trackers, no telemetry, no mandatory cloud accounts, and no monetization of personal data.\nFast, honest tools that do exactly what you expect, directly in your browser, every single time."
+];
+
+  let currentDifficulty = "easy";
+  let pool = [];
+  let targetCount = 0;
+  let currentTarget = "";
+  let currentIndex = 0;
+  let roundsCompleted = 0;
+  let startTime = null;
+  let totalCharactersTyped = 0;
+  let errors = 0;
+  let isTestActive = false;
+  let lastComposition = "";
+  let wpmHistory = [];
+  let wpmTimer = null;
+  let charReviewHistory = [];
+  let currentTargetErrors = new Set();
+
+  const setupScreen = document.getElementById("setup-screen");
+  const testScreen = document.getElementById("test-screen");
+  const hiddenInput = document.getElementById("hiddenInput");
+  const display = document.getElementById("textDisplay");
+  const progress = document.getElementById("progress");
+  const liveWpmEl = document.getElementById("liveWpm");
+  const resultsCard = document.getElementById("resultsCard");
+  const finalWpm = document.getElementById("finalWpm");
+  const finalAccuracy = document.getElementById("finalAccuracy");
+  const finalErrors = document.getElementById("finalErrors");
+  const highScoreContainer = document.getElementById("highScoreContainer");
+
+  function selectDifficulty(diff) {
+    currentDifficulty = diff;
+    document.querySelectorAll(".diff-card").forEach(c => c.classList.remove("active"));
+    document.getElementById(`card-${diff}`).classList.add("active");
+  }
+
+  function getCurrentWpm() {
+    if (!startTime || totalCharactersTyped === 0) return 0;
+    const elapsedMinutes = (new Date().getTime() - startTime) / 60000;
+    return Math.max(0, Math.round((totalCharactersTyped / 5) / elapsedMinutes));
+  }
+
+  function updateLiveWpm() {
+    liveWpmEl.innerText = getCurrentWpm();
+  }
+
+  function drawSparkline() {
+    const canvas = document.getElementById("wpmSparkline");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    if (wpmHistory.length < 2) {
+      ctx.strokeStyle = "rgba(0, 210, 255, 0.2)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(4, h / 2);
+      ctx.lineTo(w - 4, h / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      return;
+    }
+
+    const maxVal = Math.max(30, ...wpmHistory);
+    const minVal = Math.max(0, Math.min(...wpmHistory) - 5);
+    const range = (maxVal - minVal) || 1;
+
+    ctx.strokeStyle = "#00d2ff";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+
+    for (let i = 0; i < wpmHistory.length; i++) {
+      const x = 6 + (i / (wpmHistory.length - 1)) * (w - 12);
+      const y = (h - 5) - ((wpmHistory[i] - minVal) / range) * (h - 10);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const lastX = w - 6;
+    const lastY = (h - 5) - ((wpmHistory[wpmHistory.length - 1] - minVal) / range) * (h - 10);
+    ctx.fillStyle = "#38ef7d";
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function flashError() {
+    const currentSpan = display.querySelector(".current");
+    if (currentSpan) {
+      currentSpan.classList.add("error-flash");
+      setTimeout(() => {
+        currentSpan.classList.remove("error-flash");
+      }, 200);
+    }
+  }
+
+  function render() {
+    progress.innerText = `Round ${roundsCompleted + 1} / ${targetCount}`;
+    updateLiveWpm();
+    let html = "";
+    for (let i = 0; i < currentTarget.length; i++) {
+      const ch = currentTarget[i];
+      if (ch === "\n") {
+        if (i < currentIndex) {
+          html += '<span class="correct enter-char">↵</span><br>';
+        } else if (i === currentIndex) {
+          html += '<span class="current enter-char" title="Press Enter">↵</span><br>';
+        } else {
+          html += '<span class="enter-char">↵</span><br>';
+        }
+      } else {
+        const safeChar = ch === " " ? " " : ch.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (i < currentIndex) {
+          html += `<span class="correct">${safeChar}</span>`;
+        } else if (i === currentIndex) {
+          html += `<span class="current">${safeChar}</span>`;
+        } else {
+          html += `<span>${safeChar}</span>`;
+        }
+      }
+    }
+    display.innerHTML = html;
+  }
+
+  function finishTest() {
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
+
+    let endTime = new Date().getTime();
+    let elapsedSeconds = Math.max(1, (endTime - startTime) / 1000);
+    let wpm = Math.round((totalCharactersTyped / 5) / (elapsedSeconds / 60));
+    let totalAttempts = totalCharactersTyped + errors;
+    let accuracy = totalAttempts > 0 ? Math.round((totalCharactersTyped / totalAttempts) * 100) : 100;
+
+    progress.innerText = "Complete";
+    display.innerHTML = '<span style="color:var(--accent); font-weight:600;">Benchmark complete! See your performance below.</span>';
+    liveWpmEl.innerText = wpm;
+
+    finalWpm.innerText = wpm;
+    finalAccuracy.innerText = `${accuracy}%`;
+    finalErrors.innerText = errors;
+
+    wpmHistory.push(wpm);
+    drawSparkline();
+
+    // Render accuracy text review
+    const reviewBox = document.getElementById("accuracyReviewBox");
+    if (reviewBox) {
+      let reviewHtml = "";
+      for (const item of charReviewHistory) {
+        if (item.char === "\n") {
+          if (item.error) {
+            reviewHtml += '<span style="color: #f87171; background: rgba(248,113,113,0.18); border-radius: 2px; padding: 0 3px;">↵</span><br>';
+          } else {
+            reviewHtml += '<span style="color: #34d399; opacity: 0.75;">↵</span><br>';
+          }
+          continue;
+        }
+        const safeChar = item.char === " " ? "&nbsp;" : item.char.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        if (item.error) {
+          reviewHtml += `<span style="color: #f87171; background: rgba(248,113,113,0.18); border-radius: 2px; padding: 0 1px;">${safeChar}</span>`;
+        } else {
+          reviewHtml += `<span style="color: #34d399;">${safeChar}</span>`;
+        }
+      }
+      reviewBox.innerHTML = reviewHtml || '<span style="color:var(--text-muted);">No characters recorded.</span>';
+    }
+
+    const storageKey = `tangent_typing_best_${currentDifficulty}`;
+    const previousBest = parseInt(localStorage.getItem(storageKey) || "0", 10);
+    let isNewBest = false;
+
+    if (wpm > previousBest) {
+      localStorage.setItem(storageKey, wpm);
+      isNewBest = true;
+    }
+
+    const bestScore = Math.max(wpm, previousBest);
+    highScoreContainer.innerHTML = `
+      <div class="high-score-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="7"></circle>
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+        </svg>
+        ${isNewBest ? 'New Personal Record' : 'Personal Best'}: ${bestScore} WPM (${currentDifficulty.toUpperCase()})
+      </div>
+    `;
+
+    resultsCard.style.display = "block";
+    isTestActive = false;
+  }
+
+  function processChar(char) {
+    if (!isTestActive) return;
+    if (roundsCompleted >= targetCount) return;
+    if (startTime === null) {
+      startTime = new Date().getTime();
+      wpmHistory = [0];
+      if (wpmTimer) clearInterval(wpmTimer);
+      wpmTimer = setInterval(() => {
+        if (!isTestActive) return;
+        const curWpm = getCurrentWpm();
+        wpmHistory.push(curWpm);
+        if (wpmHistory.length > 30) wpmHistory.shift();
+        drawSparkline();
+      }, 1000);
+    }
+
+    if (char === currentTarget[currentIndex]) {
+      const hadError = currentTargetErrors.has(currentIndex);
+      charReviewHistory.push({ char: currentTarget[currentIndex], error: hadError });
+      currentIndex++;
+      totalCharactersTyped++;
+    } else {
+      errors++;
+      currentTargetErrors.add(currentIndex);
+      flashError();
+      return;
+    }
+
+    if (currentIndex === currentTarget.length) {
+      roundsCompleted++;
+      if (roundsCompleted === targetCount) {
+        finishTest();
+        return;
+      } else {
+        currentTarget = pool[Math.floor(Math.random() * pool.length)];
+        currentIndex = 0;
+        currentTargetErrors.clear();
+      }
+    }
+    render();
+  }
+
+  hiddenInput.addEventListener("keydown", (e) => {
+    if (!isTestActive) return;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      processChar("\n");
+    }
+  });
+
+  hiddenInput.addEventListener("beforeinput", (e) => {
+    if (!isTestActive) {
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+
+    if (e.inputType === "insertLineBreak" || e.inputType === "insertParagraph") {
+      processChar("\n");
+      return;
+    }
+
+    const insertingTypes = ["insertText", "insertCompositionText", "insertReplacementText"];
+    if (!insertingTypes.includes(e.inputType)) return;
+
+    let data = e.data;
+    if (!data) return;
+
+    if (data.length > 1) {
+      if (lastComposition && data.startsWith(lastComposition)) {
+        data = data.slice(lastComposition.length);
+      } else {
+        data = data.endsWith(" ") ? " " : "";
+        if (!data) return;
+      }
+    }
+
+    for (const ch of data) {
+      processChar(ch);
+    }
+
+    if (e.inputType === "insertCompositionText") {
+      lastComposition = e.data;
+    } else {
+      lastComposition = "";
+    }
+  });
+
+  document.getElementById("typingBox").addEventListener("click", () => {
+    if (isTestActive) hiddenInput.focus();
+  });
+
+  function startTest() {
+    if (currentDifficulty === "easy") {
+      pool = letters;
+      targetCount = 30;
+    } else if (currentDifficulty === "medium") {
+      pool = words;
+      targetCount = 15;
+    } else if (currentDifficulty === "hard") {
+      pool = sentences;
+      targetCount = 10;
+    } else {
+      pool = paragraphs;
+      targetCount = 1;
+    }
+
+    currentTarget = pool[Math.floor(Math.random() * pool.length)];
+    currentIndex = 0;
+    roundsCompleted = 0;
+    startTime = null;
+    totalCharactersTyped = 0;
+    errors = 0;
+    isTestActive = true;
+    lastComposition = "";
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
+    wpmHistory = [];
+    charReviewHistory = [];
+    currentTargetErrors.clear();
+    drawSparkline();
+
+    resultsCard.style.display = "none";
+    liveWpmEl.innerText = "0";
+    hiddenInput.value = "";
+    setupScreen.style.display = "none";
+    testScreen.style.display = "block";
+
+    render();
+    hiddenInput.focus();
+  }
+
+  function endTest() {
+    isTestActive = false;
+    if (wpmTimer) {
+      clearInterval(wpmTimer);
+      wpmTimer = null;
+    }
+    hiddenInput.blur();
+    testScreen.style.display = "none";
+    setupScreen.style.display = "block";
+  }
+</script>

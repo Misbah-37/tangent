@@ -1,0 +1,1036 @@
+<!-- --- HEAD_META --- -->
+<title>Vector & SVG Optimizer Lab | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/svg-optimizer.html">
+<meta name="description" content="Minify, clean, and optimize vector SVG files directly in browser memory. Strip hidden editor metadata, round float precision, and export clean SVGs or high-res PNGs.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Vector & SVG Optimizer Lab | Tangent">
+<meta property="og:description" content="Inspect, clean, and compress vector SVG files with granular precision controls and instant raster PNG export. 100% client-side privacy.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are my SVG graphics or logo files uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. All parsing, XML sanitization, coordinate rounding, and minification happen entirely inside your browser memory using native DOMParser and regex engines. No files are transmitted across any network."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What hidden metadata does the optimizer remove?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It safely strips Adobe Illustrator, Inkscape, Sketch, and Figma editor namespaces, XML comments, unused definitions, and empty container groups that inflate file sizes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I rasterize and export my SVG as a PNG?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can export the cleaned vector graphic directly to high-resolution PNG at 2x Retina scale using the integrated HTML5 Canvas rasterizer."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+  :root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+  }
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .lab-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* Drag & Drop Upload Zone */
+  .drop-zone {
+    background: #0e121a;
+    border: 2px dashed #242e42;
+    border-radius: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.04);
+  }
+
+  .drop-zone-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent);
+    border-radius: 12px;
+    margin: 0 auto 12px;
+  }
+
+  .drop-zone h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .drop-zone p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  /* Main Workbench Grid */
+  .workbench-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* Configuration Sidebar */
+  .config-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .toggle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #cbd5e1;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #00d2ff;
+    cursor: pointer;
+  }
+
+  .select-group {
+    margin-bottom: 20px;
+  }
+
+  .select-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+  }
+
+  .custom-select {
+    width: 100%;
+    background: #0b0e14;
+    border: 1px solid #242c3d;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .custom-select:focus {
+    border-color: var(--accent);
+  }
+
+  /* Metric Savings Bar */
+  .metrics-card {
+    background: #0b0e14;
+    border: 1px solid #1f2738;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .metrics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .savings-badge {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .metrics-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .metrics-row strong {
+    color: #f1f5f9;
+  }
+
+  /* Action Buttons */
+  .action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #08090d;
+  }
+
+  .btn-primary:hover {
+    background: #33dcff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  }
+
+  .btn-secondary {
+    background: #19202f;
+    border: 1px solid #283347;
+    color: #f1f5f9;
+  }
+
+  .btn-secondary:hover {
+    background: #232c40;
+    border-color: var(--accent);
+  }
+
+  /* Right Preview & Code Inspector */
+  .preview-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .stage-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: #141824;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .stage-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .stage-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .zoom-btn {
+    background: #1e2433;
+    border: 1px solid #2f3a52;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .zoom-btn:hover {
+    background: #2b354b;
+    color: #fff;
+  }
+
+  .bg-toggles {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bg-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid #333d54;
+    cursor: pointer;
+  }
+
+  .stage-display {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .stage-display.bg-checker {
+    background: repeating-conic-gradient(#222a3a 0% 25%, #141a24 0% 50%) 50% / 16px 16px;
+  }
+  .stage-display.bg-dark {
+    background: #08090d;
+  }
+  .stage-display.bg-light {
+    background: #ffffff;
+  }
+  .stage-display.bg-accent {
+    background: rgba(0, 210, 255, 0.12);
+  }
+
+  .stage-display svg {
+    max-width: 90%;
+    max-height: 340px;
+    width: auto;
+    height: auto;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  /* Code Tabs & Textarea */
+  .code-inspector {
+    background: #0a0d14;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .code-textarea {
+    width: 100%;
+    height: 220px;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 18px;
+    outline: none;
+    resize: vertical;
+    white-space: pre-wrap;
+    word-break: break-all;
+    box-sizing: border-box;
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 920px) {
+    .workbench-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>SVG Optimizer Lab.</h1>
+  <p>Inspect, clean, and compress vector SVG files. Strip hidden editor metadata, round float precision, remove useless tags, and export to crisp PNG.</p>
+</div>
+
+<div class="lab-container">
+
+  <!-- Drop Zone Area -->
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-zone-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line></svg>
+    </div>
+    <h3 id="dropTitle">Drag & Drop SVG or Click to Upload</h3>
+    <p id="dropSubtitle">Supports Illustrator, Inkscape, Figma, and hand-coded SVG vector graphics</p>
+    <input type="file" id="fileInput" accept=".svg,image/svg+xml" style="display: none;">
+  </div>
+
+  <div class="workbench-grid">
+    
+    <!-- Config Controls -->
+    <div class="config-panel">
+      <div class="panel-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Optimization Passes
+      </div>
+
+      <div class="toggle-list">
+        <label class="toggle-row">
+          <span>Remove Comments & DOCTYPE</span>
+          <input type="checkbox" id="optComments" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Strip Editor Metadata (AI, Inkscape)</span>
+          <input type="checkbox" id="optEditor" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Remove Empty &lt;g&gt; and &lt;defs&gt;</span>
+          <input type="checkbox" id="optEmpty" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Remove Hidden / Invisible Nodes</span>
+          <input type="checkbox" id="optHidden" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Minify Path Whitespace</span>
+          <input type="checkbox" id="optPaths" checked>
+        </label>
+      </div>
+
+      <div class="select-group">
+        <label class="select-label" for="precisionSelect">Float Coordinate Precision</label>
+        <select id="precisionSelect" class="custom-select">
+          <option value="2">2 Decimal Places (Recommended)</option>
+          <option value="1">1 Decimal Place (Aggressive)</option>
+          <option value="3">3 Decimal Places (High Precision)</option>
+          <option value="none">Original (No Rounding)</option>
+        </select>
+      </div>
+
+      <!-- Real-time Metrics Card -->
+      <div class="metrics-card">
+        <div class="metrics-header">
+          <span style="font-size: 13px; font-weight: 700; color: #fff;">Compression Gain</span>
+          <span class="savings-badge" id="savingsBadge">-0.0%</span>
+        </div>
+        <div class="metrics-row">
+          <span>Original Size:</span>
+          <strong id="origSizeText">0 B</strong>
+        </div>
+        <div class="metrics-row">
+          <span>Optimized Size:</span>
+          <strong id="optSizeText" style="color: #00d2ff;">0 B</strong>
+        </div>
+        <div class="metrics-row">
+          <span>Bytes Saved:</span>
+          <strong id="savedBytesText" style="color: #10b981;">0 B</strong>
+        </div>
+      </div>
+
+      <!-- Action Stack -->
+      <div class="action-stack">
+        <button type="button" class="action-btn btn-primary" id="downloadSvgBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download Optimized SVG
+        </button>
+        <button type="button" class="action-btn btn-secondary" id="copySvgBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span id="copySvgText">Copy SVG Code</span>
+        </button>
+        <button type="button" class="action-btn btn-secondary" id="exportPngBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          Export as PNG (2x)
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Preview Stage & Code -->
+    <div class="preview-panel">
+      
+      <div class="stage-box">
+        <div class="stage-header">
+          <span class="stage-title">Vector Preview</span>
+          <div class="stage-controls">
+            <div class="zoom-controls">
+              <button type="button" class="zoom-btn" id="zoomOutBtn" title="Zoom Out">-</button>
+              <button type="button" class="zoom-btn" id="zoomResetBtn" title="Reset Zoom">100%</button>
+              <button type="button" class="zoom-btn" id="zoomInBtn" title="Zoom In">+</button>
+            </div>
+            <div class="bg-toggles">
+              <button type="button" class="bg-btn" style="background: repeating-conic-gradient(#222a3a 0% 25%, #141a24 0% 50%) 50% / 10px 10px;" data-bg="bg-checker" title="Checkerboard"></button>
+              <button type="button" class="bg-btn" style="background: #08090d;" data-bg="bg-dark" title="Dark"></button>
+              <button type="button" class="bg-btn" style="background: #ffffff;" data-bg="bg-light" title="White"></button>
+              <button type="button" class="bg-btn" style="background: #00d2ff;" data-bg="bg-accent" title="Accent Glow"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-display bg-checker" id="stageDisplay">
+          <!-- Rendered SVG will be placed here -->
+        </div>
+      </div>
+
+      <div class="code-inspector">
+        <div class="stage-header">
+          <span class="stage-title">Optimized XML Code</span>
+        </div>
+        <textarea id="svgOutputArea" class="code-textarea" spellcheck="false" placeholder="Optimized SVG code appears here..."></textarea>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+      </div>
+      <h3>Editor Bloat Elimination</h3>
+      <p>Safely strip Adobe Illustrator, Inkscape, Sketch, and Figma metadata, unreferenced IDs, doctype declarations, and redundant XML comments.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+      </div>
+      <h3>Precision Decimal Rounding</h3>
+      <p>Round excessive coordinate decimals from 6+ digits down to 1-2 places, drastically slashing file byte sizes without visible geometry distortion.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </div>
+      <h3>Real-Time Visual Diff</h3>
+      <p>Inspect original vs minified SVGs side-by-side with live zoom, byte counter metrics, and instant 2x Retina PNG rasterization.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Are my SVG graphics or logo files uploaded anywhere?</summary>
+      <p>No. All parsing, XML sanitization, coordinate rounding, and minification happen entirely inside your browser memory using native DOMParser and regex engines. No files are transmitted across any network.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>What hidden metadata does the optimizer remove?</summary>
+      <p>It safely strips Adobe Illustrator, Inkscape, Sketch, and Figma generator tags, XML namespaces, doctypes, comments, and empty group tags while keeping paths and vector curves intact.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can I rasterize optimized SVGs to PNG images?</summary>
+      <p>Yes. The tool features a built-in high-DPI rasterizer that converts your cleaned SVG directly into a transparent PNG for presentation decks and apps.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script>
+  // Sample SVG Graphic (Vibrant Tangent Geometric Mark with Illustrator & Inkscape Junk)
+  const SAMPLE_SVG = `<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     viewBox="0 0 120 120" width="120" height="120" xml:space="preserve">
+  <metadata>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:title>Tangent Logo Asset</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d2ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <g id="empty-adobe-layer"></g>
+  <g id="tangent-brand-mark">
+    <circle cx="60.00000" cy="60.00000" r="54.00000" fill="#0d111a" stroke="#253047" stroke-width="2.50000"/>
+    <circle cx="60.00000" cy="60.00000" r="42.00000" fill="none" stroke="#1e293b" stroke-width="1.50000" stroke-dasharray="4 4"/>
+    <path d="M 60.00000 95.00000 C 40.67000 95.00000 25.00000 79.33000 25.00000 60.00000 C 25.00000 40.67000 40.67000 25.00000 60.00000 25.00000 L 98.00000 25.00000" 
+          fill="none" stroke="url(#cyanGrad)" stroke-width="7.00000" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="98.00000" cy="25.00000" r="5.00000" fill="#00d2ff"/>
+  </g>
+  <g display="none"><rect width="120" height="120" fill="#ff0000"/></g>
+</svg>`;
+
+  let originalRawSvg = SAMPLE_SVG;
+  let optimizedSvg = '';
+  let currentZoom = 1;
+
+  const dropZone = document.getElementById('dropZone');
+  const dropTitle = document.getElementById('dropTitle');
+  const dropSubtitle = document.getElementById('dropSubtitle');
+  const fileInput = document.getElementById('fileInput');
+  const stageDisplay = document.getElementById('stageDisplay');
+  const svgOutputArea = document.getElementById('svgOutputArea');
+  const savingsBadge = document.getElementById('savingsBadge');
+  const origSizeText = document.getElementById('origSizeText');
+  const optSizeText = document.getElementById('optSizeText');
+  const savedBytesText = document.getElementById('savedBytesText');
+  const downloadSvgBtn = document.getElementById('downloadSvgBtn');
+  const copySvgBtn = document.getElementById('copySvgBtn');
+  const copySvgText = document.getElementById('copySvgText');
+  const exportPngBtn = document.getElementById('exportPngBtn');
+
+  const optComments = document.getElementById('optComments');
+  const optEditor = document.getElementById('optEditor');
+  const optEmpty = document.getElementById('optEmpty');
+  const optHidden = document.getElementById('optHidden');
+  const optPaths = document.getElementById('optPaths');
+  const precisionSelect = document.getElementById('precisionSelect');
+
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const zoomResetBtn = document.getElementById('zoomResetBtn');
+
+  // Background switches
+  document.querySelectorAll('.bg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      stageDisplay.className = 'stage-display ' + btn.dataset.bg;
+    });
+  });
+
+  // Zoom controls
+  zoomInBtn.addEventListener('click', () => setZoom(currentZoom + 0.25));
+  zoomOutBtn.addEventListener('click', () => setZoom(Math.max(0.25, currentZoom - 0.25)));
+  zoomResetBtn.addEventListener('click', () => setZoom(1));
+
+  function setZoom(z) {
+    currentZoom = Math.round(z * 100) / 100;
+    zoomResetBtn.textContent = `${Math.round(currentZoom * 100)}%`;
+    const svgEl = stageDisplay.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.transform = `scale(${currentZoom})`;
+    }
+  }
+
+  // Dropzone Handlers
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      loadFile(e.dataTransfer.files[0]);
+    }
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      loadFile(e.target.files[0]);
+    }
+  });
+
+  function loadFile(file) {
+    if (!file.name.toLowerCase().endsWith('.svg') && file.type !== 'image/svg+xml') {
+      alert('Please select a valid .svg file.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      originalRawSvg = e.target.result;
+      dropTitle.textContent = file.name;
+      dropSubtitle.textContent = `${formatBytes(file.size)} loaded. Optimizing...`;
+      processOptimization();
+    };
+    reader.readAsText(file);
+  }
+
+  // Robust DOM-based SVG Optimizer
+  function processOptimization() {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(originalRawSvg, 'image/svg+xml');
+
+      const parseErr = doc.querySelector('parsererror');
+      if (parseErr) {
+        console.warn('SVG parse error, falling back to raw:', parseErr.textContent);
+        optimizedSvg = originalRawSvg;
+        renderOutput();
+        return;
+      }
+
+      const svgRoot = doc.documentElement;
+      if (!svgRoot || svgRoot.nodeName.toLowerCase() !== 'svg') {
+        optimizedSvg = originalRawSvg;
+        renderOutput();
+        return;
+      }
+
+      // 1. Remove Comments
+      if (optComments.checked) {
+        const commentIterator = doc.createNodeIterator(doc, NodeFilter.SHOW_COMMENT);
+        const comments = [];
+        let cNode;
+        while (cNode = commentIterator.nextNode()) {
+          comments.push(cNode);
+        }
+        comments.forEach(c => c.parentNode && c.parentNode.removeChild(c));
+      }
+
+      // 2. Strip Editor Namespaces & Metadata Tags
+      if (optEditor.checked) {
+        doc.querySelectorAll('metadata').forEach(m => m.remove());
+        
+        const allElements = doc.querySelectorAll('*');
+        allElements.forEach(el => {
+          const toRemove = [];
+          for (let i = 0; i < el.attributes.length; i++) {
+            const attrName = el.attributes[i].name.toLowerCase();
+            if (
+              attrName.startsWith('xmlns:inkscape') ||
+              attrName.startsWith('xmlns:sodipodi') ||
+              attrName.startsWith('xmlns:adobe') ||
+              attrName.startsWith('xmlns:i') ||
+              attrName.startsWith('xmlns:sketch') ||
+              attrName.startsWith('inkscape:') ||
+              attrName.startsWith('sodipodi:') ||
+              attrName.startsWith('i:') ||
+              attrName.startsWith('sketch:') ||
+              attrName === 'enable-background' ||
+              attrName === 'xml:space'
+            ) {
+              toRemove.push(el.attributes[i].name);
+            }
+          }
+          toRemove.forEach(a => el.removeAttribute(a));
+        });
+      }
+
+      // 3. Remove Hidden / Invisible Nodes
+      if (optHidden.checked) {
+        doc.querySelectorAll('[display="none"], [visibility="hidden"]').forEach(el => el.remove());
+      }
+
+      // 4. Remove Empty Containers (<g></g>, <defs></defs>)
+      if (optEmpty.checked) {
+        for (let pass = 0; pass < 3; pass++) {
+          doc.querySelectorAll('g, defs').forEach(el => {
+            if (!el.children.length && !el.textContent.trim()) {
+              el.remove();
+            }
+          });
+        }
+      }
+
+      // 5. Precision & Path Optimization
+      const precVal = precisionSelect.value;
+      const hasPrec = (precVal !== 'none');
+      const pNum = hasPrec ? parseInt(precVal, 10) : 2;
+
+      const roundNum = (valStr) => {
+        const n = parseFloat(valStr);
+        if (isNaN(n)) return valStr;
+        return parseFloat(n.toFixed(pNum)).toString();
+      };
+
+      doc.querySelectorAll('*').forEach(el => {
+        // Optimize Path Data (d attribute ONLY)
+        if (el.hasAttribute('d')) {
+          let d = el.getAttribute('d');
+          if (hasPrec) {
+            d = d.replace(/-?\d+\.\d+/g, roundNum);
+          }
+          if (optPaths.checked) {
+            d = d.replace(/,/g, ' ')
+                 .replace(/\s*([a-df-z])\s*/gi, '$1 ')
+                 .replace(/\s+/g, ' ')
+                 .trim();
+          }
+          el.setAttribute('d', d);
+        }
+
+        // Numeric attributes
+        if (hasPrec) {
+          ['x', 'y', 'cx', 'cy', 'r', 'rx', 'ry', 'x1', 'y1', 'x2', 'y2', 'stroke-width', 'width', 'height'].forEach(attr => {
+            if (el.hasAttribute(attr)) {
+              const v = el.getAttribute(attr);
+              if (/^-?\d+\.\d+$/.test(v)) {
+                el.setAttribute(attr, roundNum(v));
+              }
+            }
+          });
+
+          if (el.hasAttribute('viewBox')) {
+            const vbParts = el.getAttribute('viewBox').trim().split(/\s+/).map(roundNum);
+            el.setAttribute('viewBox', vbParts.join(' '));
+          }
+        }
+      });
+
+      // Serialize back to clean XML string
+      const serializer = new XMLSerializer();
+      let res = serializer.serializeToString(svgRoot);
+
+      if (optComments.checked) {
+        res = res.replace(/^<\?xml[^>]*\?>\s*/i, '');
+        res = res.replace(/^<!DOCTYPE[^>]*>\s*/i, '');
+      }
+
+      optimizedSvg = res.trim();
+    } catch (e) {
+      console.error('Optimization error:', e);
+      optimizedSvg = originalRawSvg;
+    }
+
+    renderOutput();
+  }
+
+  function renderOutput() {
+    svgOutputArea.value = optimizedSvg;
+    stageDisplay.innerHTML = optimizedSvg;
+    
+    // Apply current zoom
+    const svgEl = stageDisplay.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.transform = `scale(${currentZoom})`;
+    }
+
+    updateMetrics(originalRawSvg, optimizedSvg);
+  }
+
+  function updateMetrics(orig, opt) {
+    const origBytes = new Blob([orig]).size;
+    const optBytes = new Blob([opt]).size;
+    const saved = origBytes - optBytes;
+    const pct = origBytes > 0 ? ((saved / origBytes) * 100).toFixed(1) : 0;
+
+    origSizeText.textContent = formatBytes(origBytes);
+    optSizeText.textContent = formatBytes(optBytes);
+    savedBytesText.textContent = `${formatBytes(Math.abs(saved))} (${saved >= 0 ? '-' : '+'}${pct}%)`;
+
+    savingsBadge.textContent = `${saved >= 0 ? '-' : '+'}${Math.abs(pct)}%`;
+    savingsBadge.style.color = saved >= 0 ? 'var(--success)' : 'var(--accent)';
+  }
+
+  function formatBytes(bytes) {
+    if (bytes <= 0) return '0 B';
+    if (bytes < 1024) return bytes + ' B';
+    return (bytes / 1024).toFixed(2) + ' KB';
+  }
+
+  // Event Listeners for Toggles & Precision
+  [optComments, optEditor, optEmpty, optHidden, optPaths].forEach(el => {
+    el.addEventListener('change', processOptimization);
+  });
+  precisionSelect.addEventListener('change', processOptimization);
+  
+  svgOutputArea.addEventListener('input', () => {
+    optimizedSvg = svgOutputArea.value;
+    stageDisplay.innerHTML = optimizedSvg;
+    const svgEl = stageDisplay.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.transform = `scale(${currentZoom})`;
+    }
+    updateMetrics(originalRawSvg, optimizedSvg);
+  });
+
+  // Download Optimized SVG
+  downloadSvgBtn.addEventListener('click', () => {
+    const blob = new Blob([optimizedSvg], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'optimized.svg';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Copy SVG Code
+  copySvgBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(optimizedSvg);
+      copySvgText.textContent = "Copied!";
+      setTimeout(() => { copySvgText.textContent = "Copy SVG Code"; }, 2000);
+    } catch (err) {
+      copySvgText.textContent = "Failed to copy";
+    }
+  });
+
+  // Export as Raster PNG (2x)
+  exportPngBtn.addEventListener('click', () => {
+    const blob = new Blob([optimizedSvg], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+
+    img.onload = () => {
+      const scale = 2; // 2x Retina
+      const canvas = document.createElement('canvas');
+      const w = (img.naturalWidth || 800);
+      const h = (img.naturalHeight || 800);
+      canvas.width = w * scale;
+      canvas.height = h * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, 0, 0);
+
+      URL.revokeObjectURL(url);
+      canvas.toBlob((pngBlob) => {
+        const pngUrl = URL.createObjectURL(pngBlob);
+        const link = document.createElement('a');
+        link.href = pngUrl;
+        link.download = 'vector-export.png';
+        link.click();
+        URL.revokeObjectURL(pngUrl);
+      }, 'image/png');
+    };
+    img.src = url;
+  });
+
+  // Initial Run with Sample SVG
+  processOptimization();
+</script>

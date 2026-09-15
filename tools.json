@@ -28,6 +28,62 @@
     "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\" ry=\"2\"></rect><line x1=\"8\" y1=\"21\" x2=\"16\" y2=\"21\"></line><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"21\"></line>"
   },
   {
+    "id": "code-to-image",
+    "filename": "code-to-image.html",
+    "title": "Code-to-Image",
+    "sidebarDesc": "Carbon-style snippet frames",
+    "category": "Media & Video",
+    "cardTitle": "Code-to-Image & Snippet Studio",
+    "cardDesc": "Turn code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, macOS window chrome, and syntax themes.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 3,
+    "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><circle cx=\"6.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"9.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"12.5\" cy=\"6\" r=\"1\"></circle><polyline points=\"8 15 10 13 8 11\"></polyline><line x1=\"12\" y1=\"15\" x2=\"16\" y2=\"15\"></line>"
+  },
+  {
+    "id": "svg-optimizer",
+    "filename": "svg-optimizer.html",
+    "title": "SVG Optimizer",
+    "sidebarDesc": "Minify, clean & rasterize SVG",
+    "category": "Media & Video",
+    "cardTitle": "Vector & SVG Optimizer Lab",
+    "cardDesc": "Inspect, clean, and compress vector SVG files. Strip hidden editor metadata, round precision, remove useless tags, and export to crisp PNG.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 4,
+    "iconSvg": "<circle cx=\"12\" cy=\"19\" r=\"2\"></circle><path d=\"M12 17V5\"></path><circle cx=\"5\" cy=\"5\" r=\"2\"></circle><circle cx=\"19\" cy=\"5\" r=\"2\"></circle><line x1=\"7\" y1=\"5\" x2=\"17\" y2=\"5\"></line><path d=\"M5 7c0 4 7 8 7 10\"></path><path d=\"M19 7c0 4-7 8-7 10\"></path>"
+  },
+  {
+    "id": "photo-resizer",
+    "filename": "photo-resizer.html",
+    "title": "Photo Resizer",
+    "sidebarDesc": "Scale dimensions & WebP convert",
+    "category": "Media & Video",
+    "cardTitle": "Photo Resizer",
+    "cardDesc": "Crop, resize, and compress images with exact pixel precision and binary search targeting.",
+    "badge": null,
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 5,
+    "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><polyline points=\"21 15 16 10 5 21\"></polyline>"
+  },
+  {
+    "id": "photo-scrubber",
+    "filename": "photo-scrubber.html",
+    "title": "Photo Scrubber",
+    "sidebarDesc": "Strip GPS & EXIF camera tags",
+    "category": "Media & Video",
+    "cardTitle": "Photo EXIF & GPS Scrubber",
+    "cardDesc": "Inspect hidden GPS location coordinates, camera models, and timestamps, and wipe them permanently before sharing.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 6,
+    "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>"
+  },
+  {
     "id": "pdf-redactor",
     "filename": "pdf-redactor.html",
     "title": "PDF Redactor",
@@ -38,7 +94,7 @@
     "badge": "NEW",
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 3,
+    "gridOrder": 7,
     "iconSvg": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><line x1=\"9\" y1=\"9\" x2=\"15\" y2=\"9\"></line><line x1=\"8\" y1=\"13\" x2=\"16\" y2=\"13\"></line>"
   },
   {
@@ -52,7 +108,7 @@
     "badge": null,
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 4,
+    "gridOrder": 8,
     "iconSvg": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"></path><polyline points=\"14 2 14 8 20 8\"></polyline><line x1=\"16\" y1=\"13\" x2=\"8\" y2=\"13\"></line><line x1=\"16\" y1=\"17\" x2=\"8\" y2=\"17\"></line><polyline points=\"10 9 9 9 8 9\"></polyline>"
   },
   {
@@ -66,22 +122,50 @@
     "badge": "NEW",
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 5,
+    "gridOrder": 9,
     "iconSvg": "<path d=\"M4 7V4h3\"></path><path d=\"M20 7V4h-3\"></path><path d=\"M4 17v3h3\"></path><path d=\"M20 17v3h-3\"></path><line x1=\"4\" y1=\"12\" x2=\"20\" y2=\"12\"></line><rect x=\"8\" y=\"8\" width=\"8\" height=\"8\" rx=\"1\"></rect>"
   },
   {
-    "id": "photo-scrubber",
-    "filename": "photo-scrubber.html",
-    "title": "Photo Scrubber",
-    "sidebarDesc": "Strip GPS & EXIF camera tags",
-    "category": "Media & Video",
-    "cardTitle": "Photo EXIF & GPS Scrubber",
-    "cardDesc": "Inspect hidden GPS location coordinates, camera models, and timestamps, and wipe them permanently before sharing.",
+    "id": "markdown-studio",
+    "filename": "markdown-studio.html",
+    "title": "Academic Markdown",
+    "sidebarDesc": "LaTeX math, paper presets & PDF",
+    "category": "Documents & PDF",
+    "cardTitle": "Markdown & Academic Document Studio",
+    "cardDesc": "Write technical and academic papers with live LaTeX math, footnotes, tables, and distraction-free export to clean PDF or HTML.",
     "badge": "NEW",
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 5,
-    "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>"
+    "gridOrder": 10,
+    "iconSvg": "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"></path><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"></path><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"13\" y2=\"11\"></line>"
+  },
+  {
+    "id": "document-signer",
+    "filename": "document-signer.html",
+    "title": "Contract e-Signer",
+    "sidebarDesc": "Sign PDFs, leases & contracts",
+    "category": "Security & System",
+    "cardTitle": "Document & Contract e-Signer",
+    "cardDesc": "Sign PDFs, leases, and contracts in seconds. Draw, type, or upload your signature, place date stamps, and export with zero accounts.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 11,
+    "iconSvg": "<path d=\"M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\"></path><polygon points=\"18 2 22 6 12 16 8 16 8 12 18 2\"></polygon>"
+  },
+  {
+    "id": "file-vault",
+    "filename": "file-vault.html",
+    "title": "File Lockbox",
+    "sidebarDesc": "PIN & password file safe",
+    "category": "Security & System",
+    "cardTitle": "Private Photo & File Lockbox",
+    "cardDesc": "Lock sensitive photos, tax records, and documents with a PIN or password. Creates an encrypted local safe with zero cloud uploads.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 12,
+    "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path><circle cx=\"12\" cy=\"16\" r=\"1.5\"></circle>"
   },
   {
     "id": "password-meter",
@@ -94,7 +178,7 @@
     "badge": "UPDATED",
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 6,
+    "gridOrder": 13,
     "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path>"
   },
   {
@@ -108,22 +192,8 @@
     "badge": "UPDATED",
     "priority": 0.9,
     "changefreq": "weekly",
-    "gridOrder": 7,
+    "gridOrder": 14,
     "iconSvg": "<path d=\"M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z\"></path>"
-  },
-  {
-    "id": "photo-resizer",
-    "filename": "photo-resizer.html",
-    "title": "Photo Resizer",
-    "sidebarDesc": "Scale dimensions & WebP convert",
-    "category": "Media & Video",
-    "cardTitle": "Photo Resizer",
-    "cardDesc": "Crop, resize, and compress images with exact pixel precision and binary search targeting.",
-    "badge": null,
-    "priority": 0.9,
-    "changefreq": "weekly",
-    "gridOrder": 8,
-    "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><polyline points=\"21 15 16 10 5 21\"></polyline>"
   },
   {
     "id": "qr-generator",
@@ -136,7 +206,7 @@
     "badge": null,
     "priority": 0.8,
     "changefreq": "weekly",
-    "gridOrder": 9,
+    "gridOrder": 15,
     "iconSvg": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect>"
   },
   {
@@ -150,7 +220,35 @@
     "badge": null,
     "priority": 0.8,
     "changefreq": "weekly",
-    "gridOrder": 10,
+    "gridOrder": 16,
     "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"6\" y1=\"8\" x2=\"6\" y2=\"8\"></line><line x1=\"10\" y1=\"8\" x2=\"10\" y2=\"8\"></line><line x1=\"14\" y1=\"8\" x2=\"14\" y2=\"8\"></line><line x1=\"18\" y1=\"8\" x2=\"18\" y2=\"8\"></line><line x1=\"8\" y1=\"12\" x2=\"8\" y2=\"12\"></line><line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"></line><line x1=\"16\" y1=\"12\" x2=\"16\" y2=\"12\"></line><line x1=\"7\" y1=\"16\" x2=\"17\" y2=\"16\"></line>"
+  },
+  {
+    "id": "resume-builder",
+    "filename": "resume-builder.html",
+    "title": "Resume Studio",
+    "sidebarDesc": "ATS-friendly resume builder",
+    "category": "Utilities",
+    "cardTitle": "Resume & CV Studio",
+    "cardDesc": "Build ATS-friendly, professional resumes with live side-by-side preview and instant free PDF download with zero watermarks or subscriptions.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 17,
+    "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"18\" rx=\"2\"></rect><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"16\" y2=\"11\"></line><line x1=\"8\" y1=\"15\" x2=\"12\" y2=\"15\"></line><circle cx=\"5\" cy=\"7\" r=\"1\"></circle><circle cx=\"5\" cy=\"11\" r=\"1\"></circle><circle cx=\"5\" cy=\"15\" r=\"1\"></circle>"
+  },
+  {
+    "id": "invoice-generator",
+    "filename": "invoice-generator.html",
+    "title": "Invoice & Receipt Studio",
+    "sidebarDesc": "Professional PDF invoices & receipts",
+    "category": "Utilities",
+    "cardTitle": "Invoice & Receipt Studio",
+    "cardDesc": "Generate professional invoices and receipts with itemized taxes, custom branding logos, multi-currency support, and free PDF download.",
+    "badge": "NEW",
+    "priority": 0.9,
+    "changefreq": "weekly",
+    "gridOrder": 18,
+    "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><line x1=\"6\" y1=\"15\" x2=\"10\" y2=\"15\"></line><line x1=\"14\" y1=\"15\" x2=\"18\" y2=\"15\"></line>"
   }
 ]

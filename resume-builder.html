@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Resume & CV Studio | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/resume-builder.html">
+<meta name="description" content="Build clean, ATS-friendly resumes in minutes with live preview and instant free PDF download. Zero watermarks, zero subscription traps, 100% privacy.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Resume & CV Studio | Tangent">
+<meta property="og:description" content="Create professional, ATS-compliant resumes and download PDF without credit cards, email sign-ups, or watermarks.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this resume builder really 100% free with no watermark?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Unlike websites like Zety or Resume.io that trap you into credit card trials or print watermarks on your PDF, Tangent is completely free forever. You can create and download as many PDF resumes as you want."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are these resumes ATS-friendly for job applications?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The templates use semantic, standard single and dual-column layouts with standard fonts and clean text encoding. Applicant Tracking Systems (ATS) used by major employers and hiring platforms can parse every section without formatting glitches."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my personal contact and work history stored on your servers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Everything runs 100% locally in your browser memory. We never transmit your work history, phone number, address, or resume content to any server."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+
+<style>
+/* ==========================================================================
+   TANGENT GLOBAL BASE STYLES & LAYOUT SYSTEM
+   ========================================================================== */
+:root {
+  --bg-base: #08090d;
+  --bg-surface: #0e111a;
+  --bg-card: #131724;
+  --bg-card-hover: #191e30;
+  --border-color: #1f273b;
+  --border-highlight: rgba(0, 210, 255, 0.4);
+  --accent: #00d2ff;
+  --accent-glow: rgba(0, 210, 255, 0.18);
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-danger: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* Global Navigation */
+.global-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: rgba(8, 9, 13, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-color);
+  height: 60px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.toolkit-toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.toolkit-toggle-btn:hover,
+body.sidebar-open .toolkit-toggle-btn {
+  color: #ffffff;
+  background-color: rgba(0, 210, 255, 0.12);
+  border-color: rgba(0, 210, 255, 0.4);
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+}
+
+.toolkit-toggle-btn .sidebar-icon {
+  color: #00d2ff;
+  transition: transform 0.2s ease;
+}
+
+body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+  transform: scale(1.05);
+}
+
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link:hover { color: var(--accent); }
+
+/* Collapsible Push-Sidebar */
+.tangent-sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  box-sizing: border-box !important;
+  background: #0f131f;
+  background: linear-gradient(180deg, #131826 0%, #0c0f18 100%);
+  border-right: 1px solid rgba(0, 210, 255, 0.18);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  z-index: 2500;
+  transform: translateX(-100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body.sidebar-open .tangent-sidebar {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #00d2ff;
+}
+
+.sidebar-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.sidebar-close-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-nav-list::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.2);
+  border-radius: 4px;
+}
+.sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.5);
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-group-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+  padding-left: 8px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #ffffff;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(0, 210, 255, 0.08);
+  border-color: rgba(0, 210, 255, 0.2);
+  transform: translateX(2px);
+}
+
+.sidebar-item.active {
+  background-color: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.35);
+}
+
+.sidebar-item svg {
+  flex-shrink: 0;
+}
+
+.sidebar-item .item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-item .item-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-item:hover .item-title,
+.sidebar-item.active .item-title {
+  color: #00d2ff;
+}
+
+.sidebar-item .item-desc {
+  font-size: 0.70rem;
+  color: #94a3b8;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* App Canvas Push (Desktop) */
+.app-canvas {
+  width: 100%;
+  box-sizing: border-box;
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 961px) {
+  body.sidebar-open .app-canvas {
+    margin-left: 280px !important;
+    width: calc(100% - 280px) !important;
+  }
+}
+
+/* Mobile Overlay Mode */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2400;
+}
+
+@media (max-width: 960px) {
+  .tangent-sidebar {
+    top: 0 !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    z-index: 2500 !important;
+  }
+  body.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+  .global-nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .menu-toggle { display: flex; }
+}
+
+/* Clean Hero Header & Badges */
+.clean-header {
+  text-align: center;
+  padding: 44px 20px 24px;
+}
+
+.badge-pill, .privacy-shield-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  color: #00d2ff;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-sub {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 680px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+}
+
+.feature-bar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+}
+
+.feature-item svg {
+  color: var(--accent-emerald);
+}
+
+/* Educational / SEO Article & FAQs */
+.seo-article {
+  border-top: 1px solid var(--border-color);
+  margin-top: 60px;
+  padding-top: 48px;
+}
+
+.seo-article h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.seo-article h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 28px 0 12px 0;
+  color: var(--accent);
+}
+
+.seo-article p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+
+.seo-article ul {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.seo-article li {
+  margin-bottom: 8px;
+}
+
+.seo-article li strong {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   FEATURE TILES & FAQ ARCHITECTURE (Standardized across all pages)
+   ========================================================================== */
+.info-section {
+  max-width: 1080px;
+  margin: 60px auto 40px auto;
+  padding: 50px 20px 0 20px;
+  border-top: 1px solid #1f2533;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
+}
+
+.feature-card {
+  background: #11141d;
+  border: 1px solid #1f2533;
+  border-radius: 16px;
+  padding: 28px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-icon {
+  margin-bottom: 16px;
+  color: #00d2ff;
+  display: inline-flex;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.feature-card h3 span { color: #00d2ff; }
+
+.feature-card p {
+  color: #94a3b8;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+  text-align: left;
+}
+
+.faq-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: left;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.faq-box {
+  background: #11141d;
+  border: 1px solid #1f2533;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.faq-box details {
+  padding: 0;
+  margin: 0;
+}
+
+.faq-box summary {
+  padding: 18px 24px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.05rem;
+  color: #f1f5f9;
+  outline: none;
+  list-style: none;
+  text-align: left;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.faq-box summary:hover {
+  color: #00d2ff;
+  background-color: rgba(0, 210, 255, 0.03);
+}
+
+.faq-box summary::-webkit-details-marker { display: none; }
+
+.faq-box p {
+  padding: 0 24px 20px 24px;
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+/* Global 2-Line Footer */
+.global-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 40px 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+  background-color: var(--bg-base);
+  margin-top: auto;
+}
+
+.global-footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin: 0 12px;
+}
+
+.global-footer a:hover {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .studio-layout {
+    max-width: 1540px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+    display: grid;
+    grid-template-columns: minmax(380px, 480px) 1fr;
+    gap: 28px;
+    align-items: start;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body.sidebar-open .studio-layout {
+    grid-template-columns: minmax(340px, 440px) 1fr;
+    gap: 20px;
+    padding: 0 16px 60px;
+  }
+
+  /* Form Column */
+  .form-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    max-height: 900px;
+    overflow-y: auto;
+  }
+
+  .section-box {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1a2233;
+  }
+
+  .section-box:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 5px;
+  }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    background: #0b0e14;
+    border: 1px solid #242c3d;
+    color: #fff;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  .item-card {
+    background: #0d111a;
+    border: 1px solid #1e2638;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .btn-remove:hover {
+    color: #ef4444;
+  }
+
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #171c28;
+    border: 1px dashed #2b364d;
+    color: var(--accent);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .btn-add:hover {
+    background: #1e2536;
+    border-color: var(--accent);
+  }
+
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .btn-aux {
+    flex: 1;
+    padding: 8px;
+    background: #171b26;
+    border: 1px solid #283042;
+    color: var(--text-muted);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .btn-aux:hover {
+    background: #202636;
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Preview Column */
+  .preview-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 18px;
+  }
+
+  .btn-download-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #08090d;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-download-pdf:hover {
+    background: #33dcff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.4);
+  }
+
+  /* Paper Document Sheet */
+  .paper-stage {
+    background: #0a0d14;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 28px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    min-height: 540px;
+  }
+
+  body.sidebar-open .paper-stage {
+    padding: 20px 14px;
+  }
+
+  :root {
+    --tpl-accent: #0284c7;
+    --tpl-dark: #0f172a;
+  }
+
+  .resume-sheet {
+    width: 210mm;
+    min-height: 297mm;
+    background: #ffffff;
+    color: #1e293b;
+    padding: 24mm 22mm;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    position: relative;
+    transform-origin: top center;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+    flex-shrink: 0;
+  }
+
+  /* --- Template 1: Modern Minimal --- */
+  .resume-sheet.tpl-modern .sheet-header {
+    border-bottom: 2px solid var(--tpl-accent);
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+  }
+  .resume-sheet.tpl-modern .sheet-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .resume-sheet.tpl-modern .sheet-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tpl-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .resume-sheet.tpl-modern .sheet-sec-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tpl-accent);
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
+
+  /* --- Template 2: Executive Serif --- */
+  .resume-sheet.tpl-executive {
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  }
+  .resume-sheet.tpl-executive .sheet-header {
+    text-align: center;
+    border-bottom: 3px double var(--tpl-accent);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+  .resume-sheet.tpl-executive .sheet-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+    font-family: Georgia, serif;
+  }
+  .resume-sheet.tpl-executive .sheet-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tpl-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+  .resume-sheet.tpl-executive .sheet-contact {
+    justify-content: center;
+    font-style: italic;
+  }
+  .resume-sheet.tpl-executive .sheet-sec-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tpl-accent);
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .resume-sheet.tpl-executive .skill-badge {
+    background: transparent;
+    border: none;
+    padding: 2px 6px;
+    font-style: italic;
+    color: #334155;
+  }
+
+  /* --- Template 3: Tech 2-Column Sidebar --- */
+  .resume-sheet.tpl-sidebar {
+    display: grid;
+    grid-template-columns: 64mm 1fr;
+    gap: 0;
+    padding: 0 !important;
+  }
+  .resume-sheet.tpl-sidebar .sidebar-left {
+    background: #f8fafc;
+    border-right: 2px solid var(--tpl-accent);
+    padding: 20mm 6mm 20mm 10mm;
+  }
+  .resume-sheet.tpl-sidebar .sidebar-right {
+    padding: 20mm 12mm 20mm 8mm;
+  }
+  .resume-sheet.tpl-sidebar .sheet-sec-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tpl-accent);
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+  }
+  .resume-sheet.tpl-sidebar .sheet-name {
+    font-size: 25px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+  .resume-sheet.tpl-sidebar .sheet-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--tpl-accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* --- Template 4: Compact Clean (1-Page dense) --- */
+  .resume-sheet.tpl-compact {
+    padding: 16mm 16mm;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .resume-sheet.tpl-compact .sheet-header {
+    border-bottom: 1.5px solid var(--tpl-accent);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .resume-sheet.tpl-compact .sheet-name {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+  .resume-sheet.tpl-compact .sheet-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tpl-accent);
+    margin-bottom: 4px;
+  }
+  .resume-sheet.tpl-compact .sheet-section {
+    margin-bottom: 10px;
+  }
+  .resume-sheet.tpl-compact .sheet-sec-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--tpl-accent);
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 2px;
+    margin-bottom: 6px;
+  }
+  .resume-sheet.tpl-compact .sheet-item {
+    margin-bottom: 6px;
+  }
+  .resume-sheet.tpl-compact .sheet-bullets {
+    margin: 2px 0 0 14px;
+  }
+  .resume-sheet.tpl-compact .sheet-bullets li {
+    margin-bottom: 1px;
+  }
+
+  /* General sheet elements */
+  .sheet-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11.5px;
+    color: #475569;
+  }
+  .sheet-section {
+    margin-bottom: 16px;
+  }
+  .sheet-item {
+    margin-bottom: 11px;
+  }
+  .sheet-item-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .sheet-item-sub {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-style: italic;
+    color: #475569;
+    margin-bottom: 3px;
+  }
+  .sheet-bullets {
+    margin: 3px 0 0 16px;
+    padding: 0;
+    font-size: 11.5px;
+    color: #334155;
+  }
+  .sheet-bullets li {
+    margin-bottom: 2px;
+  }
+  .sheet-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .skill-badge {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Print Stylesheet */
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    .resume-sheet, .resume-sheet * {
+      visibility: visible !important;
+    }
+    .resume-sheet {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100% !important;
+      transform: none !important;
+      padding: 15mm 15mm !important;
+      box-shadow: none !important;
+    }
+    @page {
+      margin: 0;
+      size: auto;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .studio-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="global-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Push-Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- TANGENT_SIDEBAR_START -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <a href="pdf-redactor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="document-ocr.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">Document OCR</div>
+          <div class="item-desc">Extract text from scans & images</div>
+        </div>
+      </a>
+      <a href="markdown-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Academic Markdown</div>
+          <div class="item-desc">LaTeX math, paper presets & PDF</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      <a href="photo-resizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+      <a href="photo-scrubber.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <a href="document-signer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Contract e-Signer</div>
+          <div class="item-desc">Sign PDFs, leases & contracts</div>
+        </div>
+      </a>
+      <a href="file-vault.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">File Lockbox</div>
+          <div class="item-desc">PIN & password file safe</div>
+        </div>
+      </a>
+      <a href="password-meter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 4: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <a href="qr-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+      <a href="resume-builder.html" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
+        </div>
+      </a>
+      <a href="invoice-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</aside>
+<!-- TANGENT_SIDEBAR_END -->
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- Push-Canvas Wrapper -->
+<div class="app-canvas" id="appCanvas">
+
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>Resume & CV Studio.</h1>
+  <p>Create professional, ATS-friendly resumes with live preview and instant free PDF download. Zero watermarks, zero subscription traps, 100% privacy.</p>
+</div>
+
+<div class="studio-layout">
+  
+  <!-- Left Form Column -->
+  <div class="form-panel">
+    
+    <!-- Contact Info -->
+    <div class="section-box">
+      <div class="section-title">Personal Information</div>
+      <div class="input-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="inName" class="form-input" value="Alex Rivera">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Professional Title</label>
+          <input type="text" id="inTitle" class="form-input" value="Senior Systems Engineer">
+        </div>
+      </div>
+      <div class="input-grid">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="inEmail" class="form-input" value="alex.rivera@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="text" id="inPhone" class="form-input" value="+1 (555) 382-9102">
+        </div>
+      </div>
+      <div class="input-grid">
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" id="inLocation" class="form-input" value="Austin, TX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Website / Portfolio</label>
+          <input type="text" id="inWebsite" class="form-input" value="alexrivera.dev">
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="section-box">
+      <div class="section-title">Professional Summary</div>
+      <textarea id="inSummary" class="form-textarea" placeholder="Write a brief overview of your background and core accomplishments...">Systems Engineer with 7+ years of experience architecting fault-tolerant distributed infrastructure and high-throughput data pipelines. Proven track record reducing cloud spend by 35% while increasing service uptime to 99.99%.</textarea>
+    </div>
+
+    <!-- Experience -->
+    <div class="section-box">
+      <div class="section-title">Work Experience</div>
+      <div id="experienceList"></div>
+      <button type="button" class="btn-add" id="addExpBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add Work Experience</button>
+    </div>
+
+    <!-- Education -->
+    <div class="section-box">
+      <div class="section-title">Education</div>
+      <div id="educationList"></div>
+      <button type="button" class="btn-add" id="addEduBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add Education</button>
+    </div>
+
+    <!-- Skills -->
+    <div class="section-box">
+      <div class="section-title">Skills & Technologies</div>
+      <input type="text" id="inSkills" class="form-input" value="Rust, Go, Python, Linux Kernel, Kubernetes, Docker, AWS, Distributed Systems, Terraform, CI/CD" placeholder="Comma separated skills...">
+    </div>
+
+    <!-- Actions -->
+    <div class="action-bar">
+      <button type="button" class="btn-aux" id="loadSampleBtn">Reset Sample</button>
+      <button type="button" class="btn-aux" id="clearAllBtn">Clear All</button>
+    </div>
+
+  </div>
+
+  <!-- Right Preview Column -->
+  <div class="preview-column">
+    <div class="preview-toolbar" style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Template:</label>
+          <select id="tplSelect" class="form-input" style="width: auto; padding: 6px 12px; font-size: 12.5px; font-weight: 600; background: #131722; color: #fff; border: 1px solid #283347; border-radius: 6px; cursor: pointer;">
+            <option value="modern">Modern Minimal</option>
+            <option value="executive">Executive Serif</option>
+            <option value="sidebar">Tech 2-Column Sidebar</option>
+            <option value="compact">Compact Clean (1-Page)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Accent:</label>
+          <div class="color-dots" style="display: flex; gap: 6px;">
+            <div class="color-dot active" style="background: #0284c7; width: 18px; height: 18px;" data-tpl-color="#0284c7" title="Navy Sky"></div>
+            <div class="color-dot" style="background: #059669; width: 18px; height: 18px;" data-tpl-color="#059669" title="Forest Emerald"></div>
+            <div class="color-dot" style="background: #e11d48; width: 18px; height: 18px;" data-tpl-color="#e11d48" title="Burgundy Wine"></div>
+            <div class="color-dot" style="background: #6366f1; width: 18px; height: 18px;" data-tpl-color="#6366f1" title="Royal Indigo"></div>
+            <div class="color-dot" style="background: #475569; width: 18px; height: 18px;" data-tpl-color="#475569" title="Charcoal Neutral"></div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-download-pdf" id="downloadPdfBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print / Save PDF
+      </button>
+    </div>
+
+    <div class="paper-stage">
+      <div class="resume-sheet" id="resumeSheet">
+        <!-- Rendered Resume Content -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <h3>ATS-Compliant Vector Typography</h3>
+      <p>Semantic layout hierarchies and standard system typography ensure Applicant Tracking Systems (ATS) parse your skills cleanly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+      <h3>4 Executive Layouts & Accent Themes</h3>
+      <p>Switch between Classic Ivy, Modern Split, Minimalist Sans, and Executive Serif with real-time accent color customization.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h3>100% Free Forever Without Watermarks</h3>
+      <p>No credit cards, no trial periods, and zero paywalls. Download print-ready high-resolution A4 PDFs without watermarks anytime.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Is this resume builder really 100% free with no watermark?</summary>
+      <p>Yes. Unlike websites like Zety or Resume.io that trap you into credit card trials or print watermarks on your PDF, Tangent is completely free forever. You can create and download as many PDF resumes as you want.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Are these resumes ATS-friendly for job applications?</summary>
+      <p>Yes. The templates use semantic, standard fonts and single/clean double column structures that automated Applicant Tracking Systems (ATS) parse easily without losing formatting.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Is my personal work history or contact information saved to any database?</summary>
+      <p>No. All your resume data stays locally in your browser memory and localStorage. No recruiters, companies, or servers ever see your information.</p>
+    </details>
+  </div>
+</div>
+
+  <!-- Standard Global Footer -->
+  <footer class="global-footer">
+    <div style="margin-bottom: 16px;">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+    </div>
+    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+  </footer>
+
+</div>
+
+<!-- Global Shell Script -->
+<script>
+(() => {
+  'use strict';
+  const toolkitToggle = document.getElementById('toolkitToggle');
+  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  function setSidebarState(isOpen) {
+    if (isOpen) {
+      document.body.classList.add('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'true');
+      try { localStorage.setItem('tangent_sidebar_open', 'true'); } catch (e) {}
+    } else {
+      document.body.classList.remove('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'false');
+      try { localStorage.setItem('tangent_sidebar_open', 'false'); } catch (e) {}
+    }
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
+  }
+
+  // Restore desktop state on load
+  try {
+    if (localStorage.getItem('tangent_sidebar_open') === 'true' && window.innerWidth > 1024) {
+      setSidebarState(true);
+    }
+  } catch (e) {}
+
+  if (toolkitToggle) {
+    toolkitToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = document.body.classList.contains('sidebar-open');
+      setSidebarState(!isOpen);
+    });
+  }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', () => setSidebarState(false));
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => setSidebarState(false));
+  }
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      setSidebarState(false);
+      if (navLinks) {
+        navLinks.classList.remove('open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+})();
+</script>
+
+<script>
+  let experiences = [
+    {
+      title: "Lead Infrastructure Architect",
+      company: "Apex Cloud Networks",
+      period: "2022 - Present",
+      location: "Austin, TX",
+      bullets: "Spearheaded zero-downtime migration of 140+ microservices to Kubernetes clusters.\nEngineered automated multi-region failover protocol reducing disaster recovery RTO from 45m to 90s.\nMentored team of 8 engineers and introduced infrastructure-as-code linting standards."
+    },
+    {
+      title: "Systems Software Engineer",
+      company: "DataForge Systems",
+      period: "2019 - 2022",
+      location: "Denver, CO",
+      bullets: "Developed high-throughput telemetry ingestion service in Go processing 2.4B events/day.\nOptimized memory allocation patterns, cutting AWS container compute costs by 32%."
+    }
+  ];
+
+  let educations = [
+    {
+      degree: "B.S. in Computer Science",
+      school: "University of Colorado Boulder",
+      year: "2015 - 2019",
+      details: "Summa Cum Laude, Dean's List 8 Semesters"
+    }
+  ];
+
+  const inName = document.getElementById('inName');
+  const inTitle = document.getElementById('inTitle');
+  const inEmail = document.getElementById('inEmail');
+  const inPhone = document.getElementById('inPhone');
+  const inLocation = document.getElementById('inLocation');
+  const inWebsite = document.getElementById('inWebsite');
+  const inSummary = document.getElementById('inSummary');
+  const inSkills = document.getElementById('inSkills');
+
+  const experienceList = document.getElementById('experienceList');
+  const educationList = document.getElementById('educationList');
+  const addExpBtn = document.getElementById('addExpBtn');
+  const addEduBtn = document.getElementById('addEduBtn');
+  const resumeSheet = document.getElementById('resumeSheet');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const loadSampleBtn = document.getElementById('loadSampleBtn');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+
+  function renderExperienceInputs() {
+    experienceList.innerHTML = '';
+    experiences.forEach((exp, idx) => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <button type="button" class="btn-remove" title="Remove Experience" aria-label="Remove Experience"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        <div class="input-grid">
+          <div class="form-group">
+            <label class="form-label">Job Title</label>
+            <input type="text" class="form-input exp-title" value="${exp.title}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company</label>
+            <input type="text" class="form-input exp-company" value="${exp.company}">
+          </div>
+        </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label class="form-label">Date Range</label>
+            <input type="text" class="form-input exp-period" value="${exp.period}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-input exp-location" value="${exp.location}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Key Achievements (One per line)</label>
+          <textarea class="form-textarea exp-bullets">${exp.bullets}</textarea>
+        </div>
+      `;
+
+      card.querySelector('.btn-remove').addEventListener('click', () => {
+        experiences.splice(idx, 1);
+        renderExperienceInputs();
+        updateSheet();
+      });
+
+      card.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', () => {
+          exp.title = card.querySelector('.exp-title').value;
+          exp.company = card.querySelector('.exp-company').value;
+          exp.period = card.querySelector('.exp-period').value;
+          exp.location = card.querySelector('.exp-location').value;
+          exp.bullets = card.querySelector('.exp-bullets').value;
+          updateSheet();
+        });
+      });
+
+      experienceList.appendChild(card);
+    });
+  }
+
+  function renderEducationInputs() {
+    educationList.innerHTML = '';
+    educations.forEach((edu, idx) => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <button type="button" class="btn-remove" title="Remove Education" aria-label="Remove Education"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        <div class="input-grid">
+          <div class="form-group">
+            <label class="form-label">Degree</label>
+            <input type="text" class="form-input edu-degree" value="${edu.degree}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">School / Institution</label>
+            <input type="text" class="form-input edu-school" value="${edu.school}">
+          </div>
+        </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label class="form-label">Years</label>
+            <input type="text" class="form-input edu-year" value="${edu.year}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Honors / Details</label>
+            <input type="text" class="form-input edu-details" value="${edu.details}">
+          </div>
+        </div>
+      `;
+
+      card.querySelector('.btn-remove').addEventListener('click', () => {
+        educations.splice(idx, 1);
+        renderEducationInputs();
+        updateSheet();
+      });
+
+      card.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+          edu.degree = card.querySelector('.edu-degree').value;
+          edu.school = card.querySelector('.edu-school').value;
+          edu.year = card.querySelector('.edu-year').value;
+          edu.details = card.querySelector('.edu-details').value;
+          updateSheet();
+        });
+      });
+
+      educationList.appendChild(card);
+    });
+  }
+
+  addExpBtn.addEventListener('click', () => {
+    experiences.push({ title: "Job Title", company: "Company Name", period: "2021 - 2023", location: "City, State", bullets: "Key responsibility or achievement." });
+    renderExperienceInputs();
+    updateSheet();
+  });
+
+  addEduBtn.addEventListener('click', () => {
+    educations.push({ degree: "Degree / Certificate", school: "University / Academy", year: "2018 - 2022", details: "Major / Honors" });
+    renderEducationInputs();
+    updateSheet();
+  });
+
+  const tplSelect = document.getElementById('tplSelect');
+  let currentTemplate = 'modern';
+  let currentAccent = '#0284c7';
+
+  tplSelect.addEventListener('change', (e) => {
+    currentTemplate = e.target.value;
+    updateSheet();
+  });
+
+  document.querySelectorAll('[data-tpl-color]').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('[data-tpl-color]').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      currentAccent = dot.dataset.tplColor;
+      resumeSheet.style.setProperty('--tpl-accent', currentAccent);
+      updateSheet();
+    });
+  });
+
+  function updateSheet() {
+    resumeSheet.className = 'resume-sheet tpl-' + currentTemplate;
+    resumeSheet.style.setProperty('--tpl-accent', currentAccent);
+
+    let expHtml = '';
+    experiences.forEach(exp => {
+      const bulletsList = exp.bullets.split('\n')
+        .map(b => b.trim())
+        .filter(b => b.length > 0)
+        .map(b => `<li>${b}</li>`)
+        .join('');
+
+      expHtml += `
+        <div class="sheet-item">
+          <div class="sheet-item-head">
+            <span>${exp.title}</span>
+            <span>${exp.period}</span>
+          </div>
+          <div class="sheet-item-sub">
+            <span>${exp.company}</span>
+            <span>${exp.location}</span>
+          </div>
+          ${bulletsList ? `<ul class="sheet-bullets">${bulletsList}</ul>` : ''}
+        </div>
+      `;
+    });
+
+    let eduHtml = '';
+    educations.forEach(edu => {
+      eduHtml += `
+        <div class="sheet-item">
+          <div class="sheet-item-head">
+            <span>${edu.degree}</span>
+            <span>${edu.year}</span>
+          </div>
+          <div class="sheet-item-sub">
+            <span>${edu.school}</span>
+            <span>${edu.details}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    const skillBadges = inSkills.value.split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+      .map(s => `<span class="skill-badge">${s}</span>`)
+      .join('');
+
+    if (currentTemplate === 'sidebar') {
+      // 2-Column Sidebar Layout
+      resumeSheet.innerHTML = `
+        <div class="sidebar-left">
+          <div class="sheet-section" style="margin-bottom: 22px;">
+            <div class="sheet-sec-title">Contact</div>
+            <div style="font-size: 11.5px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+              ${inEmail.value ? `<div style="word-break: break-all;"><strong>Email:</strong><br>${inEmail.value}</div>` : ''}
+              ${inPhone.value ? `<div><strong>Phone:</strong><br>${inPhone.value}</div>` : ''}
+              ${inLocation.value ? `<div><strong>Location:</strong><br>${inLocation.value}</div>` : ''}
+              ${inWebsite.value ? `<div style="word-break: break-all;"><strong>Web:</strong><br>${inWebsite.value}</div>` : ''}
+            </div>
+          </div>
+
+          ${skillBadges ? `
+          <div class="sheet-section" style="margin-bottom: 22px;">
+            <div class="sheet-sec-title">Skills</div>
+            <div class="sheet-skills">${skillBadges}</div>
+          </div>` : ''}
+
+          ${eduHtml ? `
+          <div class="sheet-section">
+            <div class="sheet-sec-title">Education</div>
+            ${eduHtml}
+          </div>` : ''}
+        </div>
+
+        <div class="sidebar-right">
+          <div class="sheet-header" style="border-bottom: 2px solid var(--tpl-accent); padding-bottom: 12px; margin-bottom: 16px;">
+            <div class="sheet-name">${inName.value || 'Your Name'}</div>
+            <div class="sheet-title">${inTitle.value || ''}</div>
+          </div>
+
+          ${inSummary.value ? `
+          <div class="sheet-section">
+            <div class="sheet-sec-title">About Me</div>
+            <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+          </div>` : ''}
+
+          ${expHtml ? `
+          <div class="sheet-section">
+            <div class="sheet-sec-title">Work Experience</div>
+            ${expHtml}
+          </div>` : ''}
+        </div>
+      `;
+    } else {
+      // Standard / Executive / Compact Layouts
+      resumeSheet.innerHTML = `
+        <div class="sheet-header">
+          <div class="sheet-name">${inName.value || 'Your Name'}</div>
+          <div class="sheet-title">${inTitle.value || ''}</div>
+          <div class="sheet-contact">
+            ${inEmail.value ? `<span>${inEmail.value}</span>` : ''}
+            ${inPhone.value ? `<span>•</span><span>${inPhone.value}</span>` : ''}
+            ${inLocation.value ? `<span>•</span><span>${inLocation.value}</span>` : ''}
+            ${inWebsite.value ? `<span>•</span><span>${inWebsite.value}</span>` : ''}
+          </div>
+        </div>
+
+        ${inSummary.value ? `
+        <div class="sheet-section">
+          <div class="sheet-sec-title">Summary</div>
+          <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+        </div>` : ''}
+
+        ${expHtml ? `
+        <div class="sheet-section">
+          <div class="sheet-sec-title">Professional Experience</div>
+          ${expHtml}
+        </div>` : ''}
+
+        ${eduHtml ? `
+        <div class="sheet-section">
+          <div class="sheet-sec-title">Education</div>
+          ${eduHtml}
+        </div>` : ''}
+
+        ${skillBadges ? `
+        <div class="sheet-section">
+          <div class="sheet-sec-title">Core Competencies & Skills</div>
+          <div class="sheet-skills">${skillBadges}</div>
+        </div>` : ''}
+      `;
+    }
+
+    // Re-scale to fit available space seamlessly
+    requestAnimationFrame(fitResumeSheet);
+  }
+
+  function fitResumeSheet() {
+    const stage = document.querySelector('.paper-stage');
+    const sheet = document.getElementById('resumeSheet');
+    if (!stage || !sheet) return;
+
+    const sheetBaseWidth = 794; // 210mm
+    const availableWidth = stage.clientWidth - 40;
+    if (availableWidth <= 0) return;
+
+    const scale = Math.min(1.0, Math.max(0.38, availableWidth / sheetBaseWidth));
+    sheet.style.transform = `scale(${scale})`;
+    sheet.style.transformOrigin = 'top center';
+
+    const baseHeight = sheet.offsetHeight || 1123;
+    stage.style.minHeight = Math.round(baseHeight * scale + 48) + 'px';
+  }
+
+  // Observe canvas and stage to smoothly adapt when the toolkit sidebar opens or closes
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => fitResumeSheet());
+    const stage = document.querySelector('.paper-stage');
+    if (stage) ro.observe(stage);
+    const canvas = document.querySelector('.app-canvas');
+    if (canvas) ro.observe(canvas);
+  }
+  window.addEventListener('resize', fitResumeSheet);
+
+  [inName, inTitle, inEmail, inPhone, inLocation, inWebsite, inSummary, inSkills].forEach(el => {
+    el.addEventListener('input', updateSheet);
+  });
+
+  downloadPdfBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  loadSampleBtn.addEventListener('click', () => {
+    location.reload();
+  });
+
+  clearAllBtn.addEventListener('click', () => {
+    inName.value = '';
+    inTitle.value = '';
+    inEmail.value = '';
+    inPhone.value = '';
+    inLocation.value = '';
+    inWebsite.value = '';
+    inSummary.value = '';
+    inSkills.value = '';
+    experiences = [];
+    educations = [];
+    renderExperienceInputs();
+    renderEducationInputs();
+    updateSheet();
+  });
+
+  // Initial Run
+  renderExperienceInputs();
+  renderEducationInputs();
+  updateSheet();
+  setTimeout(fitResumeSheet, 50);
+</script>
+
+</body>
+</html>

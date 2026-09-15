@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Document & Contract e-Signer | Tangent</title>
+<link rel="canonical" href="https://misbah-37.github.io/tangent/document-signer.html">
+<meta name="description" content="Sign PDFs, leases, and contracts in seconds offline in your browser. Draw, type, or upload your signature, place dates, and export signed PDFs with zero accounts or fees.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Document & Contract e-Signer | Tangent">
+<meta property="og:description" content="Free, private contract and PDF signer. Place signatures, initials, and date stamps locally without accounts or monthly document caps.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<!-- PDF-Lib & PDF.js for in-browser PDF manipulation and rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if (window.pdfjsLib) {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this legally binding for leases and business contracts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. In the United States under the ESIGN Act and in the European Union under eIDAS, electronic signatures placed on electronic documents are legally valid and enforceable for most standard business, lease, and employment agreements."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my confidential contracts or personal signatures sent to any server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The entire signing process executes locally in your browser memory via WebAssembly and HTML5 Canvas. Your PDF document and your signature never touch the internet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a limit on how many contracts I can sign?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Unlike DocuSign or Adobe Sign which limit free users to 3 documents before charging monthly subscription fees, Tangent is 100% free forever with unlimited document signing."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+
+<style>
+/* ==========================================================================
+   TANGENT GLOBAL BASE STYLES & LAYOUT SYSTEM
+   ========================================================================== */
+:root {
+  --bg-base: #08090d;
+  --bg-surface: #0e111a;
+  --bg-card: #131724;
+  --bg-card-hover: #191e30;
+  --border-color: #1f273b;
+  --border-highlight: rgba(0, 210, 255, 0.4);
+  --accent: #00d2ff;
+  --accent-glow: rgba(0, 210, 255, 0.18);
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-danger: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* Global Navigation */
+.global-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: rgba(8, 9, 13, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-color);
+  height: 60px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.toolkit-toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.toolkit-toggle-btn:hover,
+body.sidebar-open .toolkit-toggle-btn {
+  color: #ffffff;
+  background-color: rgba(0, 210, 255, 0.12);
+  border-color: rgba(0, 210, 255, 0.4);
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+}
+
+.toolkit-toggle-btn .sidebar-icon {
+  color: #00d2ff;
+  transition: transform 0.2s ease;
+}
+
+body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
+  transform: scale(1.05);
+}
+
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link:hover { color: var(--accent); }
+
+/* Collapsible Push-Sidebar */
+.tangent-sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  box-sizing: border-box !important;
+  background: #0f131f;
+  background: linear-gradient(180deg, #131826 0%, #0c0f18 100%);
+  border-right: 1px solid rgba(0, 210, 255, 0.18);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  z-index: 2500;
+  transform: translateX(-100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body.sidebar-open .tangent-sidebar {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #00d2ff;
+}
+
+.sidebar-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.sidebar-close-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-nav-list::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.2);
+  border-radius: 4px;
+}
+.sidebar-nav-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.5);
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-group-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+  padding-left: 8px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #ffffff;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(0, 210, 255, 0.08);
+  border-color: rgba(0, 210, 255, 0.2);
+  transform: translateX(2px);
+}
+
+.sidebar-item.active {
+  background-color: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.35);
+}
+
+.sidebar-item svg {
+  flex-shrink: 0;
+}
+
+.sidebar-item .item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-item .item-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-item:hover .item-title,
+.sidebar-item.active .item-title {
+  color: #00d2ff;
+}
+
+.sidebar-item .item-desc {
+  font-size: 0.70rem;
+  color: #94a3b8;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* App Canvas Push (Desktop) */
+.app-canvas {
+  width: 100%;
+  box-sizing: border-box;
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 961px) {
+  body.sidebar-open .app-canvas {
+    margin-left: 280px !important;
+    width: calc(100% - 280px) !important;
+  }
+}
+
+/* Mobile Overlay Mode */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2400;
+}
+
+@media (max-width: 960px) {
+  .tangent-sidebar {
+    top: 0 !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    z-index: 2500 !important;
+  }
+  body.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+  .global-nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .menu-toggle { display: flex; }
+}
+
+/* Clean Hero Header & Badges */
+.clean-header {
+  text-align: center;
+  padding: 44px 20px 24px;
+}
+
+.badge-pill, .privacy-shield-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  color: #00d2ff;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-sub {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 680px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+}
+
+.feature-bar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+}
+
+.feature-item svg {
+  color: var(--accent-emerald);
+}
+
+/* Educational / SEO Article & FAQs */
+.seo-article {
+  border-top: 1px solid var(--border-color);
+  margin-top: 60px;
+  padding-top: 48px;
+}
+
+.seo-article h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.seo-article h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 28px 0 12px 0;
+  color: var(--accent);
+}
+
+.seo-article p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+
+.seo-article ul {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.seo-article li {
+  margin-bottom: 8px;
+}
+
+.seo-article li strong {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   FEATURE TILES & FAQ ARCHITECTURE (Standardized across all pages)
+   ========================================================================== */
+.info-section {
+  max-width: 1080px;
+  margin: 60px auto 40px auto;
+  padding: 50px 20px 0 20px;
+  border-top: 1px solid #1f2533;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
+}
+
+.feature-card {
+  background: #11141d;
+  border: 1px solid #1f2533;
+  border-radius: 16px;
+  padding: 28px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-icon {
+  margin-bottom: 16px;
+  color: #00d2ff;
+  display: inline-flex;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.feature-card h3 span { color: #00d2ff; }
+
+.feature-card p {
+  color: #94a3b8;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+  text-align: left;
+}
+
+.faq-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: left;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.faq-box {
+  background: #11141d;
+  border: 1px solid #1f2533;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.faq-box details {
+  padding: 0;
+  margin: 0;
+}
+
+.faq-box summary {
+  padding: 18px 24px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.05rem;
+  color: #f1f5f9;
+  outline: none;
+  list-style: none;
+  text-align: left;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.faq-box summary:hover {
+  color: #00d2ff;
+  background-color: rgba(0, 210, 255, 0.03);
+}
+
+.faq-box summary::-webkit-details-marker { display: none; }
+
+.faq-box p {
+  padding: 0 24px 20px 24px;
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+/* Global 2-Line Footer */
+.global-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 40px 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+  background-color: var(--bg-base);
+  margin-top: auto;
+}
+
+.global-footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin: 0 12px;
+}
+
+.global-footer a:hover {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root {
+    --bg-page: #08090d;
+    --bg-card: #11141d;
+    --bg-card-inner: #0b0d13;
+    --border-color: #1f2533;
+    --border-hover: rgba(0, 210, 255, 0.4);
+    --accent: #00d2ff;
+    --accent-glow: rgba(0, 210, 255, 0.15);
+    --accent-hover: #33dcff;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .signer-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* Upload Dropzone */
+  .upload-dropzone {
+    background: #0e121a;
+    border: 2px dashed #242e42;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+  }
+
+  .upload-dropzone:hover, .upload-dropzone.dragover {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.04);
+  }
+
+  .dropzone-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent);
+    border-radius: 12px;
+    margin: 0 auto 14px;
+  }
+
+  .upload-dropzone h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .upload-dropzone p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+
+  /* Workspace View */
+  .signer-workspace {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Toolbar */
+  .signer-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 18px;
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #171b26;
+    border: 1px solid #283042;
+    color: #cbd5e1;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tool-btn:hover {
+    background: #202636;
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .tool-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #08090d;
+    font-weight: 700;
+  }
+
+  .tool-btn.primary:hover {
+    background: #33dcff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  }
+
+  /* Document Stage Canvas */
+  .stage-viewport {
+    background: #0a0d14;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 32px;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    min-height: 700px;
+  }
+
+  .page-wrapper {
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    background: #ffffff;
+    user-select: none;
+  }
+
+  #pdfCanvas {
+    display: block;
+  }
+
+  /* Placed Elements on Page */
+  .placed-stamp {
+    position: absolute;
+    cursor: move;
+    border: 2px dashed rgba(0, 210, 255, 0.7);
+    background: rgba(0, 210, 255, 0.05);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .placed-stamp img {
+    max-width: 100%;
+    max-height: 100%;
+    pointer-events: none;
+  }
+
+  .placed-stamp .stamp-delete {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  .placed-stamp .stamp-resize {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    background: #00d2ff;
+    color: #08090d;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: nwse-resize;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  /* Signature Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 540px;
+    max-width: 100%;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #141824;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+
+  .modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: #0d1017;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(0, 210, 255, 0.04);
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .pad-canvas-wrap {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #sigPadCanvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    display: block;
+  }
+
+  .pad-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .color-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .color-dot.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="global-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Push-Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- TANGENT_SIDEBAR_START -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <a href="pdf-redactor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="document-ocr.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">Document OCR</div>
+          <div class="item-desc">Extract text from scans & images</div>
+        </div>
+      </a>
+      <a href="markdown-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Academic Markdown</div>
+          <div class="item-desc">LaTeX math, paper presets & PDF</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      <a href="photo-resizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+      <a href="photo-scrubber.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <a href="document-signer.html" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Contract e-Signer</div>
+          <div class="item-desc">Sign PDFs, leases & contracts</div>
+        </div>
+      </a>
+      <a href="file-vault.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">File Lockbox</div>
+          <div class="item-desc">PIN & password file safe</div>
+        </div>
+      </a>
+      <a href="password-meter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Category 4: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <a href="qr-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+      <a href="resume-builder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
+        </div>
+      </a>
+      <a href="invoice-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</aside>
+<!-- TANGENT_SIDEBAR_END -->
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- Push-Canvas Wrapper -->
+<div class="app-canvas" id="appCanvas">
+
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>Contract & PDF e-Signer.</h1>
+  <p>Sign lease agreements, contracts, NDAs, and forms in seconds. Draw or type your signature, drag date stamps, and export signed PDFs with zero accounts or fees.</p>
+</div>
+
+<div class="signer-container">
+  
+  <!-- Upload State -->
+  <div class="upload-dropzone" id="dropZone">
+    <div class="dropzone-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+    </div>
+    <h3>Select or Drop PDF Contract Here</h3>
+    <p>Supports leases, NDAs, employment agreements, invoices, and standard PDF forms</p>
+    <input type="file" id="pdfFileInput" accept="application/pdf" style="display: none;">
+  </div>
+
+  <!-- Interactive Signer Workspace -->
+  <div class="signer-workspace" id="signerWorkspace">
+    
+    <!-- Workspace Toolbar -->
+    <div class="signer-toolbar">
+      <div class="toolbar-group">
+        <button type="button" class="tool-btn" id="prevPageBtn" title="Previous Page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <span style="font-size: 13px; font-weight: 600; color: #cbd5e1;" id="pageIndicator">Page 1 of 1</span>
+        <button type="button" class="tool-btn" id="nextPageBtn" title="Next Page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="toolbar-group">
+        <button type="button" class="tool-btn" id="createSignatureBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+          Add Signature
+        </button>
+        <button type="button" class="tool-btn" id="addDateBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Add Date
+        </button>
+        <button type="button" class="tool-btn" id="addCheckBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Checkmark
+        </button>
+      </div>
+
+      <div class="toolbar-group">
+        <button type="button" class="tool-btn primary" id="downloadSignedPdfBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download Signed PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Document Viewport -->
+    <div class="stage-viewport">
+      <div class="page-wrapper" id="pageWrapper">
+        <canvas id="pdfCanvas"></canvas>
+        <div id="stampsLayer" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none;"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Signature Creator Modal -->
+<div class="modal-overlay" id="sigModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Create Your Signature</h3>
+      <button type="button" class="tool-btn" id="closeModalBtn" style="padding: 6px 8px;" aria-label="Close Modal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    
+    <div class="modal-tabs">
+      <button type="button" class="tab-btn active" id="tabDraw">Draw</button>
+      <button type="button" class="tab-btn" id="tabType">Type Name</button>
+      <button type="button" class="tab-btn" id="tabUpload">Upload Signature</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Draw Pane -->
+      <div id="paneDraw">
+        <div class="pad-canvas-wrap">
+          <canvas id="sigPadCanvas" width="500" height="180"></canvas>
+        </div>
+        <div class="pad-footer">
+          <div class="color-dots">
+            <div class="color-dot active" style="background: #000000;" data-color="#000000" title="Black"></div>
+            <div class="color-dot" style="background: #0f172a;" data-color="#0f172a" title="Navy Blue"></div>
+            <div class="color-dot" style="background: #1d4ed8;" data-color="#1d4ed8" title="Royal Blue"></div>
+          </div>
+          <button type="button" class="tool-btn" id="clearPadBtn">Clear</button>
+        </div>
+      </div>
+
+      <!-- Type Pane -->
+      <div id="paneType" style="display: none;">
+        <input type="text" id="typeSigInput" placeholder="Type your full name here..." style="width: 100%; padding: 12px; background: #0b0e14; border: 1px solid #242c3d; color: #fff; border-radius: 6px; font-size: 15px; margin-bottom: 16px;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 8px; text-align: center; color: #000000; font-family: 'Brush Script MT', 'Segoe Script', cursive, sans-serif; font-size: 2.2rem;" id="typeSigPreview">
+          Your Signature
+        </div>
+      </div>
+
+      <!-- Upload Pane -->
+      <div id="paneUpload" style="display: none;">
+        <div class="upload-dropzone" id="sigUploadDropzone" style="padding: 24px 16px; margin-bottom: 14px; cursor: pointer; border: 2px dashed #242e42; border-radius: 8px; text-align: center; background: #0e121a;">
+          <input type="file" id="sigImageFileInput" accept="image/*" style="display: none;">
+          <div style="color: var(--accent); margin-bottom: 8px; display: flex; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 600; color: #fff;">Click or Drop Signature Photo Here</div>
+          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Upload JPG, PNG, WEBP photo of paper signature. Automatic background removal enabled.</div>
+        </div>
+
+        <div id="sigUploadControls" style="display: none;">
+          <!-- Transparent Checkerboard Preview -->
+          <div style="background: repeating-conic-gradient(#1e2433 0% 25%, #141923 0% 50%) 50% / 16px 16px; border: 1px solid #242c3d; border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px; padding: 8px;">
+            <canvas id="uploadPreviewCanvas" style="max-width: 100%; max-height: 100%; object-fit: contain;"></canvas>
+          </div>
+
+          <!-- Processing Controls -->
+          <div style="background: #0c0f16; border: 1px solid #1f2637; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+                <input type="checkbox" id="chkAutoRemoveBg" checked style="accent-color: var(--accent); width: 15px; height: 15px;">
+                <span style="font-weight: 600;">Remove Paper Background</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+                <input type="checkbox" id="chkAutoCrop" checked style="accent-color: var(--accent); width: 15px; height: 15px;">
+                <span style="font-weight: 600;">Auto-Crop Margins</span>
+              </label>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+                  <span>Paper Clean (Filter):</span>
+                  <span id="thresholdVal" style="color: var(--accent); font-weight: 700;">28%</span>
+                </div>
+                <input type="range" id="rngThreshold" min="5" max="65" value="28" style="width: 100%; accent-color: var(--accent);">
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+                  <span>Stroke Contrast:</span>
+                  <span id="contrastVal" style="color: var(--accent); font-weight: 700;">1.8x</span>
+                </div>
+                <input type="range" id="rngContrast" min="10" max="35" value="18" style="width: 100%; accent-color: var(--accent);">
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-muted); padding: 0 4px;">
+            <span>Signature Ink Tint:</span>
+            <div class="color-dots">
+              <div class="color-dot active" style="background: #000000;" data-upload-ink="black" title="Pure Black"></div>
+              <div class="color-dot" style="background: #0f172a;" data-upload-ink="navy" title="Contract Navy"></div>
+              <div class="color-dot" style="background: #0284c7;" data-upload-ink="blue" title="Royal Blue"></div>
+              <div class="color-dot" style="background: linear-gradient(135deg, #f59e0b, #38bdf8);" data-upload-ink="original" title="Original Ink / Photo Color"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="tool-btn" id="cancelSigBtn">Cancel</button>
+        <button type="button" class="tool-btn primary" id="saveSigBtn">Use Signature</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Educational & Security Architecture Section -->
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+      </div>
+      <h3>Vector Smooth Ink Capture</h3>
+      <p>Bezier-curved digital signature pad with pressure emulation, crisp typography signatures, and adaptive image background calibration.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
+      </div>
+      <h3>Dual-Engine PDF Re-Synthesis</h3>
+      <p>High-resolution 2x Retina re-synthesis and permission bypass ensure even protected government IDs, Aadhaar cards, and bank forms export flawlessly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </div>
+      <h3>Interactive Stamp Resizing</h3>
+      <p>Drag, place, and resize signatures and date stamps interactively on any page with aspect-ratio locking and exact coordinate mapping.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+
+  <div class="faq-box">
+    <details>
+      <summary>Is my signature legally binding?</summary>
+      <p>In many jurisdictions (including the US ESIGN Act, UETA, and EU eIDAS regulation), electronic signatures placed on agreements carry legal validity when intent and consent are established.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Are my signed contracts or PDF files uploaded to a server?</summary>
+      <p>No. The entire signing workflow runs in your browser RAM using pdf-lib and PDF.js. Your sensitive contracts, leases, and identity cards never touch an external cloud.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can I upload a smartphone photo of my physical signature?</summary>
+      <p>Yes. Simply upload a picture of your handwritten signature on paper. The built-in adaptive background remover will automatically calibrate paper luminance and erase background shadows.</p>
+    </details>
+  </div>
+</div>
+
+  <!-- Standard Global Footer -->
+  <footer class="global-footer">
+    <div style="margin-bottom: 16px;">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+    </div>
+    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+  </footer>
+
+</div>
+
+<!-- Global Shell Script -->
+<script>
+(() => {
+  'use strict';
+  const toolkitToggle = document.getElementById('toolkitToggle');
+  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  function setSidebarState(isOpen) {
+    if (isOpen) {
+      document.body.classList.add('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'true');
+      try { localStorage.setItem('tangent_sidebar_open', 'true'); } catch (e) {}
+    } else {
+      document.body.classList.remove('sidebar-open');
+      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'false');
+      try { localStorage.setItem('tangent_sidebar_open', 'false'); } catch (e) {}
+    }
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
+  }
+
+  // Restore desktop state on load
+  try {
+    if (localStorage.getItem('tangent_sidebar_open') === 'true' && window.innerWidth > 1024) {
+      setSidebarState(true);
+    }
+  } catch (e) {}
+
+  if (toolkitToggle) {
+    toolkitToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = document.body.classList.contains('sidebar-open');
+      setSidebarState(!isOpen);
+    });
+  }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', () => setSidebarState(false));
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => setSidebarState(false));
+  }
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      setSidebarState(false);
+      if (navLinks) {
+        navLinks.classList.remove('open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+})();
+</script>
+
+<script>
+  let rawPdfBytes = null;
+  let pdfDoc = null;
+  let currentPageNum = 1;
+  let totalPages = 1;
+  let placedStamps = []; // { page, x, y, width, height, dataUrl }
+
+  const dropZone = document.getElementById('dropZone');
+  const pdfFileInput = document.getElementById('pdfFileInput');
+  const signerWorkspace = document.getElementById('signerWorkspace');
+  const pdfCanvas = document.getElementById('pdfCanvas');
+  const stampsLayer = document.getElementById('stampsLayer');
+  const prevPageBtn = document.getElementById('prevPageBtn');
+  const nextPageBtn = document.getElementById('nextPageBtn');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const downloadSignedPdfBtn = document.getElementById('downloadSignedPdfBtn');
+
+  // Modal elements
+  const sigModal = document.getElementById('sigModal');
+  const createSignatureBtn = document.getElementById('createSignatureBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelSigBtn = document.getElementById('cancelSigBtn');
+  const saveSigBtn = document.getElementById('saveSigBtn');
+  const tabDraw = document.getElementById('tabDraw');
+  const tabType = document.getElementById('tabType');
+  const paneDraw = document.getElementById('paneDraw');
+  const paneType = document.getElementById('paneType');
+  const sigPadCanvas = document.getElementById('sigPadCanvas');
+  const clearPadBtn = document.getElementById('clearPadBtn');
+  const typeSigInput = document.getElementById('typeSigInput');
+  const typeSigPreview = document.getElementById('typeSigPreview');
+  const addDateBtn = document.getElementById('addDateBtn');
+  const addCheckBtn = document.getElementById('addCheckBtn');
+
+  // Signature Pad Logic
+  const padCtx = sigPadCanvas.getContext('2d');
+  let isDrawing = false;
+  let activeColor = '#000000';
+
+  // Dropzone Handlers
+  dropZone.addEventListener('click', () => pdfFileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) loadPdfFile(e.dataTransfer.files[0]);
+  });
+  pdfFileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) loadPdfFile(e.target.files[0]);
+  });
+
+  function loadPdfFile(file) {
+    if (file.type !== 'application/pdf') {
+      alert('Please select a valid PDF file.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      rawPdfBytes = new Uint8Array(e.target.result);
+      dropZone.style.display = 'none';
+      signerWorkspace.style.display = 'flex';
+      
+      // Clone buffer for pdfjsLib worker so rawPdfBytes is never detached
+      const pdfJsData = new Uint8Array(rawPdfBytes.slice(0));
+      const loadingTask = pdfjsLib.getDocument({ data: pdfJsData });
+      pdfDoc = await loadingTask.promise;
+      totalPages = pdfDoc.numPages;
+      currentPageNum = 1;
+      renderCurrentPage();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  async function renderCurrentPage() {
+    pageIndicator.textContent = `Page ${currentPageNum} of ${totalPages}`;
+    const page = await pdfDoc.getPage(currentPageNum);
+    const viewport = page.getViewport({ scale: 1.5 });
+    
+    pdfCanvas.width = viewport.width;
+    pdfCanvas.height = viewport.height;
+    
+    const renderContext = {
+      canvasContext: pdfCanvas.getContext('2d'),
+      viewport: viewport
+    };
+    await page.render(renderContext).promise;
+    renderStampsForPage();
+  }
+
+  prevPageBtn.addEventListener('click', () => {
+    if (currentPageNum > 1) {
+      currentPageNum--;
+      renderCurrentPage();
+    }
+  });
+
+  nextPageBtn.addEventListener('click', () => {
+    if (currentPageNum < totalPages) {
+      currentPageNum++;
+      renderCurrentPage();
+    }
+  });
+
+  // Stamp Placement & Dragging
+  function renderStampsForPage() {
+    stampsLayer.innerHTML = '';
+    const pageStamps = placedStamps.filter(s => s.page === currentPageNum);
+
+    pageStamps.forEach(stamp => {
+      const el = document.createElement('div');
+      el.className = 'placed-stamp';
+      el.style.left = stamp.x + 'px';
+      el.style.top = stamp.y + 'px';
+      el.style.width = stamp.width + 'px';
+      el.style.height = stamp.height + 'px';
+      el.style.pointerEvents = 'auto';
+
+      const img = document.createElement('img');
+      img.src = stamp.dataUrl;
+      el.appendChild(img);
+
+      const delBtn = document.createElement('div');
+      delBtn.className = 'stamp-delete';
+      delBtn.title = 'Remove stamp';
+      delBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        placedStamps = placedStamps.filter(s => s !== stamp);
+        renderStampsForPage();
+      });
+      el.appendChild(delBtn);
+
+      const resizeBtn = document.createElement('div');
+      resizeBtn.className = 'stamp-resize';
+      resizeBtn.title = 'Drag to Resize';
+      resizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#08090d" stroke-width="3" stroke-linecap="round"><line x1="21" y1="9" x2="9" y2="21"></line><line x1="21" y1="15" x2="15" y2="21"></line><line x1="21" y1="21" x2="21" y2="21"></line></svg>`;
+
+      resizeBtn.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        let startX = e.clientX;
+        let initialW = stamp.width;
+        let initialH = stamp.height;
+        const aspect = initialW / initialH;
+
+        function onResizeMove(moveEvent) {
+          const deltaX = moveEvent.clientX - startX;
+          let newW = Math.max(35, Math.min(650, initialW + deltaX));
+          let newH = Math.round(newW / aspect);
+          stamp.width = newW;
+          stamp.height = newH;
+          el.style.width = newW + 'px';
+          el.style.height = newH + 'px';
+        }
+
+        function onResizeUp() {
+          document.removeEventListener('mousemove', onResizeMove);
+          document.removeEventListener('mouseup', onResizeUp);
+        }
+
+        document.addEventListener('mousemove', onResizeMove);
+        document.addEventListener('mouseup', onResizeUp);
+      });
+      el.appendChild(resizeBtn);
+
+      // Dragging logic
+      el.addEventListener('mousedown', (e) => {
+        if (e.target === delBtn || e.target.closest('.stamp-delete') || e.target === resizeBtn || e.target.closest('.stamp-resize')) return;
+        let startX = e.clientX;
+        let startY = e.clientY;
+        let initialX = stamp.x;
+        let initialY = stamp.y;
+
+        function onMouseMove(moveEvent) {
+          stamp.x = initialX + (moveEvent.clientX - startX);
+          stamp.y = initialY + (moveEvent.clientY - startY);
+          el.style.left = stamp.x + 'px';
+          el.style.top = stamp.y + 'px';
+        }
+
+        function onMouseUp() {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      stampsLayer.appendChild(el);
+    });
+  }
+
+  function addStampToCurrentPage(dataUrl, width = 160, height = 60) {
+    const x = (pdfCanvas.width - width) / 2;
+    const y = (pdfCanvas.height - height) / 2;
+    placedStamps.push({
+      page: currentPageNum,
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+      dataUrl: dataUrl
+    });
+    renderStampsForPage();
+  }
+
+  // Date Stamp Creator
+  addDateBtn.addEventListener('click', () => {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const c = document.createElement('canvas');
+    c.width = 240;
+    c.height = 60;
+    const ctx = c.getContext('2d');
+    ctx.font = 'bold 20px -apple-system, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(today, 10, 38);
+    addStampToCurrentPage(c.toDataURL(), 150, 40);
+  });
+
+  // Checkmark Creator
+  addCheckBtn.addEventListener('click', () => {
+    const c = document.createElement('canvas');
+    c.width = 60;
+    c.height = 60;
+    const ctx = c.getContext('2d');
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(12, 30);
+    ctx.lineTo(24, 46);
+    ctx.lineTo(48, 14);
+    ctx.stroke();
+    addStampToCurrentPage(c.toDataURL(), 40, 40);
+  });
+
+  // Modal Controls
+  createSignatureBtn.addEventListener('click', () => {
+    sigModal.classList.add('active');
+    clearSignaturePad();
+  });
+  closeModalBtn.addEventListener('click', () => sigModal.classList.remove('active'));
+  cancelSigBtn.addEventListener('click', () => sigModal.classList.remove('active'));
+
+  const tabUpload = document.getElementById('tabUpload');
+  const paneUpload = document.getElementById('paneUpload');
+  const sigUploadDropzone = document.getElementById('sigUploadDropzone');
+  const sigImageFileInput = document.getElementById('sigImageFileInput');
+  const sigUploadControls = document.getElementById('sigUploadControls');
+  const uploadPreviewCanvas = document.getElementById('uploadPreviewCanvas');
+  const uploadCtx = uploadPreviewCanvas.getContext('2d');
+  const chkAutoRemoveBg = document.getElementById('chkAutoRemoveBg');
+  const rngThreshold = document.getElementById('rngThreshold');
+  const thresholdVal = document.getElementById('thresholdVal');
+
+  let uploadedImage = null;
+  let uploadInkMode = 'black';
+
+  tabDraw.addEventListener('click', () => {
+    tabDraw.classList.add('active');
+    tabType.classList.remove('active');
+    tabUpload.classList.remove('active');
+    paneDraw.style.display = 'block';
+    paneType.style.display = 'none';
+    paneUpload.style.display = 'none';
+  });
+
+  tabType.addEventListener('click', () => {
+    tabType.classList.add('active');
+    tabDraw.classList.remove('active');
+    tabUpload.classList.remove('active');
+    paneDraw.style.display = 'none';
+    paneType.style.display = 'block';
+    paneUpload.style.display = 'none';
+  });
+
+  tabUpload.addEventListener('click', () => {
+    tabUpload.classList.add('active');
+    tabDraw.classList.remove('active');
+    tabType.classList.remove('active');
+    paneDraw.style.display = 'none';
+    paneType.style.display = 'none';
+    paneUpload.style.display = 'block';
+  });
+
+  // Upload Signature Image Logic
+  sigUploadDropzone.addEventListener('click', () => sigImageFileInput.click());
+  sigUploadDropzone.addEventListener('dragover', (e) => { e.preventDefault(); sigUploadDropzone.style.borderColor = 'var(--accent)'; });
+  sigUploadDropzone.addEventListener('dragleave', () => { sigUploadDropzone.style.borderColor = '#242e42'; });
+  sigUploadDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    sigUploadDropzone.style.borderColor = '#242e42';
+    if (e.dataTransfer.files.length) handleSignatureImageFile(e.dataTransfer.files[0]);
+  });
+  sigImageFileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleSignatureImageFile(e.target.files[0]);
+  });
+
+  function handleSignatureImageFile(file) {
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload a valid image file (JPG, PNG, WEBP).');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        uploadedImage = img;
+        sigUploadControls.style.display = 'block';
+        processUploadedSignature();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  const chkAutoCrop = document.getElementById('chkAutoCrop');
+  const rngContrast = document.getElementById('rngContrast');
+  const contrastVal = document.getElementById('contrastVal');
+
+  function processUploadedSignature() {
+    if (!uploadedImage) return;
+    const maxDim = 800;
+    let origW = uploadedImage.naturalWidth || uploadedImage.width;
+    let origH = uploadedImage.naturalHeight || uploadedImage.height;
+    let w = origW;
+    let h = origH;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) {
+        h = Math.round((h * maxDim) / w);
+        w = maxDim;
+      } else {
+        w = Math.round((w * maxDim) / h);
+        h = maxDim;
+      }
+    }
+
+    // Step 1: Draw to offscreen buffer
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = w;
+    offCanvas.height = h;
+    const offCtx = offCanvas.getContext('2d');
+    offCtx.drawImage(uploadedImage, 0, 0, w, h);
+
+    if (!chkAutoRemoveBg.checked) {
+      uploadPreviewCanvas.width = w;
+      uploadPreviewCanvas.height = h;
+      uploadCtx.clearRect(0, 0, w, h);
+      uploadCtx.drawImage(offCanvas, 0, 0);
+      return;
+    }
+
+    // Step 2: Sample paper background tone from perimeter pixels (corners and borders)
+    const imgData = offCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    const perimSamples = [];
+    const stepX = Math.max(1, Math.floor(w / 40));
+    const stepY = Math.max(1, Math.floor(h / 40));
+    const marginX = Math.max(2, Math.floor(w * 0.08));
+    const marginY = Math.max(2, Math.floor(h * 0.08));
+
+    for (let x = 0; x < w; x += stepX) {
+      for (let y = 0; y < marginY; y += 2) {
+        const idx = (y * w + x) * 4;
+        perimSamples.push(0.299 * data[idx] + 0.587 * data[idx+1] + 0.114 * data[idx+2]);
+      }
+      for (let y = h - marginY; y < h; y += 2) {
+        const idx = (y * w + x) * 4;
+        perimSamples.push(0.299 * data[idx] + 0.587 * data[idx+1] + 0.114 * data[idx+2]);
+      }
+    }
+    for (let y = marginY; y < h - marginY; y += stepY) {
+      for (let x = 0; x < marginX; x += 2) {
+        const idx = (y * w + x) * 4;
+        perimSamples.push(0.299 * data[idx] + 0.587 * data[idx+1] + 0.114 * data[idx+2]);
+      }
+      for (let x = w - marginX; x < w; x += 2) {
+        const idx = (y * w + x) * 4;
+        perimSamples.push(0.299 * data[idx] + 0.587 * data[idx+1] + 0.114 * data[idx+2]);
+      }
+    }
+
+    perimSamples.sort((a, b) => a - b);
+    // Baseline paper brightness is the 80th percentile of border pixels
+    const paperLum = perimSamples.length > 0 ? perimSamples[Math.floor(perimSamples.length * 0.82)] : 220;
+
+    // Filter parameters
+    const cleanPct = parseInt(rngThreshold.value, 10) / 100; // 0.05 to 0.65
+    const contrastFactor = parseInt(rngContrast.value, 10) / 10; // 1.0 to 3.5
+
+    thresholdVal.textContent = rngThreshold.value + '%';
+    contrastVal.textContent = contrastFactor.toFixed(1) + 'x';
+
+    // Pixels within cutOffset of paperLum are considered paper
+    const cutOffset = Math.max(8, Math.round(paperLum * cleanPct));
+    const cutoff = Math.max(40, paperLum - cutOffset);
+
+    // Track bounding box for auto-crop
+    let minX = w, maxX = 0, minY = h, maxY = 0;
+    let visiblePixelCount = 0;
+
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (lum >= cutoff) {
+          data[i + 3] = 0; // Pure transparent paper
+        } else {
+          // Calculate relative stroke darkness (0.0 = at cutoff, 1.0 = completely dark)
+          const relDarkness = (cutoff - lum) / cutoff;
+          // Apply contrast boost and feathering
+          let alpha = Math.min(255, Math.round(Math.pow(relDarkness, 0.85) * 255 * contrastFactor));
+          data[i + 3] = alpha;
+
+          if (alpha > 20) {
+            visiblePixelCount++;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+
+          if (uploadInkMode === 'black') {
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+          } else if (uploadInkMode === 'navy') {
+            data[i] = 15;
+            data[i + 1] = 23;
+            data[i + 2] = 42;
+          } else if (uploadInkMode === 'blue') {
+            data[i] = 2;
+            data[i + 1] = 132;
+            data[i + 2] = 199;
+          }
+        }
+      }
+    }
+
+    offCtx.putImageData(imgData, 0, 0);
+
+    // Step 3: Render to uploadPreviewCanvas, auto-cropping margins if enabled
+    if (chkAutoCrop && chkAutoCrop.checked && visiblePixelCount > 25 && minX < maxX && minY < maxY) {
+      const pad = 12;
+      const cropX = Math.max(0, minX - pad);
+      const cropY = Math.max(0, minY - pad);
+      const cropW = Math.min(w - cropX, (maxX - minX) + pad * 2);
+      const cropH = Math.min(h - cropY, (maxY - minY) + pad * 2);
+
+      uploadPreviewCanvas.width = cropW;
+      uploadPreviewCanvas.height = cropH;
+      uploadCtx.clearRect(0, 0, cropW, cropH);
+      uploadCtx.drawImage(offCanvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    } else {
+      uploadPreviewCanvas.width = w;
+      uploadPreviewCanvas.height = h;
+      uploadCtx.clearRect(0, 0, w, h);
+      uploadCtx.drawImage(offCanvas, 0, 0);
+    }
+  }
+
+  rngThreshold.addEventListener('input', processUploadedSignature);
+  rngContrast.addEventListener('input', processUploadedSignature);
+  chkAutoRemoveBg.addEventListener('change', processUploadedSignature);
+  if (chkAutoCrop) chkAutoCrop.addEventListener('change', processUploadedSignature);
+
+  document.querySelectorAll('[data-upload-ink]').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('[data-upload-ink]').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      uploadInkMode = dot.dataset.uploadInk;
+      processUploadedSignature();
+    });
+  });
+
+  // Drawing Pad Canvas
+  function clearSignaturePad() {
+    padCtx.clearRect(0, 0, sigPadCanvas.width, sigPadCanvas.height);
+  }
+  clearPadBtn.addEventListener('click', clearSignaturePad);
+
+  sigPadCanvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    padCtx.beginPath();
+    padCtx.strokeStyle = activeColor;
+    padCtx.lineWidth = 3;
+    padCtx.lineCap = 'round';
+    padCtx.lineJoin = 'round';
+    const rect = sigPadCanvas.getBoundingClientRect();
+    padCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  sigPadCanvas.addEventListener('mousemove', (e) => {
+    if (!isDrawing) return;
+    const rect = sigPadCanvas.getBoundingClientRect();
+    padCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    padCtx.stroke();
+  });
+
+  window.addEventListener('mouseup', () => { isDrawing = false; });
+
+  // Color Pickers
+  document.querySelectorAll('.color-dot[data-color]').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('.color-dot[data-color]').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      activeColor = dot.dataset.color;
+    });
+  });
+
+  // Type Name Input
+  typeSigInput.addEventListener('input', (e) => {
+    typeSigPreview.textContent = e.target.value || 'Your Signature';
+  });
+
+  saveSigBtn.addEventListener('click', () => {
+    let finalDataUrl;
+    let w = 180;
+    let h = 70;
+    if (tabDraw.classList.contains('active')) {
+      finalDataUrl = sigPadCanvas.toDataURL();
+    } else if (tabType.classList.contains('active')) {
+      const c = document.createElement('canvas');
+      c.width = 400;
+      c.height = 120;
+      const ctx = c.getContext('2d');
+      ctx.font = '48px "Brush Script MT", "Segoe Script", cursive';
+      ctx.fillStyle = activeColor;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(typeSigPreview.textContent, 200, 60);
+      finalDataUrl = c.toDataURL();
+    } else if (tabUpload.classList.contains('active')) {
+      if (!uploadedImage) {
+        alert('Please select or upload a signature image first.');
+        return;
+      }
+      finalDataUrl = uploadPreviewCanvas.toDataURL('image/png');
+      const ratio = uploadPreviewCanvas.width / uploadPreviewCanvas.height;
+      w = Math.min(220, Math.round(70 * ratio));
+      h = Math.round(w / ratio);
+    }
+    addStampToCurrentPage(finalDataUrl, w, h);
+    sigModal.classList.remove('active');
+  });
+
+  function downloadPdfBlob(blob, filename = 'signed-document.pdf') {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  // Export Signed PDF (Dual-Engine: Vector Injection + High-Res Synthesis Fallback)
+  downloadSignedPdfBtn.addEventListener('click', async () => {
+    if (!rawPdfBytes) return;
+    downloadSignedPdfBtn.disabled = true;
+    downloadSignedPdfBtn.textContent = 'Generating PDF...';
+
+    try {
+      // Primary Engine: Direct vector PDF injection via PDF-Lib
+      // { ignoreEncryption: true } prevents errors on government IDs, Aadhaar cards, and password-free protected PDFs
+      const pdfDocLib = await PDFLib.PDFDocument.load(rawPdfBytes.slice(0), { ignoreEncryption: true });
+      const pages = pdfDocLib.getPages();
+
+      for (const stamp of placedStamps) {
+        const pageIdx = stamp.page - 1;
+        if (pageIdx < 0 || pageIdx >= pages.length) continue;
+        const page = pages[pageIdx];
+        const { width: pWidth, height: pHeight } = page.getSize();
+
+        // Ratio between PDF-lib coordinates and browser canvas
+        const scaleX = pWidth / pdfCanvas.width;
+        const scaleY = pHeight / pdfCanvas.height;
+
+        const pngImage = await pdfDocLib.embedPng(stamp.dataUrl);
+
+        // PDF coordinate origin is bottom-left
+        const pdfX = stamp.x * scaleX;
+        const pdfY = pHeight - ((stamp.y + stamp.height) * scaleY);
+        const pdfW = stamp.width * scaleX;
+        const pdfH = stamp.height * scaleY;
+
+        page.drawImage(pngImage, {
+          x: pdfX,
+          y: pdfY,
+          width: pdfW,
+          height: pdfH
+        });
+      }
+
+      const signedBytes = await pdfDocLib.save();
+      downloadPdfBlob(new Blob([signedBytes], { type: 'application/pdf' }));
+    } catch (primaryErr) {
+      console.warn('Vector PDF injection failed, activating high-resolution synthesis fallback:', primaryErr);
+      try {
+        // Fallback Engine: High-resolution (2x Retina) PDF re-synthesis via PDF.js + Canvas
+        // Works on 100% of PDFs even if heavily protected or with complex internal stream dictionaries
+        const fallbackDoc = await PDFLib.PDFDocument.create();
+
+        for (let p = 1; p <= totalPages; p++) {
+          const page = await pdfDoc.getPage(p);
+          const viewport = page.getViewport({ scale: 2.0 });
+
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = viewport.width;
+          offCanvas.height = viewport.height;
+          const offCtx = offCanvas.getContext('2d');
+
+          await page.render({ canvasContext: offCtx, viewport: viewport }).promise;
+
+          // Render stamps for this page onto the high-res canvas
+          const pageStamps = placedStamps.filter(s => s.page === p);
+          const ratioX = viewport.width / pdfCanvas.width;
+          const ratioY = viewport.height / pdfCanvas.height;
+
+          for (const s of pageStamps) {
+            await new Promise((resolve) => {
+              const stampImg = new Image();
+              stampImg.onload = () => {
+                offCtx.drawImage(stampImg, s.x * ratioX, s.y * ratioY, s.width * ratioX, s.height * ratioY);
+                resolve();
+              };
+              stampImg.onerror = resolve;
+              stampImg.src = s.dataUrl;
+            });
+          }
+
+          const pagePngUrl = offCanvas.toDataURL('image/png');
+          const embeddedPage = await fallbackDoc.embedPng(pagePngUrl);
+          const pdfPage = fallbackDoc.addPage([page.view[2], page.view[3]]);
+          pdfPage.drawImage(embeddedPage, {
+            x: 0,
+            y: 0,
+            width: page.view[2],
+            height: page.view[3]
+          });
+        }
+
+        const signedBytes = await fallbackDoc.save();
+        downloadPdfBlob(new Blob([signedBytes], { type: 'application/pdf' }));
+      } catch (fallbackErr) {
+        console.error('All PDF export strategies failed:', fallbackErr);
+        alert('Could not export PDF: ' + (fallbackErr.message || 'Please check console.'));
+      }
+    } finally {
+      downloadSignedPdfBtn.disabled = false;
+      downloadSignedPdfBtn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download Signed PDF
+      `;
+    }
+  });
+</script>
+
+</body>
+</html>

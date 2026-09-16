@@ -469,7 +469,9 @@
       const div = document.createElement('div');
       div.className = 'col-item';
       div.innerHTML = `
-        <div class="col-icon">${type === 'number' ? iconNum : iconStr}</div>
+        <div class="col-icon" style="cursor:pointer;" onclick="toggleType('${col}')" title="Click to swap between Text and Number">
+          ${type === 'number' ? iconNum : iconStr}
+        </div>
         <div class="col-name" title="${col}">${col}</div>
       `;
       list.appendChild(div);
@@ -477,20 +479,43 @@
     document.getElementById('rowCount').textContent = parsedData.length.toLocaleString() + ' rows';
   }
 
+  function toggleType(col) {
+    colTypes[col] = colTypes[col] === 'number' ? 'string' : 'number';
+    buildDataDictionary();
+    populateSelects();
+    updateChart();
+  }
+
   function populateSelects() {
     const selX = document.getElementById('selX');
     const selY = document.getElementById('selY');
+    
+    const currX = selX.value;
+    const currY = selY.value;
+    
     selX.innerHTML = ''; selY.innerHTML = '';
     
+    let hasX = false, hasY = false;
     columns.forEach(col => {
-      const optX = document.createElement('option');
-      optX.value = col; optX.textContent = col;
-      selX.appendChild(optX);
-      
-      const optY = document.createElement('option');
-      optY.value = col; optY.textContent = col;
-      selY.appendChild(optY);
+      if (colTypes[col] === 'string') {
+        const optX = document.createElement('option');
+        optX.value = col; optX.textContent = col;
+        selX.appendChild(optX);
+        hasX = true;
+      }
+      if (colTypes[col] === 'number') {
+        const optY = document.createElement('option');
+        optY.value = col; optY.textContent = col;
+        selY.appendChild(optY);
+        hasY = true;
+      }
     });
+
+    if (!hasX) selX.innerHTML = '<option value="">(No Text Columns)</option>';
+    if (!hasY) selY.innerHTML = '<option value="">(No Number Columns)</option>';
+
+    if (currX && Array.from(selX.options).some(o => o.value === currX)) selX.value = currX;
+    if (currY && Array.from(selY.options).some(o => o.value === currY)) selY.value = currY;
   }
 
   function buildDataTable() {
@@ -539,7 +564,10 @@
     const agg = document.getElementById('selAgg').value;
     const type = document.getElementById('selType').value;
     
-    if (!xCol || !yCol) return;
+    if (!xCol || !yCol) {
+      if (currentChart) { currentChart.destroy(); currentChart = null; }
+      return;
+    }
 
     // Grouping & Aggregation Engine
     const groups = {};

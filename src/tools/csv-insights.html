@@ -214,18 +214,33 @@
   }
   .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
 
-  /* Reset Button */
-  .btn-reset {
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  /* Close File Button */
+  .btn-close {
     background: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    padding: 8px 16px;
+    padding: 6px 14px;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    margin-top: 16px;
+    margin-left: auto;
+    margin-right: 16px;
+    align-self: center;
   }
-  .btn-reset:hover { background: #ff4757; color: #fff; border-color: #ff4757; }
+  .btn-close:hover { background: rgba(255, 71, 87, 0.1); color: #ff4757; border-color: #ff4757; }
 </style>
 
 <!-- --- CONTENT --- -->
@@ -246,8 +261,11 @@
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
     </div>
     <div class="dropzone-title">Drag & Drop CSV File</div>
-    <div class="dropzone-subtitle">or click to browse local files</div>
-    <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+    <div class="dropzone-subtitle">or click anywhere in this box to browse local files</div>
+    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+      <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+      <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+    </div>
   </div>
 </div>
 
@@ -264,15 +282,20 @@
       <div id="colList">
         <!-- Columns injected via JS -->
       </div>
-      <button class="btn-reset" onclick="resetStudio()">Close File</button>
     </div>
 
     <!-- Right Panel: Studio -->
     <div class="studio-panel">
       
       <div class="studio-tabs">
-        <button class="tab-btn active" onclick="switchTab('chart')">Chart Builder</button>
-        <button class="tab-btn" onclick="switchTab('data')">Raw Data Table</button>
+        <div style="display: flex;">
+          <button class="tab-btn active" onclick="switchTab('chart')">Chart Builder</button>
+          <button class="tab-btn" onclick="switchTab('data')">Raw Data Table</button>
+        </div>
+        <button class="btn-close" onclick="resetStudio()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+          Upload New CSV
+        </button>
       </div>
 
       <!-- Tab: Chart Builder -->
@@ -600,8 +623,11 @@
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
       </div>
       <div class="dropzone-title">Drag & Drop CSV File</div>
-      <div class="dropzone-subtitle">or click to browse local files</div>
-      <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+      <div class="dropzone-subtitle">or click anywhere in this box to browse local files</div>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+        <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+        <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+      </div>
     `;
     fileInput.value = "";
     if (currentChart) { currentChart.destroy(); currentChart = null; }

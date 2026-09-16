@@ -617,3 +617,13 @@ body.sidebar-open .tangent-sidebar {
     scroll-behavior: auto !important;
   }
 }
+
+/* Master Mobile Grid Override */
+@media (max-width: 768px) {
+  .grid-container,
+  .features-grid,
+  .setup-grid,
+  .trust-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

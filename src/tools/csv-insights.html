@@ -434,6 +434,7 @@
     
     // Auto-detect types based on first non-null row
     colTypes = {};
+    const categoricalKeywords = ['year', 'id', 'zip', 'code', 'rating', 'month', 'day'];
     columns.forEach(col => {
       let type = 'string';
       for (let i = 0; i < Math.min(data.length, 10); i++) {
@@ -442,6 +443,15 @@
           break;
         }
       }
+      
+      // --- SMART HEURISTIC OVERRIDE ---
+      if (type === 'number') {
+        const lowerCol = col.toLowerCase();
+        if (categoricalKeywords.some(kw => lowerCol.includes(kw))) {
+          type = 'string'; // Force to categorical dimension
+        }
+      }
+      
       colTypes[col] = type;
     });
 

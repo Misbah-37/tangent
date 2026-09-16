@@ -318,6 +318,14 @@
             </select>
           </div>
           <div class="control-group">
+            <label>Sort By</label>
+            <select id="selSort" onchange="updateChart()">
+              <option value="y-desc">Value (Highest to Lowest)</option>
+              <option value="y-asc">Value (Lowest to Highest)</option>
+              <option value="x-asc">Category (A-Z / Chronological)</option>
+            </select>
+          </div>
+          <div class="control-group">
             <label>Chart Type</label>
             <select id="selType" onchange="updateChart()">
               <option value="bar">Bar Chart</option>
@@ -605,8 +613,18 @@
       else if (agg === 'avg') data.push(g.count > 0 ? g.sum / g.count : 0);
     });
 
-    // Sort by value descending
-    const combined = labels.map((l, i) => ({ l, v: data[i] })).sort((a, b) => b.v - a.v);
+    const sortMode = document.getElementById('selSort').value;
+    let combined = labels.map((l, i) => ({ l, v: data[i] }));
+    
+    combined.sort((a, b) => {
+      if (sortMode === 'y-desc') return b.v - a.v;
+      if (sortMode === 'y-asc') return a.v - b.v;
+      if (sortMode === 'x-asc') {
+        return String(a.l).localeCompare(String(b.l), undefined, { numeric: true, sensitivity: 'base' });
+      }
+      return 0;
+    });
+
     const sortedLabels = combined.map(x => x.l).slice(0, 50); // Limit to top 50
     const sortedData = combined.map(x => x.v).slice(0, 50);
 

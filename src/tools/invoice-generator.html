@@ -541,22 +541,37 @@
 
   /* Print Stylesheet */
   @media print {
-    body * {
-      visibility: hidden !important;
+    body { background: #fff !important; margin: 0; padding: 0; }
+    /* Hide all layout elements that shouldn't print */
+    .global-nav, .tangent-sidebar, .sidebar-backdrop, .clean-header, .editor-panel, .preview-bar, .info-section, .faq-title, .faq-box, .global-footer {
+      display: none !important;
     }
-    .invoice-paper, .invoice-paper * {
-      visibility: visible !important;
+    
+    /* Reset all structural wrappers so they don't take up ghost space */
+    .app-canvas, .invoice-container, .preview-wrapper, .paper-container {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
     }
+    
+    /* Ensure the sheet prints visibly and naturally */
     .invoice-paper {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 210mm !important;
-      min-height: 297mm !important;
-      max-width: none !important;
-      padding: 15mm 15mm !important;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      width: 100% !important;
+      transform: none !important;
       box-shadow: none !important;
+      padding: 15mm !important;
+      margin: 0 !important;
+      max-width: none !important;
     }
+
     @page {
       margin: 0;
       size: auto;
@@ -850,10 +865,7 @@ Account: 99482019482</div>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div class="inv-footer">
-          Generated securely via Tangent Client-Side Invoice Studio. Watermark-free document.
-        </div>
+
 
       </div>
     </div>

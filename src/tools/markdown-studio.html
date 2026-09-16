@@ -806,10 +806,10 @@ Start writing your academic paper or technical note here...
   }
 
   function updateStats(text) {
-    const words = text.trim() ? text.trim().split(/\\s+/).length : 0;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
     const readingTime = Math.ceil(words / 200);
-    const mathMatches = (text.match(/\\$[^$]+\\$/g) || []).length;
+    const mathMatches = (text.match(/\$[^$]+\$/g) || []).length;
 
     wordCountEl.textContent = words.toLocaleString();
     charCountEl.textContent = chars.toLocaleString();

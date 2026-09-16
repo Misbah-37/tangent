@@ -291,6 +291,40 @@
     z-index: 11;
   }
 
+  .placed-stamp .stamp-rotate-btn {
+    position: absolute;
+    bottom: -8px;
+    left: -8px;
+    width: 20px;
+    height: 20px;
+    background: #10b981;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  .placed-stamp .stamp-opac-btn {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    background: #f59e0b;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
   /* Signature Modal */
   .modal-overlay {
     display: none;
@@ -501,6 +535,10 @@
       </div>
 
       <div class="toolbar-group">
+        <button type="button" class="tool-btn" id="undoBtn" style="display: none;" title="Undo Last Stamp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+          Undo
+        </button>
         <button type="button" class="tool-btn primary" id="downloadSignedPdfBtn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Download Signed PDF
@@ -644,7 +682,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
       </div>
       <h3>Dual-Engine PDF Re-Synthesis</h3>
-      <p>High-resolution 2x Retina re-synthesis and permission bypass ensure even protected government IDs, Aadhaar cards, and bank forms export flawlessly.</p>
+      <p>High-resolution 2x Retina re-synthesis and permission bypass ensure even permission-restricted government IDs, Aadhaar cards, and bank forms export properly.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -783,7 +821,10 @@
   });
 
   // Stamp Placement & Dragging
+  const undoBtn = document.getElementById('undoBtn');
+
   function renderStampsForPage() {
+    undoBtn.style.display = placedStamps.length > 0 ? 'inline-flex' : 'none';
     stampsLayer.innerHTML = '';
     const pageStamps = placedStamps.filter(s => s.page === currentPageNum);
 
@@ -795,6 +836,9 @@
       el.style.width = stamp.width + 'px';
       el.style.height = stamp.height + 'px';
       el.style.pointerEvents = 'auto';
+      if (stamp.rotation) {
+        el.style.transform = `rotate(${stamp.rotation}rad)`;
+      }
 
       const img = document.createElement('img');
       img.src = stamp.dataUrl;
@@ -816,16 +860,18 @@
       resizeBtn.title = 'Drag to Resize';
       resizeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#08090d" stroke-width="3" stroke-linecap="round"><line x1="21" y1="9" x2="9" y2="21"></line><line x1="21" y1="15" x2="15" y2="21"></line><line x1="21" y1="21" x2="21" y2="21"></line></svg>`;
 
-      resizeBtn.addEventListener('mousedown', (e) => {
+      function startResize(e) {
         e.stopPropagation();
-        e.preventDefault();
-        let startX = e.clientX;
+        if (e.type !== 'touchstart') e.preventDefault();
+        let startX = e.touches ? e.touches[0].clientX : e.clientX;
         let initialW = stamp.width;
         let initialH = stamp.height;
         const aspect = initialW / initialH;
 
         function onResizeMove(moveEvent) {
-          const deltaX = moveEvent.clientX - startX;
+          if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
+          let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+          const deltaX = currentX - startX;
           let newW = Math.max(35, Math.min(650, initialW + deltaX));
           let newH = Math.round(newW / aspect);
           stamp.width = newW;
@@ -837,40 +883,139 @@
         function onResizeUp() {
           document.removeEventListener('mousemove', onResizeMove);
           document.removeEventListener('mouseup', onResizeUp);
+          document.removeEventListener('touchmove', onResizeMove);
+          document.removeEventListener('touchend', onResizeUp);
+          document.removeEventListener('touchcancel', onResizeUp);
         }
 
         document.addEventListener('mousemove', onResizeMove);
         document.addEventListener('mouseup', onResizeUp);
-      });
+        document.addEventListener('touchmove', onResizeMove, { passive: false });
+        document.addEventListener('touchend', onResizeUp);
+        document.addEventListener('touchcancel', onResizeUp);
+      }
+
+      resizeBtn.addEventListener('mousedown', startResize);
+      resizeBtn.addEventListener('touchstart', startResize, { passive: false });
       el.appendChild(resizeBtn);
 
+      const rotateBtn = document.createElement('div');
+      rotateBtn.className = 'stamp-rotate-btn';
+      rotateBtn.title = 'Drag to Rotate';
+      rotateBtn.style.cursor = 'grab';
+      
+      function startRotate(e) {
+        e.stopPropagation();
+        if (e.type !== 'touchstart') e.preventDefault();
+        
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        
+        let startX = e.touches ? e.touches[0].clientX : e.clientX;
+        let startY = e.touches ? e.touches[0].clientY : e.clientY;
+        let startAngle = Math.atan2(startY - cy, startX - cx);
+        let initialRot = stamp.rotation || 0;
+
+        function onRotateMove(moveEvent) {
+          if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
+          let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+          let currentY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
+          
+          let currentAngle = Math.atan2(currentY - cy, currentX - cx);
+          stamp.rotation = initialRot + (currentAngle - startAngle);
+          el.style.transform = 'rotate(' + stamp.rotation + 'rad)';
+        }
+
+        function onRotateUp() {
+          document.removeEventListener('mousemove', onRotateMove);
+          document.removeEventListener('mouseup', onRotateUp);
+          document.removeEventListener('touchmove', onRotateMove);
+          document.removeEventListener('touchend', onRotateUp);
+          document.removeEventListener('touchcancel', onRotateUp);
+        }
+
+        document.addEventListener('mousemove', onRotateMove);
+        document.addEventListener('mouseup', onRotateUp);
+        document.addEventListener('touchmove', onRotateMove, { passive: false });
+        document.addEventListener('touchend', onRotateUp);
+        document.addEventListener('touchcancel', onRotateUp);
+      }
+      
+      rotateBtn.addEventListener('mousedown', startRotate);
+      rotateBtn.addEventListener('touchstart', startRotate, { passive: false });
+      el.appendChild(rotateBtn);
+
+      const opacBtn = document.createElement('div');
+      opacBtn.className = 'stamp-opac-btn';
+      opacBtn.title = 'Adjust Transparency';
+      opacBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z"></path></svg>`;
+      opacBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (stamp.opacity === undefined) stamp.opacity = 1.0;
+        stamp.opacity -= 0.25;
+        if (stamp.opacity < 0.25) stamp.opacity = 1.0;
+        renderStampsForPage();
+      });
+      el.appendChild(opacBtn);
+
+      if (stamp.opacity !== undefined) {
+        el.style.opacity = stamp.opacity;
+      }
+
       // Dragging logic
-      el.addEventListener('mousedown', (e) => {
-        if (e.target === delBtn || e.target.closest('.stamp-delete') || e.target === resizeBtn || e.target.closest('.stamp-resize')) return;
-        let startX = e.clientX;
-        let startY = e.clientY;
+      function startDrag(e) {
+        if (e.target === delBtn || e.target.closest('.stamp-delete') || 
+            e.target === resizeBtn || e.target.closest('.stamp-resize') ||
+            e.target === rotateBtn || e.target.closest('.stamp-rotate-btn') ||
+            e.target === opacBtn || e.target.closest('.stamp-opac-btn')) return;
+        
+        if (e.type !== 'touchstart') e.preventDefault();
+        
+        let startX = e.touches ? e.touches[0].clientX : e.clientX;
+        let startY = e.touches ? e.touches[0].clientY : e.clientY;
         let initialX = stamp.x;
         let initialY = stamp.y;
 
-        function onMouseMove(moveEvent) {
-          stamp.x = initialX + (moveEvent.clientX - startX);
-          stamp.y = initialY + (moveEvent.clientY - startY);
+        function onDragMove(moveEvent) {
+          if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
+          let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+          let currentY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
+          
+          stamp.x = initialX + (currentX - startX);
+          stamp.y = initialY + (currentY - startY);
           el.style.left = stamp.x + 'px';
           el.style.top = stamp.y + 'px';
         }
 
-        function onMouseUp() {
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
+        function onDragUp() {
+          document.removeEventListener('mousemove', onDragMove);
+          document.removeEventListener('mouseup', onDragUp);
+          document.removeEventListener('touchmove', onDragMove);
+          document.removeEventListener('touchend', onDragUp);
+          document.removeEventListener('touchcancel', onDragUp);
         }
 
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
+        document.addEventListener('mousemove', onDragMove);
+        document.addEventListener('mouseup', onDragUp);
+        document.addEventListener('touchmove', onDragMove, { passive: false });
+        document.addEventListener('touchend', onDragUp);
+        document.addEventListener('touchcancel', onDragUp);
+      }
+
+      el.addEventListener('mousedown', startDrag);
+      el.addEventListener('touchstart', startDrag, { passive: false });
 
       stampsLayer.appendChild(el);
     });
   }
+
+  undoBtn.addEventListener('click', () => {
+    if (placedStamps.length > 0) {
+      placedStamps.pop();
+      renderStampsForPage();
+    }
+  });
 
   function addStampToCurrentPage(dataUrl, width = 160, height = 60) {
     const x = (pdfCanvas.width - width) / 2;
@@ -1167,25 +1312,46 @@
   }
   clearPadBtn.addEventListener('click', clearSignaturePad);
 
-  sigPadCanvas.addEventListener('mousedown', (e) => {
+  function getCoordinates(e) {
+    const rect = sigPadCanvas.getBoundingClientRect();
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  function startDrawing(e) {
+    e.preventDefault(); // Prevent scrolling on touch
     isDrawing = true;
     padCtx.beginPath();
     padCtx.strokeStyle = activeColor;
     padCtx.lineWidth = 3;
     padCtx.lineCap = 'round';
     padCtx.lineJoin = 'round';
-    const rect = sigPadCanvas.getBoundingClientRect();
-    padCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-  });
+    const coords = getCoordinates(e);
+    padCtx.moveTo(coords.x, coords.y);
+  }
 
-  sigPadCanvas.addEventListener('mousemove', (e) => {
+  function draw(e) {
     if (!isDrawing) return;
-    const rect = sigPadCanvas.getBoundingClientRect();
-    padCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    e.preventDefault(); // Prevent scrolling on touch
+    const coords = getCoordinates(e);
+    padCtx.lineTo(coords.x, coords.y);
     padCtx.stroke();
-  });
+  }
 
-  window.addEventListener('mouseup', () => { isDrawing = false; });
+  function stopDrawing() {
+    isDrawing = false;
+  }
+
+  sigPadCanvas.addEventListener('mousedown', startDrawing);
+  sigPadCanvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', stopDrawing);
+
+  sigPadCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+  sigPadCanvas.addEventListener('touchmove', draw, { passive: false });
+  window.addEventListener('touchend', stopDrawing);
+  window.addEventListener('touchcancel', stopDrawing);
 
   // Color Pickers
   document.querySelectorAll('.color-dot[data-color]').forEach(dot => {
@@ -1273,11 +1439,22 @@
         const pdfW = stamp.width * scaleX;
         const pdfH = stamp.height * scaleY;
 
+        const cx = pdfX + pdfW / 2;
+        const cy = pdfY + pdfH / 2;
+        const theta = -(stamp.rotation || 0); // Convert HTML clockwise to PDF counter-clockwise
+        
+        const dx = -pdfW / 2;
+        const dy = -pdfH / 2;
+        const dxRot = dx * Math.cos(theta) - dy * Math.sin(theta);
+        const dyRot = dx * Math.sin(theta) + dy * Math.cos(theta);
+
         page.drawImage(pngImage, {
-          x: pdfX,
-          y: pdfY,
+          x: cx + dxRot,
+          y: cy + dyRot,
           width: pdfW,
-          height: pdfH
+          height: pdfH,
+          opacity: stamp.opacity !== undefined ? stamp.opacity : 1.0,
+          rotate: PDFLib.radians(theta)
         });
       }
 
@@ -1310,7 +1487,15 @@
             await new Promise((resolve) => {
               const stampImg = new Image();
               stampImg.onload = () => {
-                offCtx.drawImage(stampImg, s.x * ratioX, s.y * ratioY, s.width * ratioX, s.height * ratioY);
+                if (s.opacity !== undefined) offCtx.globalAlpha = s.opacity;
+                const cx = (s.x + s.width / 2) * ratioX;
+                const cy = (s.y + s.height / 2) * ratioY;
+                offCtx.save();
+                offCtx.translate(cx, cy);
+                if (s.rotation) offCtx.rotate(s.rotation);
+                offCtx.drawImage(stampImg, -s.width / 2 * ratioX, -s.height / 2 * ratioY, s.width * ratioX, s.height * ratioY);
+                offCtx.restore();
+                if (s.opacity !== undefined) offCtx.globalAlpha = 1.0;
                 resolve();
               };
               stampImg.onerror = resolve;

@@ -52,581 +52,8 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
+<link rel="stylesheet" href="assets/tangent.css?v=1">
 <style>
-/* ==========================================================================
-   TANGENT GLOBAL BASE STYLES & LAYOUT SYSTEM
-   ========================================================================== */
-:root {
-  --bg-base: #08090d;
-  --bg-surface: #0e111a;
-  --bg-card: #131724;
-  --bg-card-hover: #191e30;
-  --border-color: #1f273b;
-  --border-highlight: rgba(0, 210, 255, 0.4);
-  --accent: #00d2ff;
-  --accent-glow: rgba(0, 210, 255, 0.18);
-  --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-danger: #ef4444;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-html {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
-}
-
-body {
-  background-color: var(--bg-base);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-}
-
-/* Global Navigation */
-.global-nav {
-  position: sticky;
-  top: 0;
-  z-index: 2000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 28px;
-  background: rgba(8, 9, 13, 0.88);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-color);
-  height: 60px;
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  font-size: 1.25rem;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-}
-
-.toolkit-toggle-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #cbd5e1;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.toolkit-toggle-btn:hover,
-body.sidebar-open .toolkit-toggle-btn {
-  color: #ffffff;
-  background-color: rgba(0, 210, 255, 0.12);
-  border-color: rgba(0, 210, 255, 0.4);
-  box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
-}
-
-.toolkit-toggle-btn .sidebar-icon {
-  color: #00d2ff;
-  transition: transform 0.2s ease;
-}
-
-body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
-  transform: scale(1.05);
-}
-
-.menu-toggle {
-  display: none;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nav-link:hover { color: var(--accent); }
-
-/* Collapsible Push-Sidebar */
-.tangent-sidebar {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  bottom: 0;
-  width: 280px !important;
-  min-width: 280px !important;
-  max-width: 280px !important;
-  box-sizing: border-box !important;
-  background: #0f131f;
-  background: linear-gradient(180deg, #131826 0%, #0c0f18 100%);
-  border-right: 1px solid rgba(0, 210, 255, 0.18);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
-  z-index: 2500;
-  transform: translateX(-100%);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-body.sidebar-open .tangent-sidebar {
-  transform: translateX(0);
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px 12px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.sidebar-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #00d2ff;
-}
-
-.sidebar-close-btn {
-  background: transparent;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.sidebar-close-btn:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.sidebar-nav-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 14px 12px 24px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.sidebar-nav-list::-webkit-scrollbar {
-  width: 4px;
-}
-.sidebar-nav-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-.sidebar-nav-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 210, 255, 0.2);
-  border-radius: 4px;
-}
-.sidebar-nav-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 255, 0.5);
-}
-
-.sidebar-group {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sidebar-group-title {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  margin-bottom: 4px;
-  padding-left: 8px;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #ffffff;
-  border: 1px solid transparent;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-}
-
-.sidebar-item:hover {
-  background-color: rgba(0, 210, 255, 0.08);
-  border-color: rgba(0, 210, 255, 0.2);
-  transform: translateX(2px);
-}
-
-.sidebar-item.active {
-  background-color: rgba(0, 210, 255, 0.12);
-  border: 1px solid rgba(0, 210, 255, 0.35);
-}
-
-.sidebar-item svg {
-  flex-shrink: 0;
-}
-
-.sidebar-item .item-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebar-item .item-title {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebar-item:hover .item-title,
-.sidebar-item.active .item-title {
-  color: #00d2ff;
-}
-
-.sidebar-item .item-desc {
-  font-size: 0.70rem;
-  color: #94a3b8;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* App Canvas Push (Desktop) */
-.app-canvas {
-  width: 100%;
-  box-sizing: border-box;
-  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 961px) {
-  body.sidebar-open .app-canvas {
-    margin-left: 280px !important;
-    width: calc(100% - 280px) !important;
-  }
-}
-
-/* Mobile Overlay Mode */
-.sidebar-backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  z-index: 2400;
-}
-
-@media (max-width: 960px) {
-  .tangent-sidebar {
-    top: 0 !important;
-    width: 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
-    z-index: 2500 !important;
-  }
-  body.sidebar-open .sidebar-backdrop {
-    display: block;
-  }
-  .global-nav { padding: 12px 20px; }
-  .nav-links { display: none; }
-  .menu-toggle { display: flex; }
-}
-
-/* Clean Hero Header & Badges */
-.clean-header {
-  text-align: center;
-  padding: 44px 20px 24px;
-}
-
-.badge-pill, .privacy-shield-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0, 210, 255, 0.08);
-  border: 1px solid rgba(0, 210, 255, 0.25);
-  color: #00d2ff;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-
-.page-title {
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: 12px;
-  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.page-sub {
-  color: var(--text-muted);
-  font-size: 1.05rem;
-  max-width: 680px;
-  margin: 0 auto 20px;
-  line-height: 1.6;
-}
-
-.feature-bar {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.feature-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--text-subtle);
-}
-
-.feature-item svg {
-  color: var(--accent-emerald);
-}
-
-/* Educational / SEO Article & FAQs */
-.seo-article {
-  border-top: 1px solid var(--border-color);
-  margin-top: 60px;
-  padding-top: 48px;
-}
-
-.seo-article h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-}
-
-.seo-article h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 28px 0 12px 0;
-  color: var(--accent);
-}
-
-.seo-article p {
-  color: var(--text-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-  margin-bottom: 18px;
-}
-
-.seo-article ul {
-  color: var(--text-muted);
-  font-size: 0.98rem;
-  line-height: 1.7;
-  margin-bottom: 24px;
-  padding-left: 20px;
-}
-
-.seo-article li {
-  margin-bottom: 8px;
-}
-
-.seo-article li strong {
-  color: #ffffff;
-}
-
-/* ==========================================================================
-   FEATURE TILES & FAQ ARCHITECTURE (Standardized across all pages)
-   ========================================================================== */
-.info-section {
-  max-width: 1080px;
-  margin: 60px auto 40px auto;
-  padding: 50px 20px 0 20px;
-  border-top: 1px solid #1f2533;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-bottom: 50px;
-}
-
-.feature-card {
-  background: #11141d;
-  border: 1px solid #1f2533;
-  border-radius: 16px;
-  padding: 28px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-}
-
-.feature-icon {
-  margin-bottom: 16px;
-  color: #00d2ff;
-  display: inline-flex;
-}
-
-.feature-card h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  color: #f1f5f9;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-}
-
-.feature-card h3 span { color: #00d2ff; }
-
-.feature-card p {
-  color: #94a3b8;
-  font-size: 0.92rem;
-  line-height: 1.6;
-  margin: 0;
-  text-align: left;
-}
-
-.faq-title {
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  text-align: left;
-  margin-bottom: 24px;
-  color: #ffffff;
-}
-
-.faq-box {
-  background: #11141d;
-  border: 1px solid #1f2533;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  text-align: left;
-}
-
-.faq-box details {
-  padding: 0;
-  margin: 0;
-}
-
-.faq-box summary {
-  padding: 18px 24px;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 1.05rem;
-  color: #f1f5f9;
-  outline: none;
-  list-style: none;
-  text-align: left;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.faq-box summary:hover {
-  color: #00d2ff;
-  background-color: rgba(0, 210, 255, 0.03);
-}
-
-.faq-box summary::-webkit-details-marker { display: none; }
-
-.faq-box p {
-  padding: 0 24px 20px 24px;
-  margin: 0;
-  color: #94a3b8;
-  line-height: 1.6;
-  font-size: 0.95rem;
-  text-align: left;
-}
-
-/* Global 2-Line Footer */
-.global-footer {
-  border-top: 1px solid var(--border-color);
-  padding: 40px 24px;
-  text-align: center;
-  color: #64748b;
-  font-size: 0.9rem;
-  background-color: var(--bg-base);
-  margin-top: auto;
-}
-
-.global-footer a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-  margin: 0 12px;
-}
-
-.global-footer a:hover {
-  color: var(--accent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 :root {
     --bg-page: #08090d;
     --bg-card: #11141d;
@@ -1089,7 +516,130 @@ body.sidebar-open .tangent-sidebar {
     margin-bottom: 1px;
   }
 
+  /* --- Template 5: Classic Traditional --- */
+  .resume-sheet.tpl-classic {
+    font-family: "Times New Roman", Times, serif;
+  }
+  .resume-sheet.tpl-classic .sheet-header {
+    text-align: center;
+    border-bottom: 1px solid #000;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .resume-sheet.tpl-classic .header-content { flex: 1; text-align: center; }
+  .resume-sheet.tpl-classic .sheet-contact { justify-content: center; color: #000; }
+  .resume-sheet.tpl-classic .sheet-name { font-size: 24px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+  .resume-sheet.tpl-classic .sheet-title { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
+  .resume-sheet.tpl-classic .sheet-sec-title { font-size: 14px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 2px; color: #000; }
+
+  /* --- Template 6: Creative Bold --- */
+  .resume-sheet.tpl-creative .sheet-header {
+    background: var(--tpl-accent);
+    color: #fff;
+    padding: 20px;
+    margin: -24mm -22mm 20mm -22mm;
+  }
+  .resume-sheet.tpl-creative .sheet-name { font-size: 30px; font-weight: 900; color: #fff; text-transform: uppercase; }
+  .resume-sheet.tpl-creative .sheet-title { color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 8px; }
+  .resume-sheet.tpl-creative .sheet-contact { color: rgba(255,255,255,0.8); }
+  .resume-sheet.tpl-creative .sheet-sec-title { font-size: 16px; font-weight: 900; color: var(--tpl-accent); margin-bottom: 12px; border-left: 4px solid var(--tpl-accent); padding-left: 8px; }
+  .resume-sheet.tpl-creative .sheet-photo { border-color: #fff; border-radius: 8px; }
+
+  /* --- Template 7: Academic CV --- */
+  .resume-sheet.tpl-academic { font-family: Palatino, "Palatino Linotype", serif; }
+  .resume-sheet.tpl-academic .sheet-header { border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 12px 0; margin-bottom: 20px; }
+  .resume-sheet.tpl-academic .sheet-name { font-size: 22px; font-weight: bold; text-align: center; }
+  .resume-sheet.tpl-academic .sheet-title { text-align: center; font-style: italic; margin-bottom: 8px; }
+  .resume-sheet.tpl-academic .sheet-contact { justify-content: center; }
+  .resume-sheet.tpl-academic .header-content { flex: 1; }
+  .resume-sheet.tpl-academic .sheet-sec-title { font-variant: small-caps; font-size: 16px; font-weight: bold; border-bottom: 1px dashed #94a3b8; margin-bottom: 12px; }
+
+  /* --- Template 8: Professional Corporate --- */
+  .resume-sheet.tpl-professional .sheet-header {
+    border-bottom: 4px solid var(--tpl-accent);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .resume-sheet.tpl-professional .sheet-name { font-size: 28px; color: var(--tpl-accent); font-weight: 700; }
+  .resume-sheet.tpl-professional .sheet-sec-title { background: #f1f5f9; padding: 6px 10px; font-weight: 700; color: var(--tpl-accent); border-left: 3px solid var(--tpl-accent); margin-bottom: 14px; }
+  .resume-sheet.tpl-professional .sheet-photo { border-radius: 4px; }
+
+  /* --- Template 9: Elegant Light --- */
+  .resume-sheet.tpl-elegant { font-weight: 300; }
+  .resume-sheet.tpl-elegant .sheet-name { font-weight: 300; font-size: 32px; letter-spacing: 0.1em; color: var(--tpl-accent); text-align: center; }
+  .resume-sheet.tpl-elegant .sheet-title { font-weight: 300; letter-spacing: 0.2em; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
+  .resume-sheet.tpl-elegant .sheet-contact { justify-content: center; }
+  .resume-sheet.tpl-elegant .header-content { flex: 1; }
+  .resume-sheet.tpl-elegant .sheet-sec-title { text-align: center; font-weight: 300; letter-spacing: 0.15em; color: var(--tpl-accent); margin-bottom: 16px; margin-top: 24px; text-transform: uppercase; }
+  .resume-sheet.tpl-elegant .sheet-item-head { font-weight: 600; }
+
+  /* --- Template 10: Timeline Flow --- */
+  .resume-sheet.tpl-timeline .sheet-section:not(:first-child) { border-left: 2px solid #e2e8f0; margin-left: 8px; padding-left: 16px; }
+  .resume-sheet.tpl-timeline .sheet-sec-title { position: relative; color: var(--tpl-accent); font-weight: 800; font-size: 15px; margin-bottom: 16px; }
+  .resume-sheet.tpl-timeline .sheet-section:not(:first-child) .sheet-sec-title::before { content: ''; position: absolute; left: -23px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tpl-accent); border: 2px solid #fff; }
+  .resume-sheet.tpl-timeline .sheet-header { margin-bottom: 24px; }
+  .resume-sheet.tpl-timeline .sheet-name { font-size: 26px; font-weight: 800; color: #0f172a; }
+
+  /* --- Template 11: Split 50/50 --- */
+  .resume-sheet.tpl-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20mm !important; }
+  .resume-sheet.tpl-split .sidebar-left { padding-right: 10px; border-right: 1px solid #e2e8f0; }
+  .resume-sheet.tpl-split .sheet-name { font-size: 22px; font-weight: 800; color: var(--tpl-accent); }
+  .resume-sheet.tpl-split .sheet-sec-title { font-weight: 700; color: var(--tpl-accent); border-bottom: 2px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 12px; }
+
+  /* --- Template 12: Startup Tech --- */
+  .resume-sheet.tpl-startup .sheet-name { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+  .resume-sheet.tpl-startup .sheet-sec-title { font-family: monospace; font-size: 14px; background: #0f172a; color: #fff; padding: 4px 10px; display: inline-block; margin-bottom: 16px; }
+  .resume-sheet.tpl-startup .sheet-item-head span:last-child { font-family: monospace; color: var(--tpl-accent); }
+  .resume-sheet.tpl-startup .skill-badge { font-family: monospace; border: 1px dashed #94a3b8; background: transparent; }
+
+  /* --- Template 13: Minimalist Raw --- */
+  .resume-sheet.tpl-minimalist .sheet-name { font-size: 24px; font-weight: 700; text-transform: lowercase; }
+  .resume-sheet.tpl-minimalist .sheet-title { font-weight: bold; text-transform: lowercase; margin-bottom: 12px; }
+  .resume-sheet.tpl-minimalist .sheet-sec-title { font-size: 12px; font-weight: 800; color: #000; margin-bottom: 10px; }
+  .resume-sheet.tpl-minimalist .skill-badge { background: none; border: none; padding: 0; margin-right: 8px; font-weight: bold; text-transform: lowercase; }
+  .resume-sheet.tpl-minimalist .skill-badge::after { content: ' /'; color: var(--tpl-accent); }
+  .resume-sheet.tpl-minimalist .sheet-photo { border-radius: 0; filter: grayscale(100%); }
+
+  /* --- Template 14: Portfolio Focus --- */
+  .resume-sheet.tpl-portfolio { display: grid; grid-template-columns: 80mm 1fr; gap: 15mm; padding: 15mm !important; }
+  .resume-sheet.tpl-portfolio .sheet-name { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 12px; color: #000; }
+  .resume-sheet.tpl-portfolio .sheet-photo-container { margin-bottom: 20px; text-align: center; }
+  .resume-sheet.tpl-portfolio .sheet-photo { width: 140px; height: 140px; border: none; box-shadow: 8px 8px 0 var(--tpl-accent); }
+  .resume-sheet.tpl-portfolio .sheet-sec-title { font-size: 18px; font-weight: 800; border-bottom: 4px solid var(--tpl-accent); display: inline-block; padding-bottom: 2px; margin-bottom: 16px; }
+
+  /* --- Template 15: Sleek Dark Accent --- */
+  .resume-sheet.tpl-sleek .sheet-header { background: #0f172a; color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; }
+  .resume-sheet.tpl-sleek .sheet-name { color: #fff; font-size: 26px; }
+  .resume-sheet.tpl-sleek .sheet-title { color: var(--tpl-accent); }
+  .resume-sheet.tpl-sleek .sheet-contact { color: #cbd5e1; }
+  .resume-sheet.tpl-sleek .sheet-sec-title { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--tpl-accent); padding-bottom: 4px; margin-bottom: 12px; }
+  .resume-sheet.tpl-sleek .skill-badge { background: #0f172a; color: #fff; border: none; }
+  
   /* General sheet elements */
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-content {
+    flex: 1;
+  }
+  .sheet-photo-container {
+    flex-shrink: 0;
+  }
+  .sheet-photo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--tpl-accent);
+  }
+  .sheet-body-text {
+    font-size: 12px;
+    color: #334155;
+    line-height: 1.55;
+  }
   .sheet-contact {
     display: flex;
     flex-wrap: wrap;
@@ -1180,21 +730,36 @@ body.sidebar-open .tangent-sidebar {
 
   /* Print Stylesheet */
   @media print {
-    body * {
-      visibility: hidden !important;
+    body { background: #fff !important; margin: 0; padding: 0; }
+    /* Hide all layout elements that shouldn't print */
+    .global-nav, .tangent-sidebar, .sidebar-backdrop, .clean-header, .form-panel, .preview-toolbar, .info-section, .faq-title, .faq-box, .global-footer {
+      display: none !important;
     }
-    .resume-sheet, .resume-sheet * {
-      visibility: visible !important;
+    
+    /* Reset all structural wrappers so they don't take up ghost space */
+    .app-canvas, .studio-layout, .preview-column, .paper-stage {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
     }
+    
+    /* Ensure the sheet prints visibly and naturally */
     .resume-sheet {
-      position: absolute;
-      left: 0;
-      top: 0;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
       width: 100% !important;
       transform: none !important;
-      padding: 15mm 15mm !important;
       box-shadow: none !important;
+      padding: 15mm !important;
+      margin: 0 !important;
     }
+
     @page {
       margin: 0;
       size: auto;
@@ -1265,6 +830,7 @@ body.sidebar-open .tangent-sidebar {
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Documents & PDF</div>
+      <div class="sidebar-group-content">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -1293,11 +859,13 @@ body.sidebar-open .tangent-sidebar {
           <div class="item-desc">LaTeX math, paper presets & PDF</div>
         </div>
       </a>
+      </div>
     </div>
 
     <!-- Category 2: Media & Video -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Media & Video</div>
+      <div class="sidebar-group-content">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -1340,11 +908,13 @@ body.sidebar-open .tangent-sidebar {
           <div class="item-desc">Strip GPS & EXIF camera tags</div>
         </div>
       </a>
+      </div>
     </div>
 
     <!-- Category 3: Security & System -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Security & System</div>
+      <div class="sidebar-group-content">
       <a href="document-signer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
         <div class="item-text">
@@ -1373,11 +943,13 @@ body.sidebar-open .tangent-sidebar {
           <div class="item-desc">In-browser & desktop sorter</div>
         </div>
       </a>
+      </div>
     </div>
 
     <!-- Category 4: Utilities -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Utilities</div>
+      <div class="sidebar-group-content">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -1406,6 +978,7 @@ body.sidebar-open .tangent-sidebar {
           <div class="item-desc">Professional PDF invoices & receipts</div>
         </div>
       </a>
+      </div>
     </div>
   </div>
 </aside>
@@ -1436,6 +1009,13 @@ body.sidebar-open .tangent-sidebar {
     <!-- Contact Info -->
     <div class="section-box">
       <div class="section-title">Personal Information</div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Profile Photo (Optional)</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="file" id="inPhoto" class="form-input" accept="image/*" style="flex: 1;">
+          <button type="button" id="removePhotoBtn" class="btn-aux" style="flex: 0 0 auto; display: none; padding: 9px 12px;">Remove</button>
+        </div>
+      </div>
       <div class="input-grid">
         <div class="form-group">
           <label class="form-label">Full Name</label>
@@ -1513,6 +1093,17 @@ body.sidebar-open .tangent-sidebar {
             <option value="executive">Executive Serif</option>
             <option value="sidebar">Tech 2-Column Sidebar</option>
             <option value="compact">Compact Clean (1-Page)</option>
+            <option value="classic">Classic Traditional</option>
+            <option value="creative">Creative Bold</option>
+            <option value="academic">Academic CV</option>
+            <option value="professional">Professional Corporate</option>
+            <option value="elegant">Elegant Light</option>
+            <option value="timeline">Timeline Flow</option>
+            <option value="split">Split 50/50</option>
+            <option value="startup">Startup Tech</option>
+            <option value="minimalist">Minimalist Raw</option>
+            <option value="portfolio">Portfolio Focus</option>
+            <option value="sleek">Sleek Dark Accent</option>
           </select>
         </div>
 
@@ -1557,8 +1148,8 @@ body.sidebar-open .tangent-sidebar {
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
       </div>
-      <h3>4 Executive Layouts & Accent Themes</h3>
-      <p>Switch between Classic Ivy, Modern Split, Minimalist Sans, and Executive Serif with real-time accent color customization.</p>
+      <h3>15 Professional Layouts & Accent Themes</h3>
+      <p>Choose from 15 curated styles including Executive, Classic, Minimalist, Tech, Creative, and Timeline with optional photo support and live accent themes.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -1604,70 +1195,7 @@ body.sidebar-open .tangent-sidebar {
 </div>
 
 <!-- Global Shell Script -->
-<script>
-(() => {
-  'use strict';
-  const toolkitToggle = document.getElementById('toolkitToggle');
-  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
-  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-
-  function setSidebarState(isOpen) {
-    if (isOpen) {
-      document.body.classList.add('sidebar-open');
-      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'true');
-      try { localStorage.setItem('tangent_sidebar_open', 'true'); } catch (e) {}
-    } else {
-      document.body.classList.remove('sidebar-open');
-      if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'false');
-      try { localStorage.setItem('tangent_sidebar_open', 'false'); } catch (e) {}
-    }
-    window.dispatchEvent(new Event('resize'));
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
-  }
-
-  // Restore desktop state on load
-  try {
-    if (localStorage.getItem('tangent_sidebar_open') === 'true' && window.innerWidth > 1024) {
-      setSidebarState(true);
-    }
-  } catch (e) {}
-
-  if (toolkitToggle) {
-    toolkitToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = document.body.classList.contains('sidebar-open');
-      setSidebarState(!isOpen);
-    });
-  }
-
-  if (sidebarCloseBtn) {
-    sidebarCloseBtn.addEventListener('click', () => setSidebarState(false));
-  }
-
-  if (sidebarBackdrop) {
-    sidebarBackdrop.addEventListener('click', () => setSidebarState(false));
-  }
-
-  if (menuToggle && navLinks) {
-    menuToggle.addEventListener('click', () => {
-      const isOpen = navLinks.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      setSidebarState(false);
-      if (navLinks) {
-        navLinks.classList.remove('open');
-        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    }
-  });
-})();
-</script>
+<script src="assets/tangent.js?v=1"></script>
 
 <script>
   let experiences = [
@@ -1704,6 +1232,29 @@ body.sidebar-open .tangent-sidebar {
   const inWebsite = document.getElementById('inWebsite');
   const inSummary = document.getElementById('inSummary');
   const inSkills = document.getElementById('inSkills');
+  const inPhoto = document.getElementById('inPhoto');
+  const removePhotoBtn = document.getElementById('removePhotoBtn');
+  let photoData = null;
+
+  inPhoto.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        photoData = event.target.result;
+        removePhotoBtn.style.display = 'inline-block';
+        updateSheet();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  removePhotoBtn.addEventListener('click', () => {
+    photoData = null;
+    inPhoto.value = '';
+    removePhotoBtn.style.display = 'none';
+    updateSheet();
+  });
 
   const experienceList = document.getElementById('experienceList');
   const educationList = document.getElementById('educationList');
@@ -1897,13 +1448,17 @@ body.sidebar-open .tangent-sidebar {
       .map(s => `<span class="skill-badge">${s}</span>`)
       .join('');
 
-    if (currentTemplate === 'sidebar') {
-      // 2-Column Sidebar Layout
+    const photoHtml = photoData ? `<img src="${photoData}" class="sheet-photo" alt="Profile">` : '';
+    const sidebarArchetypes = ['sidebar', 'split', 'portfolio'];
+
+    if (sidebarArchetypes.includes(currentTemplate)) {
+      // 2-Column Sidebar Layouts
       resumeSheet.innerHTML = `
         <div class="sidebar-left">
+          ${photoHtml ? `<div class="sheet-photo-container">${photoHtml}</div>` : ''}
           <div class="sheet-section" style="margin-bottom: 22px;">
             <div class="sheet-sec-title">Contact</div>
-            <div style="font-size: 11.5px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 11.5px; color: var(--contact-text, #475569); display: flex; flex-direction: column; gap: 8px;">
               ${inEmail.value ? `<div style="word-break: break-all;"><strong>Email:</strong><br>${inEmail.value}</div>` : ''}
               ${inPhone.value ? `<div><strong>Phone:</strong><br>${inPhone.value}</div>` : ''}
               ${inLocation.value ? `<div><strong>Location:</strong><br>${inLocation.value}</div>` : ''}
@@ -1925,7 +1480,7 @@ body.sidebar-open .tangent-sidebar {
         </div>
 
         <div class="sidebar-right">
-          <div class="sheet-header" style="border-bottom: 2px solid var(--tpl-accent); padding-bottom: 12px; margin-bottom: 16px;">
+          <div class="sheet-header">
             <div class="sheet-name">${inName.value || 'Your Name'}</div>
             <div class="sheet-title">${inTitle.value || ''}</div>
           </div>
@@ -1933,7 +1488,7 @@ body.sidebar-open .tangent-sidebar {
           ${inSummary.value ? `
           <div class="sheet-section">
             <div class="sheet-sec-title">About Me</div>
-            <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+            <div class="sheet-body-text">${inSummary.value}</div>
           </div>` : ''}
 
           ${expHtml ? `
@@ -1944,23 +1499,26 @@ body.sidebar-open .tangent-sidebar {
         </div>
       `;
     } else {
-      // Standard / Executive / Compact Layouts
+      // Standard / 1-Column Layouts
       resumeSheet.innerHTML = `
         <div class="sheet-header">
-          <div class="sheet-name">${inName.value || 'Your Name'}</div>
-          <div class="sheet-title">${inTitle.value || ''}</div>
-          <div class="sheet-contact">
-            ${inEmail.value ? `<span>${inEmail.value}</span>` : ''}
-            ${inPhone.value ? `<span>•</span><span>${inPhone.value}</span>` : ''}
-            ${inLocation.value ? `<span>•</span><span>${inLocation.value}</span>` : ''}
-            ${inWebsite.value ? `<span>•</span><span>${inWebsite.value}</span>` : ''}
+          <div class="header-content">
+            <div class="sheet-name">${inName.value || 'Your Name'}</div>
+            <div class="sheet-title">${inTitle.value || ''}</div>
+            <div class="sheet-contact">
+              ${inEmail.value ? `<span>${inEmail.value}</span>` : ''}
+              ${inPhone.value ? `<span>•</span><span>${inPhone.value}</span>` : ''}
+              ${inLocation.value ? `<span>•</span><span>${inLocation.value}</span>` : ''}
+              ${inWebsite.value ? `<span>•</span><span>${inWebsite.value}</span>` : ''}
+            </div>
           </div>
+          ${photoHtml ? `<div class="sheet-photo-container">${photoHtml}</div>` : ''}
         </div>
 
         ${inSummary.value ? `
         <div class="sheet-section">
           <div class="sheet-sec-title">Summary</div>
-          <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+          <div class="sheet-body-text">${inSummary.value}</div>
         </div>` : ''}
 
         ${expHtml ? `

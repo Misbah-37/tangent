@@ -71,6 +71,7 @@ def generate_sidebar_html(tools, current_page):
         lines.append(f'    <!-- Category {cat_idx}: {cat} -->')
         lines.append('    <div class="sidebar-group">')
         lines.append(f'      <div class="sidebar-group-title">{cat}</div>')
+        lines.append('      <div class="sidebar-group-content">')
         
         for item in categories[cat]:
             is_active = (item["filename"] == current_page)
@@ -83,6 +84,7 @@ def generate_sidebar_html(tools, current_page):
             lines.append('        </div>')
             lines.append('      </a>')
 
+        lines.append('      </div>')
         lines.append('    </div>')
         if cat_idx < len(ordered_cats):
             lines.append('')

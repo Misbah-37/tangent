@@ -79,6 +79,34 @@ Most utility websites quietly upload your sensitive photos, contracts, and finan
 - **Features:** Clean, distraction-free typing benchmark with real-time WPM, accuracy calculation, error highlighting, and difficulty tiers.
 - **Privacy:** Best scores saved locally via `localStorage`.
 
+### 12. 💻 Code to Image (`code-to-image.html`)
+- **Features:** Render syntax-highlighted code snippets into beautiful, shareable images.
+- **Engine:** Client-side HTML5 Canvas.
+
+### 13. 🖼️ SVG Optimizer (`svg-optimizer.html`)
+- **Features:** Minify, sanitize, and optimize SVG code locally.
+- **Engine:** Client-side string manipulation and DOM parsing.
+
+### 14. ✍️ Document Signer (`document-signer.html`)
+- **Features:** Sign PDFs and images with drawn, typed, or uploaded signatures.
+- **Engine:** `pdf-lib` vector injection and PDF.js fallback.
+
+### 15. 📄 Resume Builder (`resume-builder.html`)
+- **Features:** Live-preview resume builder and PDF exporter.
+- **Engine:** Client-side layout engine and print stylesheet.
+
+### 16. 🧾 Invoice Generator (`invoice-generator.html`)
+- **Features:** Professional invoice and receipt studio with printable layout.
+- **Engine:** Client-side generation with no watermarks.
+
+### 17. 🗄️ File Vault (`file-vault.html`)
+- **Features:** Client-side AES-GCM file encryption and decryption.
+- **Engine:** Web Crypto API and PBKDF2 key derivation.
+
+### 18. 📝 Markdown Studio (`markdown-studio.html`)
+- **Features:** Split-screen Markdown editor with live LaTeX preview and export.
+- **Engine:** Marked.js and KaTeX.
+
 ---
 
 ## 🚀 Running Locally

@@ -506,7 +506,130 @@
     margin-bottom: 1px;
   }
 
+  /* --- Template 5: Classic Traditional --- */
+  .resume-sheet.tpl-classic {
+    font-family: "Times New Roman", Times, serif;
+  }
+  .resume-sheet.tpl-classic .sheet-header {
+    text-align: center;
+    border-bottom: 1px solid #000;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .resume-sheet.tpl-classic .header-content { flex: 1; text-align: center; }
+  .resume-sheet.tpl-classic .sheet-contact { justify-content: center; color: #000; }
+  .resume-sheet.tpl-classic .sheet-name { font-size: 24px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+  .resume-sheet.tpl-classic .sheet-title { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
+  .resume-sheet.tpl-classic .sheet-sec-title { font-size: 14px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 2px; color: #000; }
+
+  /* --- Template 6: Creative Bold --- */
+  .resume-sheet.tpl-creative .sheet-header {
+    background: var(--tpl-accent);
+    color: #fff;
+    padding: 20px;
+    margin: -24mm -22mm 20mm -22mm;
+  }
+  .resume-sheet.tpl-creative .sheet-name { font-size: 30px; font-weight: 900; color: #fff; text-transform: uppercase; }
+  .resume-sheet.tpl-creative .sheet-title { color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 8px; }
+  .resume-sheet.tpl-creative .sheet-contact { color: rgba(255,255,255,0.8); }
+  .resume-sheet.tpl-creative .sheet-sec-title { font-size: 16px; font-weight: 900; color: var(--tpl-accent); margin-bottom: 12px; border-left: 4px solid var(--tpl-accent); padding-left: 8px; }
+  .resume-sheet.tpl-creative .sheet-photo { border-color: #fff; border-radius: 8px; }
+
+  /* --- Template 7: Academic CV --- */
+  .resume-sheet.tpl-academic { font-family: Palatino, "Palatino Linotype", serif; }
+  .resume-sheet.tpl-academic .sheet-header { border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 12px 0; margin-bottom: 20px; }
+  .resume-sheet.tpl-academic .sheet-name { font-size: 22px; font-weight: bold; text-align: center; }
+  .resume-sheet.tpl-academic .sheet-title { text-align: center; font-style: italic; margin-bottom: 8px; }
+  .resume-sheet.tpl-academic .sheet-contact { justify-content: center; }
+  .resume-sheet.tpl-academic .header-content { flex: 1; }
+  .resume-sheet.tpl-academic .sheet-sec-title { font-variant: small-caps; font-size: 16px; font-weight: bold; border-bottom: 1px dashed #94a3b8; margin-bottom: 12px; }
+
+  /* --- Template 8: Professional Corporate --- */
+  .resume-sheet.tpl-professional .sheet-header {
+    border-bottom: 4px solid var(--tpl-accent);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .resume-sheet.tpl-professional .sheet-name { font-size: 28px; color: var(--tpl-accent); font-weight: 700; }
+  .resume-sheet.tpl-professional .sheet-sec-title { background: #f1f5f9; padding: 6px 10px; font-weight: 700; color: var(--tpl-accent); border-left: 3px solid var(--tpl-accent); margin-bottom: 14px; }
+  .resume-sheet.tpl-professional .sheet-photo { border-radius: 4px; }
+
+  /* --- Template 9: Elegant Light --- */
+  .resume-sheet.tpl-elegant { font-weight: 300; }
+  .resume-sheet.tpl-elegant .sheet-name { font-weight: 300; font-size: 32px; letter-spacing: 0.1em; color: var(--tpl-accent); text-align: center; }
+  .resume-sheet.tpl-elegant .sheet-title { font-weight: 300; letter-spacing: 0.2em; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
+  .resume-sheet.tpl-elegant .sheet-contact { justify-content: center; }
+  .resume-sheet.tpl-elegant .header-content { flex: 1; }
+  .resume-sheet.tpl-elegant .sheet-sec-title { text-align: center; font-weight: 300; letter-spacing: 0.15em; color: var(--tpl-accent); margin-bottom: 16px; margin-top: 24px; text-transform: uppercase; }
+  .resume-sheet.tpl-elegant .sheet-item-head { font-weight: 600; }
+
+  /* --- Template 10: Timeline Flow --- */
+  .resume-sheet.tpl-timeline .sheet-section:not(:first-child) { border-left: 2px solid #e2e8f0; margin-left: 8px; padding-left: 16px; }
+  .resume-sheet.tpl-timeline .sheet-sec-title { position: relative; color: var(--tpl-accent); font-weight: 800; font-size: 15px; margin-bottom: 16px; }
+  .resume-sheet.tpl-timeline .sheet-section:not(:first-child) .sheet-sec-title::before { content: ''; position: absolute; left: -23px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tpl-accent); border: 2px solid #fff; }
+  .resume-sheet.tpl-timeline .sheet-header { margin-bottom: 24px; }
+  .resume-sheet.tpl-timeline .sheet-name { font-size: 26px; font-weight: 800; color: #0f172a; }
+
+  /* --- Template 11: Split 50/50 --- */
+  .resume-sheet.tpl-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20mm !important; }
+  .resume-sheet.tpl-split .sidebar-left { padding-right: 10px; border-right: 1px solid #e2e8f0; }
+  .resume-sheet.tpl-split .sheet-name { font-size: 22px; font-weight: 800; color: var(--tpl-accent); }
+  .resume-sheet.tpl-split .sheet-sec-title { font-weight: 700; color: var(--tpl-accent); border-bottom: 2px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 12px; }
+
+  /* --- Template 12: Startup Tech --- */
+  .resume-sheet.tpl-startup .sheet-name { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+  .resume-sheet.tpl-startup .sheet-sec-title { font-family: monospace; font-size: 14px; background: #0f172a; color: #fff; padding: 4px 10px; display: inline-block; margin-bottom: 16px; }
+  .resume-sheet.tpl-startup .sheet-item-head span:last-child { font-family: monospace; color: var(--tpl-accent); }
+  .resume-sheet.tpl-startup .skill-badge { font-family: monospace; border: 1px dashed #94a3b8; background: transparent; }
+
+  /* --- Template 13: Minimalist Raw --- */
+  .resume-sheet.tpl-minimalist .sheet-name { font-size: 24px; font-weight: 700; text-transform: lowercase; }
+  .resume-sheet.tpl-minimalist .sheet-title { font-weight: bold; text-transform: lowercase; margin-bottom: 12px; }
+  .resume-sheet.tpl-minimalist .sheet-sec-title { font-size: 12px; font-weight: 800; color: #000; margin-bottom: 10px; }
+  .resume-sheet.tpl-minimalist .skill-badge { background: none; border: none; padding: 0; margin-right: 8px; font-weight: bold; text-transform: lowercase; }
+  .resume-sheet.tpl-minimalist .skill-badge::after { content: ' /'; color: var(--tpl-accent); }
+  .resume-sheet.tpl-minimalist .sheet-photo { border-radius: 0; filter: grayscale(100%); }
+
+  /* --- Template 14: Portfolio Focus --- */
+  .resume-sheet.tpl-portfolio { display: grid; grid-template-columns: 80mm 1fr; gap: 15mm; padding: 15mm !important; }
+  .resume-sheet.tpl-portfolio .sheet-name { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 12px; color: #000; }
+  .resume-sheet.tpl-portfolio .sheet-photo-container { margin-bottom: 20px; text-align: center; }
+  .resume-sheet.tpl-portfolio .sheet-photo { width: 140px; height: 140px; border: none; box-shadow: 8px 8px 0 var(--tpl-accent); }
+  .resume-sheet.tpl-portfolio .sheet-sec-title { font-size: 18px; font-weight: 800; border-bottom: 4px solid var(--tpl-accent); display: inline-block; padding-bottom: 2px; margin-bottom: 16px; }
+
+  /* --- Template 15: Sleek Dark Accent --- */
+  .resume-sheet.tpl-sleek .sheet-header { background: #0f172a; color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; }
+  .resume-sheet.tpl-sleek .sheet-name { color: #fff; font-size: 26px; }
+  .resume-sheet.tpl-sleek .sheet-title { color: var(--tpl-accent); }
+  .resume-sheet.tpl-sleek .sheet-contact { color: #cbd5e1; }
+  .resume-sheet.tpl-sleek .sheet-sec-title { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--tpl-accent); padding-bottom: 4px; margin-bottom: 12px; }
+  .resume-sheet.tpl-sleek .skill-badge { background: #0f172a; color: #fff; border: none; }
+  
   /* General sheet elements */
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-content {
+    flex: 1;
+  }
+  .sheet-photo-container {
+    flex-shrink: 0;
+  }
+  .sheet-photo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--tpl-accent);
+  }
+  .sheet-body-text {
+    font-size: 12px;
+    color: #334155;
+    line-height: 1.55;
+  }
   .sheet-contact {
     display: flex;
     flex-wrap: wrap;
@@ -597,21 +720,36 @@
 
   /* Print Stylesheet */
   @media print {
-    body * {
-      visibility: hidden !important;
+    body { background: #fff !important; margin: 0; padding: 0; }
+    /* Hide all layout elements that shouldn't print */
+    .global-nav, .tangent-sidebar, .sidebar-backdrop, .clean-header, .form-panel, .preview-toolbar, .info-section, .faq-title, .faq-box, .global-footer {
+      display: none !important;
     }
-    .resume-sheet, .resume-sheet * {
-      visibility: visible !important;
+    
+    /* Reset all structural wrappers so they don't take up ghost space */
+    .app-canvas, .studio-layout, .preview-column, .paper-stage {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
     }
+    
+    /* Ensure the sheet prints visibly and naturally */
     .resume-sheet {
-      position: absolute;
-      left: 0;
-      top: 0;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
       width: 100% !important;
       transform: none !important;
-      padding: 15mm 15mm !important;
       box-shadow: none !important;
+      padding: 15mm !important;
+      margin: 0 !important;
     }
+
     @page {
       margin: 0;
       size: auto;
@@ -645,6 +783,13 @@
     <!-- Contact Info -->
     <div class="section-box">
       <div class="section-title">Personal Information</div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Profile Photo (Optional)</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="file" id="inPhoto" class="form-input" accept="image/*" style="flex: 1;">
+          <button type="button" id="removePhotoBtn" class="btn-aux" style="flex: 0 0 auto; display: none; padding: 9px 12px;">Remove</button>
+        </div>
+      </div>
       <div class="input-grid">
         <div class="form-group">
           <label class="form-label">Full Name</label>
@@ -722,6 +867,17 @@
             <option value="executive">Executive Serif</option>
             <option value="sidebar">Tech 2-Column Sidebar</option>
             <option value="compact">Compact Clean (1-Page)</option>
+            <option value="classic">Classic Traditional</option>
+            <option value="creative">Creative Bold</option>
+            <option value="academic">Academic CV</option>
+            <option value="professional">Professional Corporate</option>
+            <option value="elegant">Elegant Light</option>
+            <option value="timeline">Timeline Flow</option>
+            <option value="split">Split 50/50</option>
+            <option value="startup">Startup Tech</option>
+            <option value="minimalist">Minimalist Raw</option>
+            <option value="portfolio">Portfolio Focus</option>
+            <option value="sleek">Sleek Dark Accent</option>
           </select>
         </div>
 
@@ -766,8 +922,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
       </div>
-      <h3>4 Executive Layouts & Accent Themes</h3>
-      <p>Switch between Classic Ivy, Modern Split, Minimalist Sans, and Executive Serif with real-time accent color customization.</p>
+      <h3>15 Professional Layouts & Accent Themes</h3>
+      <p>Choose from 15 curated styles including Executive, Classic, Minimalist, Tech, Creative, and Timeline with optional photo support and live accent themes.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -836,6 +992,29 @@
   const inWebsite = document.getElementById('inWebsite');
   const inSummary = document.getElementById('inSummary');
   const inSkills = document.getElementById('inSkills');
+  const inPhoto = document.getElementById('inPhoto');
+  const removePhotoBtn = document.getElementById('removePhotoBtn');
+  let photoData = null;
+
+  inPhoto.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        photoData = event.target.result;
+        removePhotoBtn.style.display = 'inline-block';
+        updateSheet();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  removePhotoBtn.addEventListener('click', () => {
+    photoData = null;
+    inPhoto.value = '';
+    removePhotoBtn.style.display = 'none';
+    updateSheet();
+  });
 
   const experienceList = document.getElementById('experienceList');
   const educationList = document.getElementById('educationList');
@@ -1029,13 +1208,17 @@
       .map(s => `<span class="skill-badge">${s}</span>`)
       .join('');
 
-    if (currentTemplate === 'sidebar') {
-      // 2-Column Sidebar Layout
+    const photoHtml = photoData ? `<img src="${photoData}" class="sheet-photo" alt="Profile">` : '';
+    const sidebarArchetypes = ['sidebar', 'split', 'portfolio'];
+
+    if (sidebarArchetypes.includes(currentTemplate)) {
+      // 2-Column Sidebar Layouts
       resumeSheet.innerHTML = `
         <div class="sidebar-left">
+          ${photoHtml ? `<div class="sheet-photo-container">${photoHtml}</div>` : ''}
           <div class="sheet-section" style="margin-bottom: 22px;">
             <div class="sheet-sec-title">Contact</div>
-            <div style="font-size: 11.5px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 11.5px; color: var(--contact-text, #475569); display: flex; flex-direction: column; gap: 8px;">
               ${inEmail.value ? `<div style="word-break: break-all;"><strong>Email:</strong><br>${inEmail.value}</div>` : ''}
               ${inPhone.value ? `<div><strong>Phone:</strong><br>${inPhone.value}</div>` : ''}
               ${inLocation.value ? `<div><strong>Location:</strong><br>${inLocation.value}</div>` : ''}
@@ -1057,7 +1240,7 @@
         </div>
 
         <div class="sidebar-right">
-          <div class="sheet-header" style="border-bottom: 2px solid var(--tpl-accent); padding-bottom: 12px; margin-bottom: 16px;">
+          <div class="sheet-header">
             <div class="sheet-name">${inName.value || 'Your Name'}</div>
             <div class="sheet-title">${inTitle.value || ''}</div>
           </div>
@@ -1065,7 +1248,7 @@
           ${inSummary.value ? `
           <div class="sheet-section">
             <div class="sheet-sec-title">About Me</div>
-            <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+            <div class="sheet-body-text">${inSummary.value}</div>
           </div>` : ''}
 
           ${expHtml ? `
@@ -1076,23 +1259,26 @@
         </div>
       `;
     } else {
-      // Standard / Executive / Compact Layouts
+      // Standard / 1-Column Layouts
       resumeSheet.innerHTML = `
         <div class="sheet-header">
-          <div class="sheet-name">${inName.value || 'Your Name'}</div>
-          <div class="sheet-title">${inTitle.value || ''}</div>
-          <div class="sheet-contact">
-            ${inEmail.value ? `<span>${inEmail.value}</span>` : ''}
-            ${inPhone.value ? `<span>•</span><span>${inPhone.value}</span>` : ''}
-            ${inLocation.value ? `<span>•</span><span>${inLocation.value}</span>` : ''}
-            ${inWebsite.value ? `<span>•</span><span>${inWebsite.value}</span>` : ''}
+          <div class="header-content">
+            <div class="sheet-name">${inName.value || 'Your Name'}</div>
+            <div class="sheet-title">${inTitle.value || ''}</div>
+            <div class="sheet-contact">
+              ${inEmail.value ? `<span>${inEmail.value}</span>` : ''}
+              ${inPhone.value ? `<span>•</span><span>${inPhone.value}</span>` : ''}
+              ${inLocation.value ? `<span>•</span><span>${inLocation.value}</span>` : ''}
+              ${inWebsite.value ? `<span>•</span><span>${inWebsite.value}</span>` : ''}
+            </div>
           </div>
+          ${photoHtml ? `<div class="sheet-photo-container">${photoHtml}</div>` : ''}
         </div>
 
         ${inSummary.value ? `
         <div class="sheet-section">
           <div class="sheet-sec-title">Summary</div>
-          <div style="font-size: 12px; color: #334155; line-height: 1.55;">${inSummary.value}</div>
+          <div class="sheet-body-text">${inSummary.value}</div>
         </div>` : ''}
 
         ${expHtml ? `

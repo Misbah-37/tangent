@@ -1,7 +1,9 @@
-# Internal workspace artifacts
+# Internal workspace artifacts & AI context
 walkthrough.md
 *.log
 scratch/
 __pycache__/
 .DS_Store
 Thumbs.db
+GEMINI.md
+PROJECT_CONTEXT.md

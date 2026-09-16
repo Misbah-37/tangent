@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CSV & Excel Insights Studio | Tangent</title>
+<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/csv-insights.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="CSV Insights Studio | Tangent">
+<meta property="og:description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Tangent CSV Insights Studio",
+  "operatingSystem": "Any",
+  "applicationCategory": "BusinessApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  },
+  "description": "Client-side data analytics tool to profile and visualize CSV files locally without cloud uploads."
+}
+</script>
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+
+<link rel="stylesheet" href="assets/tangent.css?v=4">
+<style>
+/* Local App Canvas Adjustments */
+  .app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
+  
+  .clean-header { text-align: center; margin-bottom: 40px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 80px 20px;
+    text-align: center;
+    background: var(--bg-card);
+    transition: all 0.25s ease;
+    cursor: pointer;
+    margin-bottom: 40px;
+  }
+  .dropzone.dragover { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
+  .dropzone-icon { color: var(--accent); margin-bottom: 20px; }
+  .dropzone-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .dropzone-subtitle { color: var(--text-muted); margin-bottom: 24px; }
+  
+  .btn-demo {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-demo:hover { background: var(--bg-panel); }
+
+  /* Workspace (Hidden initially) */
+  #workspace { display: none; }
+  .workspace-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .workspace-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Left Panel: Data Dictionary */
+  .data-dict {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    max-height: 800px;
+    overflow-y: auto;
+  }
+  .data-dict-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .col-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  .col-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+  }
+  .col-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Right Panel: Main Studio */
+  .studio-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .studio-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-panel);
+  }
+  .tab-btn {
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    color: var(--text-main);
+    border-bottom-color: var(--accent);
+  }
+  .tab-content { padding: 24px; display: none; }
+  .tab-content.active { display: block; }
+
+  /* Chart Builder Controls */
+  .builder-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .control-group label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .control-group select {
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    appearance: none;
+  }
+  .control-group select:focus { border-color: var(--accent); }
+  
+  /* Chart Canvas Wrapper */
+  .chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
+
+  /* Data Table */
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .data-table th {
+    background: var(--bg-panel);
+    position: sticky;
+    top: 0;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+  /* Reset Button */
+  .btn-reset {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  .btn-reset:hover { background: #ff4757; color: #fff; border-color: #ff4757; }
+</style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="global-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Push-Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- TANGENT_SIDEBAR_START -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <div class="sidebar-group-content">
+      <a href="pdf-redactor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="document-ocr.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">Document OCR</div>
+          <div class="item-desc">Extract text from scans & images</div>
+        </div>
+      </a>
+      <a href="markdown-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Academic Markdown</div>
+          <div class="item-desc">LaTeX math, paper presets & PDF</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <div class="sidebar-group-content">
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      <a href="photo-resizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+      <a href="photo-scrubber.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <div class="sidebar-group-content">
+      <a href="document-signer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Contract e-Signer</div>
+          <div class="item-desc">Sign PDFs, leases & contracts</div>
+        </div>
+      </a>
+      <a href="file-vault.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">File Lockbox</div>
+          <div class="item-desc">PIN & password file safe</div>
+        </div>
+      </a>
+      <a href="password-meter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 4: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <div class="sidebar-group-content">
+      <a href="qr-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+      <a href="resume-builder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
+        </div>
+      </a>
+      <a href="invoice-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 5: Data & Analytics -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Data & Analytics</div>
+      <div class="sidebar-group-content">
+      <a href="csv-insights.html" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">CSV Insights</div>
+          <div class="item-desc">Instant dashboards & charts</div>
+        </div>
+      </a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- TANGENT_SIDEBAR_END -->
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- Push-Canvas Wrapper -->
+<div class="app-canvas" id="appCanvas">
+
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% Client-Side Analytics</span>
+  </div>
+  <h1>CSV Insights Studio</h1>
+  <p>Instantly profile, pivot, and visualize datasets directly in your browser. Zero cloud uploads.</p>
+</div>
+
+<!-- Dropzone Area -->
+<div id="setupArea">
+  <input type="file" id="fileInput" accept=".csv" style="display: none;">
+  <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+    <div class="dropzone-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+    </div>
+    <div class="dropzone-title">Drag & Drop CSV File</div>
+    <div class="dropzone-subtitle">or click to browse local files</div>
+    <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+  </div>
+</div>
+
+<!-- Workspace Area -->
+<div id="workspace">
+  <div class="workspace-grid">
+    
+    <!-- Left Panel: Columns -->
+    <div class="data-dict">
+      <div class="data-dict-title">
+        <span>Data Schema</span>
+        <span id="rowCount" style="font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: var(--bg-panel); padding: 2px 8px; border-radius: 12px;">0 rows</span>
+      </div>
+      <div id="colList">
+        <!-- Columns injected via JS -->
+      </div>
+      <button class="btn-reset" onclick="resetStudio()">Close File</button>
+    </div>
+
+    <!-- Right Panel: Studio -->
+    <div class="studio-panel">
+      
+      <div class="studio-tabs">
+        <button class="tab-btn active" onclick="switchTab('chart')">Chart Builder</button>
+        <button class="tab-btn" onclick="switchTab('data')">Raw Data Table</button>
+      </div>
+
+      <!-- Tab: Chart Builder -->
+      <div class="tab-content active" id="tab-chart">
+        <div class="builder-controls">
+          <div class="control-group">
+            <label>Dimension (X-Axis)</label>
+            <select id="selX" onchange="updateChart()"></select>
+          </div>
+          <div class="control-group">
+            <label>Metric (Y-Axis)</label>
+            <select id="selY" onchange="updateChart()"></select>
+          </div>
+          <div class="control-group">
+            <label>Aggregation</label>
+            <select id="selAgg" onchange="updateChart()">
+              <option value="sum">Sum</option>
+              <option value="avg">Average</option>
+              <option value="count">Count</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Chart Type</label>
+            <select id="selType" onchange="updateChart()">
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
+              <option value="doughnut">Doughnut Chart</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="chart-wrapper">
+          <canvas id="chartCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Tab: Raw Data -->
+      <div class="tab-content" id="tab-data">
+        <div class="table-wrapper">
+          <table class="data-table" id="dataTable">
+            <thead id="dtHead"></thead>
+            <tbody id="dtBody"></tbody>
+          </table>
+        </div>
+        <div style="text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 0.85rem;">
+          Showing top 100 rows preview.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+  <!-- Standard Global Footer -->
+  <footer class="global-footer">
+    <div style="margin-bottom: 16px;">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+    </div>
+    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+  </footer>
+
+</div>
+
+<!-- Global Shell Script -->
+<script src="assets/tangent.js?v=1"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let parsedData = [];
+  let columns = [];
+  let colTypes = {};
+  let currentChart = null;
+
+  // Icons for data types
+  const iconNum = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
+  const iconStr = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>`;
+
+  // Setup Dropzone
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+
+  dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith(".csv")) {
+      alert("Please upload a valid CSV file (e.g. data.csv).");
+      return;
+    }
+    dropzone.innerHTML = `<div class="dropzone-title">Parsing CSV...</div>`;
+    
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data, results.meta.fields || []);
+      },
+      error: function(err) {
+        alert("Error parsing CSV: " + err.message);
+        resetStudio();
+      }
+    });
+  }
+
+  function loadSampleData() {
+    dropzone.innerHTML = `<div class="dropzone-title">Loading Sample...</div>`;
+    const sampleCSV = `Date,Region,Product,Sales,Cost,Profit
+2026-01-01,North America,Laptop,5000,3000,2000
+2026-01-02,Europe,Phone,3200,2000,1200
+2026-01-03,Asia,Tablet,2100,1500,600
+2026-01-04,North America,Phone,4500,2800,1700
+2026-01-05,Europe,Laptop,6000,4000,2000
+2026-01-06,Asia,Laptop,4800,3100,1700
+2026-01-07,North America,Tablet,1500,1000,500
+2026-01-08,Europe,Tablet,1800,1200,600
+2026-01-09,Asia,Phone,3900,2500,1400
+2026-01-10,North America,Laptop,5500,3300,2200`;
+    
+    Papa.parse(sampleCSV, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data, results.meta.fields);
+      }
+    });
+  }
+
+  function processData(data, fields) {
+    if (!data || !fields || !data.length || !fields.length) {
+      alert("Dataset is empty or malformed.");
+      resetStudio();
+      return;
+    }
+    parsedData = data;
+    columns = fields;
+    
+    // Auto-detect types based on first non-null row
+    colTypes = {};
+    columns.forEach(col => {
+      let type = 'string';
+      for (let i = 0; i < Math.min(data.length, 10); i++) {
+        if (data[i][col] !== null && data[i][col] !== undefined) {
+          type = typeof data[i][col] === 'number' ? 'number' : 'string';
+          break;
+        }
+      }
+      colTypes[col] = type;
+    });
+
+    buildDataDictionary();
+    populateSelects();
+    buildDataTable();
+    
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('workspace').style.display = 'block';
+    
+    // Auto-select first string for X, first number for Y if possible
+    let strCol = columns.find(c => colTypes[c] === 'string') || columns[0];
+    let numCol = columns.find(c => colTypes[c] === 'number') || columns[0];
+    
+    document.getElementById('selX').value = strCol;
+    document.getElementById('selY').value = numCol;
+    updateChart();
+  }
+
+  function buildDataDictionary() {
+    const list = document.getElementById('colList');
+    list.innerHTML = '';
+    columns.forEach(col => {
+      const type = colTypes[col];
+      const div = document.createElement('div');
+      div.className = 'col-item';
+      div.innerHTML = `
+        <div class="col-icon">${type === 'number' ? iconNum : iconStr}</div>
+        <div class="col-name" title="${col}">${col}</div>
+      `;
+      list.appendChild(div);
+    });
+    document.getElementById('rowCount').textContent = parsedData.length.toLocaleString() + ' rows';
+  }
+
+  function populateSelects() {
+    const selX = document.getElementById('selX');
+    const selY = document.getElementById('selY');
+    selX.innerHTML = ''; selY.innerHTML = '';
+    
+    columns.forEach(col => {
+      const optX = document.createElement('option');
+      optX.value = col; optX.textContent = col;
+      selX.appendChild(optX);
+      
+      const optY = document.createElement('option');
+      optY.value = col; optY.textContent = col;
+      selY.appendChild(optY);
+    });
+  }
+
+  function buildDataTable() {
+    const head = document.getElementById('dtHead');
+    const body = document.getElementById('dtBody');
+    head.innerHTML = ''; body.innerHTML = '';
+    
+    // Header
+    const trH = document.createElement('tr');
+    columns.forEach(col => {
+      const th = document.createElement('th');
+      th.textContent = col;
+      trH.appendChild(th);
+    });
+    head.appendChild(trH);
+    
+    // Body (top 100)
+    const limit = Math.min(parsedData.length, 100);
+    for (let i = 0; i < limit; i++) {
+      const tr = document.createElement('tr');
+      columns.forEach(col => {
+        const td = document.createElement('td');
+        td.textContent = parsedData[i][col] !== null ? parsedData[i][col] : '';
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    }
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    
+    if (tabId === 'chart') {
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('tab-chart').classList.add('active');
+    } else {
+      document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      document.getElementById('tab-data').classList.add('active');
+    }
+  }
+
+  function updateChart() {
+    const xCol = document.getElementById('selX').value;
+    const yCol = document.getElementById('selY').value;
+    const agg = document.getElementById('selAgg').value;
+    const type = document.getElementById('selType').value;
+    
+    if (!xCol || !yCol) return;
+
+    // Grouping & Aggregation Engine
+    const groups = {};
+    parsedData.forEach(row => {
+      let xVal = row[xCol];
+      if (xVal === null || xVal === undefined) xVal = "Unknown";
+      
+      let yVal = parseFloat(row[yCol]) || 0;
+      
+      if (!groups[xVal]) {
+        groups[xVal] = { sum: 0, count: 0, vals: [] };
+      }
+      groups[xVal].sum += yVal;
+      groups[xVal].count += 1;
+      groups[xVal].vals.push(yVal);
+    });
+
+    const labels = Object.keys(groups);
+    let data = [];
+    
+    labels.forEach(lbl => {
+      const g = groups[lbl];
+      if (agg === 'sum') data.push(g.sum);
+      else if (agg === 'count') data.push(g.count);
+      else if (agg === 'avg') data.push(g.count > 0 ? g.sum / g.count : 0);
+    });
+
+    // Sort by value descending
+    const combined = labels.map((l, i) => ({ l, v: data[i] })).sort((a, b) => b.v - a.v);
+    const sortedLabels = combined.map(x => x.l).slice(0, 50); // Limit to top 50
+    const sortedData = combined.map(x => x.v).slice(0, 50);
+
+    renderChart(sortedLabels, sortedData, type, \`\${agg.toUpperCase()} of \${yCol} by \${xCol}\`);
+  }
+
+  function renderChart(labels, data, type, titleText) {
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
+    if (currentChart) {
+      currentChart.destroy();
+    }
+    
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
+    
+    currentChart = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: titleText,
+          data: data,
+          backgroundColor: type === 'doughnut' 
+            ? ['#00d2ff', '#3a7bd5', '#8A2387', '#E94057', '#F27121'] 
+            : '#00d2ff',
+          borderColor: type === 'line' ? '#00d2ff' : 'transparent',
+          borderWidth: 2,
+          borderRadius: type === 'bar' ? 4 : 0,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: type === 'doughnut', position: 'right' }
+        },
+        scales: type === 'doughnut' ? {} : {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function resetStudio() {
+    parsedData = []; columns = []; colTypes = {};
+    document.getElementById('workspace').style.display = 'none';
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('dropzone').innerHTML = \`
+      <div class="dropzone-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+      </div>
+      <div class="dropzone-title">Drag & Drop CSV File</div>
+      <div class="dropzone-subtitle">or click to browse local files</div>
+      <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+    \`;
+    fileInput.value = "";
+    if (currentChart) { currentChart.destroy(); currentChart = null; }
+  }
+</script>
+
+</body>
+</html>

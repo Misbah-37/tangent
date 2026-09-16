@@ -1,0 +1,609 @@
+<!-- --- HEAD_META --- -->
+<title>CSV & Excel Insights Studio | Tangent</title>
+<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/csv-insights.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="CSV Insights Studio | Tangent">
+<meta property="og:description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<meta property="og:image" content="https://misbah-37.github.io/tangent/social-banner.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Tangent CSV Insights Studio",
+  "operatingSystem": "Any",
+  "applicationCategory": "BusinessApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  },
+  "description": "Client-side data analytics tool to profile and visualize CSV files locally without cloud uploads."
+}
+</script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+  /* Local App Canvas Adjustments */
+  .app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
+  
+  .clean-header { text-align: center; margin-bottom: 40px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 80px 20px;
+    text-align: center;
+    background: var(--bg-card);
+    transition: all 0.25s ease;
+    cursor: pointer;
+    margin-bottom: 40px;
+  }
+  .dropzone.dragover { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
+  .dropzone-icon { color: var(--accent); margin-bottom: 20px; }
+  .dropzone-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .dropzone-subtitle { color: var(--text-muted); margin-bottom: 24px; }
+  
+  .btn-demo {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-demo:hover { background: var(--bg-panel); }
+
+  /* Workspace (Hidden initially) */
+  #workspace { display: none; }
+  .workspace-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .workspace-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Left Panel: Data Dictionary */
+  .data-dict {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    max-height: 800px;
+    overflow-y: auto;
+  }
+  .data-dict-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .col-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  .col-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+  }
+  .col-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Right Panel: Main Studio */
+  .studio-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .studio-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-panel);
+  }
+  .tab-btn {
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    color: var(--text-main);
+    border-bottom-color: var(--accent);
+  }
+  .tab-content { padding: 24px; display: none; }
+  .tab-content.active { display: block; }
+
+  /* Chart Builder Controls */
+  .builder-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .control-group label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .control-group select {
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    appearance: none;
+  }
+  .control-group select:focus { border-color: var(--accent); }
+  
+  /* Chart Canvas Wrapper */
+  .chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
+
+  /* Data Table */
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .data-table th {
+    background: var(--bg-panel);
+    position: sticky;
+    top: 0;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+  /* Reset Button */
+  .btn-reset {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  .btn-reset:hover { background: #ff4757; color: #fff; border-color: #ff4757; }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% Client-Side Analytics</span>
+  </div>
+  <h1>CSV Insights Studio</h1>
+  <p>Instantly profile, pivot, and visualize datasets directly in your browser. Zero cloud uploads.</p>
+</div>
+
+<!-- Dropzone Area -->
+<div id="setupArea">
+  <input type="file" id="fileInput" accept=".csv" style="display: none;">
+  <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+    <div class="dropzone-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+    </div>
+    <div class="dropzone-title">Drag & Drop CSV File</div>
+    <div class="dropzone-subtitle">or click to browse local files</div>
+    <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+  </div>
+</div>
+
+<!-- Workspace Area -->
+<div id="workspace">
+  <div class="workspace-grid">
+    
+    <!-- Left Panel: Columns -->
+    <div class="data-dict">
+      <div class="data-dict-title">
+        <span>Data Schema</span>
+        <span id="rowCount" style="font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: var(--bg-panel); padding: 2px 8px; border-radius: 12px;">0 rows</span>
+      </div>
+      <div id="colList">
+        <!-- Columns injected via JS -->
+      </div>
+      <button class="btn-reset" onclick="resetStudio()">Close File</button>
+    </div>
+
+    <!-- Right Panel: Studio -->
+    <div class="studio-panel">
+      
+      <div class="studio-tabs">
+        <button class="tab-btn active" onclick="switchTab('chart')">Chart Builder</button>
+        <button class="tab-btn" onclick="switchTab('data')">Raw Data Table</button>
+      </div>
+
+      <!-- Tab: Chart Builder -->
+      <div class="tab-content active" id="tab-chart">
+        <div class="builder-controls">
+          <div class="control-group">
+            <label>Dimension (X-Axis)</label>
+            <select id="selX" onchange="updateChart()"></select>
+          </div>
+          <div class="control-group">
+            <label>Metric (Y-Axis)</label>
+            <select id="selY" onchange="updateChart()"></select>
+          </div>
+          <div class="control-group">
+            <label>Aggregation</label>
+            <select id="selAgg" onchange="updateChart()">
+              <option value="sum">Sum</option>
+              <option value="avg">Average</option>
+              <option value="count">Count</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Chart Type</label>
+            <select id="selType" onchange="updateChart()">
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
+              <option value="doughnut">Doughnut Chart</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="chart-wrapper">
+          <canvas id="chartCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Tab: Raw Data -->
+      <div class="tab-content" id="tab-data">
+        <div class="table-wrapper">
+          <table class="data-table" id="dataTable">
+            <thead id="dtHead"></thead>
+            <tbody id="dtBody"></tbody>
+          </table>
+        </div>
+        <div style="text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 0.85rem;">
+          Showing top 100 rows preview.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let parsedData = [];
+  let columns = [];
+  let colTypes = {};
+  let currentChart = null;
+
+  // Icons for data types
+  const iconNum = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
+  const iconStr = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>`;
+
+  // Setup Dropzone
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+
+  dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith(".csv")) {
+      alert("Please upload a valid CSV file (e.g. data.csv).");
+      return;
+    }
+    dropzone.innerHTML = `<div class="dropzone-title">Parsing CSV...</div>`;
+    
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data, results.meta.fields || []);
+      },
+      error: function(err) {
+        alert("Error parsing CSV: " + err.message);
+        resetStudio();
+      }
+    });
+  }
+
+  function loadSampleData() {
+    dropzone.innerHTML = `<div class="dropzone-title">Loading Sample...</div>`;
+    const sampleCSV = `Date,Region,Product,Sales,Cost,Profit
+2026-01-01,North America,Laptop,5000,3000,2000
+2026-01-02,Europe,Phone,3200,2000,1200
+2026-01-03,Asia,Tablet,2100,1500,600
+2026-01-04,North America,Phone,4500,2800,1700
+2026-01-05,Europe,Laptop,6000,4000,2000
+2026-01-06,Asia,Laptop,4800,3100,1700
+2026-01-07,North America,Tablet,1500,1000,500
+2026-01-08,Europe,Tablet,1800,1200,600
+2026-01-09,Asia,Phone,3900,2500,1400
+2026-01-10,North America,Laptop,5500,3300,2200`;
+    
+    Papa.parse(sampleCSV, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data, results.meta.fields);
+      }
+    });
+  }
+
+  function processData(data, fields) {
+    if (!data || !fields || !data.length || !fields.length) {
+      alert("Dataset is empty or malformed.");
+      resetStudio();
+      return;
+    }
+    parsedData = data;
+    columns = fields;
+    
+    // Auto-detect types based on first non-null row
+    colTypes = {};
+    columns.forEach(col => {
+      let type = 'string';
+      for (let i = 0; i < Math.min(data.length, 10); i++) {
+        if (data[i][col] !== null && data[i][col] !== undefined) {
+          type = typeof data[i][col] === 'number' ? 'number' : 'string';
+          break;
+        }
+      }
+      colTypes[col] = type;
+    });
+
+    buildDataDictionary();
+    populateSelects();
+    buildDataTable();
+    
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('workspace').style.display = 'block';
+    
+    // Auto-select first string for X, first number for Y if possible
+    let strCol = columns.find(c => colTypes[c] === 'string') || columns[0];
+    let numCol = columns.find(c => colTypes[c] === 'number') || columns[0];
+    
+    document.getElementById('selX').value = strCol;
+    document.getElementById('selY').value = numCol;
+    updateChart();
+  }
+
+  function buildDataDictionary() {
+    const list = document.getElementById('colList');
+    list.innerHTML = '';
+    columns.forEach(col => {
+      const type = colTypes[col];
+      const div = document.createElement('div');
+      div.className = 'col-item';
+      div.innerHTML = `
+        <div class="col-icon">${type === 'number' ? iconNum : iconStr}</div>
+        <div class="col-name" title="${col}">${col}</div>
+      `;
+      list.appendChild(div);
+    });
+    document.getElementById('rowCount').textContent = parsedData.length.toLocaleString() + ' rows';
+  }
+
+  function populateSelects() {
+    const selX = document.getElementById('selX');
+    const selY = document.getElementById('selY');
+    selX.innerHTML = ''; selY.innerHTML = '';
+    
+    columns.forEach(col => {
+      const optX = document.createElement('option');
+      optX.value = col; optX.textContent = col;
+      selX.appendChild(optX);
+      
+      const optY = document.createElement('option');
+      optY.value = col; optY.textContent = col;
+      selY.appendChild(optY);
+    });
+  }
+
+  function buildDataTable() {
+    const head = document.getElementById('dtHead');
+    const body = document.getElementById('dtBody');
+    head.innerHTML = ''; body.innerHTML = '';
+    
+    // Header
+    const trH = document.createElement('tr');
+    columns.forEach(col => {
+      const th = document.createElement('th');
+      th.textContent = col;
+      trH.appendChild(th);
+    });
+    head.appendChild(trH);
+    
+    // Body (top 100)
+    const limit = Math.min(parsedData.length, 100);
+    for (let i = 0; i < limit; i++) {
+      const tr = document.createElement('tr');
+      columns.forEach(col => {
+        const td = document.createElement('td');
+        td.textContent = parsedData[i][col] !== null ? parsedData[i][col] : '';
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    }
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    
+    if (tabId === 'chart') {
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('tab-chart').classList.add('active');
+    } else {
+      document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      document.getElementById('tab-data').classList.add('active');
+    }
+  }
+
+  function updateChart() {
+    const xCol = document.getElementById('selX').value;
+    const yCol = document.getElementById('selY').value;
+    const agg = document.getElementById('selAgg').value;
+    const type = document.getElementById('selType').value;
+    
+    if (!xCol || !yCol) return;
+
+    // Grouping & Aggregation Engine
+    const groups = {};
+    parsedData.forEach(row => {
+      let xVal = row[xCol];
+      if (xVal === null || xVal === undefined) xVal = "Unknown";
+      
+      let yVal = parseFloat(row[yCol]) || 0;
+      
+      if (!groups[xVal]) {
+        groups[xVal] = { sum: 0, count: 0, vals: [] };
+      }
+      groups[xVal].sum += yVal;
+      groups[xVal].count += 1;
+      groups[xVal].vals.push(yVal);
+    });
+
+    const labels = Object.keys(groups);
+    let data = [];
+    
+    labels.forEach(lbl => {
+      const g = groups[lbl];
+      if (agg === 'sum') data.push(g.sum);
+      else if (agg === 'count') data.push(g.count);
+      else if (agg === 'avg') data.push(g.count > 0 ? g.sum / g.count : 0);
+    });
+
+    // Sort by value descending
+    const combined = labels.map((l, i) => ({ l, v: data[i] })).sort((a, b) => b.v - a.v);
+    const sortedLabels = combined.map(x => x.l).slice(0, 50); // Limit to top 50
+    const sortedData = combined.map(x => x.v).slice(0, 50);
+
+    renderChart(sortedLabels, sortedData, type, \`\${agg.toUpperCase()} of \${yCol} by \${xCol}\`);
+  }
+
+  function renderChart(labels, data, type, titleText) {
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
+    if (currentChart) {
+      currentChart.destroy();
+    }
+    
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
+    
+    currentChart = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: titleText,
+          data: data,
+          backgroundColor: type === 'doughnut' 
+            ? ['#00d2ff', '#3a7bd5', '#8A2387', '#E94057', '#F27121'] 
+            : '#00d2ff',
+          borderColor: type === 'line' ? '#00d2ff' : 'transparent',
+          borderWidth: 2,
+          borderRadius: type === 'bar' ? 4 : 0,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: type === 'doughnut', position: 'right' }
+        },
+        scales: type === 'doughnut' ? {} : {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function resetStudio() {
+    parsedData = []; columns = []; colTypes = {};
+    document.getElementById('workspace').style.display = 'none';
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('dropzone').innerHTML = \`
+      <div class="dropzone-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+      </div>
+      <div class="dropzone-title">Drag & Drop CSV File</div>
+      <div class="dropzone-subtitle">or click to browse local files</div>
+      <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+    \`;
+    fileInput.value = "";
+    if (currentChart) { currentChart.destroy(); currentChart = null; }
+  }
+</script>

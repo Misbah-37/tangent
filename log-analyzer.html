@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Server & Application Log Analyzer | Tangent</title>
+<meta name="description" content="Parse raw Apache and Nginx server logs instantly. Extract IPs, 404s, and generate security dashboards 100% locally.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/log-analyzer.html">
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+
+<link rel="stylesheet" href="assets/tangent.css?v=4">
+<style>
+:root {
+    --bg-base: #0f111a;
+    --bg-panel: #1a1d27;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #3a7bd5;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+  }
+
+  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(58, 123, 213, 0.15); color: var(--accent);
+    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .clean-header h1 {
+    font-size: 2.5rem; font-weight: 800; margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+  /* Workspace */
+  .log-workspace {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    min-height: 600px;
+    padding: 0 32px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) {
+    .log-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 16px; }
+  }
+
+  /* Panels */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+  .dropzone p { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none; padding: 10px 16px;
+    border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  
+  .btn-demo {
+    background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+  }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Dashboard Cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+  .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
+  .data-table th, .data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }
+  .data-table th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .status-200 { color: var(--success); }
+  .status-300 { color: var(--warning); }
+  .status-400 { color: var(--danger); }
+  .status-500 { color: #dc2626; font-weight: 700; }
+
+  .tabs { display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+  .tab { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; padding: 4px 8px; }
+  .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
+
+  .log-container {
+    background: #08090d; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;
+    max-height: 400px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+    color: var(--text-muted); white-space: pre-wrap; word-break: break-all;
+  }
+  .log-search { width: 100%; background: #08090d; border: 1px solid var(--border-color); color: #fff; padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-family: inherit; }
+  
+  /* Explainers */
+  .explainer-section { max-width: 1000px; margin: 80px auto 0 auto; padding: 60px 32px 0 32px; border-top: 1px solid var(--border-color); }
+  .explainer-title { font-size: 2rem; font-weight: 800; margin-bottom: 40px; text-align: center; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px; }
+  .feature-card { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px; }
+  .feature-icon { color: var(--accent); margin-bottom: 16px; }
+  .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
+  .feature-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+
+  .faq-container { margin-bottom: 60px; }
+  .faq-item { background: var(--bg-panel); border: 1px solid var(--border-color); margin-bottom: 12px; border-radius: 8px; overflow: hidden; }
+  .faq-question { width: 100%; text-align: left; padding: 20px; background: none; border: none; color: var(--text-main); font-size: 1.05rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
+  .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 500px; }
+  .faq-item.active .faq-toggle-icon { transform: rotate(45deg); }
+</style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="global-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Push-Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- TANGENT_SIDEBAR_START -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <div class="sidebar-group-content">
+      <a href="pdf-redactor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="document-ocr.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">Document OCR</div>
+          <div class="item-desc">Extract text from scans & images</div>
+        </div>
+      </a>
+      <a href="markdown-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Academic Markdown</div>
+          <div class="item-desc">LaTeX math, paper presets & PDF</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <div class="sidebar-group-content">
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      <a href="photo-resizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+      <a href="photo-scrubber.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <div class="sidebar-group-content">
+      <a href="document-signer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Contract e-Signer</div>
+          <div class="item-desc">Sign PDFs, leases & contracts</div>
+        </div>
+      </a>
+      <a href="file-vault.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">File Lockbox</div>
+          <div class="item-desc">PIN & password file safe</div>
+        </div>
+      </a>
+      <a href="password-meter.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 4: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <div class="sidebar-group-content">
+      <a href="qr-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+      <a href="resume-builder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
+        </div>
+      </a>
+      <a href="invoice-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 5: Data & Analytics -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Data & Analytics</div>
+      <div class="sidebar-group-content">
+      <a href="csv-insights.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">CSV Insights</div>
+          <div class="item-desc">Instant dashboards & charts</div>
+        </div>
+      </a>
+      <a href="sql-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SQL Analytics Studio</div>
+          <div class="item-desc">Run local SQL on CSV/Parquet</div>
+        </div>
+      </a>
+      <a href="data-hygiene.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Data Hygiene Profiler</div>
+          <div class="item-desc">Cleanse CSVs & find anomalies</div>
+        </div>
+      </a>
+      <a href="correlation-matrix.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Correlation Matrix Studio</div>
+          <div class="item-desc">Pearson heatmaps & stats</div>
+        </div>
+      </a>
+      <a href="log-analyzer.html" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Log Analyzer</div>
+          <div class="item-desc">Parse server & app logs</div>
+        </div>
+      </a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- TANGENT_SIDEBAR_END -->
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- Push-Canvas Wrapper -->
+<div class="app-canvas" id="appCanvas">
+
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+    <span>100% Client-Side Processing</span>
+  </div>
+  <h1>Server & Application Log Analyzer</h1>
+  <p>Parse raw Apache and Nginx server logs instantly. Extract IPs, 404s, and generate security dashboards without uploading sensitive server data.</p>
+</div>
+
+<div class="log-workspace">
+  <!-- Left Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Log Ingestion</span>
+      <button class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetTool()">Clear</button>
+    </div>
+    
+    <div class="panel-body" id="setupArea">
+      <div class="dropzone" id="dropzone">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+          <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+          <button class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".txt,.log" style="display: none;">
+    </div>
+
+    <div class="panel-body" id="statsArea" style="display: none; padding-top: 0;">
+      <div class="stat-grid" style="margin-top: 16px;">
+        <div class="stat-card">
+          <div class="stat-val" id="statTotal">0</div>
+          <div class="stat-lbl">Valid Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statError">0%</div>
+          <div class="stat-lbl">Error Rate</div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 16px;">
+        <canvas id="statusChart" width="250" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Log Dashboard & Intelligence</span>
+    </div>
+    <div class="panel-body" style="background: #08090d; display: flex; flex-direction: column;" id="dashboardArea">
+      <div id="emptyState" style="margin: auto; text-align: center; color: var(--text-muted); opacity: 0.5;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <p>Awaiting log data...</p>
+      </div>
+      
+      <div id="dashboardContent" style="display: none; flex-grow: 1; flex-direction: column;">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('sec')" id="tab-sec">Security & IPs</div>
+          <div class="tab" onclick="switchTab('err')" id="tab-err">404s & Errors</div>
+          <div class="tab" onclick="switchTab('raw')" id="tab-raw">Raw Explorer</div>
+        </div>
+        
+        <!-- Tab: Security & IPs -->
+        <div id="view-sec" style="display: block;">
+          <h3 id="sec-title" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Top Traffic Sources (IP Addresses)</h3>
+          <table class="data-table">
+            <thead id="tblIpsHead"><tr><th>IP Address</th><th>Requests</th><th>% of Traffic</th></tr></thead>
+            <tbody id="tblIps"></tbody>
+          </table>
+        </div>
+        
+        <!-- Tab: 404s & Errors -->
+        <div id="view-err" style="display: none;">
+          <h3 id="err-title1" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Most Frequently Missing Paths (404s)</h3>
+          <table class="data-table">
+            <thead id="tbl404Head"><tr><th>Path / URL</th><th>Failures</th></tr></thead>
+            <tbody id="tbl404"></tbody>
+          </table>
+          <h3 id="err-title2" style="font-size: 1rem; color: var(--danger); margin: 24px 0 12px 0;">Server Errors (500s)</h3>
+          <table class="data-table">
+            <thead id="tbl500Head"><tr><th>Path / URL</th><th>Count</th></tr></thead>
+            <tbody id="tbl500"></tbody>
+          </table>
+        </div>
+        
+        <!-- Tab: 404s & Errors -->
+        <div id="view-err" style="display: none;">
+          <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Most Frequently Missing Paths (404s)</h3>
+          <table class="data-table">
+            <thead><tr><th>Path / URL</th><th>Failures</th></tr></thead>
+            <tbody id="tbl404"></tbody>
+          </table>
+          <h3 style="font-size: 1rem; color: var(--danger); margin: 24px 0 12px 0;">Server Errors (500s)</h3>
+          <table class="data-table">
+            <thead><tr><th>Path / URL</th><th>Count</th></tr></thead>
+            <tbody id="tbl500"></tbody>
+          </table>
+        </div>
+        
+        <!-- Tab: Raw Explorer -->
+        <div id="view-raw" style="display: none; flex-grow: 1; flex-direction: column; height: 100%;">
+          <input type="text" class="log-search" id="txtSearch" placeholder="Search paths, IPs, or status codes (e.g. '500')...">
+          <div class="log-container" id="rawLogs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="explainer-section">
+  <h2 class="explainer-title">Secure Log Analysis</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h3>Zero-Upload Security</h3>
+      <p>Server logs contain sensitive data including user IP addresses and secret tokens. Tangent's engine parses these massive text blocks natively in your browser. No files are ever sent over the network.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+      </div>
+      <h3>Threat Spotting</h3>
+      <p>Easily identify malicious bots scraping your site by sorting the top IP addresses, or find automated hacking attempts by viewing the most frequently hit 404 paths (like wp-admin.php).</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+      </div>
+      <h3>Standard Log Support</h3>
+      <p>Tangent's Regex engine is pre-configured to automatically parse the global Common Log Format (CLF) and Combined Log Format used by default in Apache and Nginx web servers.</p>
+    </div>
+  </div>
+  
+  <div class="faq-container">
+    <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
+    <div class="faq-item">
+      <button class="faq-question">What log formats are supported?<span class="faq-toggle-icon">+</span></button>
+      <div class="faq-answer"><p>We currently support standard Apache and Nginx access logs. The parser looks for the standard pattern: IP address, timestamp, HTTP method, URL path, and HTTP Status code.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Can I analyze a 500MB log file?<span class="faq-toggle-icon">+</span></button>
+      <div class="faq-answer"><p>Yes, but because the tool runs entirely in your browser's RAM, very large files (over 50MB) may cause your browser tab to temporarily freeze while the JavaScript Regex engine parses the lines.</p></div>
+    </div>
+  </div>
+</div>
+
+  <!-- Standard Global Footer -->
+  <footer class="global-footer">
+    <div style="margin-bottom: 16px;">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+    </div>
+    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+  </footer>
+
+</div>
+
+<!-- Global Shell Script -->
+<script src="assets/tangent.js?v=1"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // FAQ Logic
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isActive = item.classList.contains('active');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+﻿  // App State
+  let parsedLogs = [];
+  let statusChartInstance = null;
+  let logMode = 'web'; // 'web' or 'syslog'
+
+  // DOM Elements
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const rawLogsDiv = document.getElementById('rawLogs');
+
+  dropzone.addEventListener('click', (e) => {
+    if(e.target === dropzone || e.target.tagName === 'P' || e.target.tagName === 'path' || e.target.tagName === 'svg') fileInput.click();
+  });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing file...</p>`;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      processLogs(e.target.result);
+    };
+    reader.readAsText(file);
+  }
+
+  function loadSample() {
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+    const sample = `
+Sep 17 00:03:26 (none) kern.warn kernel:   Beacon lost - AP disabled!!!
+Sep 17 00:03:26 (none) kern.warn kernel: ^[[41mAsicSwitchChannel(): 5G Channel:155, then must be Channel_Band:1 !!^[[m
+Sep 17 00:03:26 (none) kern.warn kernel: scan_ch_restore - End of SCAN(TYPE: 128, BandIdx: 0), restore to BW(2) channel 155, Total BSS[00]
+Sep 17 00:03:26 (none) kern.info dnsmasq: DHCP request received from 192.168.1.5
+Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
+    `.trim();
+    processLogs(sample);
+  }
+
+  function processLogs(text) {
+    const lines = text.split('\n');
+    parsedLogs = [];
+    
+    const webRegex = /^([\d\.:a-fA-F]+)\s+\S+\s+\S+\s+\[(.*?)\]\s+"(\S+)\s+(\S+).*?"\s+(\d{3})/;
+    const syslogRegex = /^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:]+):\s+(.*)/;
+    
+    logMode = 'unknown';
+    for(let i=0; i<Math.min(lines.length, 50); i++) {
+      if(webRegex.test(lines[i])) { logMode = 'web'; break; }
+      if(syslogRegex.test(lines[i])) { logMode = 'syslog'; break; }
+    }
+
+    if (logMode === 'unknown') {
+      alert("No valid log lines found. Please ensure it is a standard Apache, Nginx, or Syslog format.");
+      resetTool();
+      return;
+    }
+    
+    lines.forEach(line => {
+      if(!line.trim()) return;
+      if (logMode === 'web') {
+        const match = line.match(webRegex);
+        if (match) parsedLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5] });
+      } else if (logMode === 'syslog') {
+        const match = line.match(syslogRegex);
+        if (match) {
+          // Strip ANSI Escape codes
+          let msg = match[4].replace(/\x1b\[[0-9;]*m/gi, '').replace(/\^\[\[[0-9;]*m/gi, '').replace(/\^\[\[m/gi, '');
+          
+          let procStr = match[3];
+          let severity = 'info';
+          if (procStr.includes('.warn')) severity = 'warn';
+          if (procStr.match(/\.(err|crit|emerg|alert)/)) severity = 'error';
+          if (procStr.includes('.notice')) severity = 'notice';
+
+          parsedLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity });
+        }
+      }
+    });
+
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('statsArea').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    
+    const dashboardContent = document.getElementById('dashboardContent');
+    dashboardContent.style.display = 'flex';
+    document.getElementById('view-raw').style.display = 'none';
+    switchTab('sec');
+
+    document.getElementById('btnClear').style.display = 'block';
+
+    const total = parsedLogs.length;
+    document.getElementById('statTotal').innerText = total.toLocaleString();
+
+    let errCount = 0;
+
+    if (logMode === 'web') {
+      document.getElementById('tab-sec').innerText = 'Security & IPs';
+      document.getElementById('tab-err').innerText = '404s & Errors';
+      document.getElementById('sec-title').innerText = 'Top Traffic Sources (IP Addresses)';
+      document.getElementById('tblIpsHead').innerHTML = '<tr><th>IP Address</th><th>Requests</th><th>% of Traffic</th></tr>';
+      document.getElementById('err-title1').innerText = 'Most Frequently Missing Paths (404s)';
+      document.getElementById('tbl404Head').innerHTML = '<tr><th>Path / URL</th><th>Failures</th></tr>';
+      document.getElementById('err-title2').innerText = 'Server Errors (500s)';
+      document.getElementById('tbl500Head').innerHTML = '<tr><th>Path / URL</th><th>Count</th></tr>';
+
+      const statusCounts = {};
+      const ipCounts = {};
+      const missingPaths = {};
+      const serverErrors = {};
+
+      parsedLogs.forEach(log => {
+        statusCounts[log.status] = (statusCounts[log.status] || 0) + 1;
+        if (log.status.startsWith('4') || log.status.startsWith('5')) errCount++;
+        ipCounts[log.ip] = (ipCounts[log.ip] || 0) + 1;
+        if (log.status === '404') missingPaths[log.url] = (missingPaths[log.url] || 0) + 1;
+        else if (log.status.startsWith('5')) serverErrors[log.url] = (serverErrors[log.url] || 0) + 1;
+      });
+
+      document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
+      renderChart(statusCounts);
+      renderTable('tblIps', getTop(ipCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(missingPaths, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
+      renderTable('tbl500', getTop(serverErrors, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
+    
+    } else {
+      document.getElementById('tab-sec').innerText = 'Process Activity';
+      document.getElementById('tab-err').innerText = 'Top Messages';
+      document.getElementById('sec-title').innerText = 'Most Active Processes & Facilities';
+      document.getElementById('tblIpsHead').innerHTML = '<tr><th>Process</th><th>Logs</th><th>% of Total</th></tr>';
+      document.getElementById('err-title1').innerText = 'Most Frequent Log Messages';
+      document.getElementById('tbl404Head').innerHTML = '<tr><th>Message</th><th>Count</th></tr>';
+      document.getElementById('err-title2').innerText = 'Recent Warnings & Errors';
+      document.getElementById('tbl500Head').innerHTML = '<tr><th>Timestamp</th><th>Process</th><th>Message</th></tr>';
+
+      const processCounts = {};
+      const msgCounts = {};
+      const recentErrors = [];
+      const sevCounts = { 'info': 0, 'notice': 0, 'warn': 0, 'error': 0 };
+
+      parsedLogs.forEach(log => {
+        if (log.severity === 'warn' || log.severity === 'error') errCount++;
+        processCounts[log.process] = (processCounts[log.process] || 0) + 1;
+        msgCounts[log.msg] = (msgCounts[log.msg] || 0) + 1;
+        sevCounts[log.severity] = (sevCounts[log.severity] || 0) + 1;
+        
+        if ((log.severity === 'warn' || log.severity === 'error') && recentErrors.length < 10) {
+          recentErrors.push(log);
+        }
+      });
+
+      document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
+      renderChart(sevCounts);
+      renderTable('tblIps', getTop(processCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(msgCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
+      
+      const errTbody = document.getElementById('tbl500');
+      if (recentErrors.length === 0) errTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);">No warnings/errors found.</td></tr>';
+      else errTbody.innerHTML = recentErrors.map(l => `<tr><td>${l.date}</td><td>${l.process}</td><td style="color:${l.severity==='error'?'var(--danger)':'var(--warning)'}">${l.msg}</td></tr>`).join('');
+    }
+
+    renderRaw(parsedLogs);
+    
+    // Add search listener just once by cloning node
+    const oldSearch = document.getElementById('txtSearch');
+    const newSearch = oldSearch.cloneNode(true);
+    oldSearch.parentNode.replaceChild(newSearch, oldSearch);
+    
+    newSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = parsedLogs.filter(l => l.raw.toLowerCase().includes(q));
+      renderRaw(filtered.slice(0, 1000));
+    });
+  }
+
+  function getTop(dict, limit) {
+    return Object.entries(dict).sort((a,b) => b[1] - a[1]).slice(0, limit);
+  }
+
+  function renderTable(id, data, rowRenderer) {
+    const tbody = document.getElementById(id);
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="color: var(--text-muted);">No data available</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(([k,v]) => rowRenderer(k, v)).join('');
+  }
+
+  function renderRaw(logs) {
+    const html = logs.map(l => {
+      if (logMode === 'web') {
+        let colorClass = 'status-200';
+        if (l.status.startsWith('3')) colorClass = 'status-300';
+        if (l.status.startsWith('4')) colorClass = 'status-400';
+        if (l.status.startsWith('5')) colorClass = 'status-500';
+        const raw = l.raw.replace(new RegExp(`\\s${l.status}\\s`), ` <span class="${colorClass}">${l.status}</span> `);
+        return `<div>${raw}</div>`;
+      } else {
+        let colorClass = 'status-200';
+        if (l.severity === 'warn') colorClass = 'status-300';
+        if (l.severity === 'error') colorClass = 'status-400';
+        const raw = l.raw.replace(l.process, `<span class="${colorClass}">${l.process}</span>`);
+        return `<div>${raw}</div>`;
+      }
+    }).join('');
+    rawLogsDiv.innerHTML = html || 'No matching logs.';
+  }
+
+  function renderChart(data) {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    if (statusChartInstance) statusChartInstance.destroy();
+
+    const labels = Object.keys(data).sort();
+    const values = labels.map(l => data[l]);
+    const colors = labels.map(l => {
+      if (logMode === 'web') {
+        if (l.startsWith('2')) return '#10b981';
+        if (l.startsWith('3')) return '#f59e0b';
+        if (l.startsWith('4')) return '#ef4444';
+        if (l.startsWith('5')) return '#dc2626';
+      } else {
+        if (l === 'info') return '#3a7bd5';
+        if (l === 'notice') return '#10b981';
+        if (l === 'warn') return '#f59e0b';
+        if (l === 'error') return '#ef4444';
+      }
+      return '#94a3b8';
+    });
+
+    statusChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#f8fafc' } } } }
+    });
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    
+    document.getElementById('view-sec').style.display = 'none';
+    document.getElementById('view-err').style.display = 'none';
+    document.getElementById('view-raw').style.display = 'none';
+    
+    if(tabId === 'raw') document.getElementById(`view-${tabId}`).style.display = 'flex';
+    else document.getElementById(`view-${tabId}`).style.display = 'block';
+  }
+
+  function resetTool() {
+    parsedLogs = [];
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('statsArea').style.display = 'none';
+    document.getElementById('btnClear').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+    
+    document.getElementById('dropzone').innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+        <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+        <button class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+      </div>
+    `;
+  }
+
+</script>
+
+</body>
+</html>

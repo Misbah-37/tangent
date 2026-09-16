@@ -1,0 +1,609 @@
+<!-- --- HEAD_META --- -->
+<title>Correlation Matrix Studio | Tangent</title>
+<meta name="description" content="Discover variable relationships with instant Pearson correlation heatmaps and basic statistical testing. 100% private.">
+<link rel="canonical" href="https://misbah-37.github.io/tangent/correlation-matrix.html">
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+  :root {
+    --bg-base: #0f111a;
+    --bg-panel: #1a1d27;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #3a7bd5;
+  }
+
+  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(58, 123, 213, 0.15); color: var(--accent);
+    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .clean-header h1 {
+    font-size: 2.5rem; font-weight: 800; margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+  /* Workspace */
+  .matrix-workspace {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    min-height: 600px;
+    padding: 0 32px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) {
+    .matrix-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 16px; }
+  }
+
+  /* Panels */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+  .dropzone p { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none; padding: 10px 16px;
+    border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-demo {
+    background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+  }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Variable List */
+  .var-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .var-item label { flex-grow: 1; font-size: 0.9rem; cursor: pointer; color: var(--text-main); }
+  .var-item input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Heatmap Table */
+  .heatmap-container {
+    width: 100%;
+    overflow: auto;
+    background: #000;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  .heatmap-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 500px;
+  }
+  .heatmap-table th, .heatmap-table td {
+    border: 1px solid #2a2e3d;
+    text-align: center;
+    min-width: 80px;
+    height: 60px;
+    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .heatmap-table th {
+    background: #151821;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  .heatmap-table td:hover {
+    filter: brightness(1.2);
+    z-index: 20;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  /* Heatmap Legend */
+  .legend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .legend-bar {
+    width: 200px;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ef4444 0%, #151821 50%, #10b981 100%);
+  }
+
+  /* Explainer & FAQ Styles */
+  .explainer-section {
+    max-width: 1000px; margin: 80px auto 0 auto; padding: 60px 32px 0 32px; border-top: 1px solid var(--border-color);
+  }
+  .explainer-title { font-size: 2rem; font-weight: 800; margin-bottom: 40px; text-align: center; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px; }
+  .feature-card { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px; }
+  .feature-icon { color: var(--accent); margin-bottom: 16px; }
+  .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
+  .feature-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* FAQ Accordion */
+  .faq-container { margin-bottom: 60px; }
+  .faq-item { background: var(--bg-panel); border: 1px solid var(--border-color); margin-bottom: 12px; border-radius: 8px; overflow: hidden; }
+  .faq-question { width: 100%; text-align: left; padding: 20px; background: none; border: none; color: var(--text-main); font-size: 1.05rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
+  .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 500px; }
+  .faq-item.active .faq-toggle-icon { transform: rotate(45deg); }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+    <span>100% Client-Side Processing</span>
+  </div>
+  <h1>Correlation Matrix Studio</h1>
+  <p>Discover variable relationships with instant Pearson correlation heatmaps and basic statistical testing.</p>
+</div>
+
+<div class="matrix-workspace">
+  <!-- Left Panel: Data Source & Variables -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Data Source & Variables</span>
+      <button class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetStudio()">
+        ✕ Clear
+      </button>
+    </div>
+    <div class="panel-body" id="setupArea">
+            <div class="dropzone" id="dropzone">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop CSV file here</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+          <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+          <button class="btn-demo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".csv" style="display: none;">
+      <div style="margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+        Note: Only numerical columns will be parsed for correlation.
+      </div>
+    </div>
+    
+    <div class="panel-body" id="varsArea" style="display: none; padding: 0;">
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1); font-size: 0.85rem; color: var(--text-muted);">
+        Select variables to include in the matrix:
+      </div>
+      <div id="varList" style="padding: 8px;"></div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Heatmap -->
+  <div class="panel" style="position: relative;">
+    <div class="panel-header">
+      <span>Pearson Correlation Matrix</span>
+      <button class="btn-primary" id="btnDownload" style="display: none; padding: 4px 10px; font-size: 0.8rem;" onclick="downloadHeatmap()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download
+      </button>
+    </div>
+    <div class="panel-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #08090d;" id="heatmapContainer">
+      <div style="color: var(--text-muted); text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <p>Awaiting data...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="explainer-section">
+  <h2 class="explainer-title">How Correlation Works</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      </div>
+      <h3>Pearson's r</h3>
+      <p>The tool calculates the Pearson correlation coefficient between every pair of numerical variables. It measures the linear correlation, outputting a value between -1 and 1.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+      </div>
+      <h3>Color Scales</h3>
+      <p>Strong positive correlations (approaching +1.0) are shaded green/blue, indicating that as one variable rises, the other rises. Negative correlations (-1.0) are shaded red.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h3>100% Private</h3>
+      <p>Just like all Tangent tools, the math runs entirely in your browser's RAM via JavaScript. We never upload your datasets to any external server.</p>
+    </div>
+  </div>
+
+  <div class="faq-container">
+    <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
+    
+    <div class="faq-item">
+      <button class="faq-question">
+        What does a correlation of 0.0 mean?
+        <span class="faq-toggle-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>A correlation of exactly 0 means there is no linear relationship between the two variables. Changing one variable does not reliably predict any change in the other variable. On the matrix, these are colored as dark, neutral cells.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        Are categorical (text) variables included?
+        <span class="faq-toggle-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>No, Pearson correlation requires numerical inputs. When you upload a dataset, this tool automatically scans the first 100 rows to determine data types. Any column containing text or dates is automatically excluded from the matrix options.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        Is this causation?
+        <span class="faq-toggle-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>No. The golden rule of statistics is "Correlation does not imply causation." Just because ice cream sales and shark attacks both go up during the summer (a strong positive correlation) does not mean eating ice cream causes shark attacks.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  // FAQ Logic
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isActive = item.classList.contains('active');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+  // App State
+  let rawData = [];
+  let numericalCols = [];
+  let selectedCols = [];
+
+  // Dropzone Setup
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function loadSampleData() {
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+    const sampleCSV = `Day,Celsius,Fahrenheit,Ice_Cream_Sales,Soup_Sales,Shoe_Size,IQ
+1,10,50.0,150,500,10.0,105
+2,12,53.6,180,480,9.0,110
+3,15,59.0,220,420,11.0,98
+4,18,64.4,300,380,8.0,115
+5,20,68.0,350,310,10.5,102
+6,22,71.6,400,280,9.5,108
+7,25,77.0,520,200,12.0,95
+8,28,82.4,610,150,8.5,120
+9,30,86.0,700,100,10.0,100
+10,32,89.6,780,80,11.0,104
+11,35,95.0,900,50,9.0,112
+12,24,75.2,480,220,10.5,99
+13,19,66.2,320,350,9.5,107
+14,14,57.2,200,450,11.5,101
+15,8,46.4,120,550,8.0,118`;
+    
+    Papa.parse(sampleCSV, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data);
+      }
+    });
+  }
+
+  function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      alert("Please upload a valid CSV file.");
+      return;
+    }
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+    
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function(results) {
+        processData(results.data);
+      }
+    });
+  }
+
+        function processData(data) {
+    if (data.length === 0) return;
+    rawData = data;
+    
+    const keys = Object.keys(data[0]);
+    numericalCols = [];
+    
+    keys.forEach(key => {
+      let numberCount = 0;
+      let totalChecked = 0;
+      
+      for (let i = 0; i < Math.min(data.length, 500); i++) {
+        let val = data[i][key];
+        if (val !== null && val !== undefined && val !== '') {
+          totalChecked++;
+          if (typeof val === 'number') {
+            numberCount++;
+          } else if (typeof val === 'string') {
+            let cleaned = val.replace(/[$,%\s]/g, '');
+            // Prevent dates from passing as numbers
+            if (/^\d{4}-\d{2}-\d{2}/.test(cleaned) || /^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(cleaned)) {
+              continue;
+            }
+            let num = parseFloat(cleaned);
+            if (!isNaN(num)) {
+              numberCount++;
+            }
+          }
+        }
+      }
+      
+      // If at least 80% of the non-empty values can be extracted as a number, keep the column
+      if (totalChecked > 0 && (numberCount / totalChecked) >= 0.80) {
+        numericalCols.push(key);
+        // Force the entire column into strict numbers for math
+        for (let i = 0; i < data.length; i++) {
+          let val = data[i][key];
+          if (typeof val === 'string') {
+            let cleaned = val.replace(/[$,%\s]/g, '');
+            let num = parseFloat(cleaned);
+            data[i][key] = isNaN(num) ? null : num;
+          }
+        }
+      }
+    });
+
+    if (numericalCols.length < 2) {
+      alert("Dataset must contain at least 2 numerical columns to calculate correlation.");
+      resetStudio();
+      return;
+    }
+
+    selectedCols = [...numericalCols];
+    
+    // Update UI
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('varsArea').style.display = 'block';
+    document.getElementById('btnClear').style.display = 'block';
+    
+    renderVariableList();
+    generateMatrix();
+  }
+
+  function renderVariableList() {
+    const list = document.getElementById('varList');
+    list.innerHTML = '';
+    numericalCols.forEach(col => {
+      const div = document.createElement('div');
+      div.className = 'var-item';
+      
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb.id = 'var_' + col;
+      cb.onchange = (e) => {
+        if (e.target.checked) {
+          if (!selectedCols.includes(col)) selectedCols.push(col);
+        } else {
+          selectedCols = selectedCols.filter(c => c !== col);
+        }
+        generateMatrix();
+      };
+      
+      const lbl = document.createElement('label');
+      lbl.htmlFor = cb.id;
+      lbl.innerText = col;
+      
+      div.appendChild(cb);
+      div.appendChild(lbl);
+      list.appendChild(div);
+    });
+  }
+
+    // Pearson Correlation calculation
+  function getPearson(colX, colY) {
+    let n = 0;
+    let sumX = 0, sumY = 0, sumXY = 0;
+    let sumX2 = 0, sumY2 = 0;
+
+    for (let i = 0; i < rawData.length; i++) {
+      let x = rawData[i][colX];
+      let y = rawData[i][colY];
+      if (typeof x === 'number' && typeof y === 'number' && !isNaN(x) && !isNaN(y)) {
+        n++;
+        sumX += x;
+        sumY += y;
+        sumXY += (x * y);
+        sumX2 += (x * x);
+        sumY2 += (y * y);
+      }
+    }
+
+    if (n === 0) return 0;
+    const numerator = (n * sumXY) - (sumX * sumY);
+    const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    if (denominator === 0) return 0;
+    return numerator / denominator;
+  }
+
+  // Color Mapping: -1 (Red) to 0 (Dark) to +1 (Green)
+  function getColorForCorrelation(r) {
+    if (r < 0) {
+      const intensity = Math.abs(r);
+      const r_c = Math.round(21 + (239 - 21) * intensity);
+      const g_c = Math.round(24 + (68 - 24) * intensity);
+      const b_c = Math.round(33 + (68 - 33) * intensity);
+      return `rgb(${r_c}, ${g_c}, ${b_c})`;
+    } else {
+      const intensity = r;
+      const r_c = Math.round(21 + (16 - 21) * intensity);
+      const g_c = Math.round(24 + (185 - 24) * intensity);
+      const b_c = Math.round(33 + (129 - 33) * intensity);
+      return `rgb(${r_c}, ${g_c}, ${b_c})`;
+    }
+  }
+
+  function generateMatrix() {
+    const container = document.getElementById('heatmapContainer');
+    if (selectedCols.length < 2) {
+      container.innerHTML = `<div style="color: var(--text-muted);">Please select at least 2 variables.</div>`;
+      document.getElementById('btnDownload').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('btnDownload').style.display = 'inline-flex';
+
+    let html = `<div class="heatmap-container"><table class="heatmap-table"><thead><tr><th></th>`;
+    selectedCols.forEach(c => {
+      html += `<th title="${c}">${c.substring(0,12)}${c.length>12?'...':''}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    selectedCols.forEach((rowCol, i) => {
+      html += `<tr><th title="${rowCol}" style="text-align: right; padding-right: 12px;">${rowCol.substring(0,12)}${rowCol.length>12?'...':''}</th>`;
+      selectedCols.forEach((colCol, j) => {
+        if (i === j) {
+          html += `<td style="background: rgba(255,255,255,0.05); color: #475569;">1.00</td>`;
+        } else {
+          const r = getPearson(rowCol, colCol);
+          const color = getColorForCorrelation(r);
+          const val = r.toFixed(2);
+          html += `<td style="background: ${color}; color: #fff; font-weight: ${Math.abs(r) > 0.5 ? 'bold' : 'normal'};" title="${rowCol} vs ${colCol}\nr = ${val}">${val}</td>`;
+        }
+      });
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    
+    html += `
+      <div class="legend-container">
+        <span>-1.0 (Negative)</span>
+        <div class="legend-bar"></div>
+        <span>+1.0 (Positive)</span>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  function resetStudio() {
+    rawData = []; numericalCols = []; selectedCols = [];
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('varsArea').style.display = 'none';
+    document.getElementById('btnClear').style.display = 'none';
+    document.getElementById('btnDownload').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    
+    document.getElementById('dropzone').innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+      <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop CSV file here</p>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+        <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+        <button class="btn-demo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+      </div>
+    `;
+    
+    document.getElementById('heatmapContainer').innerHTML = `
+      <div style="color: var(--text-muted); text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <p>Awaiting data...</p>
+      </div>
+    `;
+  }
+
+  function downloadHeatmap() {
+    const container = document.getElementById('heatmapContainer');
+    
+    // Disable any scrolling during capture so the full matrix renders
+    const originalOverflow = container.style.overflow;
+    container.style.overflow = 'visible';
+    
+    html2canvas(container, {
+      backgroundColor: '#08090d',
+      scale: 2 // High res
+    }).then(canvas => {
+      container.style.overflow = originalOverflow;
+      const link = document.createElement('a');
+      link.download = 'tangent_correlation_matrix.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+

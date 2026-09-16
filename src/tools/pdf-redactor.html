@@ -64,7 +64,11 @@
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid #1a1f2e;
-    position: sticky;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    right: 0;
+    flex-shrink: 0;
     top: 0;
     z-index: 2000;
     height: 60px;
@@ -90,7 +94,9 @@
     text-decoration: none;
     font-size: 1.25rem;
     font-weight: 700;
-  }
+    flex-shrink: 0;
+      white-space: nowrap;
+    }
 
   .nav-links {
     display: flex;

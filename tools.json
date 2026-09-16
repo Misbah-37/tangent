@@ -14,6 +14,20 @@
         "priority":  0.9
     },
     {
+        "id":  "sql-studio",
+        "filename":  "sql-studio.html",
+        "title":  "SQL Analytics Studio",
+        "sidebarDesc":  "Run local SQL on CSV/Parquet",
+        "category":  "Data \u0026 Analytics",
+        "cardTitle":  "In-Browser SQL Studio",
+        "cardDesc":  "Write SQL queries against local CSV, JSON, and Parquet files instantly in your browser using the blazing-fast DuckDB-WASM engine. Zero cloud setup.",
+        "badge":  "NEW",
+        "priority":  0.9,
+        "changefreq":  "weekly",
+        "gridOrder":  1.5,
+        "iconSvg":  "\u003cpath d=\"M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4\"\u003e\u003c/path\u003e"
+    },
+    {
         "id":  "screen-recorder",
         "filename":  "screen-recorder.html",
         "title":  "Screen Recorder",
@@ -264,5 +278,47 @@
         "changefreq":  "weekly",
         "gridOrder":  18,
         "iconSvg":  "\u003crect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"\u003e\u003c/rect\u003e\u003cline x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"\u003e\u003c/line\u003e\u003cline x1=\"6\" y1=\"15\" x2=\"10\" y2=\"15\"\u003e\u003c/line\u003e\u003cline x1=\"14\" y1=\"15\" x2=\"18\" y2=\"15\"\u003e\u003c/line\u003e"
+    },
+    {
+        "id":  "data-hygiene",
+        "filename":  "data-hygiene.html",
+        "title":  "Data Hygiene Profiler",
+        "sidebarDesc":  "Cleanse CSVs \u0026 find anomalies",
+        "category":  "Data \u0026 Analytics",
+        "cardTitle":  "Data Hygiene \u0026 Anomaly Profiler",
+        "cardDesc":  "Instantly profile massive datasets for missing values, duplicate rows, and trailing spaces. Scrub data securely with zero cloud uploads.",
+        "badge":  "NEW",
+        "priority":  0.9,
+        "changefreq":  "weekly",
+        "gridOrder":  3,
+        "iconSvg":  "\u003cpath d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"\u003e\u003c/path\u003e\u003cpolyline points=\"3.27 6.96 12 12.01 20.73 6.96\"\u003e\u003c/polyline\u003e\u003cline x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"\u003e\u003c/line\u003e"
+    },
+    {
+        "category":  "Data \u0026 Analytics",
+        "id":  "correlation-matrix",
+        "filename":  "correlation-matrix.html",
+        "cardDesc":  "Discover variable relationships with instant Pearson correlation heatmaps and basic statistical testing. 100% private.",
+        "sidebarDesc":  "Pearson heatmaps \u0026 stats",
+        "iconSvg":  "\u003crect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"\u003e\u003c/rect\u003e\u003cline x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"\u003e\u003c/line\u003e\u003cline x1=\"3\" y1=\"15\" x2=\"21\" y2=\"15\"\u003e\u003c/line\u003e\u003cline x1=\"9\" y1=\"3\" x2=\"9\" y2=\"21\"\u003e\u003c/line\u003e\u003cline x1=\"15\" y1=\"3\" x2=\"15\" y2=\"21\"\u003e\u003c/line\u003e",
+        "gridOrder":  4,
+        "cardTitle":  "Correlation Matrix \u0026 Stats",
+        "badge":  "NEW",
+        "changefreq":  "weekly",
+        "title":  "Correlation Matrix Studio",
+        "priority":  0.9
+    },
+    {
+        "category":  "Data \u0026 Analytics",
+        "id":  "log-analyzer",
+        "filename":  "log-analyzer.html",
+        "cardDesc":  "Parse raw Apache/Nginx access logs instantly into dashboards and security insights without uploading sensitive server data.",
+        "sidebarDesc":  "Parse server \u0026 app logs",
+        "iconSvg":  "\u003crect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\" ry=\"2\"\u003e\u003c/rect\u003e\u003crect x=\"9\" y=\"9\" width=\"6\" height=\"6\"\u003e\u003c/rect\u003e\u003cline x1=\"9\" y1=\"1\" x2=\"9\" y2=\"4\"\u003e\u003c/line\u003e\u003cline x1=\"15\" y1=\"1\" x2=\"15\" y2=\"4\"\u003e\u003c/line\u003e\u003cline x1=\"9\" y1=\"20\" x2=\"9\" y2=\"23\"\u003e\u003c/line\u003e\u003cline x1=\"15\" y1=\"20\" x2=\"15\" y2=\"23\"\u003e\u003c/line\u003e\u003cline x1=\"20\" y1=\"9\" x2=\"23\" y2=\"9\"\u003e\u003c/line\u003e\u003cline x1=\"20\" y1=\"14\" x2=\"23\" y2=\"14\"\u003e\u003c/line\u003e\u003cline x1=\"1\" y1=\"9\" x2=\"4\" y2=\"9\"\u003e\u003c/line\u003e\u003cline x1=\"1\" y1=\"14\" x2=\"4\" y2=\"14\"\u003e\u003c/line\u003e",
+        "gridOrder":  5,
+        "cardTitle":  "Server \u0026 Application Log Analyzer",
+        "badge":  "NEW",
+        "changefreq":  "weekly",
+        "title":  "Log Analyzer",
+        "priority":  0.9
     }
 ]

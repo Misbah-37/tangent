@@ -472,6 +472,34 @@
           <div class="item-desc">Instant dashboards & charts</div>
         </div>
       </a>
+      <a href="sql-studio.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SQL Analytics Studio</div>
+          <div class="item-desc">Run local SQL on CSV/Parquet</div>
+        </div>
+      </a>
+      <a href="data-hygiene.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Data Hygiene Profiler</div>
+          <div class="item-desc">Cleanse CSVs & find anomalies</div>
+        </div>
+      </a>
+      <a href="correlation-matrix.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Correlation Matrix Studio</div>
+          <div class="item-desc">Pearson heatmaps & stats</div>
+        </div>
+      </a>
+      <a href="log-analyzer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Log Analyzer</div>
+          <div class="item-desc">Parse server & app logs</div>
+        </div>
+      </a>
       </div>
     </div>
   </div>
@@ -576,6 +604,17 @@
         </div>
         
         <div class="chart-wrapper">
+          <div id="downloadControls" style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none; gap: 8px;">
+            <select id="selExportBg" class="btn-demo" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px;">
+              <option value="dark" style="background: #1e293b; color: #f8fafc;">Dark BG</option>
+              <option value="light" style="background: #1e293b; color: #f8fafc;">Light BG</option>
+              <option value="transparent" style="background: #1e293b; color: #f8fafc;">Transparent</option>
+            </select>
+            <button class="btn-demo" style="padding: 6px 12px; font-size: 0.8rem; background: var(--bg-panel);" onclick="downloadChart()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export Image
+            </button>
+          </div>
           <canvas id="chartCanvas"></canvas>
         </div>
       </div>
@@ -593,6 +632,74 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="explainer-section" style="max-width: 1000px; margin: 80px auto;">
+  <h2 class="explainer-title" style="text-align: center; margin-bottom: 40px; font-size: 2rem;">How CSV Insights Works</h2>
+  
+  <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px;">
+    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
+      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Local Processing</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">When you drop a CSV file, it is parsed instantly inside your browser's memory using JavaScript. We never upload your raw files to any server.</p>
+    </div>
+    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
+      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
+      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Automatic Profiling</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">The data dictionary automatically maps column types. We detect whether your columns contain text, numbers, or dates so you can build charts without setup.</p>
+    </div>
+    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
+      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Aggregations & Pivots</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Build powerful summary views by selecting a dimension (X-Axis) and metric (Y-Axis). The chart builder handles grouping, sums, and averages on the fly.</p>
+    </div>
+  </div>
+
+  <div class="faq-container">
+    <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
+    
+    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
+      <details style="padding: 16px 20px;">
+        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
+          What is the maximum file size I can upload?
+          <span style="color: var(--text-muted);">+</span>
+        </summary>
+        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
+          Since everything runs locally in your browser's RAM, the maximum file size depends on your computer's memory. For most modern devices, CSV files up to 50MB will process instantly. If you need to analyze massive gigabyte-scale datasets, we recommend our SQL Analytics Studio which uses an optimized WebAssembly engine.
+        </div>
+      </details>
+    </div>
+
+    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
+      <details style="padding: 16px 20px;">
+        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
+          Is my sensitive financial data safe here?
+          <span style="color: var(--text-muted);">+</span>
+        </summary>
+        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
+          Yes. Absolutely zero data ever leaves your computer. The Tangent CSV Insights Studio uses an architecture called "Client-Side Processing". You can even turn off your internet connection after loading the page, and the tool will continue to work perfectly.
+        </div>
+      </details>
+    </div>
+
+    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
+      <details style="padding: 16px 20px;">
+        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
+          How does the Light Mode export work?
+          <span style="color: var(--text-muted);">+</span>
+        </summary>
+        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
+          When you export a chart using the "Light BG" option, the tool performs a split-second operation: it repaints the grid and text to dark colors, applies a solid white background, captures the screenshot, and then instantly reverts the live display back to Tangent's dark theme. This ensures your presentation slides look perfect without changing your viewing experience.
+        </div>
+      </details>
     </div>
   </div>
 </div>
@@ -892,7 +999,8 @@
       currentChart.destroy();
     }
     
-    Chart.defaults.color = '#94a3b8';
+    // Updated contrast: use off-white for all text
+    Chart.defaults.color = '#e2e8f0'; 
     Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
     
     currentChart = new Chart(ctx, {
@@ -902,13 +1010,18 @@
         datasets: [{
           label: titleText,
           data: data,
-          backgroundColor: type === 'doughnut' 
-            ? ['#00d2ff', '#3a7bd5', '#8A2387', '#E94057', '#F27121'] 
-            : '#00d2ff',
-          borderColor: type === 'line' ? '#00d2ff' : 'transparent',
-          borderWidth: 2,
-          borderRadius: type === 'bar' ? 4 : 0,
-          tension: 0.3
+          backgroundColor: [
+            'rgba(0, 210, 255, 0.7)',
+            'rgba(58, 123, 213, 0.7)',
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(153, 102, 255, 0.7)'
+          ],
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderWidth: 1,
+          tension: 0.3,
+          fill: type === 'line' ? { target: 'origin', above: 'rgba(0, 210, 255, 0.1)' } : false
         }]
       },
       options: {
@@ -919,23 +1032,86 @@
         },
         scales: type === 'doughnut' ? {} : {
           x: { 
-            grid: { color: 'rgba(255,255,255,0.05)' },
-            title: { display: true, text: xLabel, font: { size: 13, weight: 'bold' } }
+            title: { display: true, text: xLabel, color: '#cbd5e1' },
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#e2e8f0' }
           },
           y: { 
-            grid: { color: 'rgba(255,255,255,0.05)' }, 
-            beginAtZero: true,
-            title: { display: true, text: yLabel, font: { size: 13, weight: 'bold' } }
+            title: { display: true, text: yLabel, color: '#cbd5e1' },
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#e2e8f0' },
+            beginAtZero: true
           }
         }
       }
     });
+    
+    document.getElementById('downloadControls').style.display = 'flex';
+  }
+
+  function downloadChart() {
+    const canvas = document.getElementById('chartCanvas');
+    if (!canvas) return;
+    
+    const bgMode = document.getElementById('selExportBg').value;
+    
+    // Temporarily swap to dark text for light mode export
+    if (bgMode === 'light') {
+      Chart.defaults.color = '#334155';
+      if (currentChart.options.scales.x) {
+        currentChart.options.scales.x.title.color = '#1e293b';
+        currentChart.options.scales.x.ticks.color = '#334155';
+        currentChart.options.scales.x.grid.color = 'rgba(0, 0, 0, 0.05)';
+        currentChart.options.scales.y.title.color = '#1e293b';
+        currentChart.options.scales.y.ticks.color = '#334155';
+        currentChart.options.scales.y.grid.color = 'rgba(0, 0, 0, 0.05)';
+      }
+      currentChart.update('none'); // Force synchronous update without animation
+    }
+    
+    // Capture to temp canvas
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const ctx = tempCanvas.getContext('2d');
+    
+    if (bgMode === 'dark') {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    } else if (bgMode === 'light') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    }
+    
+    ctx.drawImage(canvas, 0, 0);
+    
+    // Trigger Download
+    const url = tempCanvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tangent-insight-chart-${bgMode}.png`;
+    a.click();
+    
+    // Revert back to dark mode styling
+    if (bgMode === 'light') {
+      Chart.defaults.color = '#e2e8f0';
+      if (currentChart.options.scales.x) {
+        currentChart.options.scales.x.title.color = '#cbd5e1';
+        currentChart.options.scales.x.ticks.color = '#e2e8f0';
+        currentChart.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.05)';
+        currentChart.options.scales.y.title.color = '#cbd5e1';
+        currentChart.options.scales.y.ticks.color = '#e2e8f0';
+        currentChart.options.scales.y.grid.color = 'rgba(255, 255, 255, 0.05)';
+      }
+      currentChart.update('none'); // Force synchronous update back
+    }
   }
 
   function resetStudio() {
     parsedData = []; columns = []; colTypes = {};
     document.getElementById('workspace').style.display = 'none';
     document.getElementById('setupArea').style.display = 'block';
+    
     document.getElementById('dropzone').innerHTML = `
       <div class="dropzone-icon">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
@@ -948,6 +1124,7 @@
       </div>
     `;
     fileInput.value = "";
+    document.getElementById('downloadControls').style.display = 'none';
     if (currentChart) { currentChart.destroy(); currentChart = null; }
   }
 </script>

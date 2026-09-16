@@ -572,10 +572,11 @@
     const sortedLabels = combined.map(x => x.l).slice(0, 50); // Limit to top 50
     const sortedData = combined.map(x => x.v).slice(0, 50);
 
-    renderChart(sortedLabels, sortedData, type, `${agg.toUpperCase()} of ${yCol} by ${xCol}`);
+    const yLabel = `${agg.toUpperCase()} of ${yCol}`;
+    renderChart(sortedLabels, sortedData, type, `${yLabel} by ${xCol}`, xCol, yLabel);
   }
 
-  function renderChart(labels, data, type, titleText) {
+  function renderChart(labels, data, type, titleText, xLabel, yLabel) {
     const ctx = document.getElementById('chartCanvas').getContext('2d');
     if (currentChart) {
       currentChart.destroy();
@@ -607,8 +608,15 @@
           legend: { display: type === 'doughnut', position: 'right' }
         },
         scales: type === 'doughnut' ? {} : {
-          x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+          x: { 
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            title: { display: true, text: xLabel, font: { size: 13, weight: 'bold' } }
+          },
+          y: { 
+            grid: { color: 'rgba(255,255,255,0.05)' }, 
+            beginAtZero: true,
+            title: { display: true, text: yLabel, font: { size: 13, weight: 'bold' } }
+          }
         }
       }
     });

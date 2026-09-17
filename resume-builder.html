@@ -1596,7 +1596,7 @@
     const availableWidth = stage.clientWidth - 40;
     if (availableWidth <= 0) return;
 
-    const scale = Math.min(1.0, Math.max(0.38, availableWidth / sheetBaseWidth));
+    const scale = Math.min(1.0, Math.max(0.1, availableWidth / sheetBaseWidth));
     sheet.style.transform = `scale(${scale})`;
     sheet.style.transformOrigin = 'top center';
 

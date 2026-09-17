@@ -315,8 +315,7 @@
 
   /* Clean Paper Invoice Sheet */
   .invoice-paper {
-    width: 100%;
-    max-width: 794px;
+    width: 794px;
     min-height: 1050px;
     background: #ffffff;
     color: #0f172a;
@@ -1159,4 +1158,34 @@ Account: 99482019482</div>
   // Initial Run
   renderItemsInputs();
   updatePaper();
+
+  function fitInvoiceSheet() {
+    const stage = document.querySelector('.paper-container');
+    const sheet = document.getElementById('invoicePaper');
+    if (!stage || !sheet) return;
+
+    const sheetBaseWidth = 794; // 210mm
+    const availableWidth = stage.clientWidth - 40;
+    if (availableWidth <= 0) return;
+
+    const scale = Math.min(1.0, Math.max(0.1, availableWidth / sheetBaseWidth));
+    sheet.style.transform = `scale(${scale})`;
+    sheet.style.transformOrigin = 'top center';
+
+    const baseHeight = sheet.offsetHeight || 1050;
+    stage.style.minHeight = Math.round(baseHeight * scale + 48) + 'px';
+  }
+
+  // Observe canvas and stage to smoothly adapt
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => fitInvoiceSheet());
+    const stage = document.querySelector('.paper-container');
+    if (stage) ro.observe(stage);
+    const canvas = document.querySelector('.app-canvas');
+    if (canvas) ro.observe(canvas);
+  }
+  window.addEventListener('resize', fitInvoiceSheet);
+
+  setTimeout(fitInvoiceSheet, 50);
+
 </script>

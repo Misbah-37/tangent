@@ -5,18 +5,6 @@
 
 <!-- --- TOOL_STYLES --- -->
 <style>
-  :root {
-    --bg-base: #0f111a;
-    --bg-panel: #1a1d27;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --accent: #3a7bd5;
-    --warning: #f59e0b;
-    --success: #10b981;
-    --danger: #ef4444;
-  }
-
   .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
   .badge-pill {
     display: inline-flex; align-items: center; gap: 6px;
@@ -25,9 +13,11 @@
     font-weight: 600; margin-bottom: 16px;
   }
   .clean-header h1 {
-    font-size: 2.5rem; font-weight: 800; margin-bottom: 12px;
-    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+    color: var(--text-main);
   }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
 
@@ -45,7 +35,7 @@
 
   /* Panels */
   .panel {
-    background: var(--bg-panel);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     display: flex;
@@ -94,8 +84,8 @@
     padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2);
     border: 1px solid var(--border-color); margin-bottom: 12px;
   }
-  .status-item.warning { border-left: 3px solid var(--warning); }
-  .status-item.success { border-left: 3px solid var(--success); }
+  .status-item.warning { border-left: 3px solid var(--accent-amber); }
+  .status-item.success { border-left: 3px solid var(--accent-emerald); }
   .status-title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; }
   .status-desc { font-size: 0.85rem; color: var(--text-muted); }
 
@@ -126,7 +116,7 @@
     display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px;
   }
   .feature-card {
-    background: var(--bg-panel); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;
+    background: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;
   }
   .feature-icon { color: var(--accent); margin-bottom: 16px; }
   .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
@@ -134,7 +124,7 @@
 
   .faq-container { margin-bottom: 60px; }
   .faq-item {
-    background: var(--bg-panel); border: 1px solid var(--border-color);
+    background: var(--bg-card); border: 1px solid var(--border-color);
     margin-bottom: 12px; border-radius: 8px; overflow: hidden;
   }
   .faq-question {

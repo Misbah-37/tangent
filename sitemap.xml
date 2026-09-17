@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Tangent Homepage -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/</loc>
+    <loc>https://runtangent.com/</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,25 +10,25 @@
 
   <!-- Documents & PDF -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/pdf-redactor.html</loc>
+    <loc>https://runtangent.com/pdf-redactor.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/pdf-converter.html</loc>
+    <loc>https://runtangent.com/pdf-converter.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/document-ocr.html</loc>
+    <loc>https://runtangent.com/document-ocr.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/markdown-studio.html</loc>
+    <loc>https://runtangent.com/markdown-studio.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -36,37 +36,37 @@
 
   <!-- Media & Video -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/screen-recorder.html</loc>
+    <loc>https://runtangent.com/screen-recorder.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/mockup-generator.html</loc>
+    <loc>https://runtangent.com/mockup-generator.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/code-to-image.html</loc>
+    <loc>https://runtangent.com/code-to-image.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/svg-optimizer.html</loc>
+    <loc>https://runtangent.com/svg-optimizer.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/photo-resizer.html</loc>
+    <loc>https://runtangent.com/photo-resizer.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/photo-scrubber.html</loc>
+    <loc>https://runtangent.com/photo-scrubber.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -74,25 +74,25 @@
 
   <!-- Security & System -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/document-signer.html</loc>
+    <loc>https://runtangent.com/document-signer.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/file-vault.html</loc>
+    <loc>https://runtangent.com/file-vault.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/password-meter.html</loc>
+    <loc>https://runtangent.com/password-meter.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/file-organizer.html</loc>
+    <loc>https://runtangent.com/file-organizer.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -100,25 +100,25 @@
 
   <!-- Utilities -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/qr-generator.html</loc>
+    <loc>https://runtangent.com/qr-generator.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/typing-test.html</loc>
+    <loc>https://runtangent.com/typing-test.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/resume-builder.html</loc>
+    <loc>https://runtangent.com/resume-builder.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/invoice-generator.html</loc>
+    <loc>https://runtangent.com/invoice-generator.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -126,31 +126,31 @@
 
   <!-- Data & Analytics -->
   <url>
-    <loc>https://misbah-37.github.io/tangent/csv-insights.html</loc>
+    <loc>https://runtangent.com/csv-insights.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/sql-studio.html</loc>
+    <loc>https://runtangent.com/sql-studio.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/data-hygiene.html</loc>
+    <loc>https://runtangent.com/data-hygiene.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/correlation-matrix.html</loc>
+    <loc>https://runtangent.com/correlation-matrix.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://misbah-37.github.io/tangent/log-analyzer.html</loc>
+    <loc>https://runtangent.com/log-analyzer.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

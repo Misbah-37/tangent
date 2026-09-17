@@ -1,9 +1,0 @@
-# Internal workspace artifacts & AI context
-walkthrough.md
-*.log
-scratch/
-__pycache__/
-.DS_Store
-Thumbs.db
-site_arch.md
-PROJECT_CONTEXT.md

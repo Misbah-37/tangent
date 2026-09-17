@@ -29,6 +29,7 @@ CATEGORY_ORDER = [
     "Documents & PDF",
     "Media & Video",
     "Security & System",
+    "Data & Analytics",
     "Utilities"
 ]
 
@@ -104,12 +105,16 @@ def generate_nav_links_html(current_page):
       </a>'''
 
 def generate_tools_layout_html(tools):
-    categories = []
-    # Collect unique categories, maintaining a stable order based on tools.json appearance
+    categories_raw = []
     for t in tools:
         cat = t.get("category", "Utilities")
-        if cat not in categories:
-            categories.append(cat)
+        if cat not in categories_raw:
+            categories_raw.append(cat)
+            
+    categories = [c for c in CATEGORY_ORDER if c in categories_raw]
+    for c in categories_raw:
+        if c not in categories:
+            categories.append(c)
             
     # Find top picks (1 from each category, lowest gridOrder)
     top_picks = []

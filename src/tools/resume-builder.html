@@ -97,6 +97,9 @@
     margin: 0 auto;
   }
 
+    .studio-layout > div {
+    min-width: 0;
+  }
   .studio-layout {
     max-width: 1540px;
     margin: 0 auto;
@@ -108,7 +111,10 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  body.sidebar-open .studio-layout {
+  body.sidebar-open   .studio-layout > div {
+    min-width: 0;
+  }
+  .studio-layout {
     grid-template-columns: minmax(340px, 440px) 1fr;
     gap: 20px;
     padding: 0 16px 60px;
@@ -757,7 +763,13 @@
   }
 
   @media (max-width: 1024px) {
-    .studio-layout {
+      .studio-layout > div {
+    min-width: 0;
+  }
+  .studio-layout {
+      grid-template-columns: 1fr;
+    }
+    .input-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -1311,7 +1323,12 @@
     if (!stage || !sheet) return;
 
     const sheetBaseWidth = 794; // 210mm
-    const availableWidth = stage.clientWidth - 40;
+      
+      // Temporarily hide sheet to measure true bounded width of parent without child overflow
+      const originalDisplay = sheet.style.display;
+      sheet.style.display = 'none';
+      const availableWidth = stage.clientWidth - 40;
+      sheet.style.display = originalDisplay;
     if (availableWidth <= 0) return;
 
     const scale = Math.min(1.0, Math.max(0.1, availableWidth / sheetBaseWidth));

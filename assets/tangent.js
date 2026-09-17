@@ -110,3 +110,10 @@
     }
   });
 })();
+function scrollTrack(trackId, direction) {
+  const track = document.getElementById(trackId);
+  if (track) {
+    const scrollAmount = direction * (280 + 20); // card width + gap
+    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+}

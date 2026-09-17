@@ -1,0 +1,372 @@
+﻿<!-- --- HEAD_META --- -->
+<title>Local HTML Data Extractor & Scraper | Tangent</title>
+<meta name="description" content="Extract data, tables, and lists from raw HTML files locally using CSS selectors. Instantly export to clean CSVs with zero cloud uploads.">
+<link rel="canonical" href="https://runtangent.com/data-extractor.html">
+
+<!-- Foundation & Social Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Local HTML Data Extractor | Tangent">
+<meta property="og:description" content="Extract tables and data from raw HTML securely in your browser. Download as CSV.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Tangent Data Extractor",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any"
+}
+</script>
+
+<!-- --- TOOL_STYLES --- -->
+<style>
+  .extractor-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
+  .grid-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  
+  .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
+  
+  textarea.code-input { width: 100%; background: #090b10; color: #a5b4fc; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; resize: vertical; min-height: 150px; outline: none; margin-bottom: 16px; }
+  textarea.code-input:focus { border-color: var(--accent); }
+  
+  .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.2); font-size: 0.9rem; color: var(--text-muted); }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); color: var(--text-main); }
+  
+  .control-group { margin-bottom: 20px; }
+  .control-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+  .control-group input[type="text"], .control-group select { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg-base); color: #fff; border: 1px solid var(--border-color); font-size: 0.95rem; }
+  
+  .btn-accent { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.05rem; transition: transform 0.1s ease; }
+  .btn-accent:active { transform: scale(0.97); }
+  
+  .table-responsive { width: 100%; overflow-x: auto; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; max-height: 400px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+  th { color: var(--text-muted); font-weight: 600; position: sticky; top: 0; background: rgba(19, 23, 36, 0.95); backdrop-filter: blur(8px); z-index: 10; }
+  tr:hover td { background: rgba(255, 255, 255, 0.02); }
+  
+  .stats-text { color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; }
+  .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
+</style>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="privacy-shield-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
+  </div>
+  <h1>HTML Data Extractor</h1>
+  <p>Extract tables, lists, and raw data from HTML files locally using CSS selectors. Instantly export to clean CSVs without expensive scraping APIs.</p>
+</div>
+
+<div class="extractor-studio">
+  <div class="grid-layout">
+    
+    <!-- Step 1: Input -->
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">1. Provide HTML Source</h3>
+        <button id="btnClear" class="btn-clear-ghost" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          Clear File
+        </button>
+      </div>
+      <textarea id="htmlInput" class="code-input" placeholder="<!-- Paste raw HTML source code here... -->"></textarea>
+      <div class="drop-zone" id="dropZone">
+        Or drag and drop an .html file here
+        <input type="file" id="fileInput" accept=".html,.htm,.txt" style="display:none;">
+      </div>
+    </div>
+    
+    <!-- Step 2: Extraction Rules -->
+    <div class="panel">
+      <h3 style="margin-top:0; margin-bottom:16px;">2. Extraction Rules</h3>
+      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+        <div class="control-group">
+          <label>Extraction Mode</label>
+          <select id="extractMode">
+            <option value="tables">Auto-Detect HTML Tables</option>
+            <option value="selector">Custom CSS Selector</option>
+          </select>
+        </div>
+        <div class="control-group" id="selectorGroup" style="opacity:0.5; pointer-events:none;">
+          <label>CSS Selector</label>
+          <input type="text" id="cssSelector" placeholder="e.g. .product-title, ul > li" value=".item">
+          
+          <div style="margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.5;">
+            <strong style="color: var(--text-main); display:block; margin-bottom:8px;">How to find your target selector:</strong>
+            <ol style="margin: 0 0 12px 0; padding-left: 22px;">
+              <li style="margin-bottom:4px;">Right-click the specific data you want on any website and click <strong>Inspect</strong>.</li>
+              <li style="margin-bottom:4px;">Look for its class name (e.g., <code>&lt;span class="product-price"&gt;</code>).</li>
+              <li>Type a dot followed by that name into the box above: <strong>.product-price</strong></li>
+            </ol>
+            <div style="background: var(--bg-base); padding: 10px; border-radius: 6px; font-family: monospace; border: 1px solid rgba(255,255,255,0.05);">
+              <strong style="color: var(--text-main); font-family: sans-serif; display:block; margin-bottom:6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Quick Cheat Sheet</strong>
+              <span style="color:#00d2ff;">.class-name</span> (Targets specific classes)<br>
+              <span style="color:#00d2ff;">li</span> or <span style="color:#00d2ff;">h2</span> (Targets HTML tags)<br>
+              <span style="color:#00d2ff;">#main-id</span> (Targets exact IDs)
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="btnExtract" class="btn-accent" style="width:100%;">Extract Data</button>
+      <style>
+        .btn-clear-ghost { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+        .btn-clear-ghost:hover { color: #f87171; background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); }
+      </style>
+    </div>
+    
+    <!-- Step 3: Results -->
+    <div class="panel" id="resultsPanel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">3. Preview & Export <span class="badge" id="rowBadge">0 rows</span></h3>
+        <button id="btnExportCsv" class="btn-accent" style="padding:10px 20px;">Export to CSV</button>
+      </div>
+      
+      <div class="table-responsive">
+        <table id="previewTable">
+          <thead id="previewThead"></thead>
+          <tbody id="previewTbody"></tbody>
+        </table>
+      </div>
+      <div class="stats-text" id="extractionStats">Showing preview of first 50 rows.</div>
+    </div>
+    
+  </div>
+</div>
+
+
+  <!-- Educational & Security Architecture Section -->
+  <div class="info-section">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Local DOM Parsing</h3>
+        <p>Safely builds a virtual document object model in your browser, allowing you to scrape code files securely without server-side APIs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>CSS Selector Targeting</h3>
+        <p>Use standard web queries to target precise text elements, lists, or product cards buried deep within raw HTML code.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3>Clean CSV Output</h3>
+        <p>Automatically cleans extracted text, strips out messy HTML tags, and correctly formats the data into a downloadable spreadsheet.</p>
+      </div>
+    </div>
+  
+    <div class="faq-title">Frequently Asked Questions</div>
+  
+    <div class="faq-box">
+      <details>
+        <summary>Can this tool scrape live websites directly via URL?</summary>
+        <p>No. For security and cross-origin (CORS) privacy reasons, browsers block direct scraping of live URLs. To use this tool, simply "View Page Source" on any website, copy the HTML, and paste it here to extract the data.</p>
+      </details>
+    </div>
+    <div class="faq-box">
+      <details>
+        <summary>Do I need to know how to code to use this?</summary>
+        <p>Not at all! If you are trying to extract data from a table, simply select the "Auto-Detect Tables" mode and it will automatically find and convert the HTML tables into a CSV. You only need basic CSS selector knowledge for advanced custom extraction.</p>
+      </details>
+    </div>
+    <div class="faq-box">
+      <details>
+        <summary>Where does the data extraction happen?</summary>
+        <p>Directly inside your browser's local sandbox. The provided source code is never sent to an external server, meaning you can safely extract confidential or proprietary data offline.</p>
+      </details>
+    </div>
+  </div>
+
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const htmlInput = document.getElementById('htmlInput');
+  const btnClear = document.getElementById('btnClear');
+  
+  const extractMode = document.getElementById('extractMode');
+  const selectorGroup = document.getElementById('selectorGroup');
+  const cssSelector = document.getElementById('cssSelector');
+  const btnExtract = document.getElementById('btnExtract');
+  
+  const resultsPanel = document.getElementById('resultsPanel');
+  const previewThead = document.getElementById('previewThead');
+  const previewTbody = document.getElementById('previewTbody');
+  const btnExportCsv = document.getElementById('btnExportCsv');
+  const rowBadge = document.getElementById('rowBadge');
+  
+  let extractedData = [];
+
+  // DOM Events for Input
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if(e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      htmlInput.value = e.target.result;
+      btnClear.style.display = 'block';
+    };
+
+  htmlInput.addEventListener('input', () => {
+    btnClear.style.display = htmlInput.value.trim().length > 0 ? 'block' : 'none';
+  });
+  
+  btnClear.addEventListener('click', () => {
+    htmlInput.value = '';
+    extractedData = [];
+    resultsPanel.style.display = 'none';
+    btnClear.style.display = 'none';
+    fileInput.value = '';
+  });
+    reader.readAsText(file);
+  }
+
+  // Toggle mode
+  extractMode.addEventListener('change', () => {
+    if(extractMode.value === 'selector') {
+      selectorGroup.style.opacity = '1';
+      selectorGroup.style.pointerEvents = 'auto';
+    } else {
+      selectorGroup.style.opacity = '0.5';
+      selectorGroup.style.pointerEvents = 'none';
+    }
+  });
+
+  // Clean text utility
+  function cleanText(str) {
+    if(!str) return "";
+    return str.replace(/\s+/g, ' ').trim();
+  }
+
+  // Extraction Logic
+  btnExtract.addEventListener('click', () => {
+    const rawHtml = htmlInput.value.trim();
+    if(!rawHtml) return alert("Please provide HTML source code.");
+    
+    extractedData = []; // reset
+    
+    // Parse virtually
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, 'text/html');
+    
+    if(extractMode.value === 'tables') {
+      const tables = doc.querySelectorAll('table');
+      if(tables.length === 0) return alert("No HTML tables found in the source code.");
+      
+      // Combine all tables (or just the largest one? Let's grab all rows for now)
+      tables.forEach((table, tIdx) => {
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('th, td');
+          const rowData = [];
+          cells.forEach(cell => {
+            rowData.push(cleanText(cell.textContent));
+          });
+          if(rowData.length > 0) {
+            // Add a meta column identifying the table index if there are multiple
+            if(tables.length > 1) rowData.unshift(`Table ${tIdx + 1}`);
+            extractedData.push(rowData);
+          }
+        });
+      });
+      
+    } else if(extractMode.value === 'selector') {
+      const query = cssSelector.value.trim();
+      if(!query) return alert("Please provide a valid CSS selector.");
+      
+      try {
+        const elements = doc.querySelectorAll(query);
+        if(elements.length === 0) return alert("No elements found matching that selector.");
+        
+        extractedData.push(["Extracted Value"]); // Header
+        elements.forEach(el => {
+          extractedData.push([cleanText(el.textContent)]);
+        });
+      } catch(err) {
+        return alert("Invalid CSS Selector syntax.");
+      }
+    }
+    
+    if(extractedData.length > 0) {
+      renderPreview();
+    }
+  });
+
+  function renderPreview() {
+    resultsPanel.style.display = 'block';
+    rowBadge.textContent = `${extractedData.length} row${extractedData.length !== 1 ? 's' : ''}`;
+    
+    previewThead.innerHTML = '';
+    previewTbody.innerHTML = '';
+    
+    // Render Header (assume first row is header, or at least structure the table columns)
+    // To make it look clean, we'll just treat the first row as the table header 
+    // if we are in 'tables' mode and the source actually had <th>. 
+    // For simplicity, we just use the first row of extractedData.
+    
+    const maxPreviewRows = 50;
+    
+    if(extractedData.length > 0) {
+      const headerRow = document.createElement('tr');
+      extractedData[0].forEach((colText, idx) => {
+        const th = document.createElement('th');
+        th.textContent = colText || `Col ${idx + 1}`;
+        headerRow.appendChild(th);
+      });
+      previewThead.appendChild(headerRow);
+    }
+    
+    // Render Body (up to 50 rows)
+    const previewLimit = Math.min(extractedData.length, maxPreviewRows + 1);
+    for(let i = 1; i < previewLimit; i++) {
+      const tr = document.createElement('tr');
+      // Ensure we fill the right number of columns based on the header
+      const targetCols = extractedData[0].length;
+      
+      for(let j = 0; j < targetCols; j++) {
+        const td = document.createElement('td');
+        td.textContent = extractedData[i][j] || "";
+        tr.appendChild(td);
+      }
+      previewTbody.appendChild(tr);
+    }
+    
+    // Scroll to results
+    resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  btnExportCsv.addEventListener('click', () => {
+    if(extractedData.length === 0) return;
+    const csvContent = Papa.unparse(extractedData);
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "extracted_data.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>

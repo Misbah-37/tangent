@@ -297,5 +297,57 @@
         "changefreq": "weekly",
         "title": "Log Analyzer",
         "priority": 0.9
+    },
+    {
+        "id": "finance-dashboard",
+        "filename": "finance-dashboard.html",
+        "title": "Finance Dashboard",
+        "sidebarDesc": "Bank CSV visualizer",
+        "category": "Data & Analytics",
+        "cardTitle": "Private Finance Dashboard",
+        "cardDesc": "Visualize bank statements locally. Generate spending charts with zero cloud uploads or linked accounts.",
+        "priority": 0.9,
+        "changefreq": "weekly",
+        "gridOrder": 6,
+        "iconSvg": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><path d=\"M12 14h.01\"></path>"
+    },
+    {
+        "id": "bulk-watermarker",
+        "filename": "bulk-watermarker.html",
+        "title": "Bulk Watermarker",
+        "sidebarDesc": "Batch image copyright stamper",
+        "category": "Media & Video",
+        "cardTitle": "Bulk Image Watermarker",
+        "cardDesc": "Watermark hundreds of images instantly. Add copyright text offline with zero cloud uploads or file size limits.",
+        "priority": 0.9,
+        "changefreq": "weekly",
+        "gridOrder": 7,
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><path d=\"M20.4 14.5L16 10 4 20\"></path>"
+    },
+    {
+        "id": "color-palette",
+        "filename": "color-palette.html",
+        "title": "Color Palette Generator",
+        "sidebarDesc": "Extract color palettes from images",
+        "category": "Media & Video",
+        "cardTitle": "Color Palette Generator",
+        "cardDesc": "Extract beautiful, cohesive color palettes from any image. Instantly generate CSS design tokens offline.",
+        "priority": 0.9,
+        "changefreq": "weekly",
+        "gridOrder": 8,
+        "iconSvg": "<path d=\"M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z\"></path>"
+    },
+    {
+        "id": "data-extractor",
+        "filename": "data-extractor.html",
+        "title": "Data Extractor",
+        "sidebarDesc": "Local HTML scraper to CSV",
+        "category": "Data & Analytics",
+        "cardTitle": "HTML Data Extractor",
+        "cardDesc": "Extract tables, lists, and raw data from HTML files locally using CSS selectors. Instantly export to clean CSVs without cloud APIs.",
+        "priority": 0.9,
+        "changefreq": "weekly",
+        "gridOrder": 9,
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line>"
     }
 ]

@@ -278,6 +278,31 @@ def build_all():
             
         hm, ts, ct, sc = parse_fragment_file(t_frag)
         
+        # Inject JSON-LD Structured Data for this tool
+        title = tool.get("title", "").replace('"', '\"')
+        desc = tool.get("cardDesc", "").replace('"', '\"')
+        cat = tool.get("category", "Utilities").replace(" ", "") + "Application"
+        ld_json = f'''
+<!-- Structured Data for {title} -->
+<script type="application/ld+json">
+{{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "{title} | Tangent",
+  "description": "{desc}",
+  "applicationCategory": "{cat}",
+  "operatingSystem": "All",
+  "url": "https://misbah-37.github.io/tangent/{fname}",
+  "offers": {{
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  }}
+}}
+</script>
+'''
+        hm = hm + ld_json
+        
         t_compiled = shell_template
         t_compiled = t_compiled.replace("<!-- INJECT_HEAD_META -->", hm)
         t_compiled = t_compiled.replace("/* INJECT_TOOL_STYLES */", ts)

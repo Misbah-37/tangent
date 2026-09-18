@@ -259,7 +259,7 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .sidebar-group-title::after {
-  content: "▼";
+  content: "\25BC";
   font-size: 0.5rem;
   transition: transform 0.2s ease;
   opacity: 0.5;

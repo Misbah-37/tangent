@@ -78,7 +78,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=6">
+<link rel="stylesheet" href="assets/tangent.css?v=7">
 <style>
 :root {
     --bg-page: #08090d;
@@ -802,13 +802,63 @@
     }
   }
 
-    @media (max-width: 500px) {
-      .app-container { padding: 0 12px; }
+    
       .tool-panel { padding: 16px; }
       .color-controls { grid-template-columns: 1fr; gap: 12px; }
       .canvas-wrapper { padding: 12px; max-width: 100%; width: 100%; box-sizing: border-box; }
       .canvas-wrapper canvas { max-width: 100%; height: auto; }
       .split-layout { gap: 20px; }
+    }
+  
+    @media (max-width: 768px) {
+      .app-container { 
+        padding: 0 12px !important; 
+        width: 100%; 
+        box-sizing: border-box;
+      }
+      .tool-panel { 
+        padding: 16px !important; 
+        width: 100%; 
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .split-layout { 
+        grid-template-columns: 1fr !important;
+        gap: 20px !important; 
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .mode-selector { 
+        width: 100%; 
+        min-width: 0; 
+        box-sizing: border-box; 
+        flex-wrap: nowrap;
+      }
+      .color-controls { 
+        grid-template-columns: 1fr !important; 
+        gap: 12px; 
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .canvas-wrapper { 
+        padding: 12px !important; 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        box-sizing: border-box !important; 
+      }
+      .canvas-wrapper canvas { 
+        max-width: 100% !important; 
+        height: auto !important; 
+      }
+      .input-group, .input-section, .output-section, .export-group {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .clean-header p {
+        padding: 0 12px;
+      }
     }
 </style>
 
@@ -1243,9 +1293,9 @@
         <div class="input-group">
           <label for="sizeSelect">Resolution</label>
           <select id="sizeSelect" onchange="generateQR()">
-            <option value="300">Standard (300 Ã— 300 px)</option>
-            <option value="600">High-Res Print (600 Ã— 600 px)</option>
-            <option value="1200">Ultra HD (1200 Ã— 1200 px)</option>
+            <option value="300">Standard (300 x 300 px)</option>
+            <option value="600">High-Res Print (600 x 600 px)</option>
+            <option value="1200">Ultra HD (1200 x 1200 px)</option>
           </select>
         </div>
 
@@ -1460,3 +1510,4 @@
 
 </body>
 </html>
+

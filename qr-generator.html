@@ -806,7 +806,7 @@
       .tool-panel { padding: 16px; }
       .color-controls { grid-template-columns: 1fr; gap: 12px; }
       .canvas-wrapper { padding: 12px; max-width: 100%; width: 100%; box-sizing: border-box; }
-      .canvas-wrapper canvas { max-width: 100%; height: auto; }
+      .canvas-wrapper canvas { max-width: 100% !important; width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; display: inline-block !important; box-sizing: border-box !important; object-fit: contain !important; }
       .split-layout { gap: 20px; }
     }
   
@@ -882,13 +882,7 @@
         display: block !important;
         text-align: center;
       }
-      .canvas-wrapper canvas {
-        max-width: 100% !important;
-        height: auto !important;
-        width: 100% !important;
-        display: inline-block !important;
-        box-sizing: border-box !important;
-      }
+      .canvas-wrapper canvas { max-width: 100% !important; width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; display: inline-block !important; box-sizing: border-box !important; object-fit: contain !important; }
       .palette-chips {
         flex-wrap: wrap !important;
       }

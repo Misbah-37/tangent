@@ -104,9 +104,14 @@
             <button class="btn btn-demo" id="btnRestore" style="flex: 1; padding: 8px;">Restore</button>
           </div>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <label style="font-size: 12px; color: var(--text-secondary);">Size:</label>
+            <label style="font-size: 12px; color: var(--text-secondary); min-width: 55px;">Size:</label>
             <input type="range" id="brushSize" min="5" max="150" value="30" style="flex: 1;">
-            <span id="brushSizeLabel" style="font-size: 12px; min-width: 30px;">30px</span>
+            <span id="brushSizeLabel" style="font-size: 12px; min-width: 35px; text-align: right;">30px</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; color: var(--text-secondary); min-width: 55px;">Hardness:</label>
+            <input type="range" id="brushHardness" min="0" max="100" value="100" style="flex: 1;">
+            <span id="brushHardnessLabel" style="font-size: 12px; min-width: 35px; text-align: right;">100%</span>
           </div>
           <button class="btn btn-demo" id="btnResetMask" style="padding: 8px;">Reset AI Mask</button>
         </div>
@@ -167,6 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRestore = document.getElementById('btnRestore');
   const brushSizeInput = document.getElementById('brushSize');
   const brushSizeLabel = document.getElementById('brushSizeLabel');
+  const brushHardnessInput = document.getElementById('brushHardness');
+  const brushHardnessLabel = document.getElementById('brushHardnessLabel');
   const btnResetMask = document.getElementById('btnResetMask');
   
   let originalImg = null;
@@ -176,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let currentMode = 'erase';
   let brushSize = 30;
+  let brushHardness = 100;
   let isDrawing = false;
   let lastPos = null;
 
@@ -192,6 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
   brushSizeInput.addEventListener('input', (e) => {
     brushSize = parseInt(e.target.value);
     brushSizeLabel.textContent = brushSize + 'px';
+  });
+  brushHardnessInput.addEventListener('input', (e) => {
+    brushHardness = parseInt(e.target.value);
+    brushHardnessLabel.textContent = brushHardness + '%';
   });
   btnResetMask.addEventListener('click', () => {
     if (maskCtx && aiMaskImageData) {
@@ -232,6 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     maskCtx.beginPath();
     maskCtx.moveTo(start.x, start.y);
     maskCtx.lineTo(end.x, end.y);
+    
+    // Apply feathering based on hardness
+    const blurAmount = (1 - (brushHardness / 100)) * (brushSize / 2);
+    maskCtx.filter = blurAmount > 0 ? `blur(${blurAmount}px)` : 'none';
+    
     maskCtx.lineWidth = brushSize;
     maskCtx.lineCap = 'round';
     maskCtx.lineJoin = 'round';
@@ -243,6 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
       maskCtx.strokeStyle = 'rgba(0,0,0,1)';
     }
     maskCtx.stroke();
+    
+    // Reset filter so it doesn't affect subsequent non-brush renders
+    maskCtx.filter = 'none';
+    
     renderComposite();
   }
 

@@ -800,6 +800,15 @@
       scroll-behavior: auto !important;
     }
   }
+
+    @media (max-width: 500px) {
+      .app-container { padding: 0 12px; }
+      .tool-panel { padding: 16px; }
+      .color-controls { grid-template-columns: 1fr; gap: 12px; }
+      .canvas-wrapper { padding: 12px; max-width: 100%; width: 100%; box-sizing: border-box; }
+      .canvas-wrapper canvas { max-width: 100%; height: auto; }
+      .split-layout { gap: 20px; }
+    }
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -1233,9 +1242,9 @@
         <div class="input-group">
           <label for="sizeSelect">Resolution</label>
           <select id="sizeSelect" onchange="generateQR()">
-            <option value="300">Standard (300 × 300 px)</option>
-            <option value="600">High-Res Print (600 × 600 px)</option>
-            <option value="1200">Ultra HD (1200 × 1200 px)</option>
+            <option value="300">Standard (300 Ã— 300 px)</option>
+            <option value="600">High-Res Print (600 Ã— 600 px)</option>
+            <option value="1200">Ultra HD (1200 Ã— 1200 px)</option>
           </select>
         </div>
 

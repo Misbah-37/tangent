@@ -77,7 +77,7 @@ def generate_sidebar_html(tools, current_page):
         for item in categories[cat]:
             is_active = (item["filename"] == current_page)
             active_class = " active" if is_active else ""
-            lines.append(f'      <a href="{item["filename"]}" class="sidebar-item{active_class}">')
+            lines.append(f'      <a href="{item["filename"].replace(".html", "")}" class="sidebar-item{active_class}">')
             lines.append(f'        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2">{item["iconSvg"]}</svg>')
             lines.append('        <div class="item-text">')
             lines.append(f'          <div class="item-title">{item["title"]}</div>')
@@ -203,7 +203,7 @@ def generate_sitemap_xml(tools):
         lines.append(f'  <!-- {cat} -->')
         for t in categories[cat]:
             lines.append('  <url>')
-            lines.append(f'    <loc>https://runtangent.com/{t["filename"]}</loc>')
+            lines.append(f'    <loc>https://runtangent.com/{t["filename"].replace(".html", "")}</loc>')
             lines.append(f'    <lastmod>{today}</lastmod>')
             lines.append(f'    <changefreq>{t.get("changefreq", "weekly")}</changefreq>')
             lines.append(f'    <priority>{t.get("priority", 0.9):.1f}</priority>')

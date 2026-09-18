@@ -10,25 +10,25 @@
 
   <!-- Documents & PDF -->
   <url>
-    <loc>https://runtangent.com/pdf-redactor.html</loc>
+    <loc>https://runtangent.com/pdf-redactor</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/pdf-converter.html</loc>
+    <loc>https://runtangent.com/pdf-converter</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/document-ocr.html</loc>
+    <loc>https://runtangent.com/document-ocr</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/markdown-studio.html</loc>
+    <loc>https://runtangent.com/markdown-studio</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -36,49 +36,49 @@
 
   <!-- Media & Video -->
   <url>
-    <loc>https://runtangent.com/screen-recorder.html</loc>
+    <loc>https://runtangent.com/screen-recorder</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/mockup-generator.html</loc>
+    <loc>https://runtangent.com/mockup-generator</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/code-to-image.html</loc>
+    <loc>https://runtangent.com/code-to-image</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/svg-optimizer.html</loc>
+    <loc>https://runtangent.com/svg-optimizer</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/photo-resizer.html</loc>
+    <loc>https://runtangent.com/photo-resizer</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/photo-scrubber.html</loc>
+    <loc>https://runtangent.com/photo-scrubber</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/bulk-watermarker.html</loc>
+    <loc>https://runtangent.com/bulk-watermarker</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/color-palette.html</loc>
+    <loc>https://runtangent.com/color-palette</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -86,25 +86,25 @@
 
   <!-- Security & System -->
   <url>
-    <loc>https://runtangent.com/document-signer.html</loc>
+    <loc>https://runtangent.com/document-signer</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/file-vault.html</loc>
+    <loc>https://runtangent.com/file-vault</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/password-meter.html</loc>
+    <loc>https://runtangent.com/password-meter</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/file-organizer.html</loc>
+    <loc>https://runtangent.com/file-organizer</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -112,43 +112,43 @@
 
   <!-- Data & Analytics -->
   <url>
-    <loc>https://runtangent.com/csv-insights.html</loc>
+    <loc>https://runtangent.com/csv-insights</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/sql-studio.html</loc>
+    <loc>https://runtangent.com/sql-studio</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/data-hygiene.html</loc>
+    <loc>https://runtangent.com/data-hygiene</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/correlation-matrix.html</loc>
+    <loc>https://runtangent.com/correlation-matrix</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/log-analyzer.html</loc>
+    <loc>https://runtangent.com/log-analyzer</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/finance-dashboard.html</loc>
+    <loc>https://runtangent.com/finance-dashboard</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/data-extractor.html</loc>
+    <loc>https://runtangent.com/data-extractor</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -156,25 +156,25 @@
 
   <!-- Utilities -->
   <url>
-    <loc>https://runtangent.com/qr-generator.html</loc>
+    <loc>https://runtangent.com/qr-generator</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/typing-test.html</loc>
+    <loc>https://runtangent.com/typing-test</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/resume-builder.html</loc>
+    <loc>https://runtangent.com/resume-builder</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://runtangent.com/invoice-generator.html</loc>
+    <loc>https://runtangent.com/invoice-generator</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

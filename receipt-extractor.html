@@ -4,7 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Smart Receipt Extractor | Tangent</title>
+<link rel="canonical" href="https://runtangent.com/receipt-extractor">
+<meta name="description" content="Extract totals, dates, and line items from receipts and invoices securely in your browser. Powered by local OCR.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="Smart Receipt Extractor | Tangent">
+<meta property="og:description" content="Extract totals, dates, and line items from receipts and invoices securely in your browser. Powered by local OCR.">
 
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are my receipts uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. We utilize an Apache 2.0 licensed WebAssembly OCR engine that processes your financial documents entirely in your local RAM."
+      }
+    }
+  ]
+}
+</script>
 <!-- Structured Data for Receipt Scanner -->
 <script type="application/ld+json">
 {
@@ -31,7 +55,144 @@
 
 <link rel="stylesheet" href="assets/tangent.css?v=8">
 <style>
+.app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
+  
+  .clean-header { text-align: center; margin-bottom: 40px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  
+  .split-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+  @media (max-width: 900px) {
+    .split-layout { grid-template-columns: 1fr; }
+  }
+  
+  .editor-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
 
+  /* Standard Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .btn-primary {
+    background: #00d2ff;
+    color: #11141d;
+    padding: 14px 28px;
+    box-shadow: 0 4px 14px rgba(0, 210, 255, 0.25);
+  }
+  .btn-primary:hover {
+    background: #33dcff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 210, 255, 0.35);
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    padding: 10px 18px;
+    border: 1px solid var(--border-color);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .btn-demo {
+    background: transparent;
+    color: #94a3b8;
+    padding: 12px 24px;
+    border: 1px solid #1f2533;
+  }
+  .btn-demo:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+  }
+
+  /* Progress Bar */
+  .progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+    display: none;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #00d2ff;
+    transition: width 0.2s ease;
+  }
+
+  /* Extraction Results UI */
+  .extracted-data {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+  }
+  .data-field {
+    background: #0d1017;
+    border: 1px solid #1f2533;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .data-field label {
+    display: block;
+    font-size: 12px;
+    color: #00d2ff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .data-field .value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  .data-field textarea {
+    width: 100%;
+    height: 180px;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    box-sizing: border-box;
+  }
+  .data-field textarea:focus { outline: none; }
+
+  /* Info Section */
+  .info-section { margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 50px; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px; }
+  .feature-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; }
+  .feature-icon { margin-bottom: 16px; color: #00d2ff; display: inline-flex; }
+  .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
+  .feature-card p { color: var(--text-secondary); line-height: 1.6; margin: 0; }
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -198,14 +359,14 @@
         </div>
       </a>
       <a href="heic-converter" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="m21 15-5-5L5 21" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
         <div class="item-text">
           <div class="item-title">HEIC Converter</div>
           <div class="item-desc">Apple photos to JPG</div>
         </div>
       </a>
       <a href="audio-transcriber" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
         <div class="item-text">
           <div class="item-title">Audio Transcriber</div>
           <div class="item-desc">Local Whisper AI minutes</div>
@@ -303,7 +464,7 @@
         </div>
       </a>
       <a href="receipt-extractor" class="sidebar-item active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10h8M8 14h8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
         <div class="item-text">
           <div class="item-title">Receipt Scanner</div>
           <div class="item-desc">Extract expenses to CSV</div>
@@ -356,7 +517,134 @@
 <!-- Push-Canvas Wrapper -->
 <div class="app-canvas" id="appCanvas">
 
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>100% LOCAL AI PROCESSING</span>
+  </div>
+  <h1>Smart Receipt Extractor</h1>
+  <p>Digitize receipts, extract totals, and parse dates instantly. Your financial documents are scanned locally via Apache 2.0 Optical Character Recognition (OCR).</p>
+</div>
 
+<div class="split-layout">
+  <!-- Left Panel: Upload -->
+  <div class="editor-panel">
+    <div class="panel-section">
+      <h3>Select Receipt Image</h3>
+      <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop Receipt Here</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Supports PDF, JPG, PNG</div>
+        <input type="file" id="fileInput" accept="image/*, application/pdf" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="panel-section" id="previewSection" style="display: none;">
+      <img id="receiptPreview" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); max-height: 200px; object-fit: cover;" />
+    </div>
+
+    <!-- Status & Progress -->
+    <div class="panel-section" id="statusSection" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span id="statusText" style="font-size: 13px; font-weight: 500; color: #00d2ff;">Initializing Engine...</span>
+        <span id="statusPercent" style="font-size: 12px; color: var(--text-secondary);">0%</span>
+      </div>
+      <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Output -->
+  <div class="preview-panel" style="border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; background: var(--bg-card); position: relative; overflow: hidden; min-height: 450px;">
+    
+    <!-- Empty State -->
+    <div id="emptyState" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px; opacity: 0.5;">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      Extracted data will appear here.
+    </div>
+
+    <!-- Consent State (Hidden by default) -->
+    <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+      <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">Local OCR Engine Required</h3>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To scan receipts without uploading them to the cloud, your browser needs to download the Tesseract Optical Character Recognition engine (~25MB). It will be cached for future offline use.</p>
+      <button class="btn btn-primary" id="btnConsentDownload">Download & Scan Receipt</button>
+      <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
+    </div>
+
+    <!-- Active Extracted State -->
+    <div id="activeState" style="display: none; flex: 1; flex-direction: column;">
+      <div class="extracted-data">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="data-field">
+            <label>Detected Total</label>
+            <div class="value" id="outTotal">--</div>
+          </div>
+          <div class="data-field">
+            <label>Detected Date</label>
+            <div class="value" id="outDate">--</div>
+          </div>
+        </div>
+        
+        <div class="data-field" style="flex: 1; display: flex; flex-direction: column;">
+          <label>Raw Extracted Text</label>
+          <textarea id="outRawText" readonly></textarea>
+        </div>
+      </div>
+      <div style="padding: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: #0b0d13;">
+        <button class="btn btn-secondary" id="btnCopyJSON">Copy as JSON</button>
+        <button class="btn btn-secondary" id="btnCopyText">Copy Text</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h3>Confidential Expense Tracking</h3>
+      <p>Financial documents contain highly sensitive merchant data and personal locations. By running OCR on your local machine, zero data leaves your network.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+      <h3>Smart Regex Parsing</h3>
+      <p>After extracting the raw text, the tool utilizes advanced Regular Expressions to automatically locate and isolate the most likely purchase dates and total amounts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+      </div>
+      <h3>Apache 2.0 Tesseract Engine</h3>
+      <p>Powered by Tesseract.js, a WebAssembly port of the industry-standard OCR engine. It is legally clear for commercial use and highly optimized for printed receipts.</p>
+    </div>
+  </div>
+
+  <div class="faq-title">Frequently Asked Questions</div>
+  <div class="faq-box">
+    <details>
+      <summary>Are my receipts uploaded to a server?</summary>
+      <p>No. We utilize an Apache 2.0 licensed WebAssembly OCR engine that processes your financial documents entirely in your local RAM. No servers or APIs are involved.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can it read handwritten tips on restaurant receipts?</summary>
+      <p>The Tesseract OCR engine is highly optimized for printed typography (like thermal receipt printers). It may struggle to accurately identify messy handwritten tip amounts and signatures.</p>
+    </details>
+  </div>
+</div>
 
   <!-- Standard Global Footer -->
   <footer class="global-footer">
@@ -374,7 +662,226 @@
 <!-- Global Shell Script -->
 <script src="assets/tangent.js?v=1"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const emptyState = document.getElementById('emptyState');
+  const consentState = document.getElementById('consentState');
+  const activeState = document.getElementById('activeState');
+  
+  const statusSection = document.getElementById('statusSection');
+  const statusText = document.getElementById('statusText');
+  const statusPercent = document.getElementById('statusPercent');
+  const progressBarContainer = document.getElementById('progressBarContainer');
+  const progressBarFill = document.getElementById('progressBarFill');
+  
+  const receiptPreview = document.getElementById('receiptPreview');
+  const previewSection = document.getElementById('previewSection');
+  
+  const btnConsentDownload = document.getElementById('btnConsentDownload');
+  const btnConsentCancel = document.getElementById('btnConsentCancel');
+  
+  const outTotal = document.getElementById('outTotal');
+  const outDate = document.getElementById('outDate');
+  const outRawText = document.getElementById('outRawText');
+  
+  const btnCopyJSON = document.getElementById('btnCopyJSON');
+  const btnCopyText = document.getElementById('btnCopyText');
+  
+  let pendingFile = null;
+  let parsedData = {};
 
+  // Drag & Drop
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+  });
+
+  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
+  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
+  
+  dropZone.addEventListener('drop', (e) => {
+    dropZone.style.borderColor = 'var(--border-color)';
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+    if (files.length > 0) handleFileSelect(files[0]);
+  });
+  
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+    fileInput.value = '';
+  });
+
+  async function handleFileSelect(file) {
+    const isCached = localStorage.getItem('tangent_ocr_model_cached');
+    
+    // We will handle preview inside processReceipt now to accommodate PDF rendering
+    if (isCached === 'true') {
+      processReceipt(file);
+    } else {
+      pendingFile = file;
+      emptyState.style.display = 'none';
+      activeState.style.display = 'none';
+      consentState.style.display = 'flex';
+    }
+  }
+
+  btnConsentDownload.addEventListener('click', () => {
+    localStorage.setItem('tangent_ocr_model_cached', 'true');
+    consentState.style.display = 'none';
+    if (pendingFile) processReceipt(pendingFile);
+  });
+
+  btnConsentCancel.addEventListener('click', () => {
+    consentState.style.display = 'none';
+    emptyState.style.display = 'flex';
+    previewSection.style.display = 'none';
+    pendingFile = null;
+  });
+
+  async function processReceipt(file) {
+    emptyState.style.display = 'none';
+    consentState.style.display = 'none';
+    activeState.style.display = 'flex';
+    
+    outTotal.textContent = '--';
+    outDate.textContent = '--';
+    outRawText.value = '';
+    
+    statusSection.style.display = 'block';
+    progressBarContainer.style.display = 'block';
+    statusText.textContent = 'Preparing File...';
+    statusText.style.color = '#00d2ff';
+    statusPercent.textContent = '0%';
+    progressBarFill.style.width = '0%';
+
+    try {
+      let imageToProcess = file;
+      
+      // If PDF, rasterize the first page to a canvas using pdf.js
+      if (file.type === 'application/pdf') {
+        statusText.textContent = 'Rendering PDF...';
+        const pdfjsObj = window.pdfjsLib;
+        pdfjsObj.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsObj.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1); // Extract first page only
+        
+        // Scale 3.0 for >200 DPI (Tesseract requires high DPI for accurate numbers)
+        const viewport = page.getViewport({ scale: 3.0 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        imageToProcess = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      }
+      
+      // Show Preview
+      const previewUrl = URL.createObjectURL(imageToProcess);
+      receiptPreview.src = previewUrl;
+      previewSection.style.display = 'block';
+
+      const worker = await Tesseract.createWorker('eng', 1, {
+        logger: m => {
+          if (m.status === 'loading tesseract core' || m.status === 'initializing api' || m.status === 'recognizing text') {
+             statusText.textContent = m.status === 'recognizing text' ? 'Scanning Document...' : 'Loading OCR Engine...';
+             const percentage = Math.round(m.progress * 100);
+             statusPercent.textContent = `${percentage}%`;
+             progressBarFill.style.width = `${percentage}%`;
+          }
+        }
+      });
+      
+      const ret = await worker.recognize(imageToProcess);
+      await worker.terminate();
+      
+      const rawText = ret.data.text;
+      outRawText.value = rawText;
+      
+      // 1. Bulletproof Amount Detection (Finds the Maximum Currency Value on the Receipt)
+      // Uses unicode escapes to prevent Windows PowerShell encoding corruption (\u20B9 is Rupee, \u20AC is Euro, \u00A3 is Pound, \u00A5 is Yen)
+      const allAmounts = [...rawText.matchAll(/(?:[\$\u00A3\u20AC\u00A5\u20B9]|rs\.?|inr)?\s*(\d{1,7}[\.,]\s*\d{2})(?!\d)/gi)];
+      let maxAmt = 0;
+      let matchedCurrency = "";
+      
+      allAmounts.forEach(m => {
+          const val = parseFloat(m[1].replace(',', '.').replace(/\s+/g, ''));
+          if (val > maxAmt) {
+              maxAmt = val;
+              matchedCurrency = m[0].replace(/[\d\.,\s]/g, ''); 
+          }
+      });
+      
+      let finalAmount = "Not Found";
+      if (maxAmt > 0) {
+          if (!matchedCurrency && rawText.includes('\u20B9')) matchedCurrency = '\u20B9';
+          else if (!matchedCurrency && rawText.includes('$')) matchedCurrency = '$';
+          else if (!matchedCurrency && rawText.includes('\u20AC')) matchedCurrency = '\u20AC';
+          else if (!matchedCurrency && rawText.includes('\u00A3')) matchedCurrency = '\u00A3';
+          finalAmount = `${matchedCurrency}${maxAmt.toFixed(2)}`;
+      }
+
+      // 2. Bulletproof Date Detection (Removed word boundaries that get corrupted by OCR noise)
+      const numDateRegex = /\d{1,2}\s*[\/\-\.]\s*\d{1,2}\s*[\/\-\.]\s*\d{2,4}/;
+      const textDateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:st|nd|rd|th)?\,?\s+\d{4}/i;
+      
+      const numDateMatch = rawText.match(numDateRegex);
+      const textDateMatch = rawText.match(textDateRegex);
+      
+      let finalDate = "Not Found";
+      if (numDateMatch) {
+          finalDate = numDateMatch[0].replace(/\s+/g, ''); // Clean up any OCR spaces
+      } else if (textDateMatch) {
+          finalDate = textDateMatch[0];
+      }
+      
+      parsedData = {
+        total: finalAmount,
+        date: finalDate,
+        text: rawText
+      };
+      
+      outTotal.textContent = parsedData.total;
+      outDate.textContent = parsedData.date;
+      
+      statusText.textContent = 'Extraction Complete!';
+      statusText.style.color = '#00ffcc';
+      progressBarContainer.style.display = 'none';
+      statusPercent.textContent = '';
+      
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = 'Error: ' + String(err);
+      statusText.style.color = '#ff4444';
+      progressBarContainer.style.display = 'none';
+    }
+  }
+
+  // Copy Actions
+  btnCopyJSON.addEventListener('click', () => {
+    if (parsedData.text) {
+      navigator.clipboard.writeText(JSON.stringify(parsedData, null, 2));
+      const originalText = btnCopyJSON.textContent;
+      btnCopyJSON.textContent = 'Copied!';
+      setTimeout(() => btnCopyJSON.textContent = originalText, 2000);
+    }
+  });
+
+  btnCopyText.addEventListener('click', () => {
+    if (parsedData.text) {
+      navigator.clipboard.writeText(parsedData.text);
+      const originalText = btnCopyText.textContent;
+      btnCopyText.textContent = 'Copied!';
+      setTimeout(() => btnCopyText.textContent = originalText, 2000);
+    }
+  });
+});
+</script>
 
 </body>
 </html>

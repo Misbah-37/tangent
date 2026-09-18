@@ -1,12 +1,11 @@
 <!-- --- HEAD_META --- -->
 <title>AI Background Remover | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/background-remover">
-<meta name="description" content="Remove backgrounds from images locally using advanced AI running entirely in your browser.">
+<meta name="description" content="Remove backgrounds from photos locally using an Apache 2.0 WebAssembly model.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="AI Background Remover | Tangent">
-<meta property="og:description" content="Remove backgrounds from images locally using advanced AI running entirely in your browser.">
-<meta property="og:image" content="https://runtangent.com/social-banner.png">
+<meta property="og:description" content="Remove backgrounds from photos locally using an Apache 2.0 WebAssembly model.">
 
 <!-- Schema.org FAQ Structured Data -->
 <script type="application/ld+json">
@@ -16,36 +15,309 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How does the AI work without a server?",
+      "name": "Are my photos uploaded to a server?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Tangent utilizes WebAssembly and Transformers.js to execute a lightweight AI segmentation model directly on your local CPU or GPU. While the browser downloads the 40MB model cache once, your actual images never leave your machine."
-      }
-    },{
-      "@type": "Question",
-      "name": "Is there a resolution limit?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Because it runs locally, the only limit is your device's memory. Tangent does not artificially restrict resolution or charge you for HD downloads like cloud-based competitors."
+        "text": "No. The AI background removal model runs locally in your browser memory."
       }
     }
   ]
 }
 </script>
 
+<!-- --- TOOL_STYLES --- -->
+<style>
+  .app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
+  .clean-header { text-align: center; margin-bottom: 40px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  .split-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; margin-bottom: 60px; }
+  @media (max-width: 900px) { .split-layout { grid-template-columns: 1fr; } }
+  .editor-panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+  .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+  
+  .btn { display: inline-flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; border: none; }
+  .btn-primary { background: #00d2ff; color: #11141d; padding: 14px 28px; box-shadow: 0 4px 14px rgba(0, 210, 255, 0.25); }
+  .btn-primary:hover { background: #33dcff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 210, 255, 0.35); }
+  .btn-demo { background: transparent; color: #94a3b8; padding: 12px 24px; border: 1px solid #1f2533; }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
+
+  .progress-bar-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 8px; display: none; }
+  .progress-bar-fill { height: 100%; width: 0%; background: #00d2ff; transition: width 0.2s ease; }
+
+  .info-section { margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 50px; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px; }
+  .feature-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; }
+  .feature-icon { margin-bottom: 16px; color: #00d2ff; display: inline-flex; }
+  .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
+  .feature-card p { color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  
+  .transparent-bg {
+    background-image: linear-gradient(45deg, #11141d 25%, transparent 25%), linear-gradient(-45deg, #11141d 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #11141d 75%), linear-gradient(-45deg, transparent 75%, #11141d 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #0b0d13;
+  }
+</style>
+
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    <span>100% LOCAL AI COMPUTATION</span>
+    <span>100% LOCAL AI PROCESSING</span>
   </div>
-  <h1>Instant Background Remover</h1>
-  <p>Drop high-resolution images to instantly remove the background. The AI model runs purely in your device's memory—zero server uploads.</p>
+  <h1>AI Background Remover</h1>
+  <p>Instantly strip the background from any photo using a local AI vision model. Zero cloud uploads. Total privacy.</p>
 </div>
 
-<div class="app-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card);">
-  <!-- Tool specific UI goes here -->
-  <p style="color: var(--text-secondary);">Tool interface coming soon...</p>
+<div class="split-layout">
+  <div class="editor-panel">
+    <div class="panel-section">
+      <h3>Select Image</h3>
+      <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop Image Here</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Supports JPG, PNG, WebP</div>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+      </div>
+      <p style="font-size: 11px; color: var(--text-secondary); margin-top: 12px; line-height: 1.4;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        On first run, the local AI model (~17MB) will be downloaded to your browser cache.
+      </p>
+    </div>
+    
+    <div class="panel-section" id="statusSection" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span id="statusText" style="font-size: 13px; font-weight: 500; color: #00d2ff;">Initializing AI Model...</span>
+        <span id="statusPercent" style="font-size: 12px; color: var(--text-secondary);">0%</span>
+      </div>
+      <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+    
+    <div class="panel-section" id="actionSection" style="display: none;">
+      <button class="btn btn-primary" id="btnDownload" style="width: 100%;">Download Transparent PNG</button>
+    </div>
+  </div>
+
+  <div class="preview-panel transparent-bg" style="border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 450px;">
+    
+    <div id="emptyState" style="color: var(--text-secondary); text-align: center;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <div>Your image will appear here.</div>
+    </div>
+    
+    <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">One-Time Model Download</h3>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To remove backgrounds locally, your browser needs to download a 17MB AI vision model. It will be cached for instant offline use in the future.</p>
+      <button class="btn btn-primary" id="btnConsentDownload">Download & Process Image</button>
+      <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
+    </div>
+    
+    <img id="resultImage" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;" />
+  </div>
 </div>
 
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+      <h3>Zero-Upload Privacy</h3>
+      <p>Your photos contain highly sensitive personal information. Tangent runs the background removal algorithm locally in your browser memory.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+      <h3>Apache 2.0 Engine</h3>
+      <p>Powered by Xenova/modnet via Transformers.js. No toxic AGPL or GPL dependencies. 100% cleared for commercial use.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
+      <h3>Instant Caching</h3>
+      <p>After the initial 17MB model download, the tool caches the weights directly in your browser. All future background removals happen instantly offline.</p>
+    </div>
+  </div>
+</div>
 
+<!-- --- SCRIPTS --- -->
+<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const emptyState = document.getElementById('emptyState');
+  const resultImage = document.getElementById('resultImage');
+  
+  const statusSection = document.getElementById('statusSection');
+  const statusText = document.getElementById('statusText');
+  const statusPercent = document.getElementById('statusPercent');
+  const progressBarContainer = document.getElementById('progressBarContainer');
+  const progressBarFill = document.getElementById('progressBarFill');
+  
+  const actionSection = document.getElementById('actionSection');
+  const btnDownload = document.getElementById('btnDownload');
+  
+  let processedBlobUrl = null;
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+  });
+
+  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
+  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
+  
+  dropZone.addEventListener('drop', (e) => {
+    dropZone.style.borderColor = 'var(--border-color)';
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (files.length > 0) processImage(files[0]);
+  });
+  
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) processImage(e.target.files[0]);
+    fileInput.value = '';
+  });
+
+  let pendingFile = null;
+  const consentState = document.getElementById('consentState');
+  const btnConsentDownload = document.getElementById('btnConsentDownload');
+  const btnConsentCancel = document.getElementById('btnConsentCancel');
+
+  btnConsentDownload.addEventListener('click', () => {
+    localStorage.setItem('tangent_bg_model_cached', 'true');
+    consentState.style.display = 'none';
+    if (pendingFile) runTransformers(pendingFile);
+  });
+
+  btnConsentCancel.addEventListener('click', () => {
+    consentState.style.display = 'none';
+    emptyState.style.display = 'flex';
+    pendingFile = null;
+  });
+
+  function processImage(file) {
+    const isCached = localStorage.getItem('tangent_bg_model_cached');
+    if (isCached === 'true') {
+      runTransformers(file);
+    } else {
+      pendingFile = file;
+      emptyState.style.display = 'none';
+      consentState.style.display = 'flex';
+    }
+  }
+
+  async function runTransformers(file) {
+    emptyState.style.display = 'none';
+    consentState.style.display = 'none';
+    resultImage.style.display = 'none';
+    actionSection.style.display = 'none';
+    
+    statusSection.style.display = 'block';
+    progressBarContainer.style.display = 'block';
+    statusText.textContent = 'Initializing AI Model...';
+    statusText.style.color = '#00d2ff';
+    statusPercent.textContent = '0%';
+    progressBarFill.style.width = '0%';
+    
+    if (processedBlobUrl) {
+      URL.revokeObjectURL(processedBlobUrl);
+      processedBlobUrl = null;
+    }
+
+    try {
+      const { AutoModel, AutoProcessor, RawImage, env } = window.transformers;
+      env.allowLocalModels = false;
+      const model_id = 'Xenova/modnet';
+      
+      const processor = await AutoProcessor.from_pretrained(model_id);
+      const model = await AutoModel.from_pretrained(model_id, {
+          quantized: true,
+          progress_callback: (data) => {
+              if (data.status === 'progress') {
+                  const percentage = Math.round((data.loaded / data.total) * 100) || 0;
+                  statusPercent.textContent = `${percentage}%`;
+                  progressBarFill.style.width = `${percentage}%`;
+              } else if (data.status === 'initiate') {
+                  statusText.textContent = 'Downloading Model (~17MB)...';
+              }
+          }
+      });
+      
+      statusText.textContent = 'Processing Image...';
+      const fileUrl = URL.createObjectURL(file);
+      const image = await RawImage.fromURL(fileUrl);
+      
+      const inputs = await processor(image);
+      const { output } = await model({ input: inputs.pixel_values });
+      
+      // Output is shape [1, 1, 512, 512]
+      const outputData = output.data;
+      const width = output.dims[3];
+      const height = output.dims[2];
+
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = width;
+      maskCanvas.height = height;
+      const maskCtx = maskCanvas.getContext('2d');
+      const maskImageData = maskCtx.createImageData(width, height);
+
+      for (let i = 0; i < outputData.length; ++i) {
+          const val = Math.max(0, Math.min(255, outputData[i] * 255));
+          const offset = i * 4;
+          maskImageData.data[offset] = val;
+          maskImageData.data[offset + 1] = val;
+          maskImageData.data[offset + 2] = val;
+          maskImageData.data[offset + 3] = 255;
+      }
+      maskCtx.putImageData(maskImageData, 0, 0);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(maskCanvas, 0, 0, image.width, image.height);
+      const scaledMaskData = ctx.getImageData(0, 0, image.width, image.height).data;
+
+      const imgObj = new Image();
+      imgObj.src = fileUrl;
+      await new Promise(r => imgObj.onload = r);
+      ctx.drawImage(imgObj, 0, 0);
+      const imgData = ctx.getImageData(0, 0, image.width, image.height);
+
+      for (let i = 0; i < imgData.data.length; i += 4) {
+          imgData.data[i + 3] = scaledMaskData[i]; 
+      }
+      ctx.putImageData(imgData, 0, 0);
+      
+      canvas.toBlob(blob => {
+        processedBlobUrl = URL.createObjectURL(blob);
+        resultImage.src = processedBlobUrl;
+        resultImage.style.display = 'block';
+        actionSection.style.display = 'block';
+        
+        statusText.textContent = 'Complete!';
+        statusText.style.color = '#00ffcc';
+        statusPercent.textContent = '100%';
+        progressBarFill.style.width = '100%';
+        progressBarContainer.style.display = 'none';
+      }, 'image/png');
+      
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = 'Error: ' + (err.message || String(err));
+      statusText.style.color = '#ff4444';
+      statusPercent.textContent = '';
+      progressBarContainer.style.display = 'none';
+    }
+  }
+  
+  btnDownload.addEventListener('click', () => {
+    if (!processedBlobUrl) return;
+    const a = document.createElement('a');
+    a.href = processedBlobUrl;
+    a.download = 'tangent_background_removed.png';
+    a.click();
+  });
+});
+</script>

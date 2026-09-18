@@ -33,6 +33,97 @@
 }
 </script>
 
+<!-- --- TOOL_STYLES --- -->
+<style>
+  /* Layout */
+  .app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
+  .clean-header { text-align: center; margin-bottom: 40px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  
+  .split-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+  @media (max-width: 900px) {
+    .split-layout { grid-template-columns: 1fr; }
+  }
+  .editor-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+
+  /* Content & FAQs */
+  .info-section {
+    margin-top: 60px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 50px;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .feature-icon {
+    margin-bottom: 16px;
+    color: #00d2ff;
+    display: inline-flex;
+  }
+  .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
+  .feature-card p { color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  .faq-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+  .faq-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .faq-box summary {
+    padding: 18px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+  }
+  .faq-box summary::-webkit-details-marker { display: none; }
+  .faq-box summary::after {
+    content: "+";
+    color: #00d2ff;
+    font-size: 1.2rem;
+  }
+  .faq-box details[open] summary::after { content: "−"; }
+  .faq-box p {
+    padding: 0 24px 20px 24px;
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    text-align: left;
+  }
+</style>
+
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
@@ -43,9 +134,238 @@
   <p>Drag and drop your iPhone HEIC photos to instantly convert them into standard JPGs. Completely private, running securely inside your browser.</p>
 </div>
 
-<div class="app-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card);">
-  <!-- Tool specific UI goes here -->
-  <p style="color: var(--text-secondary);">Tool interface coming soon...</p>
+<div class="split-layout">
+  <!-- Left Panel: Upload & Controls -->
+  <div class="editor-panel">
+    <div class="panel-section">
+      <h3>Upload HEIC Photos</h3>
+      <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop iPhone Photos Here</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">or click to browse (.heic only)</div>
+        <input type="file" id="fileInput" multiple accept=".heic,.HEIC" style="display: none;">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Output Settings</h3>
+      <div class="control-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label style="margin: 0; font-size: 13px;">JPG Quality</label>
+          <span id="qualityVal" style="font-size: 12px; color: #00d2ff;">0.8</span>
+        </div>
+        <input type="range" id="qualitySlider" min="0.1" max="1.0" step="0.1" value="0.8" style="width: 100%;">
+      </div>
+    </div>
+    
+    <div class="panel-section" id="batchControls" style="display: none; padding-top: 20px; border-top: 1px solid var(--border-color);">
+      <button class="btn btn-primary" id="btnDownloadZip" style="width: 100%;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download All as ZIP
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Panel: Preview Grid -->
+  <div class="preview-panel" style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column;">
+    <h3 style="margin-top: 0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      Converted Photos
+      <span id="statusBadge" style="font-size: 11px; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 20px; font-weight: normal;">0 files</span>
+    </h3>
+    
+    <div id="outputGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; align-content: flex-start; overflow-y: auto; flex: 1;">
+      <div id="emptyState" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        Your converted JPGs will appear here.
+      </div>
+    </div>
+  </div>
 </div>
 
+<div class="info-section">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      </div>
+      <h3>Instant Batch Processing</h3>
+      <p>Convert dozens of massive HEIC files instantly. Processing happens directly in your RAM, utilizing your machine's CPU for unparalleled speed compared to uploading over a network.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h3>Zero Server Uploads</h3>
+      <p>Your private iPhone photos are never uploaded. Tangent uses an advanced WebAssembly decoder to translate the Apple image format into JPG entirely inside your local browser sandbox.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+      <h3>EXIF Metadata Preserved</h3>
+      <p>Our conversion engine retains the critical metadata attached to your original HEIC file. Your timestamps, orientation, and camera models remain perfectly intact in the resulting JPG.</p>
+    </div>
+  </div>
 
+  <div class="faq-title">Frequently Asked Questions</div>
+  <div class="faq-box">
+    <details>
+      <summary>Why are my iPhone photos saving as HEIC?</summary>
+      <p>Apple introduced HEIC (High-Efficiency Image Container) to save space without losing quality. It provides better compression than JPG. However, it is a proprietary format and is not widely supported on Windows PCs, many web platforms, or older software.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Does Tangent upload my photos to convert them?</summary>
+      <p>Absolutely not. Unlike other free converters that upload your private photos to third-party servers, Tangent decodes the HEIC file locally using WebAssembly (`heic2any`). Your photos never leave your device, ensuring 100% privacy.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Is there a limit to how many photos I can convert?</summary>
+      <p>No. Because Tangent processes everything on your local machine, we don't have to pay for server costs or bandwidth. Therefore, we don't impose artificial limits or paywalls on your batch conversions. Process as many photos as your device's memory can handle.</p>
+    </details>
+  </div>
+</div>
+
+<!-- --- SCRIPTS --- -->
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const outputGrid = document.getElementById('outputGrid');
+  const emptyState = document.getElementById('emptyState');
+  const statusBadge = document.getElementById('statusBadge');
+  const qualitySlider = document.getElementById('qualitySlider');
+  const qualityVal = document.getElementById('qualityVal');
+  const batchControls = document.getElementById('batchControls');
+  const btnDownloadZip = document.getElementById('btnDownloadZip');
+  
+  let convertedFiles = [];
+  
+  qualitySlider.addEventListener('input', (e) => {
+    qualityVal.textContent = parseFloat(e.target.value).toFixed(1);
+  });
+
+  // Drag and drop events
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+  });
+
+  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
+  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
+  
+  dropZone.addEventListener('drop', (e) => {
+    dropZone.style.borderColor = 'var(--border-color)';
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endswith('.heic'));
+    if (files.length > 0) processFiles(files);
+  });
+  
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) processFiles(Array.from(e.target.files));
+    fileInput.value = ''; // reset
+  });
+
+  async function processFiles(files) {
+    emptyState.style.display = 'none';
+    const quality = parseFloat(qualitySlider.value);
+    
+    // Add loading cards
+    const tasks = files.map(file => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;';
+      card.innerHTML = `<div class="spinner" style="width:24px;height:24px;border:3px solid rgba(0,210,255,0.2);border-top-color:#00d2ff;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="font-size:11px; margin-top:12px; color:var(--text-secondary); text-align:center; padding:0 8px;">Processing<br>${file.name}</div>`;
+      outputGrid.appendChild(card);
+      return { file, card, quality };
+    });
+
+    statusBadge.textContent = `Processing ${tasks.length} file(s)...`;
+    statusBadge.style.color = '#00d2ff';
+    
+    // Inject keyframes if not exists
+    if (!document.getElementById('spinStyle')) {
+      const style = document.createElement('style');
+      style.id = 'spinStyle';
+      style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
+    }
+
+    for (let task of tasks) {
+      try {
+        const blob = await heic2any({
+          blob: task.file,
+          toType: "image/jpeg",
+          quality: task.quality
+        });
+        
+        // Handle potential array return (if animated HEIC)
+        const finalBlob = Array.isArray(blob) ? blob[0] : blob;
+        const url = URL.createObjectURL(finalBlob);
+        const outName = task.file.name.replace(/\.heic$/i, '.jpg');
+        
+        convertedFiles.push({ name: outName, blob: finalBlob });
+        
+        task.card.innerHTML = `
+          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 8px; backdrop-filter: blur(4px); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 10px; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;" title="${outName}">${outName}</div>
+            <a href="${url}" download="${outName}" style="color: #00d2ff; cursor: pointer; padding: 4px;" title="Download">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </a>
+          </div>
+        `;
+      } catch (err) {
+        task.card.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div style="font-size:11px; margin-top:8px; color:#ff4444; text-align:center;">Failed</div>
+        `;
+        console.error(err);
+      }
+    }
+    
+    updateBadge();
+  }
+  
+  function updateBadge() {
+    if (convertedFiles.length > 0) {
+      statusBadge.textContent = `${convertedFiles.length} ready`;
+      statusBadge.style.color = '#00ffcc';
+      batchControls.style.display = 'block';
+    } else {
+      statusBadge.textContent = '0 files';
+      statusBadge.style.color = 'inherit';
+      batchControls.style.display = 'none';
+      emptyState.style.display = 'flex';
+    }
+  }
+  
+  btnDownloadZip.addEventListener('click', async () => {
+    if (convertedFiles.length === 0) return;
+    btnDownloadZip.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Zipping...';
+    btnDownloadZip.style.opacity = '0.7';
+    
+    try {
+      const zip = new JSZip();
+      convertedFiles.forEach(f => zip.file(f.name, f.blob));
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'tangent_converted_photos.zip');
+    } catch(err) {
+      console.error(err);
+      alert('Error creating ZIP file.');
+    } finally {
+      btnDownloadZip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download All as ZIP';
+      btnDownloadZip.style.opacity = '1';
+    }
+  });
+
+});
+</script>

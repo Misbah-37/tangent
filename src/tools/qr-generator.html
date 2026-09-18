@@ -43,8 +43,8 @@
 }
 </script>
 
-<!-- QRious Library for Client-Side QR Generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<!-- QRCode Library (MIT) for Client-Side QR Generation -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 
 
@@ -1094,12 +1094,7 @@
   const bgColorInput = document.getElementById('bgColor');
   const sizeSelect = document.getElementById('sizeSelect');
 
-  // Initialize QRious instance
-  const qr = new QRious({
-    element: qrCanvas,
-    size: 600,
-    level: 'H' // High 30% error correction
-  });
+
 
   function setMode(mode) {
     activeMode = mode;
@@ -1140,12 +1135,20 @@
     document.getElementById('fgHex').textContent = fg.toUpperCase();
     document.getElementById('bgHex').textContent = bg.toUpperCase();
 
-    qr.set({
-      value: payload,
-      size: size,
-      foreground: fg,
-      background: bg,
-      level: 'H'
+    // Ensure canvas size is properly reset
+    qrCanvas.width = size;
+    qrCanvas.height = size;
+    
+    QRCode.toCanvas(qrCanvas, payload, {
+      width: size,
+      margin: 2,
+      errorCorrectionLevel: 'H',
+      color: {
+        dark: fg,
+        light: bg
+      }
+    }, function(error) {
+      if (error) console.error(error);
     });
   }
 

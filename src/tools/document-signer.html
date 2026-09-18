@@ -1,11 +1,11 @@
 <!-- --- HEAD_META --- -->
-<title>Document & Contract e-Signer | Tangent</title>
+<title>Visual PDF e-Signer | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/document-signer">
-<meta name="description" content="Sign PDFs, leases, and contracts in seconds offline in your browser. Draw, type, or upload your signature, place dates, and export signed PDFs with zero accounts or fees.">
+<meta name="description" content="Sign PDF forms, waivers, and letters in seconds offline in your browser. Draw, type, or upload your signature, place dates, and export signed PDFs with zero accounts or fees.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
-<meta property="og:title" content="Document & Contract e-Signer | Tangent">
-<meta property="og:description" content="Free, private contract and PDF signer. Place signatures, initials, and date stamps locally without accounts or monthly document caps.">
+<meta property="og:title" content="Visual PDF e-Signer | Tangent">
+<meta property="og:description" content="Free, private visual PDF signer. Place signatures, initials, and date stamps locally without accounts or monthly document caps.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
 <!-- PDF-Lib & PDF.js for in-browser PDF manipulation and rendering -->
@@ -25,7 +25,7 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Is this legally binding for leases and business contracts?",
+      "name": "Can I use this for highly contested formal agreements?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "While visual electronic signatures demonstrate intent to sign, this tool is a Visual Signature Utility. It does not provide the cryptographic audit trails, verified IP tracking, or eIDAS-certified compliance required for highly contested legal disputes. It is meant for visual placement rather than acting as a formal Trust Service Provider."
@@ -33,7 +33,7 @@
     },
     {
       "@type": "Question",
-      "name": "Are my confidential contracts or personal signatures sent to any server?",
+      "name": "Are my confidential documents or personal signatures sent to any server?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "No. The entire signing process executes locally in your browser memory via WebAssembly and HTML5 Canvas. Your PDF document and your signature never touch the internet."
@@ -41,7 +41,7 @@
     },
     {
       "@type": "Question",
-      "name": "Is there a limit on how many contracts I can sign?",
+      "name": "Is there a limit on how many documents I can sign?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "No. Unlike DocuSign or Adobe Sign which limit free users to 3 documents before charging monthly subscription fees, Tangent is 100% free forever with unlimited document signing."
@@ -489,7 +489,7 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Visual PDF e-Signer.</h1>
-  <p>Sign lease agreements, contracts, NDAs, and forms in seconds. Draw or type your signature, drag date stamps, and export signed PDFs with zero accounts or fees.</p>
+  <p>Sign PDF forms, waivers, letters, and standard documents in seconds. Draw or type your signature, drag date stamps, and export signed PDFs with zero accounts or fees.</p>
   <div style="background: rgba(255, 170, 0, 0.1); border: 1px solid rgba(255, 170, 0, 0.4); padding: 12px 16px; border-radius: 8px; margin-top: 16px; font-size: 0.9rem; color: #facc15; display: flex; gap: 12px; align-items: flex-start; text-align: left;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
     <div>
@@ -505,8 +505,8 @@
     <div class="dropzone-icon">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
     </div>
-    <h3>Select or Drop PDF Contract Here</h3>
-    <p>Supports leases, NDAs, employment agreements, invoices, and standard PDF forms</p>
+    <h3>Select or Drop PDF Document Here</h3>
+    <p>Supports waivers, permission slips, invoices, receipts, and standard PDF forms</p>
     <input type="file" id="pdfFileInput" accept="application/pdf" style="display: none;">
   </div>
 
@@ -657,7 +657,7 @@
             <span>Signature Ink Tint:</span>
             <div class="color-dots">
               <div class="color-dot active" style="background: #000000;" data-upload-ink="black" title="Pure Black"></div>
-              <div class="color-dot" style="background: #0f172a;" data-upload-ink="navy" title="Contract Navy"></div>
+              <div class="color-dot" style="background: #0f172a;" data-upload-ink="navy" title="Document Navy"></div>
               <div class="color-dot" style="background: #0284c7;" data-upload-ink="blue" title="Royal Blue"></div>
               <div class="color-dot" style="background: linear-gradient(135deg, #f59e0b, #38bdf8);" data-upload-ink="original" title="Original Ink / Photo Color"></div>
             </div>
@@ -709,8 +709,8 @@
   </div>
   <div class="faq-box">
     <details>
-      <summary>Are my signed contracts or PDF files uploaded to a server?</summary>
-      <p>No. The entire signing workflow runs in your browser RAM using pdf-lib and PDF.js. Your sensitive contracts, leases, and identity cards never touch an external cloud.</p>
+      <summary>Are my signed documents or PDF files uploaded to a server?</summary>
+      <p>No. The entire signing workflow runs in your browser RAM using pdf-lib and PDF.js. Your sensitive documents and forms never touch an external cloud.</p>
     </details>
   </div>
   <div class="faq-box">

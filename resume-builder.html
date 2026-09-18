@@ -801,6 +801,19 @@
       grid-template-columns: 1fr;
     }
   }
+
+    /* --- ZOOM & PAN --- */
+    .zoom-toolbar { position: absolute; bottom: 24px; right: 24px; background: rgba(18, 22, 33, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; display: flex; align-items: center; gap: 4px; padding: 6px; z-index: 100; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
+    .zoom-btn { background: transparent; border: none; color: #cbd5e1; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s ease; }
+    .zoom-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+    .zoom-label { color: #94a3b8; font-size: 0.75rem; font-weight: 600; padding: 0 8px; min-width: 48px; text-align: center; cursor: pointer; user-select: none; }
+    .zoom-label:hover { color: #fff; }
+    .zoom-divider { width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0 4px; }
+    .paper-stage { overflow: auto !important; cursor: grab; align-items: flex-start !important; justify-content: flex-start !important; }
+    .paper-stage.is-dragging { cursor: grabbing; }
+    .paper-stage.fullscreen-mode { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 9999; border-radius: 0; margin: 0; padding: 40px !important; background: rgba(5, 7, 10, 0.95); }
+    .sheet-transform-wrapper { transform-origin: top left; transition: transform 0.15s ease-out; margin: auto; }
+    @media print { .zoom-toolbar { display: none !important; } .sheet-transform-wrapper { transform: none !important; width: auto !important; height: auto !important; margin: 0 !important; } }
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -1653,27 +1666,121 @@
     requestAnimationFrame(fitResumeSheet);
   }
 
-  function fitResumeSheet() {
-    const stage = document.querySelector('.paper-stage');
-    const sheet = document.getElementById('resumeSheet');
-    if (!stage || !sheet) return;
+  
+    // --- ZOOM & PAN LOGIC ---
+    let currentZoom = 'fit';
+    let isFullscreen = false;
+    let wrapperInjected = false;
 
-    const sheetBaseWidth = 794; // 210mm
+    function initZoomPan() {
+      const stage = document.querySelector('.paper-stage');
+      const sheet = document.getElementById('resumeSheet');
+      if (!stage || !sheet || wrapperInjected) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'sheet-transform-wrapper';
+      wrapper.id = 'sheetWrapper';
+      sheet.parentNode.insertBefore(wrapper, sheet);
+      wrapper.appendChild(sheet);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'zoom-toolbar';
+      toolbar.id = 'zoomToolbar';
+      toolbar.innerHTML = `
+        <button type="button" class="zoom-btn" onclick="zoomOut()" title="Zoom Out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+        <div class="zoom-label" id="zoomLabel" onclick="resetZoom()" title="Reset to Fit">Fit</div>
+        <button type="button" class="zoom-btn" onclick="zoomIn()" title="Zoom In"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+        <div class="zoom-divider"></div>
+        <button type="button" class="zoom-btn" onclick="toggleFullscreen()" title="Fullscreen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></button>
+      `;
+      stage.appendChild(toolbar);
+
+      let isDragging = false, startX, startY, scrollLeft, scrollTop;
+      stage.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.zoom-toolbar')) return;
+        isDragging = true;
+        stage.classList.add('is-dragging');
+        startX = e.pageX - stage.offsetLeft;
+        startY = e.pageY - stage.offsetTop;
+        scrollLeft = stage.scrollLeft;
+        scrollTop = stage.scrollTop;
+      });
+      stage.addEventListener('mouseleave', () => { isDragging = false; stage.classList.remove('is-dragging'); });
+      stage.addEventListener('mouseup', () => { isDragging = false; stage.classList.remove('is-dragging'); });
+      stage.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - stage.offsetLeft;
+        const y = e.pageY - stage.offsetTop;
+        stage.scrollLeft = scrollLeft - (x - startX);
+        stage.scrollTop = scrollTop - (y - startY);
+      });
+
+      wrapperInjected = true;
+    }
+
+    function fitResumeSheet() {
+      initZoomPan();
+      const stage = document.querySelector('.paper-stage');
+      const sheet = document.getElementById('resumeSheet');
+      const wrapper = document.getElementById('sheetWrapper');
+      const zoomLabel = document.getElementById('zoomLabel');
+      if (!stage || !sheet || !wrapper) return;
+
+      const sheetBaseWidth = 794; 
+      const sheetBaseHeight = sheet.offsetHeight || 1123;
       
-      // Temporarily hide sheet to measure true bounded width of parent without child overflow
-      const originalDisplay = sheet.style.display;
-      sheet.style.display = 'none';
-      const availableWidth = stage.clientWidth - 40;
-      sheet.style.display = originalDisplay;
-    if (availableWidth <= 0) return;
+      let scale;
+      if (currentZoom === 'fit') {
+        const availableWidth = stage.clientWidth - (isFullscreen ? 80 : 40);
+        scale = Math.min(1.0, Math.max(0.1, availableWidth / sheetBaseWidth));
+        zoomLabel.textContent = 'Fit';
+      } else {
+        scale = currentZoom;
+        zoomLabel.textContent = Math.round(scale * 100) + '%';
+      }
 
-    const scale = Math.min(1.0, Math.max(0.1, availableWidth / sheetBaseWidth));
-    sheet.style.transform = `scale(${scale})`;
-    sheet.style.transformOrigin = 'top center';
+      sheet.style.transform = `scale(${scale})`;
+      wrapper.style.width = (sheetBaseWidth * scale) + 'px';
+      wrapper.style.height = (sheetBaseHeight * scale) + 'px';
+      
+      if (wrapper.offsetWidth < stage.clientWidth) {
+        wrapper.style.marginLeft = 'auto';
+        wrapper.style.marginRight = 'auto';
+      } else {
+        wrapper.style.marginLeft = '0';
+        wrapper.style.marginRight = '0';
+      }
+    }
 
-    const baseHeight = sheet.offsetHeight || 1123;
-    stage.style.minHeight = Math.round(baseHeight * scale + 48) + 'px';
-  }
+    window.zoomIn = function() {
+      const stage = document.querySelector('.paper-stage');
+      let z = currentZoom === 'fit' ? (stage.clientWidth - 40)/794 : currentZoom;
+      currentZoom = Math.min(3.0, z + 0.25);
+      fitResumeSheet();
+    };
+    window.zoomOut = function() {
+      const stage = document.querySelector('.paper-stage');
+      let z = currentZoom === 'fit' ? (stage.clientWidth - 40)/794 : currentZoom;
+      currentZoom = Math.max(0.25, z - 0.25);
+      fitResumeSheet();
+    };
+    window.resetZoom = function() {
+      currentZoom = 'fit';
+      fitResumeSheet();
+    };
+    window.toggleFullscreen = function() {
+      const stage = document.querySelector('.paper-stage');
+      isFullscreen = !isFullscreen;
+      if (isFullscreen) {
+        stage.classList.add('fullscreen-mode');
+      } else {
+        stage.classList.remove('fullscreen-mode');
+      }
+      setTimeout(fitResumeSheet, 10);
+    };
+    // --- END ZOOM & PAN ---
+    
 
   // Observe canvas and stage to smoothly adapt when the toolkit sidebar opens or closes
   if (window.ResizeObserver) {

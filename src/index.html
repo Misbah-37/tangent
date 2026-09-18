@@ -708,6 +708,25 @@
     .hero { margin: 60px auto 50px auto; }
     .trust-grid { grid-template-columns: 1fr; gap: 32px; }
   }
+  .tool-card:hover {
+    border-color: rgba(0, 210, 255, 0.5);
+    background-color: #151821;
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 210, 255, 0.1);
+  }
+
+  .hero-title {
+    background: linear-gradient(135deg, #ffffff 30%, #00d2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.03em;
+  }
+  .hero-highlight {
+    -webkit-text-fill-color: #00d2ff; /* fallback or explicit override */
+  }
+
 </style>
 
 <!-- --- CONTENT --- -->

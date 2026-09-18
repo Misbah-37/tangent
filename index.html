@@ -522,22 +522,49 @@
   
   @media (max-width: 768px) {
     .track-mask-wrapper {
-      -webkit-mask-image: linear-gradient(to right, black 0, black calc(100% - 16px), transparent 100%);
-      mask-image: linear-gradient(to right, black 0, black calc(100% - 16px), transparent 100%);
-    }
-    .tool-card {
-      flex: 0 0 78%;
-      width: 78%;
-    }
-    .scroll-btn {
-      display: none; /* Hide edge arrows on mobile touch devices */
+      -webkit-mask-image: none;
+      mask-image: none;
     }
     .carousel-track {
-      padding: 20px 16px; /* Smaller edge padding on mobile */
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 16px;
+      overflow: visible;
+      width: 100%;
+    }
+    .tool-card {
+      flex: none;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .tool-card .card-content p {
+      display: none;
+    }
+    .tool-card .card-content h3 {
+      font-size: 0.85rem;
+      margin-top: 12px;
+      margin-bottom: 0;
+      line-height: 1.3;
+    }
+    .card-icon {
+      margin-bottom: 0;
+    }
+    .card-badge {
+      display: none;
+    }
+    .scroll-btn {
+      display: none;
     }
     .category-header {
       padding: 0 16px;
     }
+    .trust-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
   }
 
 

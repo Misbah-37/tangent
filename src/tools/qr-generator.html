@@ -44,7 +44,7 @@
 </script>
 
 <!-- QRCode Library (MIT) for Client-Side QR Generation -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
 
 
@@ -637,10 +637,11 @@
     border: 1px solid var(--border-color);
   }
   .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: none;
-  }
+      background-color: transparent !important;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: none;
+    }
 
   /* --- SEO & Educational Content --- */
   .seo-article {

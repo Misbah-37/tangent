@@ -463,22 +463,27 @@
 
   /* Print Stylesheet for Academic Papers */
   @media print {
-    body * {
-      visibility: hidden;
+    @page { 
+      margin: 0; /* Kills browser URL, Date, and Page Number watermarks */
+      size: auto;
     }
-    .preview-content, .preview-content * {
-      visibility: visible;
+    body { background: #fff !important; }
+    
+    /* Hide the entire app UI during print */
+    body > *:not(#pdfPrintTable) {
+      display: none !important;
     }
+    
     .preview-content {
-      position: absolute;
-      left: 0;
-      top: 0;
+      position: relative !important;
       width: 100% !important;
-      padding: 0 !important;
+      padding: 0 2.54cm !important; /* 1-inch side margins */
       background: #ffffff !important;
       color: #111827 !important;
       font-size: 12pt !important;
       line-height: 1.6 !important;
+      overflow: visible !important;
+      height: auto !important;
     }
     .preview-content h1, .preview-content h2, .preview-content h3 {
       color: #000000 !important;
@@ -1211,6 +1216,60 @@ Start writing your academic paper or technical note here...
   editor.addEventListener('input', renderDocument);
 
   // Print / PDF
+  let printOriginalParent, printNextSibling, pdfPrintTable;
+
+  window.addEventListener('beforeprint', () => {
+    const content = document.getElementById('previewOutput');
+    if (!content) return;
+    
+    printOriginalParent = content.parentNode;
+    printNextSibling = content.nextSibling;
+    
+    pdfPrintTable = document.createElement('table');
+    pdfPrintTable.id = 'pdfPrintTable';
+    pdfPrintTable.style.width = '100%';
+    pdfPrintTable.style.border = 'none';
+    pdfPrintTable.style.borderCollapse = 'collapse';
+    pdfPrintTable.style.margin = '0';
+    pdfPrintTable.style.padding = '0';
+    
+    // Academic 1-inch top margin
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><td><div style="height: 2.54cm;"></div></td></tr>';
+    
+    // Academic 1-inch bottom margin
+    const tfoot = document.createElement('tfoot');
+    tfoot.innerHTML = '<tr><td><div style="height: 2.54cm;"></div></td></tr>';
+    
+    const tbody = document.createElement('tbody');
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.style.padding = '0';
+    
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    pdfPrintTable.appendChild(thead);
+    pdfPrintTable.appendChild(tbody);
+    pdfPrintTable.appendChild(tfoot);
+    
+    // Move the actual document content into the print table structure
+    td.appendChild(content);
+    document.body.appendChild(pdfPrintTable);
+  });
+
+  window.addEventListener('afterprint', () => {
+    const content = document.getElementById('previewOutput');
+    if (!content || !pdfPrintTable) return;
+    
+    // Restore DOM to original app state
+    if (printNextSibling) {
+      printOriginalParent.insertBefore(content, printNextSibling);
+    } else {
+      printOriginalParent.appendChild(content);
+    }
+    document.body.removeChild(pdfPrintTable);
+  });
+
   printPdfBtn.addEventListener('click', () => {
     window.print();
   });

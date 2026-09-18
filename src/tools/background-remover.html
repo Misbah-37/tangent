@@ -1,0 +1,51 @@
+<!-- --- HEAD_META --- -->
+<title>AI Background Remover | Tangent</title>
+<link rel="canonical" href="https://runtangent.com/background-remover">
+<meta name="description" content="Remove backgrounds from images locally using advanced AI running entirely in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tangent">
+<meta property="og:title" content="AI Background Remover | Tangent">
+<meta property="og:description" content="Remove backgrounds from images locally using advanced AI running entirely in your browser.">
+<meta property="og:image" content="https://runtangent.com/social-banner.png">
+
+<!-- Schema.org FAQ Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does the AI work without a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tangent utilizes WebAssembly and Transformers.js to execute a lightweight AI segmentation model directly on your local CPU or GPU. While the browser downloads the 40MB model cache once, your actual images never leave your machine."
+      }
+    },{
+      "@type": "Question",
+      "name": "Is there a resolution limit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because it runs locally, the only limit is your device's memory. Tangent does not artificially restrict resolution or charge you for HD downloads like cloud-based competitors."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- --- CONTENT --- -->
+<div class="clean-header">
+  <div class="badge-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>100% LOCAL AI COMPUTATION</span>
+  </div>
+  <h1>Instant Background Remover</h1>
+  <p>Drop high-resolution images to instantly remove the background. The AI model runs purely in your device's memory—zero server uploads.</p>
+</div>
+
+<div class="app-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card);">
+  <!-- Tool specific UI goes here -->
+  <p style="color: var(--text-secondary);">Tool interface coming soon...</p>
+</div>
+
+

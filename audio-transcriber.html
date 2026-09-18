@@ -4,35 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bulk Image Watermarker & Stamper | Tangent</title>
-<meta name="description" content="Watermark hundreds of images instantly in your browser. 100% private, no cloud uploads, no file size limits. Export directly to ZIP.">
-<link rel="canonical" href="https://runtangent.com/bulk-watermarker">
 
-<!-- Foundation & Social Meta Tags -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Tangent">
-<meta property="og:title" content="Bulk Image Watermarker | Tangent">
-<meta property="og:description" content="Batch watermark images securely in your browser. Download as ZIP.">
-
+<!-- Structured Data for Audio Transcriber -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Tangent Bulk Watermarker",
-  "applicationCategory": "MultimediaApplication",
-  "operatingSystem": "Any"
-}
-</script>
-<!-- Structured Data for Bulk Watermarker -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Bulk Watermarker | Tangent",
-  "description": "Watermark hundreds of images instantly. Add copyright text offline with zero cloud uploads or file size limits.",
+  "name": "Audio Transcriber | Tangent",
+  "description": "Transcribe sensitive meeting recordings locally using a WebAssembly AI model. Ultimate privacy for confidential audio.",
   "applicationCategory": "Media&VideoApplication",
   "operatingSystem": "All",
-  "url": "https://runtangent.com/bulk-watermarker.html",
+  "url": "https://runtangent.com/audio-transcriber.html",
   "offers": {
     "@type": "Offer",
     "price": "0.00",
@@ -49,23 +31,7 @@
 
 <link rel="stylesheet" href="assets/tangent.css?v=8">
 <style>
-.watermark-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
-  .grid-layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
-  @media(max-width: 800px) { .grid-layout { grid-template-columns: 1fr; } }
-  .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
-  .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; margin-bottom: 24px; background: rgba(0,0,0,0.2); }
-  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); }
-  .preview-container { text-align: center; background: #090b10; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 450px; border: 1px solid var(--border-color); position: relative; background-image: radial-gradient(var(--border-color) 1px, transparent 1px); background-size: 20px 20px; }
-  canvas#previewCanvas { max-width: 100%; max-height: 600px; object-fit: contain; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  .control-group { margin-bottom: 20px; }
-  .control-group label { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
-  .control-group input[type="text"], .control-group select { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg-base); color: #fff; border: 1px solid var(--border-color); font-size: 0.95rem; }
-  .control-group input[type="range"] { width: 100%; margin-top: 5px; accent-color: var(--accent); }
-  .control-group input[type="color"] { width: 100%; height: 46px; padding: 4px; border-radius: 8px; background: var(--bg-base); border: 1px solid var(--border-color); cursor: pointer; }
-  .btn-accent { background: var(--accent); color: #000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1.05rem; transition: transform 0.1s ease; }
-  .btn-accent:active { transform: scale(0.97); }
-  .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .status-text { margin-top: 12px; font-size: 0.9rem; color: var(--text-muted); text-align: center; }
+
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -210,7 +176,7 @@
           <div class="item-desc">Strip GPS & EXIF camera tags</div>
         </div>
       </a>
-      <a href="bulk-watermarker" class="sidebar-item active">
+      <a href="bulk-watermarker" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5L16 10 4 20"></path></svg>
         <div class="item-text">
           <div class="item-title">Bulk Watermarker</div>
@@ -238,7 +204,7 @@
           <div class="item-desc">Apple photos to JPG</div>
         </div>
       </a>
-      <a href="audio-transcriber" class="sidebar-item">
+      <a href="audio-transcriber" class="sidebar-item active">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
         <div class="item-text">
           <div class="item-title">Audio Transcriber</div>
@@ -390,135 +356,7 @@
 <!-- Push-Canvas Wrapper -->
 <div class="app-canvas" id="appCanvas">
 
-<div class="clean-header">
-  <div class="privacy-shield-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
-  </div>
-  <h1>Bulk Image Watermarker</h1>
-  <p>Batch watermark hundreds of images instantly. Securely processed offline with zero cloud uploads or file size limits.</p>
-</div>
 
-<div class="watermark-studio">
-  <div class="grid-layout">
-    
-    <!-- Sidebar Controls -->
-    <div class="panel">
-      <div class="drop-zone" id="dropZone">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        <h4 style="margin:0 0 8px 0;">Drop Images Here</h4>
-        <p style="margin:0; font-size:0.85rem; color:var(--text-muted);" id="fileCount">0 files selected</p>
-        <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" multiple style="display:none;">
-      </div>
-      
-      <div class="control-group">
-        <label>Watermark Text</label>
-        <input type="text" id="wmText" value="© Tangent" placeholder="e.g. © 2026 Your Name">
-      </div>
-      
-      <div class="control-group">
-        <label>Position</label>
-        <select id="wmPosition">
-          <option value="bottom-right">Bottom Right</option>
-          <option value="bottom-left">Bottom Left</option>
-          <option value="top-right">Top Right</option>
-          <option value="top-left">Top Left</option>
-          <option value="center">Center</option>
-        </select>
-      </div>
-      
-      <div class="control-group" style="display:flex; gap:16px;">
-        <div style="flex:1;">
-          <label>Color</label>
-          <input type="color" id="wmColor" value="#ffffff">
-        </div>
-        <div style="flex:2;">
-          <label>Opacity <span id="opacityVal">50%</span></label>
-          <input type="range" id="wmOpacity" min="0.1" max="1" step="0.1" value="0.5" style="margin-top:14px;">
-        </div>
-      </div>
-
-      <div class="control-group">
-        <label>Size Scale <span id="scaleVal">5%</span></label>
-        <input type="range" id="wmScale" min="0.01" max="0.2" step="0.01" value="0.05">
-      </div>
-      
-      <div style="display:flex; gap:12px;">
-        <button id="btnClearWM" class="btn-clear-ghost" style="display:none;" title="Clear Queue">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-        <button id="btnProcess" class="btn-accent" disabled style="flex:1; margin:0;">Export ZIP</button>
-      </div>
-      <style>
-        .btn-clear-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 16px; transition: all 0.2s ease; }
-        .btn-clear-ghost:hover { color: #f87171; background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); }
-      </style>
-      <div id="statusText" class="status-text">Ready</div>
-    </div>
-
-    <!-- Preview -->
-    <div class="panel" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <h4 style="margin:0; color:var(--text-main);">Live Preview</h4>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Previewing 1st image</span>
-      </div>
-      <div class="preview-container" style="flex:1; border:none; border-radius:0;">
-        <canvas id="previewCanvas"></canvas>
-        <div id="noPreviewMsg" style="color:var(--text-muted);">Upload images to see preview</div>
-      </div>
-    </div>
-    
-  </div>
-</div>
-
-
-  <!-- Educational & Security Architecture Section -->
-  <div class="info-section">
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </div>
-        <h3>Multi-Image Batching</h3>
-        <p>Apply custom copyright text to hundreds of images instantly. Easily process massive photography batches without expensive software.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-        </div>
-        <h3>Pixel-Perfect Rendering</h3>
-        <p>Utilizes the HTML5 Canvas API to ensure crisp, clean typography and precise opacity scaling across images of any resolution.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        </div>
-        <h3>Local ZIP Compilation</h3>
-        <p>Your finished images are compressed directly on your device into a ready-to-download ZIP file using JSZip technology.</p>
-      </div>
-    </div>
-  
-    <div class="faq-title">Frequently Asked Questions</div>
-  
-    <div class="faq-box">
-      <details>
-        <summary>Is there a file size limit for bulk processing?</summary>
-        <p>Because processing happens entirely on your local machine, there are no artificial cloud limits. You are only limited by your device's available RAM and processing power.</p>
-      </details>
-    </div>
-    <div class="faq-box">
-      <details>
-        <summary>Does the watermarker degrade my image quality?</summary>
-        <p>The tool is optimized to export JPEG and WebP files at 92% quality, which perfectly preserves visual sharpness while keeping file sizes lightweight and web-ready.</p>
-      </details>
-    </div>
-    <div class="faq-box">
-      <details>
-        <summary>Can I upload a custom image or logo as my watermark?</summary>
-        <p>Currently, the tool supports highly customizable text-based copyright stamping (allowing you to control text, size, color, opacity, and position). Image-based logo stamping is planned for a future update.</p>
-      </details>
-    </div>
-  </div>
 
   <!-- Standard Global Footer -->
   <footer class="global-footer">
@@ -536,205 +374,7 @@
 <!-- Global Shell Script -->
 <script src="assets/tangent.js?v=1"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-<script>
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const fileCount = document.getElementById('fileCount');
-  
-  const wmText = document.getElementById('wmText');
-  const wmPosition = document.getElementById('wmPosition');
-  const wmOpacity = document.getElementById('wmOpacity');
-  const wmScale = document.getElementById('wmScale');
-  const wmColor = document.getElementById('wmColor');
-  
-  const opacityVal = document.getElementById('opacityVal');
-  const scaleVal = document.getElementById('scaleVal');
-  
-  const previewCanvas = document.getElementById('previewCanvas');
-  const noPreviewMsg = document.getElementById('noPreviewMsg');
-  const btnProcess = document.getElementById('btnProcess');
-  const btnClearWM = document.getElementById('btnClearWM');
-  const statusText = document.getElementById('statusText');
-  
-  let imageFiles = [];
-  let firstImageObj = null;
-
-  dropZone.addEventListener('click', () => fileInput.click());
-  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-  });
-  fileInput.addEventListener('change', (e) => {
-    if(e.target.files.length) handleFiles(e.target.files);
-  });
-
-  wmOpacity.addEventListener('input', (e) => {
-    opacityVal.textContent = Math.round(e.target.value * 100) + '%';
-    renderPreview();
-  });
-  wmScale.addEventListener('input', (e) => {
-    scaleVal.textContent = Math.round(e.target.value * 100) + '%';
-    renderPreview();
-  });
-  wmText.addEventListener('input', renderPreview);
-  wmPosition.addEventListener('change', renderPreview);
-  wmColor.addEventListener('input', renderPreview);
-
-  function handleFiles(files) {
-    imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-    if(imageFiles.length === 0) {
-      alert("Please upload valid image files (JPG, PNG, WebP).");
-      return;
-    }
-    fileCount.textContent = `${imageFiles.length} file${imageFiles.length > 1 ? 's' : ''} loaded`;
-    btnProcess.disabled = false;
-    btnClearWM.style.display = 'block';
-
-  btnClearWM.addEventListener('click', () => {
-    imageFiles = [];
-    firstImageObj = null;
-    fileInput.value = '';
-    fileCount.textContent = '0 files selected';
-    previewCanvas.style.display = 'none';
-    noPreviewMsg.style.display = 'block';
-    btnProcess.disabled = true;
-    btnClearWM.style.display = 'none';
-    statusText.textContent = 'Ready';
-  });
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        firstImageObj = img;
-        noPreviewMsg.style.display = 'none';
-        previewCanvas.style.display = 'block';
-        renderPreview();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(imageFiles[0]);
-  }
-
-  function applyWatermarkToCanvas(canvas, img, text, pos, opacity, scale, colorHex) {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    
-    ctx.drawImage(img, 0, 0);
-    
-    // Set opacity globally for both text and shadow
-    ctx.globalAlpha = opacity;
-    
-    const fontSize = Math.max(20, Math.floor(img.width * scale));
-    ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-    ctx.fillStyle = colorHex;
-    
-    ctx.shadowColor = '#000000';
-    ctx.shadowBlur = Math.max(4, fontSize * 0.1);
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    const metrics = ctx.measureText(text);
-    const textWidth = metrics.width;
-    const textHeight = fontSize;
-    const padding = fontSize;
-    
-    let x = 0, y = 0;
-    switch(pos) {
-      case 'bottom-right': x = img.width - textWidth - padding; y = img.height - padding; break;
-      case 'bottom-left': x = padding; y = img.height - padding; break;
-      case 'top-right': x = img.width - textWidth - padding; y = padding + textHeight; break;
-      case 'top-left': x = padding; y = padding + textHeight; break;
-      case 'center': x = (img.width - textWidth) / 2; y = (img.height + textHeight) / 2; break;
-    }
-    
-    ctx.fillText(text, x, y);
-    ctx.globalAlpha = 1.0; // Reset just in case
-  }
-
-  function renderPreview() {
-    if(!firstImageObj) return;
-    applyWatermarkToCanvas(
-      previewCanvas, 
-      firstImageObj, 
-      wmText.value, 
-      wmPosition.value, 
-      parseFloat(wmOpacity.value), 
-      parseFloat(wmScale.value),
-      wmColor.value
-    );
-  }
-
-  btnProcess.addEventListener('click', async () => {
-    if(imageFiles.length === 0) return;
-    btnProcess.disabled = true;
-    statusText.textContent = `Processing 0 / ${imageFiles.length}...`;
-    
-    const zip = new JSZip();
-    const hiddenCanvas = document.createElement('canvas');
-    
-    const loadImage = (file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    };
-    
-    const getBlob = (canvas, type) => {
-      return new Promise(resolve => canvas.toBlob(resolve, type, 0.92));
-    };
-
-    for(let i = 0; i < imageFiles.length; i++) {
-      statusText.textContent = `Processing ${i + 1} / ${imageFiles.length}...`;
-      const file = imageFiles[i];
-      const img = await loadImage(file);
-      
-      applyWatermarkToCanvas(
-        hiddenCanvas, img, wmText.value, wmPosition.value, 
-        parseFloat(wmOpacity.value), parseFloat(wmScale.value), wmColor.value
-      );
-      
-      const type = file.type || 'image/jpeg';
-      const ext = file.name.split('.').pop() || 'jpg';
-      const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || `image_${i}`;
-      
-      const blob = await getBlob(hiddenCanvas, type);
-      zip.file(`${baseName}_watermarked.${ext}`, blob);
-    }
-    
-    statusText.textContent = `Zipping files...`;
-    const content = await zip.generateAsync({ type: "blob" });
-    saveAs(content, "watermarked_images.zip");
-    
-    statusText.textContent = `Download complete!`;
-    btnProcess.disabled = false;
-    btnClearWM.style.display = 'block';
-
-  btnClearWM.addEventListener('click', () => {
-    imageFiles = [];
-    firstImageObj = null;
-    fileInput.value = '';
-    fileCount.textContent = '0 files selected';
-    previewCanvas.style.display = 'none';
-    noPreviewMsg.style.display = 'block';
-    btnProcess.disabled = true;
-    btnClearWM.style.display = 'none';
-    statusText.textContent = 'Ready';
-  });
-  });
-</script>
 
 </body>
 </html>

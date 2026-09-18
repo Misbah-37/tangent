@@ -782,58 +782,46 @@
       .split-layout { gap: 20px; }
     }
   
+    
     @media (max-width: 768px) {
-      .app-container { 
-        padding: 0 12px !important; 
-        width: 100%; 
-        box-sizing: border-box;
+      .app-container {
+        padding: 0 16px !important;
+        overflow-x: hidden;
       }
-      .tool-panel { 
-        padding: 16px !important; 
-        width: 100%; 
-        min-width: 0;
-        box-sizing: border-box;
+      .tool-panel {
+        padding: 20px 16px !important;
+        overflow-x: hidden;
       }
-      .split-layout { 
+      .split-layout {
         grid-template-columns: 1fr !important;
-        gap: 20px !important; 
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
+        gap: 24px !important;
       }
-      .mode-selector { 
-        width: 100%; 
-        min-width: 0; 
-        box-sizing: border-box; 
-        flex-wrap: nowrap;
+      .mode-selector {
+        flex-wrap: wrap !important;
+        overflow-x: visible !important;
       }
-      .color-controls { 
-        grid-template-columns: 1fr !important; 
-        gap: 12px; 
-        width: 100%;
-        box-sizing: border-box;
+      .mode-btn {
+        flex: 1 1 calc(50% - 8px);
+        text-align: center;
+        justify-content: center;
       }
-      .canvas-wrapper { 
-        padding: 12px !important; 
-        width: 100% !important; 
-        max-width: 100% !important; 
-        box-sizing: border-box !important; 
+      .color-controls {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
       }
-      .canvas-wrapper canvas { 
-        max-width: 100% !important; 
-        height: auto !important; 
+      .canvas-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 16px !important;
       }
-      .input-group, .input-section, .output-section, .export-group {
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
-      }
-      .clean-header p {
-        padding: 0 12px;
+      .canvas-wrapper canvas {
+        width: 100% !important;
+        height: auto !important;
       }
     }
-
   </style>
+
 
 <!-- --- CONTENT --- -->
 <div class="clean-header">
@@ -1172,6 +1160,7 @@
   // Initial Generation
   generateQR();
 </script>
+
 
 
 

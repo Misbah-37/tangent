@@ -446,6 +446,19 @@
     </div>
     
     <div class="panel-section" id="actionSection" style="display: none;">
+        <div id="refinementToolbar" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; background: var(--bg-card-inner); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <h4 style="margin: 0; color: var(--text-main); font-size: 14px;">Manual Refinement (Brush over mistakes)</h4>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" id="btnErase" style="flex: 1; padding: 8px;">Erase</button>
+            <button class="btn btn-demo" id="btnRestore" style="flex: 1; padding: 8px;">Restore</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; color: var(--text-secondary);">Size:</label>
+            <input type="range" id="brushSize" min="5" max="150" value="30" style="flex: 1;">
+            <span id="brushSizeLabel" style="font-size: 12px; min-width: 30px;">30px</span>
+          </div>
+          <button class="btn btn-demo" id="btnResetMask" style="padding: 8px;">Reset AI Mask</button>
+        </div>
       <button class="btn btn-primary" id="btnDownload" style="width: 100%;">Download Transparent PNG</button>
     </div>
   </div>
@@ -465,7 +478,7 @@
       <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
     </div>
     
-    <img id="resultImage" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;" />
+    <canvas id="resultCanvas" style="display: none; max-width: 100%; max-height: 100%; cursor: crosshair; touch-action: none;"></canvas>
   </div>
 </div>
 
@@ -505,13 +518,124 @@
 <!-- Global Shell Script -->
 <script src="assets/tangent.js?v=1"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1"></script>
-<script>
+<script type="module">
+import { AutoModel, AutoProcessor, RawImage, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+
 document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   const emptyState = document.getElementById('emptyState');
-  const resultImage = document.getElementById('resultImage');
+  
+  const resultCanvas = document.getElementById('resultCanvas');
+  const btnErase = document.getElementById('btnErase');
+  const btnRestore = document.getElementById('btnRestore');
+  const brushSizeInput = document.getElementById('brushSize');
+  const brushSizeLabel = document.getElementById('brushSizeLabel');
+  const btnResetMask = document.getElementById('btnResetMask');
+  
+  let originalImg = null;
+  let maskCanvas = null;
+  let maskCtx = null;
+  let aiMaskImageData = null;
+  
+  let currentMode = 'erase';
+  let brushSize = 30;
+  let isDrawing = false;
+  let lastPos = null;
+
+  btnErase.addEventListener('click', () => {
+    currentMode = 'erase';
+    btnErase.className = 'btn btn-primary';
+    btnRestore.className = 'btn btn-demo';
+  });
+  btnRestore.addEventListener('click', () => {
+    currentMode = 'restore';
+    btnRestore.className = 'btn btn-primary';
+    btnErase.className = 'btn btn-demo';
+  });
+  brushSizeInput.addEventListener('input', (e) => {
+    brushSize = parseInt(e.target.value);
+    brushSizeLabel.textContent = brushSize + 'px';
+  });
+  btnResetMask.addEventListener('click', () => {
+    if (maskCtx && aiMaskImageData) {
+      maskCtx.putImageData(aiMaskImageData, 0, 0);
+      renderComposite();
+    }
+  });
+
+  function renderComposite() {
+    if (!originalImg || !maskCanvas) return;
+    const ctx = resultCanvas.getContext('2d');
+    ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+    
+    // Draw the alpha mask
+    ctx.drawImage(maskCanvas, 0, 0);
+    
+    // Draw original image, keeping only pixels where mask has alpha
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.drawImage(originalImg, 0, 0);
+    
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function getMousePos(evt) {
+    const rect = resultCanvas.getBoundingClientRect();
+    const scaleX = resultCanvas.width / rect.width;
+    const scaleY = resultCanvas.height / rect.height;
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function paintStroke(start, end) {
+    if (!maskCtx) return;
+    maskCtx.beginPath();
+    maskCtx.moveTo(start.x, start.y);
+    maskCtx.lineTo(end.x, end.y);
+    maskCtx.lineWidth = brushSize;
+    maskCtx.lineCap = 'round';
+    maskCtx.lineJoin = 'round';
+    if (currentMode === 'erase') {
+      maskCtx.globalCompositeOperation = 'destination-out';
+      maskCtx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      maskCtx.globalCompositeOperation = 'source-over';
+      maskCtx.strokeStyle = 'rgba(0,0,0,1)';
+    }
+    maskCtx.stroke();
+    renderComposite();
+  }
+
+  const startDrawing = (evt) => {
+    isDrawing = true;
+    lastPos = getMousePos(evt);
+    paintStroke(lastPos, lastPos);
+  };
+
+  const draw = (evt) => {
+    if (!isDrawing) return;
+    evt.preventDefault();
+    const pos = getMousePos(evt);
+    paintStroke(lastPos, pos);
+    lastPos = pos;
+  };
+
+  const stopDrawing = () => {
+    isDrawing = false;
+  };
+
+  resultCanvas.addEventListener('mousedown', startDrawing);
+  resultCanvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', stopDrawing);
+
+  resultCanvas.addEventListener('touchstart', startDrawing, {passive: false});
+  resultCanvas.addEventListener('touchmove', draw, {passive: false});
+  window.addEventListener('touchend', stopDrawing);
+
   
   const statusSection = document.getElementById('statusSection');
   const statusText = document.getElementById('statusText');
@@ -574,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function runTransformers(file) {
     emptyState.style.display = 'none';
     consentState.style.display = 'none';
-    resultImage.style.display = 'none';
+    resultCanvas.style.display = 'none';
     actionSection.style.display = 'none';
     
     statusSection.style.display = 'block';
@@ -590,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const { AutoModel, AutoProcessor, RawImage, env } = window.transformers;
+      
       env.allowLocalModels = false;
       const model_id = 'Xenova/modnet';
       
@@ -610,62 +734,54 @@ document.addEventListener('DOMContentLoaded', () => {
       
       statusText.textContent = 'Processing Image...';
       const fileUrl = URL.createObjectURL(file);
-      const image = await RawImage.fromURL(fileUrl);
+      originalImg = new Image();
+      originalImg.src = fileUrl;
+      await new Promise(r => originalImg.onload = r);
       
-      const inputs = await processor(image);
+      const rawImg = await RawImage.fromURL(fileUrl);
+      const inputs = await processor(rawImg);
       const { output } = await model({ input: inputs.pixel_values });
       
-      // Output is shape [1, 1, 512, 512]
       const outputData = output.data;
       const width = output.dims[3];
       const height = output.dims[2];
 
-      const maskCanvas = document.createElement('canvas');
-      maskCanvas.width = width;
-      maskCanvas.height = height;
-      const maskCtx = maskCanvas.getContext('2d');
-      const maskImageData = maskCtx.createImageData(width, height);
+      const rawAiMaskCanvas = document.createElement('canvas');
+      rawAiMaskCanvas.width = width;
+      rawAiMaskCanvas.height = height;
+      const rawMaskCtx = rawAiMaskCanvas.getContext('2d');
+      const maskData = rawMaskCtx.createImageData(width, height);
 
       for (let i = 0; i < outputData.length; ++i) {
           const val = Math.max(0, Math.min(255, outputData[i] * 255));
           const offset = i * 4;
-          maskImageData.data[offset] = val;
-          maskImageData.data[offset + 1] = val;
-          maskImageData.data[offset + 2] = val;
-          maskImageData.data[offset + 3] = 255;
+          maskData.data[offset] = 0;
+          maskData.data[offset + 1] = 0;
+          maskData.data[offset + 2] = 0;
+          maskData.data[offset + 3] = val; // Alpha channel only
       }
-      maskCtx.putImageData(maskImageData, 0, 0);
+      rawMaskCtx.putImageData(maskData, 0, 0);
 
-      const canvas = document.createElement('canvas');
-      canvas.width = image.width;
-      canvas.height = image.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(maskCanvas, 0, 0, image.width, image.height);
-      const scaledMaskData = ctx.getImageData(0, 0, image.width, image.height).data;
-
-      const imgObj = new Image();
-      imgObj.src = fileUrl;
-      await new Promise(r => imgObj.onload = r);
-      ctx.drawImage(imgObj, 0, 0);
-      const imgData = ctx.getImageData(0, 0, image.width, image.height);
-
-      for (let i = 0; i < imgData.data.length; i += 4) {
-          imgData.data[i + 3] = scaledMaskData[i]; 
-      }
-      ctx.putImageData(imgData, 0, 0);
+      maskCanvas = document.createElement('canvas');
+      maskCanvas.width = originalImg.width;
+      maskCanvas.height = originalImg.height;
+      maskCtx = maskCanvas.getContext('2d');
+      maskCtx.drawImage(rawAiMaskCanvas, 0, 0, originalImg.width, originalImg.height);
       
-      canvas.toBlob(blob => {
-        processedBlobUrl = URL.createObjectURL(blob);
-        resultImage.src = processedBlobUrl;
-        resultImage.style.display = 'block';
-        actionSection.style.display = 'block';
-        
-        statusText.textContent = 'Complete!';
-        statusText.style.color = '#00ffcc';
-        statusPercent.textContent = '100%';
-        progressBarFill.style.width = '100%';
-        progressBarContainer.style.display = 'none';
-      }, 'image/png');
+      aiMaskImageData = maskCtx.getImageData(0, 0, originalImg.width, originalImg.height);
+
+      resultCanvas.width = originalImg.width;
+      resultCanvas.height = originalImg.height;
+      renderComposite();
+
+      resultCanvas.style.display = 'block';
+      actionSection.style.display = 'block';
+      
+      statusText.textContent = 'Complete! Refine edges using the brush tools.';
+      statusText.style.color = '#00ffcc';
+      statusPercent.textContent = '100%';
+      progressBarFill.style.width = '100%';
+      progressBarContainer.style.display = 'none';
       
     } catch (err) {
       console.error(err);
@@ -677,11 +793,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   btnDownload.addEventListener('click', () => {
-    if (!processedBlobUrl) return;
-    const a = document.createElement('a');
-    a.href = processedBlobUrl;
-    a.download = 'tangent_background_removed.png';
-    a.click();
+    resultCanvas.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'tangent_background_removed.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }, 'image/png');
   });
 });
 </script>

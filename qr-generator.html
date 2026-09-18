@@ -49,7 +49,7 @@
 </script>
 
 <!-- QRCode Library (MIT) for Client-Side QR Generation -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 
 
@@ -665,10 +665,11 @@
     border: 1px solid var(--border-color);
   }
   .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: none;
-  }
+      background-color: transparent !important;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: none;
+    }
 
   /* --- SEO & Educational Content --- */
   .seo-article {
@@ -1358,7 +1359,7 @@
       <!-- QR Code Output Preview -->
       <div class="output-section">
         <div class="canvas-wrapper">
-          <canvas id="qrCanvas"></canvas>
+          <div id="qrCanvas"></div>
         </div>
         
         <div class="export-group">
@@ -1497,20 +1498,14 @@
     document.getElementById('fgHex').textContent = fg.toUpperCase();
     document.getElementById('bgHex').textContent = bg.toUpperCase();
 
-    // Ensure canvas size is properly reset
-    qrCanvas.width = size;
-    qrCanvas.height = size;
-    
-    QRCode.toCanvas(qrCanvas, payload, {
+    qrCanvas.innerHTML = '';
+    new QRCode(qrCanvas, {
+      text: payload,
       width: size,
-      margin: 2,
-      errorCorrectionLevel: 'H',
-      color: {
-        dark: fg,
-        light: bg
-      }
-    }, function(error) {
-      if (error) console.error(error);
+      height: size,
+      colorDark: fg,
+      colorLight: bg,
+      correctLevel: QRCode.CorrectLevel.H
     });
   }
 
@@ -1523,16 +1518,21 @@
   function downloadPNG() {
     const link = document.createElement('a');
     link.download = `Tangent_QR_${activeMode}.png`;
-    link.href = qrCanvas.toDataURL('image/png');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const canvas = qrCanvas.querySelector('canvas');
+    if (canvas) {
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 
   async function copyQRImage() {
     const btnText = document.getElementById('copyBtnText');
     try {
-      qrCanvas.toBlob(async (blob) => {
+      const canvas = qrCanvas.querySelector('canvas');
+      if (!canvas) throw new Error("No canvas");
+      canvas.toBlob(async (blob) => {
         const item = new ClipboardItem({ "image/png": blob });
         await navigator.clipboard.write([item]);
         btnText.textContent = "Copied to Clipboard!";

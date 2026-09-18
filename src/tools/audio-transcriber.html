@@ -300,8 +300,9 @@
 </div>
 
 <!-- --- SCRIPTS --- -->
-<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1"></script>
-<script>
+<script type="module">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+
 document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
@@ -384,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     progressBarFill.style.width = '0%';
 
     try {
-      const { pipeline, env } = window.transformers;
+      
       // Disable local models to fetch from HuggingFace hub securely
       env.allowLocalModels = false;
       

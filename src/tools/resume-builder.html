@@ -781,10 +781,10 @@
     .zoom-label { color: #94a3b8; font-size: 0.75rem; font-weight: 600; padding: 0 8px; min-width: 48px; text-align: center; cursor: pointer; user-select: none; }
     .zoom-label:hover { color: #fff; }
     .zoom-divider { width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0 4px; }
-    .paper-stage { overflow: auto !important; cursor: grab; align-items: flex-start !important; justify-content: flex-start !important; }
+    .paper-stage { overflow-y: scroll !important; overflow-x: auto !important; cursor: grab; align-items: flex-start !important; justify-content: flex-start !important; }
     .paper-stage.is-dragging { cursor: grabbing; }
     .paper-stage.fullscreen-mode { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 9999; border-radius: 0; margin: 0; padding: 40px !important; background: rgba(5, 7, 10, 0.95); }
-    .sheet-transform-wrapper { transform-origin: top left; transition: transform 0.15s ease-out; margin: auto; }
+    .sheet-transform-wrapper { transform-origin: top left;  margin: 0 auto; }
     @media print { .zoom-toolbar { display: none !important; } .sheet-transform-wrapper { transform: none !important; width: auto !important; height: auto !important; margin: 0 !important; } }
   </style>
 
@@ -1448,7 +1448,11 @@
 
   // Observe canvas and stage to smoothly adapt when the toolkit sidebar opens or closes
   if (window.ResizeObserver) {
-    const ro = new ResizeObserver(() => fitResumeSheet());
+    let resizeTimer;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => fitResumeSheet(), 50);
+    });
     const stage = document.querySelector('.paper-stage');
     if (stage) ro.observe(stage);
     const canvas = document.querySelector('.app-canvas');

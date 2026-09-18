@@ -256,7 +256,8 @@ def build_all():
             ct = grid_pattern.sub(grid_replacement, ct, count=1)
         
         idx_compiled = shell_template
-        idx_compiled = idx_compiled.replace("<!-- INJECT_HEAD_META -->", hm)
+        canonical_tag = '<link rel="canonical" href="https://runtangent.com/" />\n'
+        idx_compiled = idx_compiled.replace("<!-- INJECT_HEAD_META -->", canonical_tag + hm)
         idx_compiled = idx_compiled.replace("/* INJECT_TOOL_STYLES */", ts)
         idx_compiled = idx_compiled.replace("<!-- INJECT_NAV_LINKS -->", generate_nav_links_html("index.html"))
         idx_compiled = idx_compiled.replace("<!-- INJECT_SIDEBAR -->", generate_sidebar_html(tools, "index.html"))
@@ -308,8 +309,9 @@ def build_all():
 '''
         hm = hm + ld_json
         
+        canonical_tag = f'<link rel="canonical" href="https://runtangent.com/{fname.replace(".html", "")}" />\n'
         t_compiled = shell_template
-        t_compiled = t_compiled.replace("<!-- INJECT_HEAD_META -->", hm)
+        t_compiled = t_compiled.replace("<!-- INJECT_HEAD_META -->", canonical_tag + hm)
         t_compiled = t_compiled.replace("/* INJECT_TOOL_STYLES */", ts)
         t_compiled = t_compiled.replace("<!-- INJECT_NAV_LINKS -->", generate_nav_links_html(fname))
         t_compiled = t_compiled.replace("<!-- INJECT_SIDEBAR -->", generate_sidebar_html(tools, fname))

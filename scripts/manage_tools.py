@@ -125,7 +125,7 @@ def generate_sitemap_xml(tools):
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         '  <!-- Tangent Homepage -->',
         '  <url>',
-        '    <loc>https://misbah-37.github.io/tangent/</loc>',
+        '    <loc>https://runtangent.com/</loc>',
         f'    <lastmod>{today}</lastmod>',
         '    <changefreq>weekly</changefreq>',
         '    <priority>1.0</priority>',
@@ -150,7 +150,7 @@ def generate_sitemap_xml(tools):
         lines.append(f'  <!-- {cat} -->')
         for t in categories[cat]:
             lines.append('  <url>')
-            lines.append(f'    <loc>https://misbah-37.github.io/tangent/{t["filename"]}</loc>')
+            lines.append(f'    <loc>https://runtangent.com/{t["filename"]}</loc>')
             lines.append(f'    <lastmod>{today}</lastmod>')
             lines.append(f'    <changefreq>{t.get("changefreq", "weekly")}</changefreq>')
             lines.append(f'    <priority>{t.get("priority", 0.9):.1f}</priority>')

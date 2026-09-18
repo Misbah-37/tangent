@@ -8,7 +8,7 @@
   </p>
 
   <p align="center">
-    <a href="https://misbah-37.github.io/tangent/"><strong>Explore Live Site &rarr;</strong></a>
+    <a href="https://runtangent.com/"><strong>Explore Live Site &rarr;</strong></a>
     <br />
     <br />
     <img src="https://img.shields.io/badge/Privacy-100%25%20Client--Side-00d2ff?style=flat-square" alt="Privacy" />

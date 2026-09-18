@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://misbah-37.github.io/tangent/sitemap.xml
+Sitemap: https://runtangent.com/sitemap.xml

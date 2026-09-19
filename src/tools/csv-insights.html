@@ -1,464 +1,336 @@
 <!-- --- HEAD_META --- -->
 <title>CSV & Excel Insights Studio | Tangent</title>
-<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
 <link rel="canonical" href="https://runtangent.com/csv-insights">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="CSV Insights Studio | Tangent">
-<meta property="og:description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. No server uploads. 100% private data analytics.">
+<meta property="og:description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
+<!-- Schema.org FAQ Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Tangent CSV Insights Studio",
-  "operatingSystem": "Any",
-  "applicationCategory": "BusinessApplication",
-  "offers": {
-    "@type": "Offer",
-    "price": "0.00",
-    "priceCurrency": "USD"
-  },
-  "description": "Client-side data analytics tool to profile and visualize CSV files locally without cloud uploads."
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is my CSV data uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The CSV Insights Studio runs completely inside your web browser using HTML5 and client-side JavaScript. Your data never leaves your computer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the Auto-Profiler work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When you upload a file, a background Web Worker scans every column to detect data types, calculate averages, and map distributions, generating instant mini-charts without freezing your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I save the charts I build?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Once you build a chart in the Manual Explorer or view the Auto-Profiler, you can click 'Save Chart as Image' to download a high-resolution PNG locally."
+      }
+    }
+  ]
 }
 </script>
 
 <!-- --- TOOL_STYLES --- -->
 <style>
-  /* Local App Canvas Adjustments */
-  .app-canvas { padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
-  
-  .clean-header { text-align: center; margin-bottom: 40px; }
-  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(58, 123, 213, 0.15); color: var(--accent);
+    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; color: var(--text-main); }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-  
+
   /* Dropzone */
-  .dropzone {
-    border: 2px dashed var(--border-color);
-    border-radius: 16px;
-    padding: 80px 20px;
-    text-align: center;
-    background: var(--bg-card);
-    transition: all 0.25s ease;
-    cursor: pointer;
-    margin-bottom: 40px;
-  }
-  .dropzone.dragover { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
-  .dropzone-icon { color: var(--accent); margin-bottom: 20px; }
-  .dropzone-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
-  .dropzone-subtitle { color: var(--text-muted); margin-bottom: 24px; }
+  .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto 40px; }
+  .dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+
+  /* Workspace */
+  .workspace-container { display: none; padding: 0 32px; max-width: 98%; margin: 0 auto; min-height: 700px; }
+  .workspace-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 16px; }
+  .workspace-stats { display: flex; gap: 24px; color: var(--text-muted); font-size: 0.9rem; }
+  .workspace-stats span strong { color: var(--text-main); font-size: 1.1rem; }
   
-  .btn-demo {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-demo:hover { background: var(--bg-panel); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn-outline { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); }
+  .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-  /* Workspace (Hidden initially) */
-  #workspace { display: none; }
-  .workspace-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-  @media (max-width: 960px) {
-    .workspace-grid { grid-template-columns: 1fr; }
-  }
+  /* Tabs */
+  .tabs-nav { display: flex; gap: 8px; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px; display: inline-flex; }
+  .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+  .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Left Panel: Data Dictionary */
-  .data-dict {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    height: 100%;
-    max-height: 800px;
-    overflow-y: auto;
-  }
-  .data-dict-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .col-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 12px;
-    background: var(--bg-panel);
-    border-radius: 6px;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-  }
-  .col-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-  }
-  .col-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Tab 1: Auto Profiler */
+  .profiler-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+  .profile-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; }
+  .profile-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .profile-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .profile-type { font-size: 0.75rem; text-transform: uppercase; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; color: var(--text-muted); font-weight: 600; }
+  .profile-stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+  .profile-stats span { display: flex; flex-direction: column; }
+  .profile-stats span strong { color: var(--text-main); font-size: 0.95rem; }
+  .chart-container-sm { height: 160px; width: 100%; margin-top: 16px; position: relative; }
 
-  /* Right Panel: Main Studio */
-  .studio-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .studio-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-panel);
-  }
-  .tab-btn {
-    padding: 14px 24px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-  }
-  .tab-btn.active {
-    color: var(--text-main);
-    border-bottom-color: var(--accent);
-  }
-  .tab-content { padding: 24px; display: none; }
-  .tab-content.active { display: block; }
+  /* Tab 2: Manual Explorer */
+  .explorer-grid { display: flex; flex-direction: column; gap: 24px; }
+  @media (max-width: 900px) { .explorer-grid { grid-template-columns: 1fr; } }
+  .explorer-sidebar { 
+  background: var(--bg-card); 
+  border: 1px solid var(--border-color); 
+  border-radius: 12px; 
+  padding: 20px; 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 16px; 
+  align-items: end; 
+  margin-bottom: 24px;
+}
+.explorer-sidebar .form-group { margin-bottom: 0; }
+.explorer-sidebar .btn { height: 37px; margin-top: 0 !important; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+  select.form-control { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 36px; }
+  select.form-control option { background-color: #1e293b; color: #ffffff; font-weight: 500; padding: 10px; }
+  .explorer-main { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; width: 100%; overflow-x: auto; display: block; }
+  .chart-container-lg { width: 100%; height: 65vh; min-height: 500px; position: relative; transition: width 0.3s ease; }
 
-  /* Chart Builder Controls */
-  .builder-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 30px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-color);
-  }
-  .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .control-group label {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    font-weight: 700;
-  }
-  .control-group select {
-    background: var(--bg-base);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 12px 14px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    outline: none;
-    appearance: none;
-  }
-  .control-group select:focus { border-color: var(--accent); }
-  
-  /* Chart Canvas Wrapper */
-  .chart-wrapper {
-    position: relative;
-    height: 400px;
-    width: 100%;
-  }
+  /* Tab 3: Raw Data */
+  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; max-height: 600px; }
+  .preview-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
+  .preview-table th { background: rgba(0,0,0,0.2); font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; }
+  .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 
-  /* Data Table */
-  .table-wrapper {
-    overflow-x: auto;
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-  }
-  table.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-  .data-table th {
-    background: var(--bg-panel);
-    position: sticky;
-    top: 0;
-    text-align: left;
-    padding: 12px 16px;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
-  }
-  .data-table td {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
-  }
-  .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+  /* Processing Overlay */
+  #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s ease-in-out infinite; margin-bottom: 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn-primary:hover { opacity: 0.9; }
-
-  /* Close File Button */
-  .btn-close {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    margin-left: auto;
-    margin-right: 16px;
-    align-self: center;
-  }
-  .btn-close:hover { background: rgba(255, 71, 87, 0.1); color: #ff4757; border-color: #ff4757; }
-</style>
+    .color-picker-mini::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-picker-mini::-webkit-color-swatch { border: none; border-radius: 4px; }
+    .btn-download-mini:hover { color: var(--accent) !important; background: rgba(255,255,255,0.05); }
+    </style>
 
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-    <span>100% Client-Side Analytics</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon></svg>
+    CSV Analytics Engine
   </div>
   <h1>CSV Insights Studio</h1>
-  <p>Instantly profile, pivot, and visualize datasets directly in your browser. Zero cloud uploads.</p>
+  <p>Instantly profile columns, build pivot charts, and visualize data securely in your browser. Powered by Web Workers. Zero cloud uploads.</p>
 </div>
 
-<!-- Dropzone Area -->
-<div id="setupArea">
+<div class="dropzone" id="dropzone">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 16px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
+  <h3 style="margin-bottom: 8px; color: var(--text-main); font-size: 1.6rem;">Upload Dataset (CSV)</h3>
+  <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 24px;">Drop your file here or click to browse. Fully client-side processing.</p>
   <input type="file" id="fileInput" accept=".csv" style="display: none;">
-  <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-    <div class="dropzone-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+  <button class="btn btn-outline" style="padding: 10px 24px; font-size: 1.05rem;" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+</div>
+
+<div id="processingOverlay">
+  <div class="spinner"></div>
+  <div style="color: #fff; font-weight: 600; font-size: 1.2rem;">Profiling Dataset...</div>
+  <div style="color: var(--text-muted); font-size: 0.95rem; margin-top: 8px;">Analyzing distributions via Web Worker</div>
+</div>
+
+<div class="workspace-container" id="workspace">
+  <div class="workspace-header">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <button class="btn btn-outline" id="btnCloseFile" style="border-color: rgba(239, 68, 68, 0.4); color: #ef4444; padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; transition: 0.2s;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        Close Dataset
+      </button>
+      <div class="workspace-stats" style="border-left: 1px solid var(--border-color); padding-left: 20px;">
+        <span>Rows: <strong id="statRows">0</strong></span>
+        <span>Columns: <strong id="statCols">0</strong></span>
+      </div>
     </div>
-    <div class="dropzone-title">Drag & Drop CSV File</div>
-    <div class="dropzone-subtitle">or click anywhere in this box to browse local files</div>
-    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
-      <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
-      <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+    <div style="margin-left: auto; flex-shrink: 0; padding-left: 16px; display: flex; align-items: center; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);" title="Adjust Bar Width">
+           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
+           <input type="range" id="chartWidthSlider" min="10" max="150" value="40" style="width: 80px; accent-color: var(--accent); cursor: ew-resize;" title="Adjust Bar Width">
+        </div>
+        <button class="btn" id="btnSaveImage" style="padding: 8px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 210, 255, 0.2);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Save Chart
+      </button>
     </div>
+  </div>
+  <style>
+    #btnCloseFile:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444 !important; }
+  </style>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('tab-auto', this)">Auto-Profiler</button>
+    <button class="tab-btn" onclick="switchTab('tab-manual', this)">Manual Explorer</button>
+    <button class="tab-btn" onclick="switchTab('tab-raw', this)">Raw Data Grid</button>
+  </div>
+
+  <!-- Tab 1: Auto Profiler -->
+  <div class="tab-content active" id="tab-auto">
+    <div class="profiler-grid" id="profilerGrid">
+      <!-- Auto generated cards go here -->
+    </div>
+  </div>
+
+  <!-- Tab 2: Manual Explorer -->
+  <div class="tab-content" id="tab-manual">
+    <div class="explorer-grid">
+      <div class="explorer-sidebar">
+        <div class="form-group">
+          <label>X-Axis (Group By)</label>
+          <select id="selXAxis" class="form-control col-select"></select>
+        </div>
+        <div class="form-group">
+          <label>Y-Axis (Values)</label>
+          <select id="selYAxis" class="form-control col-select"></select>
+        </div>
+        <div class="form-group">
+          <label>Aggregation Method</label>
+          <select id="selAggregation" class="form-control">
+            <option value="sum">Sum</option>
+            <option value="avg">Average</option>
+            <option value="count">Count (Rows)</option>
+            <option value="min">Minimum</option>
+            <option value="max">Maximum</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chart Type</label>
+          <select id="selChartType" class="form-control">
+            <option value="bar">Bar Chart</option>
+            <option value="line">Line Chart</option>
+            <option value="doughnut">Doughnut Chart</option>
+            <option value="scatter">Scatter Plot</option>
+          </select>
+        </div>
+        <button class="btn" id="btnUpdateChart" style="width: 100%; margin-top: 8px;">Render Chart</button>
+      </div>
+      <div class="explorer-main">
+        <div class="chart-container-lg" id="chartScrollWrapper">
+          <canvas id="manualChartCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 3: Raw Data -->
+  <div class="tab-content" id="tab-raw">
+    <div class="table-wrapper">
+      <table class="preview-table">
+        <thead><tr id="rawThead"></tr></thead>
+        <tbody id="rawTbody"></tbody>
+      </table>
+    </div>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Showing first 100 rows.</p>
   </div>
 </div>
 
-<!-- Workspace Area -->
-<div id="workspace">
-  <div class="workspace-grid">
-    
-    <!-- Left Panel: Columns -->
-    <div class="data-dict">
-      <div class="data-dict-title">
-        <span>Data Schema</span>
-        <span id="rowCount" style="font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: var(--bg-panel); padding: 2px 8px; border-radius: 12px;">0 rows</span>
+<!-- Educational & Security Architecture Section -->
+<div class="info-section" style="max-width: 1200px; margin: 60px auto 0; padding: 0 32px;">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
-      <div id="colList">
-        <!-- Columns injected via JS -->
-      </div>
+      <h3>Zero-Cloud Privacy</h3>
+      <p>100% offline architecture guarantees your financial models, customer emails, and private datasets never touch an external server or API.</p>
     </div>
-
-    <!-- Right Panel: Studio -->
-    <div class="studio-panel">
-      
-      <div class="studio-tabs">
-        <div style="display: flex;">
-          <button class="tab-btn active" onclick="switchTab('chart')">Chart Builder</button>
-          <button class="tab-btn" onclick="switchTab('data')">Raw Data Table</button>
-        </div>
-        <button class="btn-close" onclick="resetStudio()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-          Upload New CSV
-        </button>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       </div>
-
-      <!-- Tab: Chart Builder -->
-      <div class="tab-content active" id="tab-chart">
-        <div class="builder-controls">
-          <div class="control-group">
-            <label>Dimension (X-Axis)</label>
-            <select id="selX" onchange="updateChart()"></select>
-          </div>
-          <div class="control-group">
-            <label>Metric (Y-Axis)</label>
-            <select id="selY" onchange="updateChart()"></select>
-          </div>
-          <div class="control-group">
-            <label>Aggregation</label>
-            <select id="selAgg" onchange="updateChart()">
-              <option value="sum">Sum</option>
-              <option value="avg">Average</option>
-              <option value="count">Count</option>
-            </select>
-          </div>
-          <div class="control-group">
-            <label>Sort By</label>
-            <select id="selSort" onchange="updateChart()">
-              <option value="y-desc">Value (Highest to Lowest)</option>
-              <option value="y-asc">Value (Lowest to Highest)</option>
-              <option value="x-asc">Category (A-Z / Chronological)</option>
-            </select>
-          </div>
-          <div class="control-group">
-            <label>Chart Type</label>
-            <select id="selType" onchange="updateChart()">
-              <option value="bar">Bar Chart</option>
-              <option value="line">Line Chart</option>
-              <option value="doughnut">Doughnut Chart</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="chart-wrapper">
-          <div id="downloadControls" style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none; gap: 8px;">
-            <select id="selExportBg" class="btn-demo" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px;">
-              <option value="dark" style="background: #1e293b; color: #f8fafc;">Dark BG</option>
-              <option value="light" style="background: #1e293b; color: #f8fafc;">Light BG</option>
-              <option value="transparent" style="background: #1e293b; color: #f8fafc;">Transparent</option>
-            </select>
-            <button class="btn-demo" style="padding: 6px 12px; font-size: 0.8rem; background: var(--bg-panel);" onclick="downloadChart()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Export Image
-            </button>
-          </div>
-          <canvas id="chartCanvas"></canvas>
-        </div>
-      </div>
-
-      <!-- Tab: Raw Data -->
-      <div class="tab-content" id="tab-data">
-        <div class="table-wrapper">
-          <table class="data-table" id="dataTable">
-            <thead id="dtHead"></thead>
-            <tbody id="dtBody"></tbody>
-          </table>
-        </div>
-        <div style="text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 0.85rem;">
-          Showing top 100 rows preview.
-        </div>
-      </div>
-
+      <h3>Web Worker Profiling</h3>
+      <p>Analyzes column distributions and statistical means using background CPU threads without ever freezing your browser interface.</p>
     </div>
-  </div>
-</div>
-
-<div class="explainer-section" style="max-width: 1000px; margin: 80px auto;">
-  <h2 class="explainer-title" style="text-align: center; margin-bottom: 40px; font-size: 2rem;">How CSV Insights Works</h2>
-  
-  <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px;">
-    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
-      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
       </div>
-      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Local Processing</h3>
-      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">When you drop a CSV file, it is parsed instantly inside your browser's memory using JavaScript. We never upload your raw files to any server.</p>
-    </div>
-    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
-      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      </div>
-      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Automatic Profiling</h3>
-      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">The data dictionary automatically maps column types. We detect whether your columns contain text, numbers, or dates so you can build charts without setup.</p>
-    </div>
-    <div class="feature-card" style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
-      <div class="feature-icon" style="color: var(--accent); margin-bottom: 16px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-      </div>
-      <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Aggregations & Pivots</h3>
-      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Build powerful summary views by selecting a dimension (X-Axis) and metric (Y-Axis). The chart builder handles grouping, sums, and averages on the fly.</p>
+      <h3>Interactive Explorations</h3>
+      <p>Pivot and cross-filter thousands of rows on the fly with instantaneous chart rendering powered by client-side JavaScript.</p>
     </div>
   </div>
 
-  <div class="faq-container">
-    <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
-    
-    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
-      <details style="padding: 16px 20px;">
-        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
-          What is the maximum file size I can upload?
-          <span style="color: var(--text-muted);">+</span>
-        </summary>
-        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
-          Since everything runs locally in your browser's RAM, the maximum file size depends on your computer's memory. For most modern devices, CSV files up to 50MB will process instantly. If you need to analyze massive gigabyte-scale datasets, we recommend our SQL Analytics Studio which uses an optimized WebAssembly engine.
-        </div>
-      </details>
-    </div>
+  <div class="faq-title">Frequently Asked Questions</div>
 
-    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
-      <details style="padding: 16px 20px;">
-        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
-          Is my sensitive financial data safe here?
-          <span style="color: var(--text-muted);">+</span>
-        </summary>
-        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
-          Yes. Absolutely zero data ever leaves your computer. The Tangent CSV Insights Studio uses an architecture called "Client-Side Processing". You can even turn off your internet connection after loading the page, and the tool will continue to work perfectly.
-        </div>
-      </details>
-    </div>
-
-    <div class="faq-item" style="border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; background: var(--bg-panel);">
-      <details style="padding: 16px 20px;">
-        <summary style="font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none;">
-          How does the Light Mode export work?
-          <span style="color: var(--text-muted);">+</span>
-        </summary>
-        <div style="margin-top: 16px; color: var(--text-muted); line-height: 1.6;">
-          When you export a chart using the "Light BG" option, the tool performs a split-second operation: it repaints the grid and text to dark colors, applies a solid white background, captures the screenshot, and then instantly reverts the live display back to Tangent's dark theme. This ensures your presentation slides look perfect without changing your viewing experience.
-        </div>
-      </details>
-    </div>
+  <div class="faq-box">
+    <details>
+      <summary>Is my CSV data uploaded to a server?</summary>
+      <p>No. The CSV Insights Studio runs completely inside your web browser using HTML5 and client-side JavaScript. Your data never leaves your computer. We don't even have a database to store it in.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>How does the Auto-Profiler work?</summary>
+      <p>When you upload a file, a background Web Worker scans every column to detect data types, calculate averages, and map distributions, generating instant mini-charts without locking up your browser.</p>
+    </details>
+  </div>
+  <div class="faq-box">
+    <details>
+      <summary>Can I save the charts I build?</summary>
+      <p>Yes! Once you build a chart in the Manual Explorer or view the Auto-Profiler, you can click 'Save Chart as Image' to download a high-resolution PNG locally for your presentations.</p>
+    </details>
   </div>
 </div>
 
 <!-- --- SCRIPTS --- -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-  let parsedData = [];
-  let columns = [];
-  let colTypes = {};
-  let currentChart = null;
+  // UI State
+  let rawData = [];
+  let currentHeaders = [];
+  let currentStats = null;
+  let activeChart = null; // Manual chart instance
+  let autoCharts = []; // Auto chart instances
 
-  // Icons for data types
-  const iconNum = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
-  const iconStr = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>`;
+  // ChartJS Global Defaults
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+  Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
 
-  // Setup Dropzone
+  // --- Tab Logic ---
+  function switchTab(tabId, btnElement) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btnElement.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+    
+    // Resize charts if needed
+    if (tabId === 'tab-manual' && activeChart) activeChart.resize();
+    if (tabId === 'tab-auto') autoCharts.forEach(c => c.resize());
+  }
+
+  // --- File Upload Logic ---
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
 
-  dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
   dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('dragover'); });
   dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('dragover');
+    e.preventDefault(); dropzone.classList.remove('dragover');
     if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   });
   fileInput.addEventListener('change', (e) => {
@@ -466,383 +338,467 @@
   });
 
   function handleFile(file) {
-    if (!file.name.toLowerCase().endsWith(".csv")) {
-      alert("Please upload a valid CSV file (e.g. data.csv).");
-      return;
-    }
-    dropzone.innerHTML = `<div class="dropzone-title">Parsing CSV...</div>`;
+    if (file.name.split('.').pop().toLowerCase() !== 'csv') return alert("Only CSV files are supported.");
+    
+    document.getElementById('processingOverlay').style.display = 'flex';
     
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      dynamicTyping: true,
       complete: function(results) {
-        processData(results.data, results.meta.fields || []);
-      },
-      error: function(err) {
-        alert("Error parsing CSV: " + err.message);
-        resetStudio();
+        currentHeaders = results.meta.fields || [];
+        rawData = results.data;
+        
+        document.getElementById('statRows').innerText = rawData.length.toLocaleString();
+        document.getElementById('statCols').innerText = currentHeaders.length.toLocaleString();
+        
+        populateRawGrid();
+        populateDropdowns();
+        runWebWorkerProfiler();
       }
     });
   }
 
-  function loadSampleData() {
-    dropzone.innerHTML = `<div class="dropzone-title">Loading Sample...</div>`;
-    const sampleCSV = `Date,Region,Product,Sales,Cost,Profit
-2026-01-01,North America,Laptop,5000,3000,2000
-2026-01-02,Europe,Phone,3200,2000,1200
-2026-01-03,Asia,Tablet,2100,1500,600
-2026-01-04,North America,Phone,4500,2800,1700
-2026-01-05,Europe,Laptop,6000,4000,2000
-2026-01-06,Asia,Laptop,4800,3100,1700
-2026-01-07,North America,Tablet,1500,1000,500
-2026-01-08,Europe,Tablet,1800,1200,600
-2026-01-09,Asia,Phone,3900,2500,1400
-2026-01-10,North America,Laptop,5500,3300,2200`;
-    
-    Papa.parse(sampleCSV, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: function(results) {
-        processData(results.data, results.meta.fields);
-      }
+  function populateDropdowns() {
+    const opts = currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
+    document.querySelectorAll('.col-select').forEach(sel => {
+      sel.innerHTML = opts;
     });
   }
 
-  function processData(data, fields) {
-    if (!data || !fields || !data.length || !fields.length) {
-      alert("Dataset is empty or malformed.");
-      resetStudio();
-      return;
-    }
-    parsedData = data;
-    columns = fields;
+  function populateRawGrid() {
+    document.getElementById('rawThead').innerHTML = currentHeaders.map(h => `<th>${h}</th>`).join('');
+    const sample = rawData.slice(0, 100);
+    document.getElementById('rawTbody').innerHTML = sample.map(row => 
+      '<tr>' + currentHeaders.map(h => `<td>${String(row[h]||'').replace(/</g, '&lt;')}</td>`).join('') + '</tr>'
+    ).join('');
+  }
+
+  // --- Close File Logic ---
+  document.getElementById('btnCloseFile').addEventListener('click', () => {
+    rawData = []; currentHeaders = []; currentStats = null;
+    fileInput.value = '';
     
-    // Auto-detect types based on first non-null row
-    colTypes = {};
-    const categoricalKeywords = ['year', 'id', 'zip', 'code', 'rating', 'month', 'day'];
-    columns.forEach(col => {
-      let type = 'string';
-      for (let i = 0; i < Math.min(data.length, 10); i++) {
-        if (data[i][col] !== null && data[i][col] !== undefined) {
-          type = typeof data[i][col] === 'number' ? 'number' : 'string';
-          break;
-        }
-      }
+    // Destroy charts
+    if(activeChart) { activeChart.destroy(); activeChart = null; }
+    autoCharts.forEach(c => c.destroy()); autoCharts = [];
+    
+    document.getElementById('profilerGrid').innerHTML = '';
+    
+    document.getElementById('workspace').style.display = 'none';
+    document.getElementById('dropzone').style.display = 'block';
+  });
+
+  // --- Web Worker Profiler ---
+  const workerCode = `
+    self.onmessage = function(e) {
+      const { data, headers } = e.data;
+      let stats = {};
       
-      // --- SMART HEURISTIC OVERRIDE ---
-      if (type === 'number') {
-        const lowerCol = col.toLowerCase();
-        if (categoricalKeywords.some(kw => lowerCol.includes(kw))) {
-          type = 'string'; // Force to categorical dimension
-        }
-      }
-      
-      colTypes[col] = type;
-    });
-
-    buildDataDictionary();
-    populateSelects();
-    buildDataTable();
-    
-    document.getElementById('setupArea').style.display = 'none';
-    document.getElementById('workspace').style.display = 'block';
-    
-    // Auto-select first string for X, first number for Y if possible
-    let strCol = columns.find(c => colTypes[c] === 'string') || columns[0];
-    let numCol = columns.find(c => colTypes[c] === 'number') || columns[0];
-    
-    document.getElementById('selX').value = strCol;
-    document.getElementById('selY').value = numCol;
-    updateChart();
-  }
-
-  function buildDataDictionary() {
-    const list = document.getElementById('colList');
-    list.innerHTML = '';
-    columns.forEach(col => {
-      const type = colTypes[col];
-      const div = document.createElement('div');
-      div.className = 'col-item';
-      div.innerHTML = `
-        <div class="col-icon" style="cursor:pointer;" onclick="toggleType('${col}')" title="Click to swap between Text and Number">
-          ${type === 'number' ? iconNum : iconStr}
-        </div>
-        <div class="col-name" title="${col}">${col}</div>
-      `;
-      list.appendChild(div);
-    });
-    document.getElementById('rowCount').textContent = parsedData.length.toLocaleString() + ' rows';
-  }
-
-  function toggleType(col) {
-    colTypes[col] = colTypes[col] === 'number' ? 'string' : 'number';
-    buildDataDictionary();
-    populateSelects();
-    updateChart();
-  }
-
-  function populateSelects() {
-    const selX = document.getElementById('selX');
-    const selY = document.getElementById('selY');
-    
-    const currX = selX.value;
-    const currY = selY.value;
-    
-    selX.innerHTML = ''; selY.innerHTML = '';
-    
-    let hasX = false, hasY = false;
-    columns.forEach(col => {
-      if (colTypes[col] === 'string') {
-        const optX = document.createElement('option');
-        optX.value = col; optX.textContent = col;
-        selX.appendChild(optX);
-        hasX = true;
-      }
-      if (colTypes[col] === 'number') {
-        const optY = document.createElement('option');
-        optY.value = col; optY.textContent = col;
-        selY.appendChild(optY);
-        hasY = true;
-      }
-    });
-
-    if (!hasX) selX.innerHTML = '<option value="">(No Text Columns)</option>';
-    if (!hasY) selY.innerHTML = '<option value="">(No Number Columns)</option>';
-
-    if (currX && Array.from(selX.options).some(o => o.value === currX)) selX.value = currX;
-    if (currY && Array.from(selY.options).some(o => o.value === currY)) selY.value = currY;
-  }
-
-  function buildDataTable() {
-    const head = document.getElementById('dtHead');
-    const body = document.getElementById('dtBody');
-    head.innerHTML = ''; body.innerHTML = '';
-    
-    // Header
-    const trH = document.createElement('tr');
-    columns.forEach(col => {
-      const th = document.createElement('th');
-      th.textContent = col;
-      trH.appendChild(th);
-    });
-    head.appendChild(trH);
-    
-    // Body (top 100)
-    const limit = Math.min(parsedData.length, 100);
-    for (let i = 0; i < limit; i++) {
-      const tr = document.createElement('tr');
-      columns.forEach(col => {
-        const td = document.createElement('td');
-        td.textContent = parsedData[i][col] !== null ? parsedData[i][col] : '';
-        tr.appendChild(td);
+      headers.forEach(h => {
+        stats[h] = { type: 'string', missing: 0, unique: new Set(), numVals: [], strCounts: {} };
       });
-      body.appendChild(tr);
-    }
+
+      for (let i = 0; i < data.length; i++) {
+        let row = data[i];
+        for (let j = 0; j < headers.length; j++) {
+          let h = headers[j];
+          let val = row[h];
+          if (val === undefined || val === null || String(val).trim() === '') {
+            stats[h].missing++;
+            continue;
+          }
+          let strVal = String(val).trim();
+          stats[h].unique.add(strVal);
+          
+          let numVal = parseFloat(strVal);
+          if (!isNaN(numVal) && String(numVal) === strVal) {
+            stats[h].numVals.push(numVal);
+          } else {
+            stats[h].strCounts[strVal] = (stats[h].strCounts[strVal] || 0) + 1;
+          }
+        }
+      }
+
+      let results = {};
+      headers.forEach(h => {
+        let s = stats[h];
+        let totalValued = data.length - s.missing;
+        // Determine type
+        let isNum = s.numVals.length > (totalValued * 0.8);
+        
+        results[h] = { type: isNum ? 'numeric' : 'string', missing: s.missing, uniqueCount: s.unique.size };
+        
+        if (isNum) {
+           s.numVals.sort((a,b) => a-b);
+           results[h].min = s.numVals[0] || 0;
+           results[h].max = s.numVals[s.numVals.length-1] || 0;
+           let sum = s.numVals.reduce((a,b) => a+b, 0);
+           results[h].avg = s.numVals.length ? (sum / s.numVals.length) : 0;
+           
+           // Create 10-bin histogram data
+           let bins = 10;
+           let range = results[h].max - results[h].min;
+           let binSize = range / bins || 1;
+           let dist = Array(bins).fill(0);
+           s.numVals.forEach(v => {
+             let binIdx = Math.floor((v - results[h].min) / binSize);
+             if(binIdx >= bins) binIdx = bins - 1;
+             dist[binIdx]++;
+           });
+           results[h].dist = dist;
+           results[h].labels = Array(bins).fill(0).map((_, i) => (results[h].min + i*binSize).toFixed(1));
+        } else {
+           // Top 5 categories
+           let sorted = Object.entries(s.strCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+           results[h].labels = sorted.map(x => x[0]);
+           results[h].dist = sorted.map(x => x[1]);
+        }
+      });
+
+      self.postMessage({ status: 'success', stats: results });
+    };
+  `;
+  const blob = new Blob([workerCode], { type: 'application/javascript' });
+  const workerUrl = URL.createObjectURL(blob);
+  let worker = null;
+
+  function runWebWorkerProfiler() {
+    if (worker) worker.terminate();
+    worker = new Worker(workerUrl);
+    
+    worker.onmessage = function(e) {
+      if (e.data.status === 'success') {
+        currentStats = e.data.stats;
+        renderAutoProfiler();
+        document.getElementById('processingOverlay').style.display = 'none';
+        document.getElementById('dropzone').style.display = 'none';
+        document.getElementById('workspace').style.display = 'block';
+        
+        // Render initial manual chart
+        renderManualChart();
+      }
+    };
+    worker.postMessage({ data: rawData, headers: currentHeaders });
   }
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-    
-    if (tabId === 'chart') {
-      document.querySelectorAll('.tab-btn')[0].classList.add('active');
-      document.getElementById('tab-chart').classList.add('active');
-    } else {
-      document.querySelectorAll('.tab-btn')[1].classList.add('active');
-      document.getElementById('tab-data').classList.add('active');
-    }
-  }
+  // --- Auto Profiler Render ---
+  function renderAutoProfiler() {
+    const grid = document.getElementById('profilerGrid');
+    grid.innerHTML = '';
+    autoCharts.forEach(c => c.destroy());
+    autoCharts = [];
 
-  function updateChart() {
-    const xCol = document.getElementById('selX').value;
-    const yCol = document.getElementById('selY').value;
-    const agg = document.getElementById('selAgg').value;
-    const type = document.getElementById('selType').value;
-    
-    if (!xCol || !yCol) {
-      if (currentChart) { currentChart.destroy(); currentChart = null; }
-      return;
-    }
-
-    // Grouping & Aggregation Engine
-    const groups = {};
-    parsedData.forEach(row => {
-      let xVal = row[xCol];
-      if (xVal === null || xVal === undefined) xVal = "Unknown";
+    const colorPalette = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
+      currentHeaders.forEach((h, i) => {
+        let themeHex = colorPalette[i % colorPalette.length];
+      let stat = currentStats[h];
+      let card = document.createElement('div');
+      card.className = 'profile-card';
       
+      let statsHtml = '';
+      if(stat.type === 'numeric') {
+         statsHtml = `
+           <div class="profile-stats">
+             <span>Min <strong>${stat.min.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
+             <span>Avg <strong>${stat.avg.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
+             <span>Max <strong>${stat.max.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
+           </div>
+         `;
+      } else {
+         statsHtml = `
+           <div class="profile-stats">
+             <span>Unique Vals <strong>${stat.uniqueCount.toLocaleString()}</strong></span>
+             <span>Missing <strong>${stat.missing.toLocaleString()}</strong></span>
+           </div>
+         `;
+      }
+
+      card.innerHTML = `
+          <div class="profile-header" style="align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+              <div class="profile-title" title="${h}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${h}</div>
+              <div class="profile-type">${stat.type}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+              <input type="color" class="color-picker-mini" value="${themeHex}" title="Change Chart Color" style="width: 20px; height: 20px; border: none; cursor: pointer; padding: 0; background: transparent; border-radius: 4px;">
+              <button class="btn-download-mini" title="Download Chart" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; border-radius: 4px; transition: 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </button>
+            </div>
+          </div>
+          ${statsHtml}
+          <div class="chart-container-sm">
+            <canvas id="autoChart_${i}"></canvas>
+          </div>
+        `;
+      grid.appendChild(card);
+
+      // Render Chart
+      let ctx = document.getElementById(`autoChart_${i}`).getContext('2d');
+      let chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: stat.labels,
+          datasets: [{
+            data: stat.dist,
+            backgroundColor: themeHex,
+              borderColor: 'transparent',
+              borderWidth: 0,
+            borderRadius: 2,
+            barPercentage: 0.95,
+            categoryPercentage: 0.95
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: true } },
+          scales: {
+              x: { 
+                display: true, 
+                grid: { display: false },
+                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxRotation: 45, maxTicksLimit: 6 }
+              },
+              y: { 
+                display: true, 
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxTicksLimit: 4 }
+              }
+            }
+        }
+      });
+      autoCharts.push(chart);
+        
+        let colorPicker = card.querySelector('.color-picker-mini');
+        if (colorPicker) {
+            colorPicker.addEventListener('input', (e) => {
+                chart.data.datasets[0].backgroundColor = e.target.value;
+                chart.update();
+            });
+        }
+        
+        let dlBtn = card.querySelector('.btn-download-mini');
+        if (dlBtn) {
+            dlBtn.addEventListener('click', () => {
+                let c = document.getElementById(`autoChart_${i}`);
+                let nc = document.createElement('canvas');
+                nc.width = c.width + 40;
+                nc.height = c.height + 110;
+                let nctx = nc.getContext('2d');
+                
+                nctx.fillStyle = '#0f172a';
+                nctx.fillRect(0, 0, nc.width, nc.height);
+                
+                nctx.fillStyle = '#f8fafc';
+                nctx.font = '600 16px "Segoe UI", sans-serif';
+                nctx.textAlign = 'left';
+                nctx.fillText(h + ' Profile', 20, 30);
+                
+                if (stat.type === 'numeric') {
+                    nctx.textAlign = 'left';
+                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Min', 20, 55);
+                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.min.toLocaleString(undefined, {maximumFractionDigits: 2}), 20, 75);
+                    
+                    nctx.textAlign = 'center';
+                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Avg', nc.width / 2, 55);
+                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.avg.toLocaleString(undefined, {maximumFractionDigits: 2}), nc.width / 2, 75);
+                    
+                    nctx.textAlign = 'right';
+                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Max', nc.width - 20, 55);
+                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.max.toLocaleString(undefined, {maximumFractionDigits: 2}), nc.width - 20, 75);
+                } else {
+                    nctx.textAlign = 'left';
+                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Unique Vals', 20, 55);
+                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.uniqueCount.toLocaleString(), 20, 75);
+                    
+                    nctx.textAlign = 'right';
+                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Missing', nc.width - 20, 55);
+                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.missing.toLocaleString(), nc.width - 20, 75);
+                }
+                
+                nctx.textAlign = 'left';
+                nctx.drawImage(c, 20, 95);
+                
+                const link = document.createElement('a');
+                let cleanName = h.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                link.download = `tangent_${cleanName}_profile.png`;
+                link.href = nc.toDataURL('image/png');
+                link.click();
+            });
+        }
+    });
+  }
+
+  // --- Manual Explorer Render ---
+  document.getElementById('btnUpdateChart').addEventListener('click', renderManualChart);
+
+  function renderManualChart() {
+    if(!rawData.length) return;
+    const xCol = document.getElementById('selXAxis').value;
+    const yCol = document.getElementById('selYAxis').value;
+    const agg = document.getElementById('selAggregation').value;
+    const type = document.getElementById('selChartType').value;
+
+    let groups = {};
+    for (let i = 0; i < rawData.length; i++) {
+      let row = rawData[i];
+      let xVal = row[xCol];
+      if (xVal === undefined || xVal === null || String(xVal).trim() === '') xVal = 'Unknown';
       let yVal = parseFloat(row[yCol]) || 0;
       
-      if (!groups[xVal]) {
-        groups[xVal] = { sum: 0, count: 0, vals: [] };
-      }
+      if (!groups[xVal]) groups[xVal] = { sum: 0, count: 0, min: yVal, max: yVal };
       groups[xVal].sum += yVal;
       groups[xVal].count += 1;
-      groups[xVal].vals.push(yVal);
-    });
-
-    const labels = Object.keys(groups);
-    let data = [];
-    
-    labels.forEach(lbl => {
-      const g = groups[lbl];
-      if (agg === 'sum') data.push(g.sum);
-      else if (agg === 'count') data.push(g.count);
-      else if (agg === 'avg') data.push(g.count > 0 ? g.sum / g.count : 0);
-    });
-
-    const sortMode = document.getElementById('selSort').value;
-    let combined = labels.map((l, i) => ({ l, v: data[i] }));
-    
-    combined.sort((a, b) => {
-      if (sortMode === 'y-desc') return b.v - a.v;
-      if (sortMode === 'y-asc') return a.v - b.v;
-      if (sortMode === 'x-asc') {
-        return String(a.l).localeCompare(String(b.l), undefined, { numeric: true, sensitivity: 'base' });
-      }
-      return 0;
-    });
-
-    const sortedLabels = combined.map(x => x.l).slice(0, 50); // Limit to top 50
-    const sortedData = combined.map(x => x.v).slice(0, 50);
-
-    const yLabel = `${agg.toUpperCase()} of ${yCol}`;
-    renderChart(sortedLabels, sortedData, type, `${yLabel} by ${xCol}`, xCol, yLabel);
-  }
-
-  function renderChart(labels, data, type, titleText, xLabel, yLabel) {
-    const ctx = document.getElementById('chartCanvas').getContext('2d');
-    if (currentChart) {
-      currentChart.destroy();
+      if (yVal < groups[xVal].min) groups[xVal].min = yVal;
+      if (yVal > groups[xVal].max) groups[xVal].max = yVal;
     }
+
+    let labels = Object.keys(groups);
+    let dataPoints = [];
     
-    // Updated contrast: use off-white for all text
-    Chart.defaults.color = '#e2e8f0'; 
-    Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
-    
-    currentChart = new Chart(ctx, {
+    // Limit to top 50 groups if too many for performance
+    if (labels.length > 50) {
+       labels.sort((a,b) => groups[b].sum - groups[a].sum);
+       labels = labels.slice(0, 50);
+    }
+
+    labels.forEach(l => {
+       let g = groups[l];
+       if (agg === 'sum') dataPoints.push(g.sum);
+       else if (agg === 'avg') dataPoints.push(g.sum / g.count);
+       else if (agg === 'count') dataPoints.push(g.count);
+       else if (agg === 'min') dataPoints.push(g.min);
+       else if (agg === 'max') dataPoints.push(g.max);
+    });
+
+    if (activeChart) activeChart.destroy();
+
+    let wrapper = document.getElementById('chartScrollWrapper');
+    let parent = wrapper.parentElement;
+
+    // Intelligent Chart Optimization Logic
+    if (type === 'doughnut') {
+      wrapper.style.width = '100%';
+      parent.style.overflowX = 'hidden';
+    } else {
+      // Calculate ideal width based on dataset density (guarantees at least 40px per column)
+      let barWidth = parseInt(document.getElementById('chartWidthSlider').value) || 40;
+        let idealWidth = labels.length * barWidth;
+      let minAvailableWidth = parent.clientWidth - 48; // Account for CSS padding
+
+      if (idealWidth > minAvailableWidth) {
+        // High density data: expand chart width and enable horizontal scroll so bars stay legible
+        wrapper.style.width = idealWidth + 'px';
+        parent.style.overflowX = 'auto'; 
+      } else {
+        // Low density data: fit perfectly on screen without scrolling
+        wrapper.style.width = '100%';
+        parent.style.overflowX = 'hidden'; 
+      }
+    }
+
+    let ctx = document.getElementById('manualChartCanvas').getContext('2d');
+    let bgColor = type === 'line' || type === 'scatter' ? 'rgba(58, 123, 213, 0.1)' : 'rgba(58, 123, 213, 0.6)';
+    let borderColor = '#3a7bd5';
+
+    // Multi-color palette for Bars and Doughnuts
+    const colorPalette = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
+    if(type === 'doughnut' || type === 'bar') {
+       bgColor = labels.map((_, i) => colorPalette[i % colorPalette.length]);
+       borderColor = 'transparent';
+    }
+
+    activeChart = new Chart(ctx, {
       type: type,
       data: {
         labels: labels,
         datasets: [{
-          label: titleText,
-          data: data,
-          backgroundColor: [
-            'rgba(0, 210, 255, 0.7)',
-            'rgba(58, 123, 213, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(153, 102, 255, 0.7)'
-          ],
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          borderWidth: 1,
-          tension: 0.3,
-          fill: type === 'line' ? { target: 'origin', above: 'rgba(0, 210, 255, 0.1)' } : false
+          label: `${agg.toUpperCase()} of ${yCol} by ${xCol}`,
+          data: dataPoints,
+          backgroundColor: bgColor,
+          borderColor: borderColor,
+          borderWidth: type === 'bar' ? 1 : 2,
+          barPercentage: 0.95,
+          categoryPercentage: 0.95,
+          maxBarThickness: 100,
+          fill: type === 'line',
+          tension: 0.3
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: type === 'doughnut', position: 'right' }
+          legend: { position: type === 'doughnut' ? 'right' : 'top' }
         },
         scales: type === 'doughnut' ? {} : {
-          x: { 
-            title: { display: true, text: xLabel, color: '#cbd5e1' },
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#e2e8f0' }
+          x: {
+            title: { display: true, text: xCol, color: '#94a3b8', font: { size: 13, weight: '600' }, padding: {top: 10} },
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0,
+              callback: function(value, index, values) {
+                let label = this.getLabelForValue(value);
+                return label.length > 20 ? label.substring(0, 20) + '...' : label;
+              }
+            }
           },
           y: { 
-            title: { display: true, text: yLabel, color: '#cbd5e1' },
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#e2e8f0' },
-            beginAtZero: true
+            title: { display: true, text: `${agg.toUpperCase()} of ${yCol}`, color: '#94a3b8', font: { size: 13, weight: '600' }, padding: {bottom: 10} },
+            grid: { color: 'rgba(255,255,255,0.05)' } 
           }
         }
       }
     });
-    
-    document.getElementById('downloadControls').style.display = 'flex';
   }
 
-  function downloadChart() {
-    const canvas = document.getElementById('chartCanvas');
-    if (!canvas) return;
-    
-    const bgMode = document.getElementById('selExportBg').value;
-    
-    // Temporarily swap to dark text for light mode export
-    if (bgMode === 'light') {
-      Chart.defaults.color = '#334155';
-      if (currentChart.options.scales.x) {
-        currentChart.options.scales.x.title.color = '#1e293b';
-        currentChart.options.scales.x.ticks.color = '#334155';
-        currentChart.options.scales.x.grid.color = 'rgba(0, 0, 0, 0.05)';
-        currentChart.options.scales.y.title.color = '#1e293b';
-        currentChart.options.scales.y.ticks.color = '#334155';
-        currentChart.options.scales.y.grid.color = 'rgba(0, 0, 0, 0.05)';
+  // --- Dynamic Width Slider ---
+    document.getElementById('chartWidthSlider').addEventListener('input', (e) => {
+      if (!activeChart || activeChart.config.type === 'doughnut') return;
+      
+      let val = parseInt(e.target.value);
+      let labelCount = activeChart.data.labels.length;
+      let wrapper = document.getElementById('chartScrollWrapper');
+      let parent = wrapper.parentElement;
+      let minAvailableWidth = parent.clientWidth - 48;
+      
+      let idealWidth = labelCount * val;
+      if (idealWidth > minAvailableWidth) {
+        wrapper.style.width = idealWidth + 'px';
+        parent.style.overflowX = 'auto';
+      } else {
+        wrapper.style.width = '100%';
+        parent.style.overflowX = 'hidden';
       }
-      currentChart.update('none'); // Force synchronous update without animation
-    }
-    
-    // Capture to temp canvas
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
-    const ctx = tempCanvas.getContext('2d');
-    
-    if (bgMode === 'dark') {
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-    } else if (bgMode === 'light') {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-    }
-    
-    ctx.drawImage(canvas, 0, 0);
-    
-    // Trigger Download
-    const url = tempCanvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tangent-insight-chart-${bgMode}.png`;
-    a.click();
-    
-    // Revert back to dark mode styling
-    if (bgMode === 'light') {
-      Chart.defaults.color = '#e2e8f0';
-      if (currentChart.options.scales.x) {
-        currentChart.options.scales.x.title.color = '#cbd5e1';
-        currentChart.options.scales.x.ticks.color = '#e2e8f0';
-        currentChart.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.05)';
-        currentChart.options.scales.y.title.color = '#cbd5e1';
-        currentChart.options.scales.y.ticks.color = '#e2e8f0';
-        currentChart.options.scales.y.grid.color = 'rgba(255, 255, 255, 0.05)';
-      }
-      currentChart.update('none'); // Force synchronous update back
-    }
-  }
+    });
 
-  function resetStudio() {
-    parsedData = []; columns = []; colTypes = {};
-    document.getElementById('workspace').style.display = 'none';
-    document.getElementById('setupArea').style.display = 'block';
     
-    document.getElementById('dropzone').innerHTML = `
-      <div class="dropzone-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-      </div>
-      <div class="dropzone-title">Drag & Drop CSV File</div>
-      <div class="dropzone-subtitle">or click anywhere in this box to browse local files</div>
-      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
-        <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
-        <button class="btn-demo" id="btnDemo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
-      </div>
-    `;
-    fileInput.value = "";
-    document.getElementById('downloadControls').style.display = 'none';
-    if (currentChart) { currentChart.destroy(); currentChart = null; }
-  }
+  document.getElementById('btnSaveImage').addEventListener('click', () => {
+    // Determine which canvas is visible
+    let canvas = null;
+    if (document.getElementById('tab-manual').classList.contains('active')) {
+      canvas = document.getElementById('manualChartCanvas');
+    } else if (document.getElementById('tab-auto').classList.contains('active')) {
+      alert("Please switch to Manual Explorer to download a full-size chart.");
+      return;
+    }
+    
+    if (canvas) {
+      // Create a temporary canvas with white background (to avoid transparent PNG black bg issues)
+      const newCanvas = document.createElement('canvas');
+      newCanvas.width = canvas.width;
+      newCanvas.height = canvas.height;
+      const ctx = newCanvas.getContext('2d');
+      ctx.fillStyle = '#0f172a'; // Match tangent dark theme
+      ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+      ctx.drawImage(canvas, 0, 0);
+
+      const link = document.createElement('a');
+      link.download = 'tangent_chart.png';
+      link.href = newCanvas.toDataURL('image/png');
+      link.click();
+    }
+  });
 </script>

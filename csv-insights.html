@@ -1173,6 +1173,8 @@
       ? `${header} — Top ${MAX_BARS} of ${totalCount.toLocaleString()} Values`
       : `${header} — All Values (${totalCount})`;
 
+    document.getElementById('fullChartModal').style.display = 'flex';
+
     const wrap = document.getElementById('fullChartModalCanvasWrap');
     const parent = wrap.parentElement;
     const minAvailableWidth = parent.clientWidth;
@@ -1215,8 +1217,6 @@
         }
       }
     });
-
-    document.getElementById('fullChartModal').style.display = 'flex';
   }
 
   function closeFullChartModal() {

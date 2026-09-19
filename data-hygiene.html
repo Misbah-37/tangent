@@ -5,9 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="canonical" href="https://runtangent.com/data-hygiene" />
-<title>Data Hygiene Profiler | Tangent</title>
-<meta name="description" content="Instantly profile massive datasets for missing values, duplicate rows, and trailing spaces. Scrub data securely with zero cloud uploads.">
+<title>Data Sanitizer & Profiler | Tangent</title>
+<meta name="description" content="Instantly clean datasets, impute missing values, and deduplicate rows. Scrub data securely with zero cloud uploads via background Web Workers.">
 <link rel="canonical" href="https://runtangent.com/data-hygiene">
+
+
+  <!-- Foundation & Social Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Tangent">
+  <meta property="og:title" content="Data Sanitizer & Profiler | Tangent">
+  <meta property="og:description" content="Instantly clean datasets, impute missing values, and deduplicate rows. Scrub data securely with zero cloud uploads via background Web Workers.">
+  <meta property="og:image" content="https://runtangent.com/social-banner.png">
+
+  <!-- Schema.org FAQ Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What happens to my CSV data when I upload it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Your data never leaves your device. The Data Sanitizer runs entirely in your browser using a background Web Worker, meaning everything is processed inside your local computer's memory. We do not use external APIs or cloud servers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a limit to the dataset size I can clean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The limit is strictly dependent on your device's RAM. Because we utilize Web Workers, the user interface remains responsive, allowing most modern computers to easily process CSV files containing hundreds of thousands of rows."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the deduplication process work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can select 'Exact Row Match', which only removes a row if every single column is identical to another row. Alternatively, you can select 'Specific Key Columns' to deduplicate based on identifiers like Email Addresses or User IDs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is data imputation?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Imputation is the process of replacing missing data with substituted values. Tangent can automatically calculate the Mean (average) or Median of a numeric column and fill in the blank cells for you instantly."
+        }
+      }
+    ]
+  }
+  </script>
 <!-- Structured Data for Data Hygiene Profiler -->
 <script type="application/ld+json">
 {
@@ -41,140 +91,88 @@
     padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
     font-weight: 600; margin-bottom: 16px;
   }
-  .clean-header h1 {
-    font-size: 2.4rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    letter-spacing: -0.03em;
-    color: var(--text-main);
-  }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; color: var(--text-main); }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
 
-  /* Workspace */
-  .hygiene-workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 420px;
-    gap: 24px;
-    min-height: 600px;
-    padding: 0 32px;
-  }
-  @media (max-width: 900px) {
-    .hygiene-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 16px; }
-  }
+  .hygiene-workspace { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; min-height: 700px; padding: 0 32px; align-items: start; }
+  @media (max-width: 900px) { .hygiene-workspace { grid-template-columns: 1fr; padding: 0 16px; } }
 
-  /* Panels */
-  .panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--text-main);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+  .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1); font-weight: 600; display:flex; justify-content:space-between; align-items:center; }
+  .panel-body { padding: 20px; flex: 1; overflow-y: auto; }
 
-  /* Dropzone */
-  .dropzone {
-    border: 2px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 32px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: rgba(255, 255, 255, 0.02);
-  }
-  .dropzone:hover {
-    border-color: var(--accent);
-    background: rgba(58, 123, 213, 0.05);
-  }
-  .dropzone p { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; }
+  /* Accordion styles */
+  .accordion-item { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .accordion-header { background: rgba(255,255,255,0.02); padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; user-select: none; font-size: 0.95rem; }
+  .accordion-header:hover { background: rgba(255,255,255,0.05); }
+  .accordion-content { padding: 16px; display: none; border-top: 1px solid var(--border-color); background: var(--bg-main); }
+  .accordion-content.active { display: block; }
+  .accordion-icon { transition: transform 0.2s; }
+  .accordion-content.active + .accordion-header .accordion-icon { transform: rotate(180deg); }
 
-  /* Buttons */
-  .btn {
-    background: var(--accent); color: #fff; border: none; padding: 10px 16px;
-    border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+  .form-control { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; }
+  select.form-control { 
+    appearance: none; 
+    cursor: pointer; 
   }
-  .btn:hover { opacity: 0.9; }
-  .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
-
-  /* Health Report Status Items */
-  .status-item {
-    padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color); margin-bottom: 12px;
-  }
-  .status-item.warning { border-left: 3px solid var(--accent-amber); }
-  .status-item.success { border-left: 3px solid var(--accent-emerald); }
-  .status-title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; }
-  .status-desc { font-size: 0.85rem; color: var(--text-muted); }
-
-  /* Action Checklist */
-  .action-list { margin-top: 20px; }
-  .action-item {
-    display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;
-    padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px;
-  }
-  .action-item input[type="checkbox"] { margin-top: 4px; accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
-  .action-text h4 { margin: 0 0 4px 0; font-size: 0.95rem; color: var(--text-main); }
-  .action-text p { margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
-
-  /* Explainer & FAQ Styles */
-  .explainer-section {
-    max-width: 1000px;
-    margin: 80px auto 0 auto;
-    padding-top: 60px;
-    border-top: 1px solid var(--border-color);
-  }
-  .explainer-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 40px;
-    text-align: center;
-  }
-  .features-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px;
-  }
-  .feature-card {
-    background: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;
-  }
-  .feature-icon { color: var(--accent); margin-bottom: 16px; }
-  .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
-  .feature-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
-
-  .faq-container { margin-bottom: 60px; }
-  .faq-item {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    margin-bottom: 12px; border-radius: 8px; overflow: hidden;
-  }
-  .faq-question {
-    width: 100%; text-align: left; padding: 20px; background: none; border: none;
-    color: var(--text-main); font-size: 1.05rem; font-weight: 600; cursor: pointer;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .faq-question:hover { background: rgba(255, 255, 255, 0.02); }
-  .faq-answer {
-    padding: 0 20px; max-height: 0; overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;
-  }
-  .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 500px; }
-  .faq-toggle-icon { font-size: 1.5rem; font-weight: 300; transition: transform 0.3s ease; }
-  .faq-item.active .faq-toggle-icon { transform: rotate(45deg); }
   
-  .preview-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap; margin-top: 8px; }
-  .preview-table th, .preview-table td { border: 1px solid var(--border-color); padding: 4px 6px; }
-  .preview-table th { background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600; text-align: left; }
-  .preview-table td { color: var(--text-main); font-family: monospace; }
-  .highlight-anomaly { background: rgba(239, 68, 68, 0.2); color: #fca5a5 !important; white-space: pre; }
+  /* Add custom dropdown arrow for single selects */
+  select.form-control:not([multiple]) {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 36px;
+  }
+  
+  /* Force dark background for native dropdown options so white text remains visible */
+  select.form-control option {
+    background-color: #1e293b;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 10px;
+  }
+  .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 0.85rem; margin-bottom: 12px; cursor: pointer; color: var(--text-muted); line-height: 1.4; }
+  .checkbox-label input { margin-top: 2px; }
+  .checkbox-label span strong { color: var(--text-main); display: block; margin-bottom: 2px; }
+
+  .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); margin-bottom: 24px; }
+  .dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+
+  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
+  .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
+  .preview-table th { background: rgba(255,255,255,0.02); font-weight: 600; white-space: nowrap; color: var(--text-muted); }
+  .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+  .metrics-grid-secondary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+  
+  .metric-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
+  .metric-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
+
+  .metric-card-sm { padding: 8px; }
+  .metric-card-sm .metric-value { font-size: 1.1rem; color: #fff; }
+  .metric-card-sm .metric-label { font-size: 0.65rem; }
+
+  .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); }
+  
+  #processingOverlay { display: none; position: absolute; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 10; align-items: center; justify-content: center; flex-direction: column; border-radius: 12px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s ease-in-out infinite; margin-bottom: 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* Select multiple */
+  select[multiple] { height: 140px; background: rgba(0,0,0,0.3); }
+  select[multiple] option { padding: 8px 10px; border-radius: 4px; margin-bottom: 4px; transition: 0.1s; border: 1px solid transparent; }
+  select[multiple] option:hover { background: rgba(255,255,255,0.05); }
+  select[multiple] option:checked { background: rgba(58, 123, 213, 0.3); border: 1px solid var(--accent); color: #fff; }
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -501,148 +499,261 @@
 
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-    <span>Opt-In Data Cleansing</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 15h18v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6z"></path><path d="M10 19h4"></path></svg>
+    Data Sanitizer Engine
   </div>
-  <h1>Data Hygiene Profiler</h1>
-  <p>Instantly scan datasets for missing values, duplicates, and formatting anomalies. Choose exactly how to clean your data with zero unexpected overwrites.</p>
+  <h1>Data Sanitizer & Profiler</h1>
+  <p>Cleanse datasets, impute missing values, and deduplicate rows. 100% client-side Web Worker execution. Zero cloud uploads.</p>
 </div>
 
 <div class="hygiene-workspace">
-  <!-- Left Panel: Data Ingestion & Audit -->
+  
+  <!-- Recipe Builder Panel -->
   <div class="panel">
     <div class="panel-header">
-      <span>Data Source & Audit</span>
-      <button id="btnClearFile" style="display: none; background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: 600; transition: opacity 0.2s; display: flex; align-items: center; gap: 4px;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        Clear File
+      Recipe Builder
+    </div>
+    <div class="panel-body" style="padding: 16px;">
+      
+      <!-- Structural Repairs -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Structural Repairs
+          <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content active">
+          <label class="checkbox-label">
+            <input type="checkbox" id="chkCleanHeaders" checked>
+            <span><strong>Sanitize Headers</strong> Trim spaces, replace spaces with underscores, and deduplicate identical column names.</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="chkDropEmptyRows" checked>
+            <span><strong>Prune Empty Rows</strong> Remove rows where every single cell is completely blank.</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="chkStripControlChars" checked>
+            <span><strong>Strip Control Characters</strong> Remove invisible ASCII, zero-width spaces, and BOM markers that break database imports.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Formatting & Cleansing -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Formatting & Cleansing
+          <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+          <label class="checkbox-label">
+            <input type="checkbox" id="chkTrimAll" checked>
+            <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
+          </label>
+          <div class="form-group">
+            <label>Standardize Dates (ISO-8601)</label>
+            <select id="selFormatDates" class="form-control col-select" multiple></select>
+            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Attempts to parse and convert selected columns to YYYY-MM-DD.</small>
+          </div>
+          <div class="form-group">
+            <label>Clean Numeric / Currency</label>
+            <select id="selFormatNumbers" class="form-control col-select" multiple></select>
+            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols ($€£) and formatting commas.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missing Data Handling -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Missing Data Handling
+          <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+          <div class="form-group">
+            <label>Drop Rows Missing Critical Data In:</label>
+            <select id="selDropMissingCols" class="form-control col-select" multiple></select>
+          </div>
+          <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <label>Impute (Fill) Missing Data</label>
+            <select id="selImputeCol" class="form-control col-select" style="margin-bottom: 8px;">
+              <option value="">-- Select Column --</option>
+            </select>
+            <select id="selImputeMethod" class="form-control">
+              <option value="mean">Fill with Mean (Numeric)</option>
+              <option value="median">Fill with Median (Numeric)</option>
+              <option value="mode">Fill with Mode (Most Frequent)</option>
+              <option value="custom">Fill with Custom Value</option>
+            </select>
+            <input type="text" id="txtImputeCustom" class="form-control" style="margin-top: 8px; display: none;" placeholder="e.g. Unknown or N/A">
+            <button class="btn btn-outline" style="margin-top: 8px; padding: 6px; font-size: 0.8rem;" id="btnAddImputation">Add Rule</button>
+            <div id="imputationRulesList" style="margin-top: 12px; font-size: 0.8rem; color: var(--accent);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deduplication -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Deduplication
+          <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+          <div class="form-group">
+            <label>Deduplicate Based On:</label>
+            <select id="selDedupMode" class="form-control" onchange="document.getElementById('dedupColsWrapper').style.display = this.value === 'keys' ? 'block' : 'none'">
+              <option value="none">Do Not Deduplicate</option>
+              <option value="exact">Exact Row Match (All Columns)</option>
+              <option value="keys">Specific Key Columns</option>
+            </select>
+          </div>
+          <div class="form-group" id="dedupColsWrapper" style="display: none;">
+            <label>Select Key Columns (Must match exactly)</label>
+            <select id="selDedupCols" class="form-control col-select" multiple></select>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" id="btnRunRecipe" style="margin-top: 16px;" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        Execute Recipe Pipeline
       </button>
+
+    </div>
+  </div>
+
+  <!-- Preview & Dashboard Panel -->
+  <div class="panel" style="position: relative;">
+    <div id="processingOverlay">
+      <div class="spinner"></div>
+      <div style="color: #fff; font-weight: 600; font-size: 1.1rem;">Processing Dataset...</div>
+      <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">Running Web Worker Pipeline</div>
+    </div>
+
+    <div class="panel-header">
+      Workspace & Preview
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" id="btnClear" style="width: auto; padding: 6px 12px; font-size: 0.85rem; background: var(--bg-main);" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          Close File
+        </button>
+        <button class="btn" id="btnExport" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download CSV
+        </button>
+      </div>
     </div>
     <div class="panel-body">
       
-      <div class="dropzone" id="fileDropzone" onclick="document.getElementById('fileInput').click()">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-        <p>Drop a CSV file here to scan for anomalies</p>
+      <div class="dropzone" id="dropzone">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 12px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
+        <h3 style="margin-bottom: 8px; color: var(--text-main);">Upload Dataset (CSV)</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Drop your file here or click to browse. Processes securely in your browser RAM.</p>
+        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+        <button class="btn btn-outline" style="width: auto;" onclick="document.getElementById('fileInput').click()">Browse Files</button>
       </div>
-      <input type="file" id="fileInput" accept=".csv" style="display: none;">
-      
-      <div id="auditReport" style="margin-top: 24px; display: none;">
-        <h4 style="color: var(--text-main); margin-bottom: 12px; font-size: 0.95rem;">Health Diagnostics</h4>
-        <div id="auditMetrics">
-          <!-- Populated dynamically -->
+
+      <div id="dashboardArea" style="display: none;">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value" id="statRowsIn">0</div>
+            <div class="metric-label">Input Rows</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="statRowsOut">0</div>
+            <div class="metric-label">Output Rows</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="statCols">0</div>
+            <div class="metric-label">Columns</div>
+          </div>
+        </div>
+
+        <div class="metrics-grid-secondary">
+          <div class="metric-card metric-card-sm">
+            <div class="metric-value" id="statEmptyDropped">0</div>
+            <div class="metric-label">Empty Dropped</div>
+          </div>
+          <div class="metric-card metric-card-sm">
+            <div class="metric-value" id="statMissingDropped">0</div>
+            <div class="metric-label">Missing Dropped</div>
+          </div>
+          <div class="metric-card metric-card-sm">
+            <div class="metric-value" id="statDeduped">0</div>
+            <div class="metric-label">Duplicates Dropped</div>
+          </div>
+          <div class="metric-card metric-card-sm">
+            <div class="metric-value" id="statImputed">0</div>
+            <div class="metric-label">Values Imputed</div>
+          </div>
+        </div>
+
+        <h4 style="margin-bottom: 8px; color: var(--text-main);">Live Data Preview (First 15 Rows)</h4>
+        <div class="table-wrapper">
+          <table class="preview-table" id="previewTable">
+            <thead><tr id="previewThead"></tr></thead>
+            <tbody id="previewTbody"></tbody>
+          </table>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Right Panel: Opt-In Fixes & Export -->
-  <div class="panel" style="position: relative;">
-    
-    <div id="editorLock" style="position: absolute; inset: 0; background: rgba(26, 29, 39, 0.95); backdrop-filter: blur(2px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      <h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1.1rem;">Sanitization Locked</h3>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Drop a file to generate a hygiene report.</p>
-    </div>
-
-    <div class="panel-header">
-      <span>Action Sandbox</span>
-      <button class="btn" id="btnExport" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Apply Fixes & Export CSV
-      </button>
-    </div>
-    
-    <div class="panel-body">
-      <div style="background: rgba(58, 123, 213, 0.1); border: 1px solid rgba(58, 123, 213, 0.3); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; gap: 12px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <span style="font-size: 0.9rem; color: var(--text-main); line-height: 1.4;">Zero data will be modified unless you explicitly opt-in. Select the automated fixes below that you wish to apply to your dataset before exporting.</span>
-      </div>
-
-      <div class="action-list">
-        <!-- Trim Spaces -->
-        <label class="action-item">
-          <input type="checkbox" id="chkTrimSpaces">
-          <div class="action-text">
-            <h4>Trim Trailing & Leading Spaces</h4>
-            <p>Removes invisible whitespace surrounding text values (e.g., converting <code>" New York "</code> to <code>"New York"</code>) which often breaks database joins.</p>
-          </div>
-        </label>
-        
-        <!-- Drop Nulls -->
-        <label class="action-item">
-          <input type="checkbox" id="chkDropNulls">
-          <div class="action-text">
-            <h4>Drop Rows with Missing Data</h4>
-            <p>Completely removes any row that contains an empty string or Null value. Only use this if you require strict 100% data completion.</p>
-          </div>
-        </label>
-
-        <!-- Deduplicate -->
-        <label class="action-item">
-          <input type="checkbox" id="chkDeduplicate">
-          <div class="action-text">
-            <h4>Remove Exact Duplicate Rows</h4>
-            <p>Scans every column of every row. If two rows are perfectly identical, the duplicate is purged from the final export.</p>
-          </div>
-        </label>
-
-      </div>
-    </div>
-  </div>
 </div>
 
-<div class="explainer-section">
-  <h2 class="explainer-title">How Data Hygiene Works</h2>
+
+  <!-- Educational & Security Architecture Section -->
+  <div class="info-section" style="max-width: 1200px; margin: 60px auto 0; padding: 0 32px;">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <h3>Zero-Cloud Privacy</h3>
+        <p>100% offline architecture guarantees your financial models, customer emails, and private datasets never touch an external server or API.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <h3>Web Worker Performance</h3>
+        <p>Processes hundreds of thousands of rows smoothly via background CPU threading without ever freezing your browser interface.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        </div>
+        <h3>Smart Data Imputation</h3>
+        <p>Automatically fix gaps in your analytics by calculating Means and Medians on the fly to fill missing blanks instantly.</p>
+      </div>
+    </div>
   
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-      </div>
-      <h3>Strict Advisor Principle</h3>
-      <p>Many spreadsheet apps try to "be helpful" by silently converting numbers into dates or dropping trailing zeros. This tool is built to explicitly forbid silent mutations. We flag the issues; you choose what to fix.</p>
+    <div class="faq-title">Frequently Asked Questions</div>
+  
+    <div class="faq-box">
+      <details>
+        <summary>What happens to my CSV data when I upload it?</summary>
+        <p>Your data never leaves your device. The Data Sanitizer runs entirely in your browser using a background Web Worker, meaning everything is processed inside your local computer's memory. We do not use external APIs or cloud servers.</p>
+      </details>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      </div>
-      <h3>Opt-In Sanitization</h3>
-      <p>Data anomalies aren't always mistakes—sometimes a missing value means "Not Applicable". By requiring explicit checkboxes for every cleaning operation, you never accidentally destroy intentional data structure.</p>
+    <div class="faq-box">
+      <details>
+        <summary>Is there a limit to the dataset size I can clean?</summary>
+        <p>The limit is strictly dependent on your device's RAM. Because we utilize Web Workers, the user interface remains responsive, allowing most modern computers to easily process CSV files containing hundreds of thousands of rows.</p>
+      </details>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-      </div>
-      <h3>Local RAM Processing</h3>
-      <p>When you drop a 50MB CSV file, it is parsed row-by-row locally in your browser's RAM via JavaScript streams. We never upload your raw files to any server to profile them.</p>
+    <div class="faq-box">
+      <details>
+        <summary>How does the deduplication process work?</summary>
+        <p>You can select 'Exact Row Match', which only removes a row if every single column is identical to another row. Alternatively, you can select 'Specific Key Columns' to deduplicate based on identifiers like Email Addresses or User IDs.</p>
+      </details>
     </div>
-  </div>
-
-  <div class="faq-container">
-    <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
-    
-    <div class="faq-item">
-      <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-        Does "Drop Missing Data" affect the original file?
-        <span class="faq-toggle-icon">+</span>
-      </button>
-      <div class="faq-answer">
-        <p>No. Browsers cannot overwrite local files on your hard drive. When you check "Drop Rows" and click Export, it generates a brand new CSV file inside your browser's memory and downloads it to your Downloads folder.</p>
-      </div>
-    </div>
-    
-    <div class="faq-item">
-      <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-        Why use this over Excel or Python Pandas?
-        <span class="faq-toggle-icon">+</span>
-      </button>
-      <div class="faq-answer">
-        <p>Excel often struggles with large datasets and is notorious for auto-formatting data without permission. Python Pandas is incredibly powerful, but requires installing Python, setting up virtual environments, and writing code just to trim a trailing space. This tool offers the power of Python data cleaning, with zero setup.</p>
-      </div>
+    <div class="faq-box">
+      <details>
+        <summary>What is data imputation?</summary>
+        <p>Imputation is the process of replacing missing data with substituted values. Tangent can automatically calculate the Mean (average) or Median of a numeric column and fill in the blank cells for you instantly.</p>
+      </details>
     </div>
   </div>
-</div>
 
   <!-- Standard Global Footer -->
   <footer class="global-footer">
@@ -662,18 +773,52 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
-  const dropzone = document.getElementById('fileDropzone');
-  const fileInput = document.getElementById('fileInput');
-  
   let rawData = [];
-  let headers = [];
-  let fileName = "cleaned_data.csv";
+  let currentHeaders = [];
+  let processedData = [];
+  let processedHeaders = [];
+  let imputationRules = [];
+  let originalFileName = "data.csv";
+
+  // UI Interactions
+  function toggleAccordion(header) {
+    const content = header.nextElementSibling;
+    content.classList.toggle('active');
+  }
+
+  document.getElementById('selImputeMethod').addEventListener('change', (e) => {
+    document.getElementById('txtImputeCustom').style.display = e.target.value === 'custom' ? 'block' : 'none';
+  });
+
+  document.getElementById('btnAddImputation').addEventListener('click', () => {
+    const col = document.getElementById('selImputeCol').value;
+    const method = document.getElementById('selImputeMethod').value;
+    const customVal = document.getElementById('txtImputeCustom').value;
+    
+    if(!col) return alert("Select a column first.");
+    if(method === 'custom' && !customVal) return alert("Enter a custom value.");
+    
+    // Remove existing rule for this col if exists
+    imputationRules = imputationRules.filter(r => r.col !== col);
+    imputationRules.push({ col, method, customVal });
+    
+    renderImputationRules();
+  });
+
+  function renderImputationRules() {
+    const list = document.getElementById('imputationRulesList');
+    list.innerHTML = imputationRules.map(r => `<div>&bull; ${r.col}: ${r.method} ${r.method==='custom'?`("${r.customVal}")`:''}</div>`).join('');
+  }
+
+  // File Handling
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
 
   dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--accent)"; });
-  dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = "rgba(255, 255, 255, 0.2)"; });
+  dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = "var(--border-color)"; });
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
-    dropzone.style.borderColor = "rgba(255, 255, 255, 0.2)";
+    dropzone.style.borderColor = "var(--border-color)";
     if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   });
   fileInput.addEventListener('change', (e) => {
@@ -682,215 +827,336 @@
 
   function handleFile(file) {
     if (file.name.split('.').pop().toLowerCase() !== 'csv') {
-      alert("Currently only CSV files are supported for hygiene profiling.");
-      return;
+      return alert("Only CSV files are supported.");
     }
+    originalFileName = file.name;
     
-    fileName = file.name.replace('.csv', '_cleaned.csv');
+    document.getElementById('dropzone').style.display = 'none';
+    document.getElementById('dashboardArea').style.display = 'block';
     
-    // UI Unlock
-    dropzone.querySelector('p').textContent = `Loaded: ${file.name}`;
-    document.getElementById('editorLock').style.display = 'none';
-    document.getElementById('btnExport').disabled = false;
-    document.getElementById('auditReport').style.display = 'block';
-    document.getElementById('btnClearFile').style.display = 'flex';
-    document.getElementById('auditMetrics').innerHTML = `<div class="status-item"><div class="status-title">Scanning Data...</div><div class="status-desc">Parsing rows and profiling columns...</div></div>`;
-    
-    // Parse File
     Papa.parse(file, {
       header: true,
-      skipEmptyLines: true,
+      skipEmptyLines: false, // We handle empty rows in the pipeline
       complete: function(results) {
-        headers = results.meta.fields;
+        currentHeaders = results.meta.fields || [];
         rawData = results.data;
-        runAudit();
-      },
-      error: function(err) {
-        document.getElementById('auditMetrics').innerHTML = `<div class="status-item warning"><div class="status-title">Parse Error</div><div class="status-desc">${err.message}</div></div>`;
+        populateDropdowns();
+        
+        // Initial preview
+        processedData = rawData.slice(0, 15);
+        processedHeaders = [...currentHeaders];
+        updatePreview(processedHeaders, processedData);
+        updateStats(rawData.length, rawData.length, currentHeaders.length, {emptyDropped:0, missingDropped:0, deduped:0, imputed:0});
+        
+        document.getElementById('btnRunRecipe').disabled = false;
+        document.getElementById('btnExport').disabled = false;
+        document.getElementById('btnClear').disabled = false;
       }
     });
   }
 
-  function runAudit() {
-    let nullRowsCount = 0;
-    let spacedCellsCount = 0;
-    let duplicateRowsCount = 0;
-    let rowHashes = new Map();
+  function populateDropdowns() {
+    const selects = document.querySelectorAll('.col-select');
+    let opts = '<option value="">-- Select --</option>' + currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
+    let multiOpts = currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
     
-    let spaceSample = [];
-    let nullSample = [];
-    let duplicateSample = [];
-
-    for (let i = 0; i < rawData.length; i++) {
-      let row = rawData[i];
-      let rowString = "";
-      let rowHasNull = false;
-      let rowHasSpace = false;
-      
-      for (let key of headers) {
-        let val = row[key];
-        
-        if (val === null || val === undefined || String(val).trim() === "") {
-          rowHasNull = true;
-        } 
-        else if (typeof val === 'string' && (val.startsWith(' ') || val.endsWith(' '))) {
-          rowHasSpace = true;
-          spacedCellsCount++;
-        }
-        
-        rowString += val + "|";
-      }
-
-      if (rowHasNull) {
-        nullRowsCount++;
-        if (nullSample.length < 3) nullSample.push(row);
-      }
-      
-      if (rowHasSpace) {
-        if (spaceSample.length < 3) spaceSample.push(row);
-      }
-
-      if (rowHashes.has(rowString)) {
-        duplicateRowsCount++;
-        if (duplicateSample.length < 4) { // Keep up to 2 pairs of duplicates
-          let orig = rowHashes.get(rowString);
-          if (!duplicateSample.includes(orig)) {
-            duplicateSample.push(orig); // The original we saw earlier
-            duplicateSample.push(row);  // The duplicate we just found
-          }
-        }
-      } else {
-        rowHashes.set(rowString, row);
-      }
-    }
-
-    const renderTable = (sampleData, highlightNull, highlightSpace) => {
-      let thead = headers.map(h => `<th>${h}</th>`).join('');
-      
-      let tbody = sampleData.map(row => {
-        let tr = headers.map(h => {
-          let v = row[h];
-          let isNull = (v === null || v === undefined || String(v).trim() === "");
-          let isSpace = (typeof v === 'string' && (v.startsWith(' ') || v.endsWith(' ')));
-          let cssClass = ((highlightNull && isNull) || (highlightSpace && isSpace)) ? 'highlight-anomaly' : '';
-          return `<td class="${cssClass}">${v !== null && v !== undefined ? v : ''}</td>`;
-        }).join('');
-        return `<tr>${tr}</tr>`;
-      }).join('');
-      
-      return `
-        <details style="margin-top: 12px; font-size: 0.8rem;">
-          <summary style="cursor: pointer; color: var(--accent); font-weight: 600;">View Sample Rows</summary>
-          <div style="margin-top: 8px; overflow-x: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px;">
-            <table class="preview-table">
-              <thead><tr>${thead}</tr></thead>
-              <tbody>${tbody}</tbody>
-            </table>
-          </div>
-        </details>
-      `;
-    };
-
-    let html = `
-      <div class="status-item" style="background: rgba(255,255,255,0.02);">
-        <div class="status-title">Total Shape</div>
-        <div class="status-desc">${rawData.length.toLocaleString()} rows • ${headers.length} columns</div>
-      </div>
-      
-      <div class="status-item ${spacedCellsCount > 0 ? 'warning' : 'success'}">
-        <div class="status-title">${spacedCellsCount > 0 ? '⚠️ Trailing Spaces Detected' : '✅ Spacing Clean'}</div>
-        <div class="status-desc">${spacedCellsCount.toLocaleString()} cells contain hidden leading or trailing spaces.</div>
-        ${spacedCellsCount > 0 ? renderTable(spaceSample, false, true) : ''}
-      </div>
-
-      <div class="status-item ${nullRowsCount > 0 ? 'warning' : 'success'}">
-        <div class="status-title">${nullRowsCount > 0 ? '⚠️ Missing Data Detected' : '✅ Data Complete'}</div>
-        <div class="status-desc">${nullRowsCount.toLocaleString()} rows contain at least one null or empty cell.</div>
-        ${nullRowsCount > 0 ? renderTable(nullSample, true, false) : ''}
-      </div>
-
-      <div class="status-item ${duplicateRowsCount > 0 ? 'warning' : 'success'}">
-        <div class="status-title">${duplicateRowsCount > 0 ? '⚠️ Duplicates Detected' : '✅ No Duplicates'}</div>
-        <div class="status-desc">${duplicateRowsCount.toLocaleString()} completely identical rows found.</div>
-        ${duplicateRowsCount > 0 ? renderTable(duplicateSample, false, false) : ''}
-      </div>
-    `;
-
-    document.getElementById('auditMetrics').innerHTML = html;
+    selects.forEach(sel => {
+      sel.innerHTML = sel.hasAttribute('multiple') ? multiOpts : opts;
+    });
   }
 
-  // Export & Clean Logic
-  document.getElementById('btnExport').addEventListener('click', () => {
-    if (rawData.length === 0) return;
+  function getMultiSelectValues(id) {
+    const sel = document.getElementById(id);
+    return Array.from(sel.selectedOptions).map(opt => opt.value);
+  }
 
-    let cleanedData = [];
-    let rowHashes = new Set();
+  // Preview Render
+  function updatePreview(headers, data) {
+    const thead = document.getElementById('previewThead');
+    const tbody = document.getElementById('previewTbody');
     
-    let doTrim = document.getElementById('chkTrimSpaces').checked;
-    let doDropNulls = document.getElementById('chkDropNulls').checked;
-    let doDedup = document.getElementById('chkDeduplicate').checked;
-
-    for (let i = 0; i < rawData.length; i++) {
-      let row = rawData[i];
-      let newRow = {};
-      let hasNull = false;
-      let rowString = "";
-
-      for (let key of headers) {
-        let val = row[key];
-        
-        // Trim Spaces
-        if (doTrim && typeof val === 'string') {
-          val = val.trim();
-        }
-        
-        // Null Check
-        if (val === null || val === undefined || String(val) === "") {
-          hasNull = true;
-        }
-        
-        newRow[key] = val;
-        rowString += val + "|";
-      }
-
-      // Drop rows with Nulls
-      if (doDropNulls && hasNull) continue;
-
-      // Drop Duplicate Rows
-      if (doDedup) {
-        if (rowHashes.has(rowString)) continue;
-        rowHashes.add(rowString);
-      }
-
-      cleanedData.push(newRow);
+    thead.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+    
+    let html = '';
+    const displayRows = data.slice(0, 15);
+    for (let row of displayRows) {
+      html += '<tr>' + headers.map(h => `<td>${row[h] !== undefined && row[h] !== null ? String(row[h]).replace(/</g, '&lt;') : ''}</td>`).join('') + '</tr>';
     }
+    tbody.innerHTML = html;
+  }
 
-    // Unparse and Download
-    let csvString = Papa.unparse(cleanedData);
-    let blob = new Blob([csvString], { type: 'text/csv' });
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
+  function updateStats(inCount, outCount, colCount, audit) {
+    document.getElementById('statRowsIn').innerText = inCount.toLocaleString();
+    document.getElementById('statRowsOut').innerText = outCount.toLocaleString();
+    document.getElementById('statCols').innerText = colCount.toLocaleString();
+    
+    if (audit) {
+      document.getElementById('statEmptyDropped').innerText = audit.emptyDropped.toLocaleString();
+      document.getElementById('statMissingDropped').innerText = audit.missingDropped.toLocaleString();
+      document.getElementById('statDeduped').innerText = audit.deduped.toLocaleString();
+      document.getElementById('statImputed').innerText = audit.imputed.toLocaleString();
+    }
+  }
+
+  // The Web Worker Code (Embedded via Blob)
+  const workerCode = `
+    self.onmessage = function(e) {
+      const { data, headers, recipe } = e.data;
+      
+      let newHeaders = [...headers];
+      let rows = data;
+      let audit = { emptyDropped: 0, missingDropped: 0, deduped: 0, imputed: 0 };
+
+      try {
+        // 1. Structural Pass (Headers)
+        if (recipe.structure.cleanHeaders) {
+          const seen = new Set();
+          newHeaders = newHeaders.map(h => {
+             let clean = h.trim().replace(/\\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+             if (!clean) clean = 'col';
+             let finalH = clean;
+             let count = 1;
+             while(seen.has(finalH)) {
+               finalH = clean + '_' + count;
+               count++;
+             }
+             seen.add(finalH);
+             return finalH;
+          });
+        }
+
+        // Remap data to new headers if changed, and clone to avoid mutating original ref
+        let outRows = [];
+        for (let i=0; i < rows.length; i++) {
+           let newRow = {};
+           let isEmpty = true;
+           for (let j=0; j < headers.length; j++) {
+             let val = rows[i][headers[j]];
+             newRow[newHeaders[j]] = val;
+             if (val !== undefined && val !== null && String(val).trim() !== "") isEmpty = false;
+           }
+           
+           if (recipe.structure.dropEmptyRows && isEmpty) {
+               audit.emptyDropped++;
+               continue;
+           }
+           outRows.push(newRow);
+        }
+        rows = outRows;
+
+        // 2. Data Cleansing & Formatting Pass
+        const { trimAll, stripControl, dateCols, numberCols } = recipe.formats;
+        const cRegex = /[\\x00-\\x1F\\x7F]/g;
+        
+        for (let i=0; i < rows.length; i++) {
+           let row = rows[i];
+           for (let h of newHeaders) {
+              let val = row[h];
+              if (val === undefined || val === null) continue;
+              
+              let strVal = String(val);
+              
+              if (stripControl) strVal = strVal.replace(cRegex, '');
+              if (trimAll) strVal = strVal.trim();
+              
+              if (dateCols.includes(h) && strVal) {
+                 let d = new Date(strVal);
+                 if (!isNaN(d.getTime())) {
+                   strVal = d.toISOString().split('T')[0];
+                 }
+              }
+              
+              if (numberCols.includes(h) && strVal) {
+                 let cleanNum = strVal.replace(/[^0-9.-]/g, '');
+                 if(cleanNum) strVal = cleanNum;
+              }
+
+              row[h] = strVal;
+           }
+        }
+
+        // 3. Missing Data Pass
+        const dropMissing = recipe.missing.dropMissingCols;
+        if (dropMissing.length > 0) {
+           let beforeCount = rows.length;
+           rows = rows.filter(r => {
+             for (let c of dropMissing) {
+                let idx = headers.indexOf(c);
+                if (idx > -1) {
+                  let newCol = newHeaders[idx];
+                  if (!r[newCol] || String(r[newCol]).trim() === "") return false;
+                }
+             }
+             return true;
+           });
+           audit.missingDropped = beforeCount - rows.length;
+        }
+
+        const imputation = recipe.missing.rules;
+        if (imputation.length > 0) {
+           // Calculate stats per column
+           let stats = {};
+           for (let rule of imputation) {
+              let idx = headers.indexOf(rule.col);
+              if(idx === -1) continue;
+              let newCol = newHeaders[idx];
+              
+              if (rule.method === 'mean' || rule.method === 'median') {
+                 let vals = [];
+                 for (let r of rows) {
+                    let v = parseFloat(r[newCol]);
+                    if(!isNaN(v)) vals.push(v);
+                 }
+                 vals.sort((a,b) => a-b);
+                 if(vals.length > 0) {
+                   stats[newCol] = {
+                      mean: vals.reduce((a,b)=>a+b, 0) / vals.length,
+                      median: vals[Math.floor(vals.length / 2)]
+                   };
+                 }
+              } else if (rule.method === 'mode') {
+                 let counts = {};
+                 let maxCount = 0;
+                 let mode = "";
+                 for (let r of rows) {
+                    let v = String(r[newCol]||"").trim();
+                    if(v) {
+                       counts[v] = (counts[v] || 0) + 1;
+                       if(counts[v] > maxCount) { maxCount = counts[v]; mode = v; }
+                    }
+                 }
+                 stats[newCol] = { mode };
+              }
+           }
+
+           // Apply Imputation
+           for (let i=0; i < rows.length; i++) {
+              let r = rows[i];
+              for (let rule of imputation) {
+                 let idx = headers.indexOf(rule.col);
+                 if(idx === -1) continue;
+                 let newCol = newHeaders[idx];
+                 let val = String(r[newCol]||"").trim();
+                 
+                 if (val === "") {
+                    if (rule.method === 'custom') { r[newCol] = rule.customVal; audit.imputed++; }
+                    else if (rule.method === 'mean' && stats[newCol]) { r[newCol] = stats[newCol].mean.toFixed(2); audit.imputed++; }
+                    else if (rule.method === 'median' && stats[newCol]) { r[newCol] = stats[newCol].median; audit.imputed++; }
+                    else if (rule.method === 'mode' && stats[newCol]) { r[newCol] = stats[newCol].mode; audit.imputed++; }
+                 }
+              }
+           }
+        }
+
+        // 4. Deduplication Pass
+        const { dedupMode, dedupCols } = recipe.dedup;
+        if (dedupMode !== 'none') {
+           let beforeDedup = rows.length;
+           const seen = new Set();
+           rows = rows.filter(r => {
+              let key = "";
+              if (dedupMode === 'exact') {
+                 key = newHeaders.map(h => r[h]).join('|');
+              } else if (dedupMode === 'keys') {
+                 key = dedupCols.map(c => {
+                    let idx = headers.indexOf(c);
+                    return idx > -1 ? r[newHeaders[idx]] : "";
+                 }).join('|');
+              }
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+           });
+           audit.deduped = beforeDedup - rows.length;
+        }
+
+        self.postMessage({ status: 'success', data: rows, headers: newHeaders, audit });
+      } catch (err) {
+        self.postMessage({ status: 'error', message: err.message });
+      }
+    };
+  `;
+  const blob = new Blob([workerCode], { type: 'application/javascript' });
+  const workerUrl = URL.createObjectURL(blob);
+  
+  let worker = null;
+
+  document.getElementById('btnRunRecipe').addEventListener('click', () => {
+    if (!rawData.length) return;
+
+    const recipe = {
+      structure: {
+        cleanHeaders: document.getElementById('chkCleanHeaders').checked,
+        dropEmptyRows: document.getElementById('chkDropEmptyRows').checked
+      },
+      formats: {
+        trimAll: document.getElementById('chkTrimAll').checked,
+        stripControl: document.getElementById('chkStripControlChars').checked,
+        dateCols: getMultiSelectValues('selFormatDates'),
+        numberCols: getMultiSelectValues('selFormatNumbers')
+      },
+      missing: {
+        dropMissingCols: getMultiSelectValues('selDropMissingCols'),
+        rules: imputationRules
+      },
+      dedup: {
+        dedupMode: document.getElementById('selDedupMode').value,
+        dedupCols: getMultiSelectValues('selDedupCols')
+      }
+    };
+
+    document.getElementById('processingOverlay').style.display = 'flex';
+
+    if (worker) worker.terminate();
+    worker = new Worker(workerUrl);
+
+    worker.onmessage = function(e) {
+      document.getElementById('processingOverlay').style.display = 'none';
+      if (e.data.status === 'success') {
+        processedData = e.data.data;
+        processedHeaders = e.data.headers;
+        updatePreview(processedHeaders, processedData);
+        updateStats(rawData.length, processedData.length, processedHeaders.length, e.data.audit);
+      } else {
+        alert("Processing Error: " + e.data.message);
+      }
+    };
+
+    worker.postMessage({ data: rawData, headers: currentHeaders, recipe });
   });
 
-  document.getElementById('btnClearFile').addEventListener('click', () => {
+  document.getElementById('btnExport').addEventListener('click', () => {
+    if (!processedData.length) return;
+    
+    const csv = Papa.unparse({ fields: processedHeaders, data: processedData });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = originalFileName.replace('.csv', '_sanitized.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  document.getElementById('btnClear').addEventListener('click', () => {
+    // Reset state
     rawData = [];
-    headers = [];
-    fileName = "cleaned_data.csv";
+    currentHeaders = [];
+    processedData = [];
+    processedHeaders = [];
+    imputationRules = [];
     document.getElementById('fileInput').value = '';
-    dropzone.querySelector('p').textContent = 'Drop a CSV file here to scan for anomalies';
     
-    document.getElementById('editorLock').style.display = 'flex';
+    // Reset UI
+    document.getElementById('dashboardArea').style.display = 'none';
+    document.getElementById('dropzone').style.display = 'block';
+    document.getElementById('btnRunRecipe').disabled = true;
     document.getElementById('btnExport').disabled = true;
-    document.getElementById('auditReport').style.display = 'none';
-    document.getElementById('btnClearFile').style.display = 'none';
+    document.getElementById('btnClear').disabled = true;
     
-    document.getElementById('chkTrimSpaces').checked = false;
-    document.getElementById('chkDropNulls').checked = false;
-    document.getElementById('chkDeduplicate').checked = false;
+    renderImputationRules();
+    document.querySelectorAll('.col-select').forEach(sel => sel.innerHTML = '');
   });
 </script>
 

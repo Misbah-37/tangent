@@ -116,7 +116,7 @@
   .profile-stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
   .profile-stats span { display: flex; flex-direction: column; }
   .profile-stats span strong { color: var(--text-main); font-size: 0.95rem; }
-  .chart-container-sm { height: 160px; width: 100%; margin-top: 16px; position: relative; cursor: pointer; }
+  .chart-container-sm { height: 160px; width: 100%; margin-top: 16px; position: relative; }
 
   /* Tab 2: Manual Explorer */
   .explorer-grid { display: flex; flex-direction: column; gap: 24px; }
@@ -156,6 +156,79 @@
     .color-picker-mini::-webkit-color-swatch-wrapper { padding: 0; }
     .color-picker-mini::-webkit-color-swatch { border: none; border-radius: 4px; }
     .btn-download-mini:hover { color: var(--accent) !important; background: rgba(255,255,255,0.05); }
+
+/* ── Tangent Global Loader ── */
+#tangentLoader {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 13, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+.tl-logo-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+}
+.tl-logo-wrap svg {
+  width: 88px;
+  height: 88px;
+  overflow: visible;
+}
+/* Arc draws itself */
+.tl-arc {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+/* Line fades and scales in after arc */
+.tl-line {
+  transform-origin: 32px 14px;
+  transform-box: fill-box;
+  animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes tlDrawArc {
+  0%   { stroke-dashoffset: 1; opacity: 0.2; }
+  20%  { opacity: 1; }
+  70%  { stroke-dashoffset: 0; }
+  90%  { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1; opacity: 0.2; }
+}
+@keyframes tlPulseLine {
+  0%, 30%  { opacity: 0; transform: scaleY(0.1); }
+  60%, 85% { opacity: 1; transform: scaleY(1); }
+  100%     { opacity: 0; transform: scaleY(0.1); }
+}
+/* Glow ring behind logo */
+.tl-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+  animation: tlGlowPulse 1.6s ease-in-out infinite;
+}
+@keyframes tlGlowPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+.tl-message {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-family: Inter, -apple-system, sans-serif;
+  animation: tlFadeMsg 1.6s ease-in-out infinite;
+}
+@keyframes tlFadeMsg {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -477,6 +550,23 @@
 <!-- Backdrop Overlay for Mobile -->
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
+<!-- ── Global Tangent Loader ── -->
+<div id="tangentLoader" role="status" aria-live="polite" aria-label="Loading">
+  <div class="tl-logo-wrap">
+    <div class="tl-glow"></div>
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="tl-arc"
+        d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14"
+        stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
+        pathLength="1"/>
+      <path class="tl-line"
+        d="M 32 14 V 44"
+        stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="tl-message" id="tangentLoaderMsg">Processing...</div>
+</div>
+
 <!-- Push-Canvas Wrapper -->
 <div class="app-canvas" id="appCanvas">
 
@@ -502,23 +592,6 @@
   <div style="color: #fff; font-weight: 600; font-size: 1.2rem;">Profiling Dataset...</div>
   <div style="color: var(--text-muted); font-size: 0.95rem; margin-top: 8px;">Analyzing distributions via Web Worker</div>
 </div>
-
-<div id="fullChartModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 300; align-items: center; justify-content: center; padding: 24px;">
-  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; width: min(92vw, 960px); max-height: 85vh; display: flex; flex-direction: column;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0;">
-      <h3 id="fullChartModalTitle" style="color: var(--text-main); font-size: 1.15rem; margin: 0;"></h3>
-      <button id="fullChartModalClose" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; border-radius: 4px;" title="Close">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-    <div style="overflow-x: auto; overflow-y: hidden; flex: 1; border-top: 1px solid var(--border-color); padding-top: 16px;">
-      <div class="chart-container-lg" id="fullChartModalCanvasWrap" style="height: 420px; min-height: 420px;">
-        <canvas id="fullChartModalCanvas"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <div class="workspace-container" id="workspace">
   <div class="workspace-header">
@@ -677,6 +750,22 @@
 <!-- Global Shell Script -->
 <script src="assets/tangent.js?v=1"></script>
 
+<!-- Global TangentLoader Utility -->
+<script>
+  window.TangentLoader = {
+    show: function(msg) {
+      var el = document.getElementById('tangentLoader');
+      var msgEl = document.getElementById('tangentLoaderMsg');
+      if (msgEl) msgEl.textContent = msg || 'Processing...';
+      if (el) el.style.display = 'flex';
+    },
+    hide: function() {
+      var el = document.getElementById('tangentLoader');
+      if (el) el.style.display = 'none';
+    }
+  };
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -687,7 +776,6 @@
   let currentStats = null;
   let activeChart = null; // Manual chart instance
   let autoCharts = []; // Auto chart instances
-  let fullChartModalInstance = null; // Chart instance shown in the "view all values" modal
 
   // ChartJS Global Defaults
   Chart.defaults.color = '#94a3b8';
@@ -831,22 +919,11 @@
            });
            results[h].dist = dist;
            results[h].labels = Array(bins).fill(0).map((_, i) => (results[h].min + i*binSize).toFixed(1));
-           results[h].fullLabels = results[h].labels;
-           results[h].fullDist = results[h].dist;
         } else {
-           // Top 5 categories, with the remainder rolled into an "Other" bucket
-           let allSorted = Object.entries(s.strCounts).sort((a,b) => b[1] - a[1]);
-           let top = allSorted.slice(0, 5);
-           let rest = allSorted.slice(5);
-           results[h].labels = top.map(x => x[0]);
-           results[h].dist = top.map(x => x[1]);
-           if (rest.length > 0) {
-             let otherSum = rest.reduce((a, x) => a + x[1], 0);
-             results[h].labels.push(\`Other (\${rest.length})\`);
-             results[h].dist.push(otherSum);
-           }
-           results[h].fullLabels = allSorted.map(x => x[0]);
-           results[h].fullDist = allSorted.map(x => x[1]);
+           // Top 5 categories
+           let sorted = Object.entries(s.strCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+           results[h].labels = sorted.map(x => x[0]);
+           results[h].dist = sorted.map(x => x[1]);
         }
       });
 
@@ -922,7 +999,7 @@
             </div>
           </div>
           ${statsHtml}
-          <div class="chart-container-sm" title="Click to view all values">
+          <div class="chart-container-sm">
             <canvas id="autoChart_${i}"></canvas>
           </div>
         `;
@@ -952,27 +1029,18 @@
               x: { 
                 display: true, 
                 grid: { display: false },
-                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxRotation: 45, maxTicksLimit: 6 },
-                title: { display: true, text: stat.type === 'numeric' ? h : 'Value', color: '#94a3b8', font: { size: 11, weight: '600' }, padding: {top: 6} }
+                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxRotation: 45, maxTicksLimit: 6 }
               },
               y: { 
                 display: true, 
                 grid: { color: 'rgba(255,255,255,0.05)' },
-                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxTicksLimit: 4 },
-                title: { display: true, text: 'Count', color: '#94a3b8', font: { size: 11, weight: '600' }, padding: {bottom: 6} }
+                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxTicksLimit: 4 }
               }
             }
         }
       });
       autoCharts.push(chart);
-
-        let chartWrap = card.querySelector('.chart-container-sm');
-        if (chartWrap) {
-            chartWrap.addEventListener('click', () => {
-                openFullChartModal(h, stat, chart.data.datasets[0].backgroundColor);
-            });
-        }
-
+        
         let colorPicker = card.querySelector('.color-picker-mini');
         if (colorPicker) {
             colorPicker.addEventListener('input', (e) => {
@@ -1157,80 +1225,6 @@
     });
   }
 
-  // --- Full Chart Modal (click a mini chart to see every value) ---
-  function openFullChartModal(header, stat, color) {
-    const MAX_BARS = 200; // keeps canvas width safely under browser limits (~32,767px) and keeps the chart legible
-    let labels = stat.fullLabels || stat.labels;
-    let dist = stat.fullDist || stat.dist;
-    const totalCount = labels.length;
-    const truncated = totalCount > MAX_BARS;
-    if (truncated) {
-      labels = labels.slice(0, MAX_BARS);
-      dist = dist.slice(0, MAX_BARS);
-    }
-
-    document.getElementById('fullChartModalTitle').textContent = truncated
-      ? `${header} — Top ${MAX_BARS} of ${totalCount.toLocaleString()} Values`
-      : `${header} — All Values (${totalCount})`;
-
-    document.getElementById('fullChartModal').style.display = 'flex';
-
-    const wrap = document.getElementById('fullChartModalCanvasWrap');
-    const parent = wrap.parentElement;
-    const minAvailableWidth = parent.clientWidth;
-    const idealWidth = stat.type === 'numeric' ? minAvailableWidth : Math.min(Math.max(minAvailableWidth, labels.length * 70), 14000);
-    wrap.style.width = idealWidth + 'px';
-
-    if (fullChartModalInstance) fullChartModalInstance.destroy();
-    const ctx = document.getElementById('fullChartModalCanvas').getContext('2d');
-    fullChartModalInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: dist,
-          backgroundColor: color,
-          borderColor: 'transparent',
-          borderWidth: 0,
-          borderRadius: 3,
-          barPercentage: 0.9,
-          categoryPercentage: 0.9
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: true } },
-        scales: {
-          x: {
-            display: true,
-            grid: { display: false },
-            ticks: { color: 'rgba(255,255,255,0.6)', font: {size: 11}, maxRotation: 60, minRotation: labels.length > 8 ? 45 : 0, autoSkip: false },
-            title: { display: true, text: stat.type === 'numeric' ? header : 'Value', color: '#94a3b8', font: { size: 12, weight: '600' }, padding: {top: 8} }
-          },
-          y: {
-            display: true,
-            grid: { color: 'rgba(255,255,255,0.06)' },
-            ticks: { color: 'rgba(255,255,255,0.6)', font: {size: 11} },
-            title: { display: true, text: 'Count', color: '#94a3b8', font: { size: 12, weight: '600' }, padding: {bottom: 8} }
-          }
-        }
-      }
-    });
-  }
-
-  function closeFullChartModal() {
-    document.getElementById('fullChartModal').style.display = 'none';
-  }
-
-  document.getElementById('fullChartModalClose').addEventListener('click', closeFullChartModal);
-  document.getElementById('fullChartModal').addEventListener('click', (e) => {
-    if (e.target.id === 'fullChartModal') closeFullChartModal();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeFullChartModal();
-  });
-
   // --- Dynamic Width Slider ---
     document.getElementById('chartWidthSlider').addEventListener('input', (e) => {
       if (!activeChart || activeChart.config.type === 'doughnut') return;
@@ -1249,6 +1243,8 @@
         wrapper.style.width = '100%';
         parent.style.overflowX = 'hidden';
       }
+      // Trigger Chart.js to recompute layout after container change
+      activeChart.resize();
     });
 
     

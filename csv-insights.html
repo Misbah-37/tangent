@@ -1079,7 +1079,7 @@
     ctx.font = '10px sans-serif';
     var maxLabelWidth = ctx.measureText(Math.round(maxVal).toLocaleString()).width;
     
-    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = (h > 200) ? 60 : (xTitle ? 34 : 22), marginTop = 6, marginRight = 8;
+    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = (h > 200) ? 90 : (xTitle ? 34 : 22), marginTop = 6, marginRight = 8;
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
 
@@ -1213,7 +1213,7 @@
     );
     
     var legendHeight = isMulti ? 30 : 0;
-    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = 46, marginTop = 14 + legendHeight, marginRight = 16;
+    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = xTitle ? 76 : 56, marginTop = 14 + legendHeight, marginRight = 16;
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
     

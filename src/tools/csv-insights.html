@@ -1,162 +1,151 @@
 <!-- --- HEAD_META --- -->
-<title>CSV & Excel Insights Studio | Tangent</title>
+<title>CSV Insights Studio | Tangent</title>
 <meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
 <link rel="canonical" href="https://runtangent.com/csv-insights">
 
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Tangent">
-<meta property="og:title" content="CSV Insights Studio | Tangent">
-<meta property="og:description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
-<meta property="og:image" content="https://runtangent.com/social-banner.png">
-
-<!-- Schema.org FAQ Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Is my CSV data uploaded to a server?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. The CSV Insights Studio runs completely inside your web browser using HTML5 and client-side JavaScript. Your data never leaves your computer."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How does the Auto-Profiler work?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "When you upload a file, a background Web Worker scans every column to detect data types, calculate averages, and map distributions, generating instant mini-charts without freezing your browser."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I save the charts I build?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes! Once you build a chart in the Manual Explorer or view the Auto-Profiler, you can click 'Save Chart as Image' to download a high-resolution PNG locally."
-      }
-    }
-  ]
-}
-</script>
-
 <!-- --- TOOL_STYLES --- -->
 <style>
-  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
-  .badge-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(58, 123, 213, 0.15); color: var(--accent);
-    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
-    font-weight: 600; margin-bottom: 16px;
+  :root {
+    --bg-card: #1e293b;
+    --border-color: #334155;
+    --warn: #fdb827;
+    --danger: #ef4444;
   }
-  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; color: var(--text-main); }
-  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-
-  /* Dropzone */
-  .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto 40px; }
-  .dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
-
-  /* Workspace */
-  .workspace-container { display: none; padding: 0 32px; max-width: 98%; margin: 0 auto; min-height: 700px; }
-  .workspace-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 16px; }
-  .workspace-stats { display: flex; gap: 24px; color: var(--text-muted); font-size: 0.9rem; }
-  .workspace-stats span strong { color: var(--text-main); font-size: 1.1rem; }
   
+  /* ---------- Hero ---------- */
+  .clean-header { text-align: center; margin: 48px auto 40px; padding: 0 32px; max-width: 700px; }
+  .badge-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(58,123,213,0.15); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
+  .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .clean-header p { color: var(--text-muted); font-size: 1.05rem; margin: 0; }
+
+  /* ---------- Dropzone ---------- */
+  .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto 40px; }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(58,123,213,0.05); }
+  .dropzone h3 { margin: 0 0 8px; font-size: 1.5rem; }
+  .dropzone p { color: var(--text-muted); margin: 0 0 22px; }
+
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
   .btn:hover { filter: brightness(1.1); }
   .btn-outline { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); }
   .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-  /* Tabs */
-  .tabs-nav { display: flex; gap: 8px; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px; display: inline-flex; }
-  .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
-  .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Tab 1: Auto Profiler */
-  .profiler-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-  .profile-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; }
-  .profile-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
-  .profile-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-  .profile-type { font-size: 0.75rem; text-transform: uppercase; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; color: var(--text-muted); font-weight: 600; }
-  .profile-stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
-  .profile-stats span { display: flex; flex-direction: column; }
-  .profile-stats span strong { color: var(--text-main); font-size: 0.95rem; }
-  .chart-container-sm { height: 160px; width: 100%; margin-top: 16px; position: relative; }
-
-  /* Tab 2: Manual Explorer */
-  .explorer-grid { display: flex; flex-direction: column; gap: 24px; }
-  @media (max-width: 900px) { .explorer-grid { grid-template-columns: 1fr; } }
-  .explorer-sidebar { 
-  background: var(--bg-card); 
-  border: 1px solid var(--border-color); 
-  border-radius: 12px; 
-  padding: 20px; 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-  gap: 16px; 
-  align-items: end; 
-  margin-bottom: 24px;
-}
-.explorer-sidebar .form-group { margin-bottom: 0; }
-.explorer-sidebar .btn { height: 37px; margin-top: 0 !important; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
-  select.form-control { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 36px; }
-  select.form-control option { background-color: #1e293b; color: #ffffff; font-weight: 500; padding: 10px; }
-  .explorer-main { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; width: 100%; overflow-x: auto; display: block; }
-  .chart-container-lg { width: 100%; height: 65vh; min-height: 500px; position: relative; transition: width 0.3s ease; }
-
-  /* Tab 3: Raw Data */
-  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; max-height: 600px; }
-  .preview-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
-  .preview-table th { background: rgba(0,0,0,0.2); font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; }
-  .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
-
-  /* Processing Overlay */
-  #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
-  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s ease-in-out infinite; margin-bottom: 16px; }
+  /* ---------- Processing overlay ---------- */
+  #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s linear infinite; margin-bottom: 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-    .color-picker-mini::-webkit-color-swatch-wrapper { padding: 0; }
-    .color-picker-mini::-webkit-color-swatch { border: none; border-radius: 4px; }
-    .btn-download-mini:hover { color: var(--accent) !important; background: rgba(255,255,255,0.05); }
-    </style>
+  /* ---------- Workspace ---------- */
+  .workspace-container { display: none; padding: 0 32px; max-width: 1400px; margin: 0 auto; min-height: 700px; }
+  .workspace-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 16px; }
+  .workspace-stats { display: flex; gap: 24px; color: var(--text-muted); font-size: 0.9rem; }
+  .workspace-stats strong { color: var(--text-main); font-size: 1.1rem; }
+  #btnCloseFile { border-color: rgba(239,68,68,0.4); color: var(--danger); padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; }
+  #btnCloseFile:hover { background: rgba(239,68,68,0.1); border-color: var(--danger) !important; }
+
+  .tabs-nav { display: inline-flex; gap: 8px; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px; }
+  .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
+  .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Auto-Profiler ---------- */
+  .profiler-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  @media (max-width: 1200px) { .profiler-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .profiler-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 650px) { .profiler-grid { grid-template-columns: 1fr; } }
+  .profile-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
+  .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+  .profile-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .profile-title { font-weight: 700; font-size: 1.02rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+  .badge { font-size: 0.68rem; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; }
+  .badge-numeric { background: rgba(58,123,213,0.18); color: #7fb0f5; }
+  .badge-date { background: rgba(147,108,176,0.2); color: #c7a9e6; }
+  .badge-categorical { background: rgba(255,255,255,0.1); color: var(--text-muted); }
+  .badge-id { background: rgba(253,184,39,0.15); color: var(--warn); }
+  .header-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .header-controls input[type=color] { width: 20px; height: 20px; border: none; padding: 0; background: transparent; cursor: pointer; }
+  .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; border-radius: 4px; }
+  .icon-btn:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
+  .stats-row { display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--text-muted); margin-bottom: 4px; }
+  .stats-row > span { display: flex; flex-direction: column; }
+  .stats-row strong { color: var(--text-main); font-size: 0.95rem; }
+  .stats-secondary { font-size: 0.74rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
+  .stats-secondary .warn { color: var(--warn); }
+  .chart-wrap { height: 150px; width: 100%; position: relative; cursor: pointer; }
+  .chart-wrap canvas { width: 100%; height: 100%; display: block; }
+
+  /* ---------- Manual Explorer ---------- */
+  .explorer-grid { display: flex; flex-direction: column; gap: 24px; }
+  .explorer-sidebar { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end; }
+  .explorer-sidebar .form-group { margin-bottom: 0; }
+  .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+  select.form-control { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; height: 37px; }
+  .explorer-sidebar .btn { height: 37px; }
+  .explorer-main { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; width: 100%; overflow-x: auto; }
+  .chart-legend-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; text-align: center; }
+  .chart-note { color: var(--warn); font-size: 0.78rem; margin-top: 8px; text-align: center; }
+  .chart-container-lg { width: 100%; height: 60vh; min-height: 460px; position: relative; transition: width 0.2s ease; }
+  .chart-container-lg canvas { width: 100%; height: 100%; display: block; }
+  .doughnut-wrap { display: flex; align-items: center; gap: 24px; height: 100%; }
+  .doughnut-canvas-box { flex: 1; height: 100%; min-width: 0; position: relative; }
+  .doughnut-canvas-box canvas { width: 100%; height: 100%; display: block; }
+  .doughnut-legend { max-height: 100%; overflow-y: auto; padding-right: 8px; min-width: 160px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+  .legend-item strong { color: var(--text-main); margin-left: auto; padding-left: 10px; }
+
+  /* ---------- Raw Data ---------- */
+  .table-wrapper { width: 100%; overflow: auto; border: 1px solid var(--border-color); border-radius: 8px; max-height: 600px; }
+  .preview-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
+  .preview-table th { background: #0b1220; font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; }
+  .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---------- Modal ---------- */
+  #fullChartModal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(4px); z-index: 400; align-items: center; justify-content: center; padding: 24px; }
+  #fullChartModal .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; width: min(92vw, 980px); max-height: 85vh; display: flex; flex-direction: column; }
+  #fullChartModal .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  #fullChartModal h3 { margin: 0; font-size: 1.1rem; }
+  #fullChartModal .modal-scroll { overflow-x: auto; overflow-y: hidden; flex: 1; border-top: 1px solid var(--border-color); padding-top: 14px; }
+  #fullChartModalCanvasWrap { height: 420px; min-height: 420px; position: relative; }
+  #fullChartModalCanvasWrap canvas { width: 100%; height: 100%; display: block; }
+  #fullChartModal .modal-note { color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; }
+
+  #tooltip { position: fixed; display: none; background: #000; color: #fff; padding: 5px 9px; border-radius: 5px; font-size: 0.78rem; pointer-events: none; z-index: 500; white-space: nowrap; border: 1px solid var(--border-color); }
+
+  /* ---------- Info / FAQ / Footer ---------- */
+  .info-section { max-width: 1200px; margin: 60px auto 0; padding: 0 32px 60px; }
+</style>
 
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon></svg>
-    CSV Analytics Engine
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>CSV Insights Studio</h1>
-  <p>Instantly profile columns, build pivot charts, and visualize data securely in your browser. Powered by Web Workers. Zero cloud uploads.</p>
+  <p>Instantly profile columns, build pivot charts, and visualize data securely in your browser. Powered by a Web Worker. Zero cloud uploads. Zero dependencies.</p>
 </div>
 
 <div class="dropzone" id="dropzone">
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 16px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
-  <h3 style="margin-bottom: 8px; color: var(--text-main); font-size: 1.6rem;">Upload Dataset (CSV)</h3>
-  <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 24px;">Drop your file here or click to browse. Fully client-side processing.</p>
-  <input type="file" id="fileInput" accept=".csv" style="display: none;">
-  <button class="btn btn-outline" style="padding: 10px 24px; font-size: 1.05rem;" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+  <h3>Upload Dataset (CSV)</h3>
+  <p>Drop your file here or click to browse. Fully client-side processing.</p>
+  <input type="file" id="fileInput" accept=".csv" style="display:none;">
+  <button class="btn btn-outline" id="browseBtn" style="padding: 10px 24px; font-size: 1.05rem;">Browse Files</button>
 </div>
 
 <div id="processingOverlay">
   <div class="spinner"></div>
-  <div style="color: #fff; font-weight: 600; font-size: 1.2rem;">Profiling Dataset...</div>
+  <div style="color:#fff; font-weight:600; font-size:1.2rem;">Profiling Dataset...</div>
   <div style="color: var(--text-muted); font-size: 0.95rem; margin-top: 8px;">Analyzing distributions via Web Worker</div>
 </div>
 
 <div class="workspace-container" id="workspace">
   <div class="workspace-header">
-    <div style="display: flex; align-items: center; gap: 20px;">
-      <button class="btn btn-outline" id="btnCloseFile" style="border-color: rgba(239, 68, 68, 0.4); color: #ef4444; padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; transition: 0.2s;">
+    <div style="display:flex; align-items:center; gap:20px;">
+      <button class="btn btn-outline" id="btnCloseFile">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         Close Dataset
       </button>
@@ -165,35 +154,28 @@
         <span>Columns: <strong id="statCols">0</strong></span>
       </div>
     </div>
-    <div style="margin-left: auto; flex-shrink: 0; padding-left: 16px; display: flex; align-items: center; gap: 16px;">
-        <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);" title="Adjust Bar Width">
-           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-           <input type="range" id="chartWidthSlider" min="10" max="150" value="40" style="width: 80px; accent-color: var(--accent); cursor: ew-resize;" title="Adjust Bar Width">
-        </div>
-        <button class="btn" id="btnSaveImage" style="padding: 8px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 210, 255, 0.2);">
+    <div id="manualControls" style="display:none; align-items:center; gap:16px;">
+      <div style="display:flex; align-items:center; gap:8px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);" title="Adjust Chart Zoom">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
+        <input type="range" id="chartWidthSlider" min="100" max="500" value="100" style="width:80px; accent-color: var(--accent); cursor: ew-resize;">
+      </div>
+      <button class="btn" id="btnSaveImage">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Save Chart
       </button>
     </div>
   </div>
-  <style>
-    #btnCloseFile:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444 !important; }
-  </style>
 
   <div class="tabs-nav">
-    <button class="tab-btn active" onclick="switchTab('tab-auto', this)">Auto-Profiler</button>
-    <button class="tab-btn" onclick="switchTab('tab-manual', this)">Manual Explorer</button>
-    <button class="tab-btn" onclick="switchTab('tab-raw', this)">Raw Data Grid</button>
+    <button class="tab-btn active" data-tab="tab-auto">Auto-Profiler</button>
+    <button class="tab-btn" data-tab="tab-manual">Manual Explorer</button>
+    <button class="tab-btn" data-tab="tab-raw">Raw Data Grid</button>
   </div>
 
-  <!-- Tab 1: Auto Profiler -->
   <div class="tab-content active" id="tab-auto">
-    <div class="profiler-grid" id="profilerGrid">
-      <!-- Auto generated cards go here -->
-    </div>
+    <div class="profiler-grid" id="profilerGrid"></div>
   </div>
 
-  <!-- Tab 2: Manual Explorer -->
   <div class="tab-content" id="tab-manual">
     <div class="explorer-grid">
       <div class="explorer-sidebar">
@@ -224,17 +206,18 @@
             <option value="scatter">Scatter Plot</option>
           </select>
         </div>
-        <button class="btn" id="btnUpdateChart" style="width: 100%; margin-top: 8px;">Render Chart</button>
+        <button class="btn" id="btnUpdateChart" style="width:100%;">Render Chart</button>
       </div>
       <div class="explorer-main">
+        <div id="chartLegendLabel" class="chart-legend-label"></div>
         <div class="chart-container-lg" id="chartScrollWrapper">
           <canvas id="manualChartCanvas"></canvas>
         </div>
+        <div id="chartNote" class="chart-note"></div>
       </div>
     </div>
   </div>
 
-  <!-- Tab 3: Raw Data -->
   <div class="tab-content" id="tab-raw">
     <div class="table-wrapper">
       <table class="preview-table">
@@ -246,8 +229,7 @@
   </div>
 </div>
 
-<!-- Educational & Security Architecture Section -->
-<div class="info-section" style="max-width: 1200px; margin: 60px auto 0; padding: 0 32px;">
+<div class="info-section">
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
@@ -261,544 +243,884 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       </div>
       <h3>Web Worker Profiling</h3>
-      <p>Analyzes column distributions and statistical means using background CPU threads without ever freezing your browser interface.</p>
+      <p>Analyzes column distributions and statistical measures using a background CPU thread without ever freezing your browser interface.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
       </div>
       <h3>Interactive Explorations</h3>
-      <p>Pivot and cross-filter thousands of rows on the fly with instantaneous chart rendering powered by client-side JavaScript.</p>
+      <p>Pivot thousands of rows on the fly with instantaneous chart rendering — no libraries, no build step, just the browser's own canvas engine.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+      <h3>Raw Data Inspection</h3>
+      <p>Instantly browse the first 100 rows of your raw CSV file in a clean, scrollable grid to verify data integrity before rendering charts.</p>
     </div>
   </div>
 
   <div class="faq-title">Frequently Asked Questions</div>
+  <div class="faq-box"><details><summary>Is my CSV data uploaded to a server?</summary><p>No. This tool runs completely inside your web browser using HTML5 and vanilla client-side JavaScript. Your data never leaves your computer, and there's no third-party library loaded from a CDN either.</p></details></div>
+  <div class="faq-box"><details><summary>How does the Auto-Profiler work?</summary><p>When you upload a file, a background Web Worker scans every column to detect its type (numeric, date, or categorical), computes statistics like median and standard deviation, and builds a histogram — all without freezing your browser.</p></details></div>
+  <div class="faq-box"><details><summary>Can I save the charts I build?</summary><p>Yes — every chart, in both the Auto-Profiler and the Manual Explorer, has a "Save as PNG" option that renders straight from the canvas, no server round-trip needed.</p></details></div>
+</div>
 
-  <div class="faq-box">
-    <details>
-      <summary>Is my CSV data uploaded to a server?</summary>
-      <p>No. The CSV Insights Studio runs completely inside your web browser using HTML5 and client-side JavaScript. Your data never leaves your computer. We don't even have a database to store it in.</p>
-    </details>
-  </div>
-  <div class="faq-box">
-    <details>
-      <summary>How does the Auto-Profiler work?</summary>
-      <p>When you upload a file, a background Web Worker scans every column to detect data types, calculate averages, and map distributions, generating instant mini-charts without locking up your browser.</p>
-    </details>
-  </div>
-  <div class="faq-box">
-    <details>
-      <summary>Can I save the charts I build?</summary>
-      <p>Yes! Once you build a chart in the Manual Explorer or view the Auto-Profiler, you can click 'Save Chart as Image' to download a high-resolution PNG locally for your presentations.</p>
-    </details>
+<div id="tooltip"></div>
+
+<div id="fullChartModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="fullChartModalTitle"></h3>
+      <button class="icon-btn" id="fullChartModalClose" title="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-scroll">
+      <div id="fullChartModalCanvasWrap"><canvas id="fullChartModalCanvas"></canvas></div>
+    </div>
+    <div class="modal-note" id="fullChartModalNote"></div>
   </div>
 </div>
 
 <!-- --- SCRIPTS --- -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-  // UI State
-  let rawData = [];
-  let currentHeaders = [];
-  let currentStats = null;
-  let activeChart = null; // Manual chart instance
-  let autoCharts = []; // Auto chart instances
+(function () {
+  "use strict";
 
-  // ChartJS Global Defaults
-  Chart.defaults.color = '#94a3b8';
-  Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
-  Chart.defaults.font.family = 'Inter, -apple-system, sans-serif';
+  var workerSrc = [
+    '"use strict";',
+    'var NUMERIC_RE = /^[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?$/;',
+    'function isNumericToken(s) { if (s === "") return false; if (!NUMERIC_RE.test(s)) return false; var v = parseFloat(s); return isFinite(v); }',
+    'var DATE_ISO_RE = /^\\d{4}-\\d{1,2}-\\d{1,2}([T ]\\d{1,2}:\\d{2}(:\\d{2})?)?$/;',
+    'var DATE_SLASH_RE = /^\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}$/;',
+    'function isDateToken(s) { if (!(DATE_ISO_RE.test(s) || DATE_SLASH_RE.test(s))) return false; var t = Date.parse(s); return !isNaN(t); }',
 
-  // --- Tab Logic ---
-  function switchTab(tabId, btnElement) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    btnElement.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
-    
-    // Resize charts if needed
-    if (tabId === 'tab-manual' && activeChart) activeChart.resize();
-    if (tabId === 'tab-auto') autoCharts.forEach(c => c.resize());
+    'function csvParse(text) {',
+    '  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);',
+    '  var rows = []; var row = []; var field = ""; var inQuotes = false; var i = 0; var n = text.length;',
+    '  while (i < n) {',
+    '    var c = text[i];',
+    '    if (inQuotes) {',
+    '      if (c === "\\"") { if (text[i+1] === "\\"") { field += "\\""; i += 2; continue; } inQuotes = false; i++; continue; }',
+    '      field += c; i++; continue;',
+    '    }',
+    '    if (c === "\\"") { inQuotes = true; i++; continue; }',
+    '    if (c === ",") { row.push(field); field = ""; i++; continue; }',
+    '    if (c === "\\r") { i++; continue; }',
+    '    if (c === "\\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }',
+    '    field += c; i++;',
+    '  }',
+    '  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }',
+    '  while (rows.length && rows[rows.length-1].length === 1 && rows[rows.length-1][0] === "") rows.pop();',
+    '  if (!rows.length) return { headers: [], data: [] };',
+    '  var headers = rows[0]; var data = [];',
+    '  for (var r = 1; r < rows.length; r++) {',
+    '    var obj = {};',
+    '    for (var c2 = 0; c2 < headers.length; c2++) obj[headers[c2]] = rows[r][c2] !== undefined ? rows[r][c2] : "";',
+    '    data.push(obj);',
+    '  }',
+    '  return { headers: headers, data: data };',
+    '}',
+
+    'function roundN(v, d) { var m = Math.pow(10, d); return Math.round(v*m)/m; }',
+    'function fmtNum(v) { return roundN(v, 2) + ""; }',
+    'function fmtCompact(v) {',
+    '  var abs = Math.abs(v);',
+    '  if (abs >= 1e9) return roundN(v/1e9, 1) + "B";',
+    '  if (abs >= 1e6) return roundN(v/1e6, 1) + "M";',
+    '  if (abs >= 1e3) return roundN(v/1e3, 1) + "k";',
+    '  return roundN(v, 2) + "";',
+    '}',
+
+    'function computeNumericProfile(nums) {',
+    '  var n = nums.length;',
+    '  if (n === 0) return { min:0, max:0, mean:0, median:0, stdev:0, distinctCount:0, mode:"discrete", labels:[], dist:[], fullLabels:[], fullDist:[] };',
+    '  var sorted = nums.slice().sort(function(a,b){ return a-b; });',
+    '  var min = sorted[0], max = sorted[n-1];',
+    '  var sum = 0; for (var i=0;i<n;i++) sum += sorted[i];',
+    '  var mean = sum/n;',
+    '  var median = (n % 2 === 1) ? sorted[(n-1)/2] : (sorted[n/2-1] + sorted[n/2]) / 2;',
+    '  var variance = 0; for (var j=0;j<n;j++) variance += Math.pow(sorted[j]-mean, 2); variance = variance/n;',
+    '  var stdev = Math.sqrt(variance);',
+    '  var distinctMap = {};',
+    '  for (var k=0;k<n;k++) { var key = sorted[k]; distinctMap[key] = (distinctMap[key]||0)+1; }',
+    '  var distinctVals = Object.keys(distinctMap).map(Number).sort(function(a,b){return a-b;});',
+    '  var distinctCount = distinctVals.length;',
+    '  var out = { min:min, max:max, mean:mean, median:median, stdev:stdev, distinctCount:distinctCount };',
+    '  if (distinctCount <= 20) {',
+    '    out.mode = "discrete";',
+    '    out.labels = distinctVals.map(function(v){ return fmtNum(v); });',
+    '    out.dist = distinctVals.map(function(v){ return distinctMap[v]; });',
+    '    out.fullLabels = out.labels; out.fullDist = out.dist;',
+    '  } else {',
+    '    out.mode = "continuous";',
+    '    var binCount = Math.min(20, Math.max(8, Math.round(1 + 3.322*Math.log10(n))));',
+    '    var range = max-min; var binSize = range/binCount || 1;',
+    '    var dist = new Array(binCount).fill(0);',
+    '    for (var m=0;m<n;m++) { var idx = Math.floor((sorted[m]-min)/binSize); if (idx>=binCount) idx=binCount-1; if (idx<0) idx=0; dist[idx]++; }',
+    '    var labels = [];',
+    '    for (var b=0;b<binCount;b++) { var lo = min+b*binSize, hi = min+(b+1)*binSize; labels.push(fmtCompact(lo) + "\\u2013" + fmtCompact(hi)); }',
+    '    out.labels = labels; out.dist = dist;',
+    '    var fineBinCount = Math.min(40, binCount*2);',
+    '    var fineBinSize = range/fineBinCount || 1;',
+    '    var fineDist = new Array(fineBinCount).fill(0);',
+    '    for (var m2=0;m2<n;m2++) { var idx2 = Math.floor((sorted[m2]-min)/fineBinSize); if (idx2>=fineBinCount) idx2=fineBinCount-1; if (idx2<0) idx2=0; fineDist[idx2]++; }',
+    '    var fineLabels = [];',
+    '    for (var b2=0;b2<fineBinCount;b2++) { var lo2 = min+b2*fineBinSize, hi2 = min+(b2+1)*fineBinSize; fineLabels.push(fmtCompact(lo2) + "\\u2013" + fmtCompact(hi2)); }',
+    '    out.fullLabels = fineLabels; out.fullDist = fineDist;',
+    '  }',
+    '  return out;',
+    '}',
+
+    'function formatDateLabel(ts, rangeMs) {',
+    '  var d = new Date(ts); var DAY = 86400000;',
+    '  if (rangeMs > 3*365*DAY) return d.getUTCFullYear() + "";',
+    '  if (rangeMs > 60*DAY) return (d.getUTCMonth()+1) + "/" + d.getUTCFullYear();',
+    '  return (d.getUTCMonth()+1) + "/" + d.getUTCDate();',
+    '}',
+
+    'function computeDateProfile(times) {',
+    '  var n = times.length;',
+    '  if (n === 0) return { min:0, max:0, labels:[], dist:[], fullLabels:[], fullDist:[] };',
+    '  var sorted = times.slice().sort(function(a,b){return a-b;});',
+    '  var min = sorted[0], max = sorted[n-1];',
+    '  var out = { min:min, max:max };',
+    '  var binCount = Math.min(20, Math.max(8, Math.round(1+3.322*Math.log10(n))));',
+    '  var range = max-min; var binSize = range/binCount || 1;',
+    '  var dist = new Array(binCount).fill(0);',
+    '  for (var i=0;i<n;i++) { var idx = Math.floor((sorted[i]-min)/binSize); if (idx>=binCount) idx=binCount-1; if (idx<0) idx=0; dist[idx]++; }',
+    '  var labels = []; for (var b=0;b<binCount;b++) labels.push(formatDateLabel(min+b*binSize, range));',
+    '  out.labels = labels; out.dist = dist;',
+    '  var fineBinCount = Math.min(40, binCount*2);',
+    '  var fineBinSize = range/fineBinCount || 1;',
+    '  var fineDist = new Array(fineBinCount).fill(0);',
+    '  for (var i2=0;i2<n;i2++) { var idx2 = Math.floor((sorted[i2]-min)/fineBinSize); if (idx2>=fineBinCount) idx2=fineBinCount-1; if (idx2<0) idx2=0; fineDist[idx2]++; }',
+    '  var fineLabels = []; for (var b2=0;b2<fineBinCount;b2++) fineLabels.push(formatDateLabel(min+b2*fineBinSize, range));',
+    '  out.fullLabels = fineLabels; out.fullDist = fineDist;',
+    '  return out;',
+    '}',
+
+    'function computeCategoricalProfile(strings) {',
+    '  var counts = {};',
+    '  for (var i=0;i<strings.length;i++) counts[strings[i]] = (counts[strings[i]]||0)+1;',
+    '  var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; });',
+    '  entries.sort(function(a,b){ return b[1]-a[1]; });',
+    '  var distinctCount = entries.length;',
+    '  var lowerCounts = {};',
+    '  for (var j=0;j<entries.length;j++) { var lk = entries[j][0].toLowerCase(); lowerCounts[lk] = (lowerCounts[lk]||0)+entries[j][1]; }',
+    '  var lowerDistinct = Object.keys(lowerCounts).length;',
+    '  var caseVariants = lowerDistinct < distinctCount;',
+    '  var top = entries.slice(0,5); var rest = entries.slice(5);',
+    '  var labels = top.map(function(e){return e[0];});',
+    '  var dist = top.map(function(e){return e[1];});',
+    '  if (rest.length > 0) { var otherSum = 0; for (var r=0;r<rest.length;r++) otherSum += rest[r][1]; labels.push("Other (" + rest.length + ")"); dist.push(otherSum); }',
+    '  return { distinctCount: distinctCount, caseVariants: caseVariants, caseInsensitiveDistinct: lowerDistinct,',
+    '    labels: labels, dist: dist,',
+    '    fullLabels: entries.map(function(e){return e[0];}), fullDist: entries.map(function(e){return e[1];}) };',
+    '}',
+
+    'function classifyAndProfile(values, totalRows) {',
+    '  var missing = 0; var valuedStrings = [];',
+    '  for (var i=0;i<values.length;i++) {',
+    '    var raw = values[i];',
+    '    var s = (raw===undefined||raw===null) ? "" : String(raw).trim();',
+    '    if (s === "") missing++; else valuedStrings.push(s);',
+    '  }',
+    '  var valuedCount = valuedStrings.length;',
+    '  var numericCount = 0, dateCount = 0;',
+    '  for (var j=0;j<valuedStrings.length;j++) {',
+    '    if (isNumericToken(valuedStrings[j])) numericCount++;',
+    '    else if (isDateToken(valuedStrings[j])) dateCount++;',
+    '  }',
+    '  var type;',
+    '  if (valuedCount > 0 && numericCount/valuedCount > 0.8) type = "numeric";',
+    '  else if (valuedCount > 0 && dateCount/valuedCount > 0.8) type = "date";',
+    '  else type = "categorical";',
+    '  var result = { type: type, total: totalRows, missing: missing, valued: valuedCount };',
+    '  if (type === "numeric") {',
+    '    var nums = []; var nonConforming = 0;',
+    '    for (var k=0;k<valuedStrings.length;k++) { if (isNumericToken(valuedStrings[k])) nums.push(parseFloat(valuedStrings[k])); else nonConforming++; }',
+    '    result.nonConforming = nonConforming;',
+    '    var np = computeNumericProfile(nums);',
+    '    for (var key in np) result[key] = np[key];',
+    '    result.uniqueRatio = result.valued > 0 ? result.distinctCount / result.valued : 0;',
+    '  } else if (type === "date") {',
+    '    var times = []; var nonConforming2 = 0;',
+    '    for (var m=0;m<valuedStrings.length;m++) { if (isDateToken(valuedStrings[m])) times.push(Date.parse(valuedStrings[m])); else nonConforming2++; }',
+    '    result.nonConforming = nonConforming2;',
+    '    var dp = computeDateProfile(times);',
+    '    for (var key2 in dp) result[key2] = dp[key2];',
+    '  } else {',
+    '    var cp = computeCategoricalProfile(valuedStrings);',
+    '    for (var key3 in cp) result[key3] = cp[key3];',
+    '    result.uniqueRatio = result.valued > 0 ? result.distinctCount / result.valued : 0;',
+    '  }',
+    '  return result;',
+    '}',
+
+    'self.onmessage = function(e) {',
+    '  var parsed = csvParse(e.data.text);',
+    '  var headers = parsed.headers, data = parsed.data;',
+    '  var stats = {};',
+    '  for (var c=0;c<headers.length;c++) {',
+    '    var h = headers[c];',
+    '    var colValues = new Array(data.length);',
+    '    for (var r=0;r<data.length;r++) colValues[r] = data[r][h];',
+    '    stats[h] = classifyAndProfile(colValues, data.length);',
+    '  }',
+    '  self.postMessage({ headers: headers, rowCount: data.length, data: data, stats: stats });',
+    '};'
+  ].join('\n');
+
+  var workerBlob = new Blob([workerSrc], { type: 'application/javascript' });
+  var workerUrl = URL.createObjectURL(workerBlob);
+  var worker = null;
+
+  var COLORS = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
+  var tooltipEl = document.getElementById('tooltip');
+
+  function pct(n, d) { return d > 0 ? Math.round((n / d) * 1000) / 10 : 0; }
+  function hexToRgba(hex, alpha) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var r = parseInt(h.substring(0, 2), 16), g = parseInt(h.substring(2, 4), 16), b = parseInt(h.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
   }
 
-  // --- File Upload Logic ---
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('fileInput');
+  function attachBarTooltip(canvas) {
+    canvas.addEventListener('mousemove', function (e) {
+      var meta = canvas._chartMeta;
+      if (!meta || !meta.labels.length) { tooltipEl.style.display = 'none'; return; }
+      var rect = canvas.getBoundingClientRect();
+      var mx = e.clientX - rect.left;
+      var idx = Math.floor((mx - meta.marginLeft) / meta.barSlot);
+      if (idx < 0 || idx >= meta.labels.length) { tooltipEl.style.display = 'none'; return; }
+      tooltipEl.textContent = meta.labels[idx] + ': ' + meta.values[idx].toLocaleString();
+      tooltipEl.style.left = (e.clientX + 12) + 'px';
+      tooltipEl.style.top = (e.clientY + 12) + 'px';
+      tooltipEl.style.display = 'block';
+    });
+    canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
+  }
 
-  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-  dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('dragover'); });
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault(); dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-  });
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length) handleFile(e.target.files[0]);
-  });
+  function drawBarChart(canvas, opts) {
+    var labels = opts.labels, values = opts.values, color = opts.color;
+    var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var w = Math.max(rect.width, 50), h = Math.max(rect.height, 50);
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
 
-  function handleFile(file) {
-    if (file.name.split('.').pop().toLowerCase() !== 'csv') return alert("Only CSV files are supported.");
+    var maxVal = Math.max(1, Math.max.apply(null, values.length ? values : [0]));
+    ctx.font = '10px sans-serif';
+    var maxLabelWidth = ctx.measureText(Math.round(maxVal).toLocaleString()).width;
     
-    document.getElementById('processingOverlay').style.display = 'flex';
+    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = xTitle ? 34 : 22, marginTop = 6, marginRight = 8;
+    var plotW = w - marginLeft - marginRight;
+    var plotH = h - marginTop - marginBottom;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    var yTicks = 4;
+    for (var t = 0; t <= yTicks; t++) {
+      var val = maxVal * t / yTicks;
+      var y = marginTop + plotH - (val / maxVal) * plotH;
+      ctx.beginPath(); ctx.moveTo(marginLeft, y); ctx.lineTo(marginLeft + plotW, y); ctx.stroke();
+      ctx.fillText(Math.round(val).toLocaleString(), marginLeft - 6, y);
+    }
+
+    var n = values.length;
+    var barSlot = n > 0 ? plotW / n : plotW;
+    var barWidth = Math.max(1, barSlot * 0.75);
+    for (var i = 0; i < n; i++) {
+      var v = values[i];
+      var barH = (v / maxVal) * plotH;
+      var x = marginLeft + i * barSlot + (barSlot - barWidth) / 2;
+      var y2 = marginTop + plotH - barH;
+      ctx.fillStyle = color;
+      var r = Math.min(3, barWidth / 2);
+      ctx.beginPath();
+      ctx.moveTo(x, y2 + barH);
+      ctx.lineTo(x, y2 + r);
+      ctx.arcTo(x, y2, x + r, y2, r);
+      ctx.lineTo(x + barWidth - r, y2);
+      ctx.arcTo(x + barWidth, y2, x + barWidth, y2 + r, r);
+      ctx.lineTo(x + barWidth, y2 + barH);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '9px sans-serif';
+    var approxLabelWidth = 46;
+    var maxLabelsFit = Math.max(1, Math.floor(plotW / approxLabelWidth));
+    var skip = Math.max(1, Math.ceil(n / maxLabelsFit));
+    for (var j = 0; j < n; j += skip) {
+      var lx = marginLeft + j * barSlot + barSlot / 2;
+      var label = String(labels[j]);
+      if (label.length > 12) label = label.slice(0, 11) + '\u2026';
+      ctx.save();
+      ctx.translate(lx, marginTop + plotH + 4);
+      if (n > 6) { ctx.rotate(-Math.PI / 5); ctx.textAlign = 'right'; }
+      else { ctx.textAlign = 'center'; }
+      ctx.textBaseline = 'top';
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+
+    if (xTitle) {
+      ctx.fillStyle = '#94a3b8'; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(xTitle, marginLeft + plotW / 2, h - 4);
+    }
+    if (yTitle) {
+      ctx.save();
+      ctx.translate(10, marginTop + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = '#94a3b8'; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(yTitle, 0, 0);
+      ctx.restore();
+    }
+
+    canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot };
+  }
+
+  function drawCartesianChart(canvas, opts) {
+    var mark = opts.mark, labels = opts.labels, values = opts.values, color = opts.color;
+    var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var w = Math.max(rect.width, 80), h = Math.max(rect.height, 80);
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    var n = values.length;
+    var rawMin = n ? Math.min.apply(null, values) : 0;
+    var rawMax = n ? Math.max.apply(null, values) : 1;
+    var yMin = Math.min(0, rawMin);
+    var yMax = Math.max(0, rawMax);
+    if (yMin === yMax) yMax = yMin + 1;
+    var yRange = yMax - yMin;
+
+    ctx.font = '11px sans-serif';
+    var maxLabelWidth = Math.max(
+      ctx.measureText(Math.round(yMax).toLocaleString()).width,
+      ctx.measureText(Math.round(yMin).toLocaleString()).width
+    );
+    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = 46, marginTop = 14, marginRight = 16;
+    var plotW = w - marginLeft - marginRight;
+    var plotH = h - marginTop - marginBottom;
     
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        currentHeaders = results.meta.fields || [];
-        rawData = results.data;
-        
-        document.getElementById('statRows').innerText = rawData.length.toLocaleString();
-        document.getElementById('statCols').innerText = currentHeaders.length.toLocaleString();
-        
-        populateRawGrid();
-        populateDropdowns();
-        runWebWorkerProfiler();
+    function yPos(v) { return marginTop + plotH - ((v - yMin) / yRange) * plotH; }
+    var zeroY = yPos(0);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    var yTicks = 5;
+    for (var t = 0; t <= yTicks; t++) {
+      var val = yMin + yRange * t / yTicks;
+      var y = yPos(val);
+      ctx.beginPath(); ctx.moveTo(marginLeft, y); ctx.lineTo(marginLeft + plotW, y); ctx.stroke();
+      ctx.fillText(Math.round(val).toLocaleString(), marginLeft - 8, y);
+    }
+
+    var barSlot = n > 0 ? plotW / n : plotW;
+
+    if (mark === 'bar') {
+      var barWidth = Math.max(1, barSlot * 0.7);
+      for (var i = 0; i < n; i++) {
+        var v = values[i];
+        var barColor = Array.isArray(color) ? color[i % color.length] : color;
+        var yTop = yPos(Math.max(v, 0)), yBot = yPos(Math.min(v, 0));
+        var x = marginLeft + i * barSlot + (barSlot - barWidth) / 2;
+        var hgt = Math.max(1, yBot - yTop);
+        ctx.fillStyle = barColor;
+        ctx.fillRect(x, yTop, barWidth, hgt);
       }
+    } else if (mark === 'line') {
+      var pts = [];
+      for (var i2 = 0; i2 < n; i2++) pts.push([marginLeft + i2 * barSlot + barSlot / 2, yPos(values[i2])]);
+      if (pts.length) {
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], zeroY);
+        pts.forEach(function (p) { ctx.lineTo(p[0], p[1]); });
+        ctx.lineTo(pts[pts.length - 1][0], zeroY);
+        ctx.closePath();
+        ctx.fillStyle = hexToRgba(color, 0.15);
+        ctx.fill();
+        ctx.beginPath();
+        pts.forEach(function (p, idx) { if (idx === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); });
+        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+        pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 3, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); });
+      }
+    } else if (mark === 'points') {
+      for (var i3 = 0; i3 < n; i3++) {
+        var px = marginLeft + i3 * barSlot + barSlot / 2;
+        var py = yPos(values[i3]);
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fillStyle = hexToRgba(color, 0.65);
+        ctx.fill();
+        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+      }
+    }
+
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '10px sans-serif';
+    var approxLabelWidth = 60;
+    var maxLabelsFit = Math.max(1, Math.floor(plotW / approxLabelWidth));
+    var skip = Math.max(1, Math.ceil(n / maxLabelsFit));
+    for (var j = 0; j < n; j += skip) {
+      var lx = marginLeft + j * barSlot + barSlot / 2;
+      var label = String(labels[j]);
+      if (label.length > 18) label = label.slice(0, 17) + '\u2026';
+      ctx.save();
+      ctx.translate(lx, marginTop + plotH + 6);
+      ctx.rotate(-Math.PI / 6); ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+
+    if (xTitle) {
+      ctx.fillStyle = '#94a3b8'; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(xTitle, marginLeft + plotW / 2, h - 6);
+    }
+    if (yTitle) {
+      ctx.save();
+      ctx.translate(14, marginTop + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = '#94a3b8'; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(yTitle, 0, 0);
+      ctx.restore();
+    }
+
+    canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot };
+  }
+
+  function drawDoughnutChart(canvas, opts) {
+    var labels = opts.labels, values = opts.values, colors = opts.colors;
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var w = Math.max(rect.width, 80), h = Math.max(rect.height, 80);
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    var cx = w / 2, cy = h / 2;
+    var radius = Math.max(10, Math.min(w, h) / 2 - 8);
+    var innerRadius = radius * 0.6;
+    var total = 0; for (var i = 0; i < values.length; i++) total += Math.abs(values[i]);
+    if (total === 0) total = 1;
+
+    var startAngle = -Math.PI / 2;
+    var segs = [];
+    for (var i2 = 0; i2 < values.length; i2++) {
+      var frac = Math.abs(values[i2]) / total;
+      var endAngle = startAngle + frac * Math.PI * 2;
+      var col = colors[i2 % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = col;
+      ctx.fill();
+      segs.push({ start: startAngle, end: endAngle, label: labels[i2], value: values[i2], color: col });
+      startAngle = endAngle;
+    }
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+
+    canvas._doughnutMeta = { cx: cx, cy: cy, radius: radius, innerRadius: innerRadius, segs: segs };
+  }
+
+  function attachDoughnutTooltip(canvas) {
+    canvas.addEventListener('mousemove', function (e) {
+      var meta = canvas._doughnutMeta;
+      if (!meta) { tooltipEl.style.display = 'none'; return; }
+      var rect = canvas.getBoundingClientRect();
+      var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      var dx = mx - meta.cx, dy = my - meta.cy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < meta.innerRadius || dist > meta.radius) { tooltipEl.style.display = 'none'; return; }
+      var angle = Math.atan2(dy, dx);
+      if (angle < -Math.PI / 2) angle += Math.PI * 2;
+      var found = null;
+      for (var i = 0; i < meta.segs.length; i++) {
+        var s = meta.segs[i];
+        if (angle >= s.start && angle < s.end) { found = s; break; }
+      }
+      if (!found) { tooltipEl.style.display = 'none'; return; }
+      tooltipEl.textContent = found.label + ': ' + found.value.toLocaleString();
+      tooltipEl.style.left = (e.clientX + 12) + 'px';
+      tooltipEl.style.top = (e.clientY + 12) + 'px';
+      tooltipEl.style.display = 'block';
+    });
+    canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
+  }
+
+  var MAX_BARS = 200;
+  var modalEl = document.getElementById('fullChartModal');
+  var modalCanvas = document.getElementById('fullChartModalCanvas');
+  var modalWrap = document.getElementById('fullChartModalCanvasWrap');
+  var _lastModalArgs = null;
+
+  function openFullChartModal(header, stat, color) {
+    modalEl.style.display = 'flex'; 
+    _lastModalArgs = [header, stat, color];
+
+    var labels = stat.fullLabels || stat.labels;
+    var dist = stat.fullDist || stat.dist;
+    var totalCount = labels.length;
+    var truncated = totalCount > MAX_BARS;
+    if (truncated) { labels = labels.slice(0, MAX_BARS); dist = dist.slice(0, MAX_BARS); }
+
+    document.getElementById('fullChartModalTitle').textContent = truncated
+      ? header + ' \u2014 Top ' + MAX_BARS + ' of ' + totalCount.toLocaleString() + ' Values'
+      : header + ' \u2014 All Values (' + totalCount + ')';
+
+    var noteParts = [];
+    if (truncated) noteParts.push('Showing the ' + MAX_BARS + ' most frequent values, sorted by count.');
+    if (stat.nonConforming) noteParts.push(stat.nonConforming.toLocaleString() + ' value(s) did not match this column\u2019s detected type and are excluded from the chart.');
+    document.getElementById('fullChartModalNote').textContent = noteParts.join(' ');
+
+    var parent = modalWrap.parentElement;
+    var minAvailableWidth = parent.clientWidth;
+    var perBar = stat.type === 'categorical' ? 60 : 50;
+    var idealWidth = (stat.mode === 'continuous' || stat.type === 'date')
+      ? Math.max(minAvailableWidth, labels.length * 34)
+      : Math.min(Math.max(minAvailableWidth, labels.length * perBar), 14000);
+    modalWrap.style.width = idealWidth + 'px';
+
+    drawBarChart(modalCanvas, {
+      labels: labels, values: dist, color: color,
+      xTitle: stat.type === 'numeric' || stat.type === 'date' ? header : 'Value',
+      yTitle: 'Count'
+    });
+  }
+  function closeFullChartModal() { modalEl.style.display = 'none'; }
+  document.getElementById('fullChartModalClose').addEventListener('click', closeFullChartModal);
+  modalEl.addEventListener('click', function (e) { if (e.target === modalEl) closeFullChartModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeFullChartModal(); });
+
+  var rawData = [], currentHeaders = [], currentStats = null, currentRowCount = 0;
+  var chartRegistry = []; 
+  var manualChartMeta = null; 
+
+  function renderAutoProfilerGrid() {
+    var grid = document.getElementById('profilerGrid');
+    grid.innerHTML = '';
+    chartRegistry = [];
+
+    currentHeaders.forEach(function (h, i) {
+      var stat = currentStats[h];
+      var color = COLORS[i % COLORS.length];
+      var card = document.createElement('div');
+      card.className = 'profile-card';
+
+      var badgeClass = 'badge-' + stat.type;
+      var idBadge = '';
+      if (stat.type === 'categorical' && stat.uniqueRatio > 0.95 && stat.valued > 20) {
+        idBadge = '<span class="badge badge-id" title="Nearly every value is unique \u2014 likely an identifier, not a category">ID-LIKE</span>';
+      }
+
+      var statsRowHtml = '';
+      var secondaryParts = ['Missing: ' + stat.missing.toLocaleString() + ' (' + pct(stat.missing, stat.total) + '%)'];
+
+      if (stat.type === 'numeric') {
+        statsRowHtml =
+          '<div class="stats-row"><span>Min<strong>' + stat.min.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
+          '<span>Median<strong>' + stat.median.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
+          '<span>Max<strong>' + stat.max.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span></div>' +
+          '<div class="stats-row"><span>Mean<strong>' + stat.mean.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
+          '<span>Std Dev<strong>' + stat.stdev.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
+          '<span>Unique<strong>' + stat.distinctCount.toLocaleString() + '</strong></span></div>';
+        if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' non-numeric value(s) excluded from stats</span>');
+      } else if (stat.type === 'date') {
+        statsRowHtml =
+          '<div class="stats-row"><span>Earliest<strong>' + new Date(stat.min).toLocaleDateString() + '</strong></span>' +
+          '<span>Latest<strong>' + new Date(stat.max).toLocaleDateString() + '</strong></span></div>';
+        if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' value(s) did not parse as dates</span>');
+      } else {
+        statsRowHtml = '<div class="stats-row"><span>Unique<strong>' + stat.distinctCount.toLocaleString() + ' (' + pct(stat.distinctCount, stat.valued) + '%)</strong></span></div>';
+        if (stat.caseVariants) secondaryParts.push('<span class="warn">\u26A0 merges to ' + stat.caseInsensitiveDistinct.toLocaleString() + ' groups if case is ignored</span>');
+      }
+
+      card.innerHTML =
+        '<div class="profile-header">' +
+        '<div class="profile-title-wrap"><div class="profile-title" title="' + h.replace(/"/g, '&quot;') + '">' + h + '</div>' +
+        '<span class="badge ' + badgeClass + '">' + stat.type.toUpperCase() + '</span>' + idBadge + '</div>' +
+        '<div class="header-controls">' +
+        '<input type="color" class="color-picker" value="' + color + '" title="Change chart color">' +
+        '<button class="icon-btn btn-download" title="Download chart as PNG"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>' +
+        '</div></div>' +
+        statsRowHtml +
+        '<div class="stats-secondary">' + secondaryParts.join(' &middot; ') + '</div>' +
+        '<div class="chart-wrap" title="Click to view all values"><canvas></canvas></div>';
+
+      grid.appendChild(card);
+
+      var canvas = card.querySelector('canvas');
+      var chartColor = color;
+      drawBarChart(canvas, { labels: stat.labels, values: stat.dist, color: chartColor, yTitle: 'Count' });
+      attachBarTooltip(canvas);
+      chartRegistry.push({ canvas: canvas, stat: stat, getColor: function () { return chartColor; } });
+
+      card.querySelector('.chart-wrap').addEventListener('click', function () { openFullChartModal(h, stat, chartColor); });
+      card.querySelector('.color-picker').addEventListener('input', function (e) {
+        chartColor = e.target.value;
+        drawBarChart(canvas, { labels: stat.labels, values: stat.dist, color: chartColor, yTitle: 'Count' });
+      });
+      card.querySelector('.btn-download').addEventListener('click', function () {
+        var exportCanvas = document.createElement('canvas');
+        exportCanvas.width = canvas.width + 40; exportCanvas.height = canvas.height + 60;
+        var ectx = exportCanvas.getContext('2d');
+        ectx.fillStyle = '#0f172a'; ectx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        ectx.fillStyle = '#f8fafc'; ectx.font = '600 16px sans-serif';
+        ectx.fillText(h + ' Profile', 20, 30);
+        ectx.drawImage(canvas, 20, 45, canvas.width, canvas.height);
+        var link = document.createElement('a');
+        link.download = 'profile_' + h.replace(/[^a-z0-9]/gi, '_') + '.png';
+        link.href = exportCanvas.toDataURL('image/png');
+        link.click();
+      });
     });
   }
 
   function populateDropdowns() {
-    const opts = currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
-    document.querySelectorAll('.col-select').forEach(sel => {
-      sel.innerHTML = opts;
+    var opts = currentHeaders.map(function (h) { return '<option value="' + h.replace(/"/g, '&quot;') + '">' + h + '</option>'; }).join('');
+    document.querySelectorAll('.col-select').forEach(function (sel) { sel.innerHTML = opts; });
+  }
+
+  function aggregate(xCol, yCol) {
+    var groups = {}; 
+    var order = [];
+    var skipped = 0;
+    for (var i = 0; i < rawData.length; i++) {
+      var row = rawData[i];
+      var xRaw = row[xCol];
+      var xVal = (xRaw === undefined || xRaw === null || String(xRaw).trim() === '') ? 'Unknown' : String(xRaw).trim();
+      if (!groups[xVal]) { groups[xVal] = { sum: 0, validCount: 0, min: Infinity, max: -Infinity, rowCount: 0 }; order.push(xVal); }
+      var g = groups[xVal];
+      g.rowCount++;
+
+      var yRaw = row[yCol];
+      var yStr = (yRaw === undefined || yRaw === null) ? '' : String(yRaw).trim();
+      var yVal = parseFloat(yStr);
+      var validNum = yStr !== '' && !isNaN(yVal) && isFinite(yVal);
+      if (validNum) {
+        g.sum += yVal; g.validCount++;
+        if (yVal < g.min) g.min = yVal;
+        if (yVal > g.max) g.max = yVal;
+      } else {
+        skipped++;
+      }
+    }
+    return { groups: groups, order: order, skipped: skipped };
+  }
+
+  function renderManualChart() {
+    if (!rawData.length) return;
+    var xCol = document.getElementById('selXAxis').value;
+    var yCol = document.getElementById('selYAxis').value;
+    var agg = document.getElementById('selAggregation').value;
+    var type = document.getElementById('selChartType').value;
+
+    var result = aggregate(xCol, yCol);
+    var groups = result.groups;
+    var labels = result.order.slice();
+
+    labels.forEach(function (l) {
+      var g = groups[l];
+      var v;
+      if (agg === 'sum') v = g.sum;
+      else if (agg === 'avg') v = g.validCount > 0 ? g.sum / g.validCount : 0;
+      else if (agg === 'count') v = g.rowCount;
+      else if (agg === 'min') v = g.validCount > 0 ? g.min : 0;
+      else v = g.validCount > 0 ? g.max : 0; 
+      groups[l].__value = v;
     });
+
+    var truncatedGroups = false;
+    if (labels.length > 50) {
+      labels.sort(function (a, b) { return Math.abs(groups[b].__value) - Math.abs(groups[a].__value); });
+      labels = labels.slice(0, 50);
+      truncatedGroups = true;
+    }
+    var dataPoints = labels.map(function (l) { return groups[l].__value; });
+
+    var notes = [];
+    if (result.skipped > 0 && agg !== 'count') notes.push(result.skipped.toLocaleString() + ' row(s) skipped: non-numeric value in "' + yCol + '"');
+    if (truncatedGroups) notes.push('Showing the top 50 groups by magnitude (out of ' + result.order.length.toLocaleString() + ')');
+    document.getElementById('chartNote').textContent = notes.join(' \u00b7 ');
+    document.getElementById('chartLegendLabel').textContent = agg.toUpperCase() + ' of ' + yCol + ' by ' + xCol;
+
+    manualChartMeta = { labels: labels, dataPoints: dataPoints, type: type, xCol: xCol, yCol: yCol, agg: agg };
+
+    var wrapper = document.getElementById('chartScrollWrapper');
+    var parent = wrapper.parentElement;
+    var explorerMain = document.querySelector('.explorer-main');
+
+    if (type === 'doughnut') {
+      wrapper.style.width = '100%';
+      explorerMain.style.overflowX = 'hidden';
+      wrapper.innerHTML =
+        '<div class="doughnut-wrap"><div class="doughnut-canvas-box"><canvas id="manualChartCanvas"></canvas></div>' +
+        '<div class="doughnut-legend" id="doughnutLegend"></div></div>';
+      var dCanvas = document.getElementById('manualChartCanvas');
+      var dColors = labels.map(function (_, i) { return COLORS[i % COLORS.length]; });
+      drawDoughnutChart(dCanvas, { labels: labels, values: dataPoints, colors: dColors });
+      attachDoughnutTooltip(dCanvas);
+      var legend = document.getElementById('doughnutLegend');
+      legend.innerHTML = labels.map(function (l, i) {
+        return '<div class="legend-item"><span class="legend-swatch" style="background:' + dColors[i] + '"></span>' + l + '<strong>' + dataPoints[i].toLocaleString() + '</strong></div>';
+      }).join('');
+    } else {
+      wrapper.innerHTML = '<canvas id="manualChartCanvas"></canvas>';
+      var zoomPct = parseInt(document.getElementById('chartWidthSlider').value, 10) || 100;
+      wrapper.style.width = zoomPct + '%';
+      if (zoomPct > 100) explorerMain.style.overflowX = 'auto';
+      else explorerMain.style.overflowX = 'hidden';
+
+      var cCanvas = document.getElementById('manualChartCanvas');
+      var mark = type === 'bar' ? 'bar' : (type === 'line' ? 'line' : 'points');
+      var color = (type === 'bar') ? labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
+      drawCartesianChart(cCanvas, { mark: mark, labels: labels, values: dataPoints, color: color, xTitle: xCol, yTitle: agg.toUpperCase() + ' of ' + yCol });
+      attachBarTooltip(cCanvas);
+    }
   }
 
+  document.getElementById('btnUpdateChart').addEventListener('click', renderManualChart);
+  document.getElementById('chartWidthSlider').addEventListener('input', function (e) {
+    if (!manualChartMeta || manualChartMeta.type === 'doughnut') return;
+    var val = parseInt(e.target.value, 10);
+    var wrapper = document.getElementById('chartScrollWrapper');
+    var explorerMain = document.querySelector('.explorer-main');
+    
+    wrapper.style.width = val + '%';
+    if (val > 100) explorerMain.style.overflowX = 'auto';
+    else explorerMain.style.overflowX = 'hidden';
+    
+    var canvas = document.getElementById('manualChartCanvas');
+    var mark = manualChartMeta.type === 'bar' ? 'bar' : (manualChartMeta.type === 'line' ? 'line' : 'points');
+    var color = (manualChartMeta.type === 'bar') ? manualChartMeta.labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
+    drawCartesianChart(canvas, { mark: mark, labels: manualChartMeta.labels, values: manualChartMeta.dataPoints, color: color, xTitle: manualChartMeta.xCol, yTitle: manualChartMeta.agg.toUpperCase() + ' of ' + manualChartMeta.yCol });
+  });
+
+  document.getElementById('btnSaveImage').addEventListener('click', function () {
+    var canvas = document.getElementById('manualChartCanvas');
+    if (!canvas) return;
+    var newCanvas = document.createElement('canvas');
+    newCanvas.width = canvas.width; newCanvas.height = canvas.height;
+    var ctx = newCanvas.getContext('2d');
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+    ctx.drawImage(canvas, 0, 0);
+    var link = document.createElement('a');
+    link.download = 'tangent_chart.png';
+    link.href = newCanvas.toDataURL('image/png');
+    link.click();
+  });
+
+  // =========================================================================
+  // 10. RAW DATA GRID
+  // =========================================================================
   function populateRawGrid() {
-    document.getElementById('rawThead').innerHTML = currentHeaders.map(h => `<th>${h}</th>`).join('');
-    const sample = rawData.slice(0, 100);
-    document.getElementById('rawTbody').innerHTML = sample.map(row => 
-      '<tr>' + currentHeaders.map(h => `<td>${String(row[h]||'').replace(/</g, '&lt;')}</td>`).join('') + '</tr>'
-    ).join('');
+    document.getElementById('rawThead').innerHTML = currentHeaders.map(function (h) { return '<th>' + h.replace(/</g, '&lt;') + '</th>'; }).join('');
+    var sample = rawData.slice(0, 100);
+    document.getElementById('rawTbody').innerHTML = sample.map(function (row) {
+      return '<tr>' + currentHeaders.map(function (h) { return '<td>' + String(row[h] || '').replace(/</g, '&lt;') + '</td>'; }).join('') + '</tr>';
+    }).join('');
   }
 
-  // --- Close File Logic ---
-  document.getElementById('btnCloseFile').addEventListener('click', () => {
-    rawData = []; currentHeaders = []; currentStats = null;
+  // =========================================================================
+  // 11. TABS
+  // =========================================================================
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      var tabId = btn.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
+      
+      var manualControls = document.getElementById('manualControls');
+      if (manualControls) manualControls.style.display = (tabId === 'tab-manual') ? 'flex' : 'none';
+
+      if (tabId === 'tab-manual' && manualChartMeta) renderManualChart();
+      if (tabId === 'tab-auto') chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
+    });
+  });
+
+  // =========================================================================
+  // 12. FILE HANDLING
+  // =========================================================================
+  var dropzone = document.getElementById('dropzone');
+  var fileInput = document.getElementById('fileInput');
+
+  document.getElementById('browseBtn').addEventListener('click', function () { fileInput.click(); });
+  dropzone.addEventListener('click', function (e) { if (e.target.id !== 'browseBtn') fileInput.click(); });
+  dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
+  dropzone.addEventListener('drop', function (e) {
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function (e) { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+  document.getElementById('btnCloseFile').addEventListener('click', function () {
+    rawData = []; currentHeaders = []; currentStats = null; manualChartMeta = null;
     fileInput.value = '';
-    
-    // Destroy charts
-    if(activeChart) { activeChart.destroy(); activeChart = null; }
-    autoCharts.forEach(c => c.destroy()); autoCharts = [];
-    
     document.getElementById('profilerGrid').innerHTML = '';
-    
     document.getElementById('workspace').style.display = 'none';
     document.getElementById('dropzone').style.display = 'block';
   });
 
-  // --- Web Worker Profiler ---
-  const workerCode = `
-    self.onmessage = function(e) {
-      const { data, headers } = e.data;
-      let stats = {};
-      
-      headers.forEach(h => {
-        stats[h] = { type: 'string', missing: 0, unique: new Set(), numVals: [], strCounts: {} };
-      });
+  function handleFile(file) {
+    if (file.name.split('.').pop().toLowerCase() !== 'csv') { alert('Only CSV files are supported.'); return; }
+    document.getElementById('processingOverlay').style.display = 'flex';
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      if (worker) worker.terminate();
+      worker = new Worker(workerUrl);
+      worker.onmessage = function (ev) {
+        currentHeaders = ev.data.headers;
+        currentStats = ev.data.stats;
+        currentRowCount = ev.data.rowCount;
+        rawData = ev.data.data;
 
-      for (let i = 0; i < data.length; i++) {
-        let row = data[i];
-        for (let j = 0; j < headers.length; j++) {
-          let h = headers[j];
-          let val = row[h];
-          if (val === undefined || val === null || String(val).trim() === '') {
-            stats[h].missing++;
-            continue;
-          }
-          let strVal = String(val).trim();
-          stats[h].unique.add(strVal);
-          
-          let numVal = parseFloat(strVal);
-          if (!isNaN(numVal) && String(numVal) === strVal) {
-            stats[h].numVals.push(numVal);
-          } else {
-            stats[h].strCounts[strVal] = (stats[h].strCounts[strVal] || 0) + 1;
-          }
-        }
-      }
+        document.getElementById('statRows').textContent = currentRowCount.toLocaleString();
+        document.getElementById('statCols').textContent = currentHeaders.length.toLocaleString();
 
-      let results = {};
-      headers.forEach(h => {
-        let s = stats[h];
-        let totalValued = data.length - s.missing;
-        // Determine type
-        let isNum = s.numVals.length > (totalValued * 0.8);
-        
-        results[h] = { type: isNum ? 'numeric' : 'string', missing: s.missing, uniqueCount: s.unique.size };
-        
-        if (isNum) {
-           s.numVals.sort((a,b) => a-b);
-           results[h].min = s.numVals[0] || 0;
-           results[h].max = s.numVals[s.numVals.length-1] || 0;
-           let sum = s.numVals.reduce((a,b) => a+b, 0);
-           results[h].avg = s.numVals.length ? (sum / s.numVals.length) : 0;
-           
-           // Create 10-bin histogram data
-           let bins = 10;
-           let range = results[h].max - results[h].min;
-           let binSize = range / bins || 1;
-           let dist = Array(bins).fill(0);
-           s.numVals.forEach(v => {
-             let binIdx = Math.floor((v - results[h].min) / binSize);
-             if(binIdx >= bins) binIdx = bins - 1;
-             dist[binIdx]++;
-           });
-           results[h].dist = dist;
-           results[h].labels = Array(bins).fill(0).map((_, i) => (results[h].min + i*binSize).toFixed(1));
-        } else {
-           // Top 5 categories
-           let sorted = Object.entries(s.strCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
-           results[h].labels = sorted.map(x => x[0]);
-           results[h].dist = sorted.map(x => x[1]);
-        }
-      });
+        populateDropdowns();
+        populateRawGrid();
 
-      self.postMessage({ status: 'success', stats: results });
-    };
-  `;
-  const blob = new Blob([workerCode], { type: 'application/javascript' });
-  const workerUrl = URL.createObjectURL(blob);
-  let worker = null;
-
-  function runWebWorkerProfiler() {
-    if (worker) worker.terminate();
-    worker = new Worker(workerUrl);
-    
-    worker.onmessage = function(e) {
-      if (e.data.status === 'success') {
-        currentStats = e.data.stats;
-        renderAutoProfiler();
         document.getElementById('processingOverlay').style.display = 'none';
-        document.getElementById('dropzone').style.display = 'none';
+        dropzone.style.display = 'none';
         document.getElementById('workspace').style.display = 'block';
-        
-        // Render initial manual chart
+
+        renderAutoProfilerGrid();
         renderManualChart();
-      }
+      };
+      worker.postMessage({ text: e.target.result });
     };
-    worker.postMessage({ data: rawData, headers: currentHeaders });
+    reader.readAsText(file);
   }
 
-  // --- Auto Profiler Render ---
-  function renderAutoProfiler() {
-    const grid = document.getElementById('profilerGrid');
-    grid.innerHTML = '';
-    autoCharts.forEach(c => c.destroy());
-    autoCharts = [];
-
-    const colorPalette = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
-      currentHeaders.forEach((h, i) => {
-        let themeHex = colorPalette[i % colorPalette.length];
-      let stat = currentStats[h];
-      let card = document.createElement('div');
-      card.className = 'profile-card';
-      
-      let statsHtml = '';
-      if(stat.type === 'numeric') {
-         statsHtml = `
-           <div class="profile-stats">
-             <span>Min <strong>${stat.min.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
-             <span>Avg <strong>${stat.avg.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
-             <span>Max <strong>${stat.max.toLocaleString(undefined, {maximumFractionDigits: 2})}</strong></span>
-           </div>
-         `;
-      } else {
-         statsHtml = `
-           <div class="profile-stats">
-             <span>Unique Vals <strong>${stat.uniqueCount.toLocaleString()}</strong></span>
-             <span>Missing <strong>${stat.missing.toLocaleString()}</strong></span>
-           </div>
-         `;
-      }
-
-      card.innerHTML = `
-          <div class="profile-header" style="align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-              <div class="profile-title" title="${h}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${h}</div>
-              <div class="profile-type">${stat.type}</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-              <input type="color" class="color-picker-mini" value="${themeHex}" title="Change Chart Color" style="width: 20px; height: 20px; border: none; cursor: pointer; padding: 0; background: transparent; border-radius: 4px;">
-              <button class="btn-download-mini" title="Download Chart" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; border-radius: 4px; transition: 0.2s;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              </button>
-            </div>
-          </div>
-          ${statsHtml}
-          <div class="chart-container-sm">
-            <canvas id="autoChart_${i}"></canvas>
-          </div>
-        `;
-      grid.appendChild(card);
-
-      // Render Chart
-      let ctx = document.getElementById(`autoChart_${i}`).getContext('2d');
-      let chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: stat.labels,
-          datasets: [{
-            data: stat.dist,
-            backgroundColor: themeHex,
-              borderColor: 'transparent',
-              borderWidth: 0,
-            borderRadius: 2,
-            barPercentage: 0.95,
-            categoryPercentage: 0.95
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: true } },
-          scales: {
-              x: { 
-                display: true, 
-                grid: { display: false },
-                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxRotation: 45, maxTicksLimit: 6 }
-              },
-              y: { 
-                display: true, 
-                grid: { color: 'rgba(255,255,255,0.05)' },
-                ticks: { color: 'rgba(255,255,255,0.5)', font: {size: 10}, maxTicksLimit: 4 }
-              }
-            }
-        }
-      });
-      autoCharts.push(chart);
-        
-        let colorPicker = card.querySelector('.color-picker-mini');
-        if (colorPicker) {
-            colorPicker.addEventListener('input', (e) => {
-                chart.data.datasets[0].backgroundColor = e.target.value;
-                chart.update();
-            });
-        }
-        
-        let dlBtn = card.querySelector('.btn-download-mini');
-        if (dlBtn) {
-            dlBtn.addEventListener('click', () => {
-                let c = document.getElementById(`autoChart_${i}`);
-                let nc = document.createElement('canvas');
-                nc.width = c.width + 40;
-                nc.height = c.height + 110;
-                let nctx = nc.getContext('2d');
-                
-                nctx.fillStyle = '#0f172a';
-                nctx.fillRect(0, 0, nc.width, nc.height);
-                
-                nctx.fillStyle = '#f8fafc';
-                nctx.font = '600 16px "Segoe UI", sans-serif';
-                nctx.textAlign = 'left';
-                nctx.fillText(h + ' Profile', 20, 30);
-                
-                if (stat.type === 'numeric') {
-                    nctx.textAlign = 'left';
-                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Min', 20, 55);
-                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.min.toLocaleString(undefined, {maximumFractionDigits: 2}), 20, 75);
-                    
-                    nctx.textAlign = 'center';
-                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Avg', nc.width / 2, 55);
-                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.avg.toLocaleString(undefined, {maximumFractionDigits: 2}), nc.width / 2, 75);
-                    
-                    nctx.textAlign = 'right';
-                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Max', nc.width - 20, 55);
-                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.max.toLocaleString(undefined, {maximumFractionDigits: 2}), nc.width - 20, 75);
-                } else {
-                    nctx.textAlign = 'left';
-                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Unique Vals', 20, 55);
-                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.uniqueCount.toLocaleString(), 20, 75);
-                    
-                    nctx.textAlign = 'right';
-                    nctx.fillStyle = '#94a3b8'; nctx.font = '12px "Segoe UI", sans-serif'; nctx.fillText('Missing', nc.width - 20, 55);
-                    nctx.fillStyle = '#f8fafc'; nctx.font = '600 14px "Segoe UI", sans-serif'; nctx.fillText(stat.missing.toLocaleString(), nc.width - 20, 75);
-                }
-                
-                nctx.textAlign = 'left';
-                nctx.drawImage(c, 20, 95);
-                
-                const link = document.createElement('a');
-                let cleanName = h.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                link.download = `tangent_${cleanName}_profile.png`;
-                link.href = nc.toDataURL('image/png');
-                link.click();
-            });
-        }
-    });
-  }
-
-  // --- Manual Explorer Render ---
-  document.getElementById('btnUpdateChart').addEventListener('click', renderManualChart);
-
-  function renderManualChart() {
-    if(!rawData.length) return;
-    const xCol = document.getElementById('selXAxis').value;
-    const yCol = document.getElementById('selYAxis').value;
-    const agg = document.getElementById('selAggregation').value;
-    const type = document.getElementById('selChartType').value;
-
-    let groups = {};
-    for (let i = 0; i < rawData.length; i++) {
-      let row = rawData[i];
-      let xVal = row[xCol];
-      if (xVal === undefined || xVal === null || String(xVal).trim() === '') xVal = 'Unknown';
-      let yVal = parseFloat(row[yCol]) || 0;
-      
-      if (!groups[xVal]) groups[xVal] = { sum: 0, count: 0, min: yVal, max: yVal };
-      groups[xVal].sum += yVal;
-      groups[xVal].count += 1;
-      if (yVal < groups[xVal].min) groups[xVal].min = yVal;
-      if (yVal > groups[xVal].max) groups[xVal].max = yVal;
-    }
-
-    let labels = Object.keys(groups);
-    let dataPoints = [];
-    
-    // Limit to top 50 groups if too many for performance
-    if (labels.length > 50) {
-       labels.sort((a,b) => groups[b].sum - groups[a].sum);
-       labels = labels.slice(0, 50);
-    }
-
-    labels.forEach(l => {
-       let g = groups[l];
-       if (agg === 'sum') dataPoints.push(g.sum);
-       else if (agg === 'avg') dataPoints.push(g.sum / g.count);
-       else if (agg === 'count') dataPoints.push(g.count);
-       else if (agg === 'min') dataPoints.push(g.min);
-       else if (agg === 'max') dataPoints.push(g.max);
-    });
-
-    if (activeChart) activeChart.destroy();
-
-    let wrapper = document.getElementById('chartScrollWrapper');
-    let parent = wrapper.parentElement;
-
-    // Intelligent Chart Optimization Logic
-    if (type === 'doughnut') {
-      wrapper.style.width = '100%';
-      parent.style.overflowX = 'hidden';
-    } else {
-      // Calculate ideal width based on dataset density (guarantees at least 40px per column)
-      let barWidth = parseInt(document.getElementById('chartWidthSlider').value) || 40;
-        let idealWidth = labels.length * barWidth;
-      let minAvailableWidth = parent.clientWidth - 48; // Account for CSS padding
-
-      if (idealWidth > minAvailableWidth) {
-        // High density data: expand chart width and enable horizontal scroll so bars stay legible
-        wrapper.style.width = idealWidth + 'px';
-        parent.style.overflowX = 'auto'; 
-      } else {
-        // Low density data: fit perfectly on screen without scrolling
-        wrapper.style.width = '100%';
-        parent.style.overflowX = 'hidden'; 
-      }
-    }
-
-    let ctx = document.getElementById('manualChartCanvas').getContext('2d');
-    let bgColor = type === 'line' || type === 'scatter' ? 'rgba(58, 123, 213, 0.1)' : 'rgba(58, 123, 213, 0.6)';
-    let borderColor = '#3a7bd5';
-
-    // Multi-color palette for Bars and Doughnuts
-    const colorPalette = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
-    if(type === 'doughnut' || type === 'bar') {
-       bgColor = labels.map((_, i) => colorPalette[i % colorPalette.length]);
-       borderColor = 'transparent';
-    }
-
-    activeChart = new Chart(ctx, {
-      type: type,
-      data: {
-        labels: labels,
-        datasets: [{
-          label: `${agg.toUpperCase()} of ${yCol} by ${xCol}`,
-          data: dataPoints,
-          backgroundColor: bgColor,
-          borderColor: borderColor,
-          borderWidth: type === 'bar' ? 1 : 2,
-          barPercentage: 0.95,
-          categoryPercentage: 0.95,
-          maxBarThickness: 100,
-          fill: type === 'line',
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: type === 'doughnut' ? 'right' : 'top' }
-        },
-        scales: type === 'doughnut' ? {} : {
-          x: {
-            title: { display: true, text: xCol, color: '#94a3b8', font: { size: 13, weight: '600' }, padding: {top: 10} },
-            grid: { color: 'rgba(255,255,255,0.05)' },
-            ticks: {
-              maxRotation: 45,
-              minRotation: 0,
-              callback: function(value, index, values) {
-                let label = this.getLabelForValue(value);
-                return label.length > 20 ? label.substring(0, 20) + '...' : label;
-              }
-            }
-          },
-          y: { 
-            title: { display: true, text: `${agg.toUpperCase()} of ${yCol}`, color: '#94a3b8', font: { size: 13, weight: '600' }, padding: {bottom: 10} },
-            grid: { color: 'rgba(255,255,255,0.05)' } 
-          }
-        }
-      }
-    });
-  }
-
-  // --- Dynamic Width Slider ---
-    document.getElementById('chartWidthSlider').addEventListener('input', (e) => {
-      if (!activeChart || activeChart.config.type === 'doughnut') return;
-      
-      let val = parseInt(e.target.value);
-      let labelCount = activeChart.data.labels.length;
-      let wrapper = document.getElementById('chartScrollWrapper');
-      let parent = wrapper.parentElement;
-      let minAvailableWidth = parent.clientWidth - 48;
-      
-      let idealWidth = labelCount * val;
-      if (idealWidth > minAvailableWidth) {
-        wrapper.style.width = idealWidth + 'px';
-        parent.style.overflowX = 'auto';
-      } else {
-        wrapper.style.width = '100%';
-        parent.style.overflowX = 'hidden';
-      }
-    });
-
-    
-  document.getElementById('btnSaveImage').addEventListener('click', () => {
-    // Determine which canvas is visible
-    let canvas = null;
-    if (document.getElementById('tab-manual').classList.contains('active')) {
-      canvas = document.getElementById('manualChartCanvas');
-    } else if (document.getElementById('tab-auto').classList.contains('active')) {
-      alert("Please switch to Manual Explorer to download a full-size chart.");
-      return;
-    }
-    
-    if (canvas) {
-      // Create a temporary canvas with white background (to avoid transparent PNG black bg issues)
-      const newCanvas = document.createElement('canvas');
-      newCanvas.width = canvas.width;
-      newCanvas.height = canvas.height;
-      const ctx = newCanvas.getContext('2d');
-      ctx.fillStyle = '#0f172a'; // Match tangent dark theme
-      ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-      ctx.drawImage(canvas, 0, 0);
-
-      const link = document.createElement('a');
-      link.download = 'tangent_chart.png';
-      link.href = newCanvas.toDataURL('image/png');
-      link.click();
-    }
+  window.addEventListener('resize', function () {
+    chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
+    if (document.getElementById('tab-manual').classList.contains('active') && manualChartMeta) renderManualChart();
+    if (modalEl.style.display === 'flex' && _lastModalArgs) openFullChartModal.apply(null, _lastModalArgs);
   });
+})();
 </script>

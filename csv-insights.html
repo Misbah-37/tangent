@@ -3,31 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSV Insights Studio — Rebuilt (Dependency-Free)</title>
+
+<link rel="canonical" href="https://runtangent.com/csv-insights" />
+<title>CSV Insights Studio | Tangent</title>
+<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
+<link rel="canonical" href="https://runtangent.com/csv-insights">
+<!-- Structured Data for CSV Insights -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CSV Insights | Tangent",
+  "description": "Drag and drop any CSV file to instantly profile data, build pivot tables, and generate stunning charts in your browser.",
+  "applicationCategory": "Data&AnalyticsApplication",
+  "operatingSystem": "All",
+  "url": "https://runtangent.com/csv-insights.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+
+<link rel="stylesheet" href="assets/tangent.css?v=8">
 <style>
-  :root {
-    --bg-page: #0f172a;
+:root {
     --bg-card: #1e293b;
     --border-color: #334155;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --accent: #3a7bd5;
-    --brand-cyan: #00d2ff;
     --warn: #fdb827;
     --danger: #ef4444;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg-page); color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-  a { color: inherit; }
-
-  /* ---------- Nav ---------- */
-  .global-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border-color); background: #0b1220; }
-  .nav-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; text-decoration: none; }
-  .nav-note { color: var(--text-muted); font-size: 0.8rem; }
-
+  
   /* ---------- Hero ---------- */
   .clean-header { text-align: center; margin: 48px auto 40px; padding: 0 32px; max-width: 700px; }
   .badge-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(58,123,213,0.15); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
@@ -66,7 +79,10 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
   /* ---------- Auto-Profiler ---------- */
-  .profiler-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+  .profiler-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  @media (max-width: 1200px) { .profiler-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .profiler-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 650px) { .profiler-grid { grid-template-columns: 1fr; } }
   .profile-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
   .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
   .profile-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -129,36 +145,424 @@
 
   /* ---------- Info / FAQ / Footer ---------- */
   .info-section { max-width: 1200px; margin: 60px auto 0; padding: 0 32px 60px; }
-  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 50px; }
-  .feature-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; }
-  .feature-card h3 { margin: 12px 0 8px; font-size: 1.05rem; }
-  .feature-card p { color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5; }
-  .faq-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 16px; }
-  .faq-box { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background: var(--bg-card); }
-  .faq-box summary { padding: 14px 18px; cursor: pointer; font-weight: 600; }
-  .faq-box p { padding: 0 18px 16px; color: var(--text-muted); margin: 0; font-size: 0.9rem; line-height: 1.5; }
-  .global-footer { text-align: center; padding: 30px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; }
-  .global-footer a { margin: 0 10px; text-decoration: none; color: var(--text-muted); }
-  .global-footer a:hover { color: var(--accent); }
+
+/* ── Tangent Global Loader ── */
+#tangentLoader {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 13, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+.tl-logo-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+}
+.tl-logo-wrap svg {
+  width: 88px;
+  height: 88px;
+  overflow: visible;
+}
+/* Arc draws itself */
+.tl-arc {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+/* Line fades and scales in after arc */
+.tl-line {
+  transform-origin: 32px 14px;
+  transform-box: fill-box;
+  animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes tlDrawArc {
+  0%   { stroke-dashoffset: 1; opacity: 0.2; }
+  20%  { opacity: 1; }
+  70%  { stroke-dashoffset: 0; }
+  90%  { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1; opacity: 0.2; }
+}
+@keyframes tlPulseLine {
+  0%, 30%  { opacity: 0; transform: scaleY(0.1); }
+  60%, 85% { opacity: 1; transform: scaleY(1); }
+  100%     { opacity: 0; transform: scaleY(0.1); }
+}
+/* Glow ring behind logo */
+.tl-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+  animation: tlGlowPulse 1.6s ease-in-out infinite;
+}
+@keyframes tlGlowPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+.tl-message {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-family: Inter, -apple-system, sans-serif;
+  animation: tlFadeMsg 1.6s ease-in-out infinite;
+}
+@keyframes tlFadeMsg {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
 </style>
+
+<!-- Enforce Custom Domain Canonical -->
+<script>
+  if (window.location.hostname.includes("github.io")) {
+    window.location.replace("https://runtangent.com" + window.location.pathname + window.location.hash);
+  }
+</script>
 </head>
 <body>
 
+<!-- Global Navigation -->
 <nav class="global-nav">
-  <a href="#" class="nav-brand">
-    <svg width="22" height="22" viewBox="0 0 64 64" fill="none">
-      <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="var(--brand-cyan)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-    </svg>
-    <span><span style="color:#fff;">Tan</span><span style="color:var(--brand-cyan);">gent</span></span>
-  </a>
-  <div class="nav-note">100% client-side · zero dependencies · runs fully offline</div>
+  <div class="nav-left">
+    <a href="/" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+    </a>
+
+    <!-- Push-Sidebar Toggle Button -->
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+      <span>Toolkit</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <!-- Hamburger Button (Mobile Only) -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="/#trust" class="nav-link">Privacy Guarantee</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
 </nav>
+
+<!-- TANGENT_SIDEBAR_START -->
+<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Toolkit</span>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-nav-list">
+    <!-- Category 1: Documents & PDF -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Documents & PDF</div>
+      <div class="sidebar-group-content">
+      <a href="pdf-redactor" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Redactor</div>
+          <div class="item-desc">Blackout data & wipe metadata</div>
+        </div>
+      </a>
+      <a href="pdf-converter" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">PDF Suite</div>
+          <div class="item-desc">Merge, split, compress, & convert</div>
+        </div>
+      </a>
+      <a href="document-ocr" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">Document OCR</div>
+          <div class="item-desc">Extract text from scans & images</div>
+        </div>
+      </a>
+      <a href="markdown-studio" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Academic Markdown</div>
+          <div class="item-desc">LaTeX math, paper presets & PDF</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 2: Media & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Media & Video</div>
+      <div class="sidebar-group-content">
+      <a href="screen-recorder" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
+      <a href="mockup-generator" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      <a href="photo-resizer" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Resizer</div>
+          <div class="item-desc">Scale dimensions & WebP convert</div>
+        </div>
+      </a>
+      <a href="photo-scrubber" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Photo Scrubber</div>
+          <div class="item-desc">Strip GPS & EXIF camera tags</div>
+        </div>
+      </a>
+      <a href="bulk-watermarker" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5L16 10 4 20"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Bulk Watermarker</div>
+          <div class="item-desc">Batch image copyright stamper</div>
+        </div>
+      </a>
+      <a href="color-palette" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Color Palette Generator</div>
+          <div class="item-desc">Extract color palettes from images</div>
+        </div>
+      </a>
+      <a href="background-remover" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+        <div class="item-text">
+          <div class="item-title">Background Remover</div>
+          <div class="item-desc">Local AI transparent PNG</div>
+        </div>
+      </a>
+      <a href="heic-converter" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">HEIC Converter</div>
+          <div class="item-desc">Apple photos to JPG</div>
+        </div>
+      </a>
+      <a href="audio-transcriber" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+        <div class="item-text">
+          <div class="item-title">Audio Transcriber</div>
+          <div class="item-desc">Local Whisper AI minutes</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 3: Security & System -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Security & System</div>
+      <div class="sidebar-group-content">
+      <a href="document-signer" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Visual e-Signer</div>
+          <div class="item-desc">Visually sign PDFs & docs</div>
+        </div>
+      </a>
+      <a href="file-vault" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">File Lockbox</div>
+          <div class="item-desc">PIN & password file safe</div>
+        </div>
+      </a>
+      <a href="password-meter" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Password Shield</div>
+          <div class="item-desc">Entropy meter & passphrase gen</div>
+        </div>
+      </a>
+      <a href="file-organizer" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">File Organizer</div>
+          <div class="item-desc">In-browser & desktop sorter</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 4: Data & Analytics -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Data & Analytics</div>
+      <div class="sidebar-group-content">
+      <a href="csv-insights" class="sidebar-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        <div class="item-text">
+          <div class="item-title">CSV Insights</div>
+          <div class="item-desc">Instant dashboards & charts</div>
+        </div>
+      </a>
+      <a href="sql-studio" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SQL Analytics Studio</div>
+          <div class="item-desc">Run local SQL on CSV/Parquet</div>
+        </div>
+      </a>
+      <a href="data-hygiene" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Data Hygiene Profiler</div>
+          <div class="item-desc">Cleanse CSVs & find anomalies</div>
+        </div>
+      </a>
+      <a href="correlation-matrix" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Correlation Matrix Studio</div>
+          <div class="item-desc">Pearson heatmaps & stats</div>
+        </div>
+      </a>
+      <a href="log-analyzer" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Log Analyzer</div>
+          <div class="item-desc">Parse server & app logs</div>
+        </div>
+      </a>
+      <a href="finance-dashboard" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 14h.01"></path></svg>
+        <div class="item-text">
+          <div class="item-title">Finance Dashboard</div>
+          <div class="item-desc">Bank CSV visualizer</div>
+        </div>
+      </a>
+      <a href="data-extractor" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Data Extractor</div>
+          <div class="item-desc">Local HTML scraper to CSV</div>
+        </div>
+      </a>
+      <a href="receipt-extractor" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
+        <div class="item-text">
+          <div class="item-title">Receipt Scanner</div>
+          <div class="item-desc">Extract expenses to CSV</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 5: Utilities -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Utilities</div>
+      <div class="sidebar-group-content">
+      <a href="qr-generator" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <div class="item-text">
+          <div class="item-title">QR Generator</div>
+          <div class="item-desc">Custom styling & vector download</div>
+        </div>
+      </a>
+      <a href="typing-test" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Typing Test</div>
+          <div class="item-desc">100 sentences & paragraphs</div>
+        </div>
+      </a>
+      <a href="resume-builder" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
+        <div class="item-text">
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
+        </div>
+      </a>
+      <a href="invoice-generator" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
+        </div>
+      </a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- TANGENT_SIDEBAR_END -->
+
+<!-- Backdrop Overlay for Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ── Global Tangent Loader ── -->
+<div id="tangentLoader" role="status" aria-live="polite" aria-label="Loading">
+  <div class="tl-logo-wrap">
+    <div class="tl-glow"></div>
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="tl-arc"
+        d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14"
+        stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
+        pathLength="1"/>
+      <path class="tl-line"
+        d="M 32 14 V 44"
+        stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="tl-message" id="tangentLoaderMsg">Processing...</div>
+</div>
+
+<!-- Push-Canvas Wrapper -->
+<div class="app-canvas" id="appCanvas">
 
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon></svg>
-    CSV Analytics Engine
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>CSV Insights Studio</h1>
   <p>Instantly profile columns, build pivot charts, and visualize data securely in your browser. Powered by a Web Worker. Zero cloud uploads. Zero dependencies.</p>
@@ -190,10 +594,10 @@
         <span>Columns: <strong id="statCols">0</strong></span>
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:16px;">
-      <div style="display:flex; align-items:center; gap:8px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);" title="Adjust Bar Width">
+    <div id="manualControls" style="display:none; align-items:center; gap:16px;">
+      <div style="display:flex; align-items:center; gap:8px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);" title="Adjust Chart Zoom">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-        <input type="range" id="chartWidthSlider" min="10" max="150" value="40" style="width:80px; accent-color: var(--accent); cursor: ew-resize;">
+        <input type="range" id="chartWidthSlider" min="100" max="500" value="100" style="width:80px; accent-color: var(--accent); cursor: ew-resize;">
       </div>
       <button class="btn" id="btnSaveImage">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -268,19 +672,32 @@
 <div class="info-section">
   <div class="features-grid">
     <div class="feature-card">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-cyan)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
       <h3>Zero-Cloud Privacy</h3>
       <p>100% offline architecture guarantees your financial models, customer emails, and private datasets never touch an external server or API.</p>
     </div>
     <div class="feature-card">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-cyan)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      </div>
       <h3>Web Worker Profiling</h3>
       <p>Analyzes column distributions and statistical measures using a background CPU thread without ever freezing your browser interface.</p>
     </div>
     <div class="feature-card">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-cyan)" stroke-width="2"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
+      </div>
       <h3>Interactive Explorations</h3>
       <p>Pivot thousands of rows on the fly with instantaneous chart rendering — no libraries, no build step, just the browser's own canvas engine.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+      <h3>Raw Data Inspection</h3>
+      <p>Instantly browse the first 100 rows of your raw CSV file in a clean, scrollable grid to verify data integrity before rendering charts.</p>
     </div>
   </div>
 
@@ -289,13 +706,6 @@
   <div class="faq-box"><details><summary>How does the Auto-Profiler work?</summary><p>When you upload a file, a background Web Worker scans every column to detect its type (numeric, date, or categorical), computes statistics like median and standard deviation, and builds a histogram — all without freezing your browser.</p></details></div>
   <div class="faq-box"><details><summary>Can I save the charts I build?</summary><p>Yes — every chart, in both the Auto-Profiler and the Manual Explorer, has a "Save as PNG" option that renders straight from the canvas, no server round-trip needed.</p></details></div>
 </div>
-
-<footer class="global-footer">
-  <div style="margin-bottom: 12px;">
-    <a href="#">Home</a><a href="#">GitHub</a><a href="#">Contact</a>
-  </div>
-  <div>Rebuilt as a dependency-free demonstration.</div>
-</footer>
 
 <div id="tooltip"></div>
 
@@ -314,15 +724,42 @@
   </div>
 </div>
 
+  <!-- Standard Global Footer -->
+  <footer class="global-footer">
+    <div style="margin-bottom: 16px;">
+      <a href="/">Home</a>
+      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="mailto:hello@runtangent.com">Contact</a>
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+    </div>
+    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
+  </footer>
+
+</div>
+
+<!-- Global Shell Script -->
+<script src="assets/tangent.js?v=1"></script>
+
+<!-- Global TangentLoader Utility -->
+<script>
+  window.TangentLoader = {
+    show: function(msg) {
+      var el = document.getElementById('tangentLoader');
+      var msgEl = document.getElementById('tangentLoaderMsg');
+      if (msgEl) msgEl.textContent = msg || 'Processing...';
+      if (el) el.style.display = 'flex';
+    },
+    hide: function() {
+      var el = document.getElementById('tangentLoader');
+      if (el) el.style.display = 'none';
+    }
+  };
+</script>
+
 <script>
 (function () {
   "use strict";
 
-  // =========================================================================
-  // 1. WEB WORKER — CSV parsing + profiling (type detection, stats, histograms)
-  //    Entirely vanilla JS, no imports. Kept off the main thread so a large
-  //    file never freezes the UI.
-  // =========================================================================
   var workerSrc = [
     '"use strict";',
     'var NUMERIC_RE = /^[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?$/;',
@@ -512,9 +949,6 @@
   var workerUrl = URL.createObjectURL(workerBlob);
   var worker = null;
 
-  // =========================================================================
-  // 2. SHARED HELPERS
-  // =========================================================================
   var COLORS = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
   var tooltipEl = document.getElementById('tooltip');
 
@@ -542,9 +976,6 @@
     canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
   }
 
-  // =========================================================================
-  // 3. AUTO-PROFILER MINI/MODAL BAR CHART (counts only, always >= 0)
-  // =========================================================================
   function drawBarChart(canvas, opts) {
     var labels = opts.labels, values = opts.values, color = opts.color;
     var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
@@ -556,10 +987,13 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    var marginLeft = 40, marginBottom = xTitle ? 34 : 22, marginTop = 6, marginRight = 8;
+    var maxVal = Math.max(1, Math.max.apply(null, values.length ? values : [0]));
+    ctx.font = '10px sans-serif';
+    var maxLabelWidth = ctx.measureText(Math.round(maxVal).toLocaleString()).width;
+    
+    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = xTitle ? 34 : 22, marginTop = 6, marginRight = 8;
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
-    var maxVal = Math.max(1, Math.max.apply(null, values.length ? values : [0]));
 
     ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
@@ -628,10 +1062,6 @@
     canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot };
   }
 
-  // =========================================================================
-  // 4. MANUAL EXPLORER CARTESIAN CHART (bar / line / scatter) — handles
-  //    positive AND negative values (min/max aggregation can go negative)
-  // =========================================================================
   function drawCartesianChart(canvas, opts) {
     var mark = opts.mark, labels = opts.labels, values = opts.values, color = opts.color;
     var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
@@ -643,10 +1073,6 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    var marginLeft = 56, marginBottom = 46, marginTop = 14, marginRight = 16;
-    var plotW = w - marginLeft - marginRight;
-    var plotH = h - marginTop - marginBottom;
-
     var n = values.length;
     var rawMin = n ? Math.min.apply(null, values) : 0;
     var rawMax = n ? Math.max.apply(null, values) : 1;
@@ -654,6 +1080,16 @@
     var yMax = Math.max(0, rawMax);
     if (yMin === yMax) yMax = yMin + 1;
     var yRange = yMax - yMin;
+
+    ctx.font = '11px sans-serif';
+    var maxLabelWidth = Math.max(
+      ctx.measureText(Math.round(yMax).toLocaleString()).width,
+      ctx.measureText(Math.round(yMin).toLocaleString()).width
+    );
+    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = 46, marginTop = 14, marginRight = 16;
+    var plotW = w - marginLeft - marginRight;
+    var plotH = h - marginTop - marginBottom;
+    
     function yPos(v) { return marginTop + plotH - ((v - yMin) / yRange) * plotH; }
     var zeroY = yPos(0);
 
@@ -741,9 +1177,6 @@
     canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot };
   }
 
-  // =========================================================================
-  // 5. DOUGHNUT CHART
-  // =========================================================================
   function drawDoughnutChart(canvas, opts) {
     var labels = opts.labels, values = opts.values, colors = opts.colors;
     var dpr = window.devicePixelRatio || 1;
@@ -807,9 +1240,6 @@
     canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
   }
 
-  // =========================================================================
-  // 6. FULL CHART MODAL (Auto-Profiler: click a mini chart to see everything)
-  // =========================================================================
   var MAX_BARS = 200;
   var modalEl = document.getElementById('fullChartModal');
   var modalCanvas = document.getElementById('fullChartModalCanvas');
@@ -817,7 +1247,7 @@
   var _lastModalArgs = null;
 
   function openFullChartModal(header, stat, color) {
-    modalEl.style.display = 'flex'; // show FIRST so layout measurements below are accurate
+    modalEl.style.display = 'flex'; 
     _lastModalArgs = [header, stat, color];
 
     var labels = stat.fullLabels || stat.labels;
@@ -854,16 +1284,10 @@
   modalEl.addEventListener('click', function (e) { if (e.target === modalEl) closeFullChartModal(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeFullChartModal(); });
 
-  // =========================================================================
-  // 7. STATE
-  // =========================================================================
   var rawData = [], currentHeaders = [], currentStats = null, currentRowCount = 0;
-  var chartRegistry = []; // Auto-Profiler mini charts: {canvas, stat, getColor}
-  var manualChartMeta = null; // last render config, for resize/re-render
+  var chartRegistry = []; 
+  var manualChartMeta = null; 
 
-  // =========================================================================
-  // 8. AUTO-PROFILER GRID
-  // =========================================================================
   function renderAutoProfilerGrid() {
     var grid = document.getElementById('profilerGrid');
     grid.innerHTML = '';
@@ -944,16 +1368,13 @@
     });
   }
 
-  // =========================================================================
-  // 9. MANUAL EXPLORER
-  // =========================================================================
   function populateDropdowns() {
     var opts = currentHeaders.map(function (h) { return '<option value="' + h.replace(/"/g, '&quot;') + '">' + h + '</option>'; }).join('');
     document.querySelectorAll('.col-select').forEach(function (sel) { sel.innerHTML = opts; });
   }
 
   function aggregate(xCol, yCol) {
-    var groups = {}; // key -> {sum, validCount, min, max, rowCount}
+    var groups = {}; 
     var order = [];
     var skipped = 0;
     for (var i = 0; i < rawData.length; i++) {
@@ -997,7 +1418,7 @@
       else if (agg === 'avg') v = g.validCount > 0 ? g.sum / g.validCount : 0;
       else if (agg === 'count') v = g.rowCount;
       else if (agg === 'min') v = g.validCount > 0 ? g.min : 0;
-      else v = g.validCount > 0 ? g.max : 0; // max
+      else v = g.validCount > 0 ? g.max : 0; 
       groups[l].__value = v;
     });
 
@@ -1009,7 +1430,6 @@
     }
     var dataPoints = labels.map(function (l) { return groups[l].__value; });
 
-    // note about data-quality caveats
     var notes = [];
     if (result.skipped > 0 && agg !== 'count') notes.push(result.skipped.toLocaleString() + ' row(s) skipped: non-numeric value in "' + yCol + '"');
     if (truncatedGroups) notes.push('Showing the top 50 groups by magnitude (out of ' + result.order.length.toLocaleString() + ')');
@@ -1038,11 +1458,10 @@
       }).join('');
     } else {
       wrapper.innerHTML = '<canvas id="manualChartCanvas"></canvas>';
-      var barWidthPx = parseInt(document.getElementById('chartWidthSlider').value, 10) || 40;
-      var idealWidth = labels.length * barWidthPx;
-      var minAvailableWidth = parent.clientWidth - 48;
-      if (idealWidth > minAvailableWidth) { wrapper.style.width = idealWidth + 'px'; explorerMain.style.overflowX = 'auto'; }
-      else { wrapper.style.width = '100%'; explorerMain.style.overflowX = 'hidden'; }
+      var zoomPct = parseInt(document.getElementById('chartWidthSlider').value, 10) || 100;
+      wrapper.style.width = zoomPct + '%';
+      if (zoomPct > 100) explorerMain.style.overflowX = 'auto';
+      else explorerMain.style.overflowX = 'hidden';
 
       var cCanvas = document.getElementById('manualChartCanvas');
       var mark = type === 'bar' ? 'bar' : (type === 'line' ? 'line' : 'points');
@@ -1057,12 +1476,12 @@
     if (!manualChartMeta || manualChartMeta.type === 'doughnut') return;
     var val = parseInt(e.target.value, 10);
     var wrapper = document.getElementById('chartScrollWrapper');
-    var parent = wrapper.parentElement;
     var explorerMain = document.querySelector('.explorer-main');
-    var minAvailableWidth = parent.clientWidth - 48;
-    var idealWidth = manualChartMeta.labels.length * val;
-    if (idealWidth > minAvailableWidth) { wrapper.style.width = idealWidth + 'px'; explorerMain.style.overflowX = 'auto'; }
-    else { wrapper.style.width = '100%'; explorerMain.style.overflowX = 'hidden'; }
+    
+    wrapper.style.width = val + '%';
+    if (val > 100) explorerMain.style.overflowX = 'auto';
+    else explorerMain.style.overflowX = 'hidden';
+    
     var canvas = document.getElementById('manualChartCanvas');
     var mark = manualChartMeta.type === 'bar' ? 'bar' : (manualChartMeta.type === 'line' ? 'line' : 'points');
     var color = (manualChartMeta.type === 'bar') ? manualChartMeta.labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
@@ -1070,10 +1489,6 @@
   });
 
   document.getElementById('btnSaveImage').addEventListener('click', function () {
-    if (document.getElementById('tab-auto').classList.contains('active')) {
-      alert('Please switch to Manual Explorer to download a full-size chart, or use the download icon on an individual profile card.');
-      return;
-    }
     var canvas = document.getElementById('manualChartCanvas');
     if (!canvas) return;
     var newCanvas = document.createElement('canvas');
@@ -1109,6 +1524,10 @@
       btn.classList.add('active');
       var tabId = btn.getAttribute('data-tab');
       document.getElementById(tabId).classList.add('active');
+      
+      var manualControls = document.getElementById('manualControls');
+      if (manualControls) manualControls.style.display = (tabId === 'tab-manual') ? 'flex' : 'none';
+
       if (tabId === 'tab-manual' && manualChartMeta) renderManualChart();
       if (tabId === 'tab-auto') chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
     });
@@ -1157,11 +1576,6 @@
         populateDropdowns();
         populateRawGrid();
 
-        // Workspace must become visible BEFORE any canvas inside it is drawn.
-        // getBoundingClientRect() on a canvas under display:none returns 0x0,
-        // which was forcing every chart to render at a fallback 50x50px and
-        // then get stretched by CSS to fill the real card size -- that's what
-        // was mangling the axis labels and column names into illegible text.
         document.getElementById('processingOverlay').style.display = 'none';
         dropzone.style.display = 'none';
         document.getElementById('workspace').style.display = 'block';
@@ -1179,15 +1593,8 @@
     if (document.getElementById('tab-manual').classList.contains('active') && manualChartMeta) renderManualChart();
     if (modalEl.style.display === 'flex' && _lastModalArgs) openFullChartModal.apply(null, _lastModalArgs);
   });
-
-  // expose for testing
-  window.__test = {
-    getHeaders: function () { return currentHeaders; },
-    getStats: function () { return currentStats; },
-    getRawData: function () { return rawData; },
-    getManualChartMeta: function () { return manualChartMeta; }
-  };
 })();
 </script>
+
 </body>
 </html>

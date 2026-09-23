@@ -166,11 +166,20 @@
   
   /* Local spinner removed — uses global TangentLoader from shell.html */
   
-  /* Select multiple */
-  select[multiple] { height: 140px; background: rgba(0,0,0,0.3); }
-  select[multiple] option { padding: 8px 10px; border-radius: 4px; margin-bottom: 4px; transition: 0.1s; border: 1px solid transparent; }
-  select[multiple] option:hover { background: rgba(255,255,255,0.05); }
-  select[multiple] option:checked { background: rgba(58, 123, 213, 0.3); border: 1px solid var(--accent); color: #fff; }
+  /* Pill Tags */
+  .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pill-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(58, 123, 213, 0.15); color: var(--accent);
+    padding: 6px 12px; border-radius: 16px; font-size: 0.85rem;
+    border: 1px solid rgba(58, 123, 213, 0.3);
+  }
+  .pill-tag .remove { cursor: pointer; color: #fff; opacity: 0.6; transition: 0.2s; font-weight: bold; }
+  .pill-tag .remove:hover { opacity: 1; color: #ff4444; }
+  .cell-missing { background: rgba(255, 68, 68, 0.1) !important; color: #ff4444; }
+  .cell-whitespace { background: rgba(255, 193, 7, 0.1) !important; color: #d4a017; font-family: monospace; }
+  .badge-anomaly { display: inline-block; background: rgba(255,68,68,0.15); color: #ff4444; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-right: 4px; }
+  .badge-warning { display: inline-block; background: rgba(255,193,7,0.15); color: #d4a017; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
 
 /* ── Tangent Global Loader ── */
 #tangentLoader {
@@ -638,12 +647,14 @@
           </label>
           <div class="form-group">
             <label>Standardize Dates (ISO-8601)</label>
-            <select id="selFormatDates" class="form-control col-select" multiple></select>
+            <select id="selFormatDates" class="form-control col-select"></select>
+              <div id="selFormatDates_pills" class="pill-container"></div>
             <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Attempts to parse and convert selected columns to YYYY-MM-DD.</small>
           </div>
           <div class="form-group">
             <label>Clean Numeric / Currency</label>
-            <select id="selFormatNumbers" class="form-control col-select" multiple></select>
+            <select id="selFormatNumbers" class="form-control col-select"></select>
+              <div id="selFormatNumbers_pills" class="pill-container"></div>
             <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols ($€£) and formatting commas.</small>
           </div>
         </div>
@@ -658,7 +669,8 @@
         <div class="accordion-content">
           <div class="form-group">
             <label>Drop Rows Missing Critical Data In:</label>
-            <select id="selDropMissingCols" class="form-control col-select" multiple></select>
+            <select id="selDropMissingCols" class="form-control col-select"></select>
+              <div id="selDropMissingCols_pills" class="pill-container"></div>
           </div>
           <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top: 16px;">
             <label>Impute (Fill) Missing Data</label>
@@ -695,7 +707,8 @@
           </div>
           <div class="form-group" id="dedupColsWrapper" style="display: none;">
             <label>Select Key Columns (Must match exactly)</label>
-            <select id="selDedupCols" class="form-control col-select" multiple></select>
+            <select id="selDedupCols" class="form-control col-select"></select>
+              <div id="selDedupCols_pills" class="pill-container"></div>
           </div>
         </div>
       </div>
@@ -769,7 +782,13 @@
           </div>
         </div>
 
-        <h4 style="margin-bottom: 8px; color: var(--text-main);">Live Data Preview (First 15 Rows)</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 style="margin: 0; color: var(--text-main);">Live Data Preview <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Max 15 Rows)</span></h4>
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="chkShowAnomalies" onchange="if(processedData && processedData.length > 0) updatePreview(processedHeaders, processedData)">
+            Show rows with anomalies only
+          </label>
+        </div>
         <div class="table-wrapper">
           <table class="preview-table" id="previewTable">
             <thead><tr id="previewThead"></tr></thead>
@@ -879,6 +898,50 @@
   let imputationRules = [];
   let originalFileName = "data.csv";
 
+    // Pill State Manager
+    let multiSelectState = {
+      selFormatDates: [],
+      selFormatNumbers: [],
+      selDropMissingCols: [],
+      selDedupCols: []
+    };
+
+    function addPill(id) {
+      const sel = document.getElementById(id);
+      const val = sel.value;
+      if (!val) return;
+      if (!multiSelectState[id].includes(val)) {
+        multiSelectState[id].push(val);
+        renderPills(id);
+      }
+      sel.value = ""; // Reset dropdown
+    }
+
+    function removePill(id, val) {
+      multiSelectState[id] = multiSelectState[id].filter(x => x !== val);
+      renderPills(id);
+    }
+
+    function renderPills(id) {
+      const container = document.getElementById(id + '_pills');
+      if (container) {
+        container.innerHTML = multiSelectState[id].map(val => `
+          <div class="pill-tag">
+            ${val}
+            <span class="remove" onclick="removePill('${id}', '${val}')">X</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      ['selFormatDates', 'selFormatNumbers', 'selDropMissingCols', 'selDedupCols'].forEach(id => {
+        let el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => addPill(id));
+      });
+    });
+
+
   // UI Interactions
   function toggleAccordion(header) {
     const content = header.nextElementSibling;
@@ -942,7 +1005,7 @@
         populateDropdowns();
         
         // Initial preview
-        processedData = rawData.slice(0, 15);
+        processedData = rawData;
         processedHeaders = [...currentHeaders];
         updatePreview(processedHeaders, processedData);
         updateStats(rawData.length, rawData.length, currentHeaders.length, {emptyDropped:0, missingDropped:0, deduped:0, imputed:0});
@@ -954,35 +1017,86 @@
     });
   }
 
-  function populateDropdowns() {
-    const selects = document.querySelectorAll('.col-select');
-    let opts = '<option value="">-- Select --</option>' + currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
-    let multiOpts = currentHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
-    
-    selects.forEach(sel => {
-      sel.innerHTML = sel.hasAttribute('multiple') ? multiOpts : opts;
-    });
-  }
+    function populateDropdowns() {
+      const selects = document.querySelectorAll(".col-select");
+      let opts = '<option value="">-- Select Column --</option>' + currentHeaders.map(h => `<option value="${h}">${h}</option>`).join("");
+      selects.forEach(sel => sel.innerHTML = opts);
+    }
 
-  function getMultiSelectValues(id) {
-    const sel = document.getElementById(id);
-    return Array.from(sel.selectedOptions).map(opt => opt.value);
-  }
+    function getMultiSelectValues(id) {
+      return multiSelectState[id] || [];
+    }
 
   // Preview Render
-  function updatePreview(headers, data) {
-    const thead = document.getElementById('previewThead');
-    const tbody = document.getElementById('previewTbody');
-    
-    thead.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
-    
-    let html = '';
-    const displayRows = data.slice(0, 15);
-    for (let row of displayRows) {
-      html += '<tr>' + headers.map(h => `<td>${row[h] !== undefined && row[h] !== null ? String(row[h]).replace(/</g, '&lt;') : ''}</td>`).join('') + '</tr>';
+    function updatePreview(headers, data) {
+      // 1. Profiling pass
+      let stats = {};
+      headers.forEach(h => stats[h] = { missing: 0, space: 0 });
+      
+      for (let i = 0; i < data.length; i++) {
+        let row = data[i];
+        for (let h of headers) {
+           let val = row[h];
+           if (val === undefined || val === null || String(val).trim() === "") {
+             stats[h].missing++;
+           } else if (String(val) !== String(val).trim()) {
+             stats[h].space++;
+           }
+        }
+      }
+
+      // 2. Render Headers
+      const thead = document.getElementById("previewThead");
+      thead.innerHTML = headers.map(h => {
+        let badges = "";
+        if (stats[h].missing > 0) badges += `<div class="badge-anomaly">${stats[h].missing} empty</div>`;
+        if (stats[h].space > 0) badges += `<div class="badge-warning">${stats[h].space} spaces</div>`;
+        return `<th>${h}<br>${badges}</th>`;
+      }).join("");
+
+      // 3. Render Body
+      const tbody = document.getElementById("previewTbody");
+      let html = "";
+      const showAnomaliesOnly = document.getElementById("chkShowAnomalies") && document.getElementById("chkShowAnomalies").checked;
+      let displayRows = [];
+      if (showAnomaliesOnly) {
+        for (let i = 0; i < data.length; i++) {
+          let row = data[i];
+          let hasAnomaly = false;
+          for (let h of headers) {
+            let val = row[h];
+            if (val === undefined || val === null || String(val).trim() === "" || String(val) !== String(val).trim()) {
+              hasAnomaly = true;
+              break;
+            }
+          }
+          if (hasAnomaly) displayRows.push(row);
+          if (displayRows.length >= 15) break;
+        }
+      } else {
+        displayRows = data.slice(0, 15);
+      }
+      
+      for (let row of displayRows) {
+        html += "<tr>" + headers.map(h => {
+           let val = row[h];
+           let strVal = val !== undefined && val !== null ? String(val) : "";
+           let cellClass = "";
+           let displayVal = strVal.replace(/</g, "&lt;");
+           
+           if (strVal.trim() === "") {
+             cellClass = "cell-missing";
+             displayVal = "<span style=\"opacity:0.5; font-style:italic;\">null</span>";
+           } else if (strVal !== strVal.trim()) {
+             cellClass = "cell-whitespace";
+             displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "·"));
+           }
+           
+           return `<td class="${cellClass}">${displayVal}</td>`;
+        }).join("") + "</tr>";
+      }
+      tbody.innerHTML = html;
     }
-    tbody.innerHTML = html;
-  }
 
   function updateStats(inCount, outCount, colCount, audit) {
     document.getElementById('statRowsIn').innerText = inCount.toLocaleString();
@@ -1256,6 +1370,7 @@
     
     renderImputationRules();
     document.querySelectorAll('.col-select').forEach(sel => sel.innerHTML = '');
+      Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
   });
 </script>
 

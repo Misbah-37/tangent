@@ -1424,18 +1424,36 @@
     var manualCanvas = document.getElementById('manualChartCanvas');
   if(manualCanvas) {
       manualCanvas.addEventListener('click', function(e) {
-          if (!manualChartMeta || manualChartMeta.type === 'doughnut') return;
+          if (!manualChartMeta) return;
           var rect = manualCanvas.getBoundingClientRect();
           var x = e.clientX - rect.left;
-          var meta = manualCanvas.__clickMeta;
-          if(!meta) return;
+          var y = e.clientY - rect.top;
           
-          var innerX = x - meta.marginLeft;
-          if(innerX < 0 || innerX > meta.plotW) return;
+          var clickedLabel = null;
           
-          var index = Math.floor(innerX / meta.barSlot);
-          if(index >= 0 && index < meta.labels.length) {
-              var clickedLabel = String(meta.labels[index]);
+          if (manualChartMeta.type === 'doughnut') {
+              var dMeta = manualCanvas._doughnutMeta;
+              if(!dMeta) return;
+              var dx = x - dMeta.cx, dy = y - dMeta.cy;
+              var dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < dMeta.innerRadius || dist > dMeta.radius) return;
+              var angle = Math.atan2(dy, dx);
+              if (angle < -Math.PI / 2) angle += Math.PI * 2;
+              for (var i = 0; i < dMeta.segs.length; i++) {
+                  if (angle >= dMeta.segs[i].start && angle < dMeta.segs[i].end) { clickedLabel = String(dMeta.segs[i].label); break; }
+              }
+          } else {
+              var cMeta = manualCanvas._chartMeta;
+              if(!cMeta) return;
+              var innerX = x - cMeta.marginLeft;
+              if (innerX < 0 || innerX > cMeta.plotW) return;
+              var index = Math.floor(innerX / cMeta.barSlot);
+              if (index >= 0 && index < cMeta.labels.length) {
+                  clickedLabel = String(cMeta.labels[index]);
+              }
+          }
+          
+          if (clickedLabel !== null) {
               var xCol = manualChartMeta.xCol;
               var binMode = document.getElementById('selDateBin') ? document.getElementById('selDateBin').value : 'none';
               var isDate = (currentStats[xCol] && currentStats[xCol].type === 'date');

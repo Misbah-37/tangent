@@ -1041,7 +1041,9 @@
       var mx = e.clientX - rect.left;
       
       var idx = Math.floor((mx - meta.marginLeft) / meta.barSlot);
-      if (idx < 0 || idx >= meta.labels.length) { tooltipEl.style.display = 'none'; return; }
+      if (idx < 0 || idx >= meta.labels.length) { tooltipEl.style.display = 'none'; canvas.style.cursor = 'default'; return; }
+        canvas.style.cursor = 'pointer';
+        var hintHTML = '<br><span style="font-size: 10px; color: rgba(255,255,255,0.6); font-weight: normal; margin-top: 4px; display: inline-block;">▶ Click to filter raw data</span>';
         
         if (meta.seriesNames && meta.seriesNames.length > 0) {
           var htmlStr = '<strong>' + meta.labels[idx] + '</strong><br/>';
@@ -1051,8 +1053,9 @@
           }
           tooltipEl.innerHTML = htmlStr;
       } else {
-            tooltipEl.textContent = meta.labels[idx] + ': ' + meta.values[idx].toLocaleString();
+            tooltipEl.innerHTML = '<strong>' + meta.labels[idx] + '</strong>: ' + meta.values[idx].toLocaleString();
         }
+        tooltipEl.innerHTML += hintHTML;
       
       tooltipEl.style.left = (e.clientX + 12) + 'px';
       tooltipEl.style.top = (e.clientY + 12) + 'px';
@@ -1418,8 +1421,9 @@
         var s = meta.segs[i];
         if (angle >= s.start && angle < s.end) { found = s; break; }
       }
-      if (!found) { tooltipEl.style.display = 'none'; return; }
-        tooltipEl.textContent = found.label + ': ' + found.value.toLocaleString();
+      if (!found) { tooltipEl.style.display = 'none'; canvas.style.cursor = 'default'; return; }
+        canvas.style.cursor = 'pointer';
+        tooltipEl.innerHTML = '<strong>' + found.label + '</strong>: ' + found.value.toLocaleString() + '<br><span style="font-size: 10px; color: rgba(255,255,255,0.6); font-weight: normal; margin-top: 4px; display: inline-block;">▶ Click to filter raw data</span>';
       tooltipEl.style.left = (e.clientX + 12) + 'px';
       tooltipEl.style.top = (e.clientY + 12) + 'px';
       tooltipEl.style.display = 'block';

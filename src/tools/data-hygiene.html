@@ -200,24 +200,36 @@
           Formatting & Cleansing
           <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
-        <div class="accordion-content">
-          <label class="checkbox-label">
-            <input type="checkbox" id="chkTrimAll" checked>
-            <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
-          </label>
-          <div class="form-group">
-            <label>Standardize Dates (ISO-8601)</label>
-            <select id="selFormatDates" class="form-control col-select"></select>
+                  <div class="accordion-content">
+            <label class="checkbox-label">
+              <input type="checkbox" id="chkTrimAll" checked>
+              <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
+            </label>
+            <div class="form-group">
+              <label>Standardize Dates (ISO-8601)</label>
+              <select id="selFormatDates" class="form-control col-select"></select>
               <div id="selFormatDates_pills" class="pill-container"></div>
-            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Attempts to parse and convert selected columns to YYYY-MM-DD.</small>
-          </div>
-          <div class="form-group">
-            <label>Clean Numeric / Currency</label>
-            <select id="selFormatNumbers" class="form-control col-select"></select>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert various date formats to YYYY-MM-DD.</small>
+            </div>
+            <div class="form-group">
+              <label>Clean Numeric / Currency</label>
+              <select id="selFormatNumbers" class="form-control col-select"></select>
               <div id="selFormatNumbers_pills" class="pill-container"></div>
-            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols ($€£) and formatting commas.</small>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols, fixes 'k' (e.g. 60k), and parses word numbers.</small>
+            </div>
+            <div class="form-group">
+              <label>Standardize Phone Numbers</label>
+              <select id="selFormatPhones" class="form-control col-select"></select>
+              <div id="selFormatPhones_pills" class="pill-container"></div>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Converts raw phone numbers to standard XXX-XXX-XXXX format.</small>
+            </div>
+            <div class="form-group">
+              <label>Title-Case Text</label>
+              <select id="selTitleCase" class="form-control col-select"></select>
+              <div id="selTitleCase_pills" class="pill-container"></div>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Properly capitalizes names and addresses (e.g. helen keller &rarr; Helen Keller).</small>
+            </div>
           </div>
-        </div>
       </div>
 
       <!-- Missing Data Handling -->
@@ -464,7 +476,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      ['selFormatDates', 'selFormatNumbers', 'selDropMissingCols', 'selDedupCols'].forEach(id => {
+      ['selFormatDates', 'selFormatNumbers', 'selFormatPhones', 'selTitleCase', 'selDropMissingCols', 'selDedupCols'].forEach(id => {
         let el = document.getElementById(id);
         if (el) el.addEventListener('change', () => addPill(id));
       });
@@ -687,37 +699,65 @@
         rows = outRows;
 
         // 2. Data Cleansing & Formatting Pass
-        const { trimAll, stripControl, dateCols, numberCols } = recipe.formats;
-        const cRegex = /[\\x00-\\x1F\\x7F]/g;
-        
-        for (let i=0; i < rows.length; i++) {
-           let row = rows[i];
-           for (let h of newHeaders) {
-              let val = row[h];
-              if (val === undefined || val === null) continue;
-              
-              let strVal = String(val);
-              
-              if (stripControl) strVal = strVal.replace(cRegex, '');
-              if (trimAll) strVal = strVal.trim();
-              
-              if (dateCols.includes(h) && strVal) {
-                 let d = new Date(strVal);
-                 if (!isNaN(d.getTime())) {
-                   strVal = d.toISOString().split('T')[0];
-                 }
-              }
-              
-              if (numberCols.includes(h) && strVal) {
-                 let cleanNum = strVal.replace(/[^0-9.-]/g, '');
-                 if(cleanNum) strVal = cleanNum;
-              }
+          const { trimAll, stripControl, dateCols = [], numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
+          const cRegex = /[\x00-\x1F\x7F]/g;
+          
+          const wordToNum = { "zero":0, "one":1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9, "ten":10, "eleven":11, "twelve":12, "thirteen":13, "fourteen":14, "fifteen":15, "sixteen":16, "seventeen":17, "eighteen":18, "nineteen":19, "twenty":20 };
+          
+          for (let i=0; i < rows.length; i++) {
+             let row = rows[i];
+             for (let h of newHeaders) {
+                let val = row[h];
+                if (val === undefined || val === null) continue;
+                
+                let strVal = String(val);
+                if (stripControl) strVal = strVal.replace(cRegex, '');
+                if (trimAll) strVal = strVal.trim();
+                if (!strVal) continue;
+                
+                if (dateCols.includes(h)) {
+                   let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
+                   let d = new Date(dStr);
+                   if (!isNaN(d.getTime())) {
+                     strVal = d.toISOString().split('T')[0];
+                   } else {
+                     let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+                     if(m) {
+                       let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
+                       if(p1 > 12 && p2 <= 12) { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; }
+                       else if(p2 > 12 && p1 <= 12) { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
+                       else { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
+                     }
+                   }
+                }
+                
+                if (numberCols.includes(h)) {
+                   let lower = strVal.toLowerCase();
+                   if (wordToNum[lower] !== undefined) {
+                     strVal = String(wordToNum[lower]);
+                   } else {
+                     if (lower.endsWith('k')) { strVal = strVal.slice(0,-1) + "000"; }
+                     else if (lower.endsWith('m')) { strVal = strVal.slice(0,-1) + "000000"; }
+                     let cleanNum = strVal.replace(/[^0-9.-]/g, '');
+                     if(cleanNum) strVal = cleanNum;
+                   }
+                }
+                
+                if (phoneCols.includes(h)) {
+                   let nums = strVal.replace(/[^0-9]/g, '');
+                   if (nums.length === 10) { strVal = nums.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
+                   else if (nums.length === 11 && nums.startsWith('1')) { strVal = nums.replace(/1(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
+                }
+                
+                if (titleCols.includes(h)) {
+                   strVal = strVal.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+                }
+  
+                row[h] = strVal;
+             }
+          }
 
-              row[h] = strVal;
-           }
-        }
-
-        // 3. Missing Data Pass
+          // 3. Missing Data Pass
         const dropMissing = recipe.missing.dropMissingCols;
         if (dropMissing.length > 0) {
            let beforeCount = rows.length;

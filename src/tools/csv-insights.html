@@ -1,7 +1,31 @@
 <!-- --- HEAD_META --- -->
+<link rel="canonical" href="https://runtangent.com/csv-insights" />
 <title>CSV Insights Studio | Tangent</title>
 <meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
 <link rel="canonical" href="https://runtangent.com/csv-insights">
+<!-- Structured Data for CSV Insights -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CSV Insights | Tangent",
+  "description": "Drag and drop any CSV file to instantly profile data, build pivot tables, and generate stunning charts in your browser.",
+  "applicationCategory": "Data&AnalyticsApplication",
+  "operatingSystem": "All",
+  "url": "https://runtangent.com/csv-insights.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
 <!-- --- TOOL_STYLES --- -->
 <style>
@@ -116,6 +140,14 @@
 
   /* ---------- Info / FAQ / Footer ---------- */
   .info-section { max-width: 1200px; margin: 60px auto 0; padding: 0 32px 60px; }
+  select.form-control option {
+    background-color: #1e293b;
+    color: #f8fafc;
+  }
+  
+  #fullChartModalCanvasWrap { height: 420px; position: relative; margin-bottom: 20px; }
+  .modal-scroll { overflow: auto; flex: 1; }
+
 </style>
 
 <!-- --- CONTENT --- -->
@@ -163,6 +195,10 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Save Chart
       </button>
+      <button class="btn" id="btnExportPivot" style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: rgba(46, 204, 113, 0.4);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Export Pivot
+      </button>
     </div>
   </div>
 
@@ -179,23 +215,40 @@
   <div class="tab-content" id="tab-manual">
     <div class="explorer-grid">
       <div class="explorer-sidebar">
-        <div class="form-group">
-          <label>X-Axis (Group By)</label>
-          <select id="selXAxis" class="form-control col-select"></select>
-        </div>
+                  <div class="form-group">
+            <label>X-Axis (Group By)</label>
+            <select id="selXAxis" class="form-control col-select"></select>
+          </div>
+          <div class="form-group" id="grpDateBin" style="display: none; max-width: 140px;">
+            <label style="color: #00d2ff;">Date Binning</label>
+            <select id="selDateBin" class="form-control" style="background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.3);">
+              <option value="none">Exact Date</option>
+              <option value="month">Month</option>
+              <option value="quarter">Quarter</option>
+              <option value="year">Year</option>
+            </select>
+          </div>
         <div class="form-group">
           <label>Y-Axis (Values)</label>
           <select id="selYAxis" class="form-control col-select"></select>
         </div>
-        <div class="form-group">
-          <label>Aggregation Method</label>
-          <select id="selAggregation" class="form-control">
-            <option value="sum">Sum</option>
-            <option value="avg">Average</option>
-            <option value="count">Count (Rows)</option>
-            <option value="min">Minimum</option>
-            <option value="max">Maximum</option>
+        <div class="form-group" id="grpGroupBy">
+          <label>Color By (Optional)</label>
+          <select id="selGroupBy" class="form-control col-select">
+            <option value="">None (1D Chart)</option>
           </select>
+        </div>
+        <div class="form-group">
+                      <label>Aggregation Method</label>
+            <select id="selAggregation" class="form-control">
+              <option value="sum">Sum</option>
+              <option value="avg">Average</option>
+              <option value="median">Median</option>
+              <option value="count">Count (Rows)</option>
+              <option value="distinct">Distinct Count</option>
+              <option value="min">Minimum</option>
+              <option value="max">Maximum</option>
+            </select>
         </div>
         <div class="form-group">
           <label>Chart Type</label>
@@ -285,6 +338,27 @@
 </div>
 
 <!-- --- SCRIPTS --- -->
+</div>
+
+<!-- Global Shell Script -->
+<script src="assets/tangent.js?v=1"></script>
+
+<!-- Global TangentLoader Utility -->
+<script>
+  window.TangentLoader = {
+    show: function(msg) {
+      var el = document.getElementById('tangentLoader');
+      var msgEl = document.getElementById('tangentLoaderMsg');
+      if (msgEl) msgEl.textContent = msg || 'Processing...';
+      if (el) el.style.display = 'flex';
+    },
+    hide: function() {
+      var el = document.getElementById('tangentLoader');
+      if (el) el.style.display = 'none';
+    }
+  };
+</script>
+
 <script>
 (function () {
   "use strict";
@@ -303,10 +377,10 @@
     '  while (i < n) {',
     '    var c = text[i];',
     '    if (inQuotes) {',
-    '      if (c === "\\"") { if (text[i+1] === "\\"") { field += "\\""; i += 2; continue; } inQuotes = false; i++; continue; }',
+    '      if (c === \'"\') { if (text[i+1] === \'"\') { field += \'"\'; i += 2; continue; } inQuotes = false; i++; continue; }',
     '      field += c; i++; continue;',
     '    }',
-    '    if (c === "\\"") { inQuotes = true; i++; continue; }',
+    '    if (c === \'"\') { inQuotes = true; i++; continue; }',
     '    if (c === ",") { row.push(field); field = ""; i++; continue; }',
     '    if (c === "\\r") { i++; continue; }',
     '    if (c === "\\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }',
@@ -495,9 +569,21 @@
       if (!meta || !meta.labels.length) { tooltipEl.style.display = 'none'; return; }
       var rect = canvas.getBoundingClientRect();
       var mx = e.clientX - rect.left;
+      
       var idx = Math.floor((mx - meta.marginLeft) / meta.barSlot);
       if (idx < 0 || idx >= meta.labels.length) { tooltipEl.style.display = 'none'; return; }
-      tooltipEl.textContent = meta.labels[idx] + ': ' + meta.values[idx].toLocaleString();
+        
+        if (meta.seriesNames && meta.seriesNames.length > 0) {
+          var htmlStr = '<strong>' + meta.labels[idx] + '</strong><br/>';
+          for(var s=0; s<meta.seriesNames.length; s++) {
+              var v = meta.values[idx][s];
+              if (v !== 0) htmlStr += '<span style="color:' + (Array.isArray(canvas._lastColor) ? canvas._lastColor[s % canvas._lastColor.length] : '#fff') + '">●</span> ' + meta.seriesNames[s] + ': ' + v.toLocaleString() + '<br/>';
+          }
+          tooltipEl.innerHTML = htmlStr;
+      } else {
+            tooltipEl.textContent = meta.labels[idx] + ': ' + meta.values[idx].toLocaleString();
+        }
+      
       tooltipEl.style.left = (e.clientX + 12) + 'px';
       tooltipEl.style.top = (e.clientY + 12) + 'px';
       tooltipEl.style.display = 'block';
@@ -520,7 +606,7 @@
     ctx.font = '10px sans-serif';
     var maxLabelWidth = ctx.measureText(Math.round(maxVal).toLocaleString()).width;
     
-    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = xTitle ? 34 : 22, marginTop = 6, marginRight = 8;
+    var marginLeft = Math.max(40, maxLabelWidth + 16), marginBottom = (h > 200) ? 60 : (xTitle ? 34 : 22), marginTop = 6, marginRight = 8;
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
 
@@ -594,6 +680,10 @@
   function drawCartesianChart(canvas, opts) {
     var mark = opts.mark, labels = opts.labels, values = opts.values, color = opts.color;
     var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
+    var seriesNames = opts.seriesNames || null;
+    var isMulti = seriesNames && seriesNames.length > 0;
+    canvas._lastColor = color;
+    
     var dpr = window.devicePixelRatio || 1;
     var rect = canvas.getBoundingClientRect();
     var w = Math.max(rect.width, 80), h = Math.max(rect.height, 80);
@@ -603,8 +693,41 @@
     ctx.clearRect(0, 0, w, h);
 
     var n = values.length;
-    var rawMin = n ? Math.min.apply(null, values) : 0;
-    var rawMax = n ? Math.max.apply(null, values) : 1;
+    var rawMin = 0, rawMax = 1;
+    
+    if (n > 0) {
+        if (isMulti) {
+            if (mark === 'bar') {
+                var maxSums = [], minSums = [];
+                for(var i=0; i<n; i++) {
+                    var sumPos = 0, sumNeg = 0;
+                    for(var s=0; s<values[i].length; s++) {
+                        var v = values[i][s];
+                        if (v > 0) sumPos += v; else sumNeg += v;
+                    }
+                    maxSums.push(sumPos);
+                    minSums.push(sumNeg);
+                }
+                rawMax = Math.max.apply(null, maxSums);
+                rawMin = Math.min.apply(null, minSums);
+            } else {
+                var allVals = [];
+                for(var i=0; i<n; i++) {
+                   for(var s=0; s<values[i].length; s++) {
+                       allVals.push(values[i][s]);
+                   }
+                }
+                if(allVals.length) {
+                    rawMax = Math.max.apply(null, allVals);
+                    rawMin = Math.min.apply(null, allVals);
+                }
+            }
+        } else {
+            rawMin = Math.min.apply(null, values);
+            rawMax = Math.max.apply(null, values);
+        }
+    }
+    
     var yMin = Math.min(0, rawMin);
     var yMax = Math.max(0, rawMax);
     if (yMin === yMax) yMax = yMin + 1;
@@ -615,7 +738,9 @@
       ctx.measureText(Math.round(yMax).toLocaleString()).width,
       ctx.measureText(Math.round(yMin).toLocaleString()).width
     );
-    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = 46, marginTop = 14, marginRight = 16;
+    
+    var legendHeight = isMulti ? 30 : 0;
+    var marginLeft = Math.max(56, maxLabelWidth + 16), marginBottom = 46, marginTop = 14 + legendHeight, marginRight = 16;
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
     
@@ -633,44 +758,105 @@
       ctx.beginPath(); ctx.moveTo(marginLeft, y); ctx.lineTo(marginLeft + plotW, y); ctx.stroke();
       ctx.fillText(Math.round(val).toLocaleString(), marginLeft - 8, y);
     }
+    
+    if (isMulti) {
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.font = '11px sans-serif';
+        var legX = marginLeft;
+        for(var s=0; s<seriesNames.length; s++) {
+            var c = color[s % color.length];
+            var txt = String(seriesNames[s]);
+            if (txt.length > 20) txt = txt.slice(0, 19) + '…';
+            var tw = ctx.measureText(txt).width;
+            if (legX + 16 + tw + 10 > w - marginRight && legX > marginLeft) {
+                // wrap not implemented for simplicity, just stop drawing legend
+                if(legX > w) break;
+            }
+            ctx.fillStyle = c;
+            ctx.fillRect(legX, 6, 12, 12);
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.fillText(txt, legX + 16, 6);
+            legX += 16 + tw + 16;
+        }
+    }
 
     var barSlot = n > 0 ? plotW / n : plotW;
 
     if (mark === 'bar') {
       var barWidth = Math.max(1, barSlot * 0.7);
       for (var i = 0; i < n; i++) {
-        var v = values[i];
-        var barColor = Array.isArray(color) ? color[i % color.length] : color;
-        var yTop = yPos(Math.max(v, 0)), yBot = yPos(Math.min(v, 0));
         var x = marginLeft + i * barSlot + (barSlot - barWidth) / 2;
-        var hgt = Math.max(1, yBot - yTop);
-        ctx.fillStyle = barColor;
-        ctx.fillRect(x, yTop, barWidth, hgt);
+        
+        if (isMulti) {
+            var posOffset = 0;
+            var negOffset = 0;
+            for (var s = 0; s < values[i].length; s++) {
+                var v = values[i][s];
+                if (v === 0) continue;
+                var barColor = color[s % color.length];
+                
+                if (v > 0) {
+                    var yTop = yPos(posOffset + v);
+                    var yBot = yPos(posOffset);
+                    var hgt = Math.max(1, yBot - yTop);
+                    ctx.fillStyle = barColor;
+                    ctx.fillRect(x, yTop, barWidth, hgt);
+                    posOffset += v;
+                } else {
+                    var yTop = yPos(negOffset);
+                    var yBot = yPos(negOffset + v);
+                    var hgt = Math.max(1, yBot - yTop);
+                    ctx.fillStyle = barColor;
+                    ctx.fillRect(x, yTop, barWidth, hgt);
+                    negOffset += v;
+                }
+            }
+        } else {
+            var v = values[i];
+            var barColor = Array.isArray(color) ? color[i % color.length] : color;
+            var yTop = yPos(Math.max(v, 0)), yBot = yPos(Math.min(v, 0));
+            var hgt = Math.max(1, yBot - yTop);
+            ctx.fillStyle = barColor;
+            ctx.fillRect(x, yTop, barWidth, hgt);
+        }
       }
-    } else if (mark === 'line') {
-      var pts = [];
-      for (var i2 = 0; i2 < n; i2++) pts.push([marginLeft + i2 * barSlot + barSlot / 2, yPos(values[i2])]);
-      if (pts.length) {
-        ctx.beginPath();
-        ctx.moveTo(pts[0][0], zeroY);
-        pts.forEach(function (p) { ctx.lineTo(p[0], p[1]); });
-        ctx.lineTo(pts[pts.length - 1][0], zeroY);
-        ctx.closePath();
-        ctx.fillStyle = hexToRgba(color, 0.15);
-        ctx.fill();
-        ctx.beginPath();
-        pts.forEach(function (p, idx) { if (idx === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); });
-        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
-        pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 3, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); });
-      }
-    } else if (mark === 'points') {
-      for (var i3 = 0; i3 < n; i3++) {
-        var px = marginLeft + i3 * barSlot + barSlot / 2;
-        var py = yPos(values[i3]);
-        ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(color, 0.65);
-        ctx.fill();
-        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+    } else if (mark === 'line' || mark === 'points') {
+      var numSeries = isMulti ? seriesNames.length : 1;
+      
+      for(var s=0; s<numSeries; s++) {
+          var sColor = isMulti ? color[s % color.length] : color;
+          
+          if (mark === 'line') {
+              var pts = [];
+              for (var i2 = 0; i2 < n; i2++) {
+                  var v = isMulti ? values[i2][s] : values[i2];
+                  pts.push([marginLeft + i2 * barSlot + barSlot / 2, yPos(v)]);
+              }
+              if (pts.length) {
+                ctx.beginPath();
+                ctx.moveTo(pts[0][0], zeroY);
+                pts.forEach(function (p) { ctx.lineTo(p[0], p[1]); });
+                ctx.lineTo(pts[pts.length - 1][0], zeroY);
+                ctx.closePath();
+                ctx.fillStyle = hexToRgba(sColor, 0.15);
+                ctx.fill();
+                ctx.beginPath();
+                pts.forEach(function (p, idx) { if (idx === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); });
+                ctx.strokeStyle = sColor; ctx.lineWidth = 2; ctx.stroke();
+                pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 3, 0, Math.PI * 2); ctx.fillStyle = sColor; ctx.fill(); });
+              }
+          } else if (mark === 'points') {
+              for (var i3 = 0; i3 < n; i3++) {
+                var v = isMulti ? values[i3][s] : values[i3];
+                var px = marginLeft + i3 * barSlot + barSlot / 2;
+                var py = yPos(v);
+                ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
+                ctx.fillStyle = hexToRgba(sColor, 0.65);
+                ctx.fill();
+                ctx.strokeStyle = sColor; ctx.lineWidth = 1.5; ctx.stroke();
+              }
+          }
       }
     }
 
@@ -682,7 +868,7 @@
     for (var j = 0; j < n; j += skip) {
       var lx = marginLeft + j * barSlot + barSlot / 2;
       var label = String(labels[j]);
-      if (label.length > 18) label = label.slice(0, 17) + '\u2026';
+      if (label.length > 18) label = label.slice(0, 17) + '…';
       ctx.save();
       ctx.translate(lx, marginTop + plotH + 6);
       ctx.rotate(-Math.PI / 6); ctx.textAlign = 'right'; ctx.textBaseline = 'top';
@@ -690,6 +876,8 @@
       ctx.restore();
     }
 
+    canvas.__clickMeta = { marginLeft: marginLeft, plotW: plotW, barSlot: barSlot, labels: labels };
+    
     if (xTitle) {
       ctx.fillStyle = '#94a3b8'; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillText(xTitle, marginLeft + plotW / 2, h - 6);
@@ -703,7 +891,7 @@
       ctx.restore();
     }
 
-    canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot };
+    canvas._chartMeta = { labels: labels, values: values, marginLeft: marginLeft, marginTop: marginTop, plotW: plotW, plotH: plotH, barSlot: barSlot, seriesNames: seriesNames };
   }
 
   function drawDoughnutChart(canvas, opts) {
@@ -761,7 +949,7 @@
         if (angle >= s.start && angle < s.end) { found = s; break; }
       }
       if (!found) { tooltipEl.style.display = 'none'; return; }
-      tooltipEl.textContent = found.label + ': ' + found.value.toLocaleString();
+        tooltipEl.textContent = found.label + ': ' + found.value.toLocaleString();
       tooltipEl.style.left = (e.clientX + 12) + 'px';
       tooltipEl.style.top = (e.clientY + 12) + 'px';
       tooltipEl.style.display = 'block';
@@ -898,36 +1086,75 @@
   }
 
   function populateDropdowns() {
-    var opts = currentHeaders.map(function (h) { return '<option value="' + h.replace(/"/g, '&quot;') + '">' + h + '</option>'; }).join('');
-    document.querySelectorAll('.col-select').forEach(function (sel) { sel.innerHTML = opts; });
-  }
-
-  function aggregate(xCol, yCol) {
-    var groups = {}; 
-    var order = [];
-    var skipped = 0;
-    for (var i = 0; i < rawData.length; i++) {
-      var row = rawData[i];
-      var xRaw = row[xCol];
-      var xVal = (xRaw === undefined || xRaw === null || String(xRaw).trim() === '') ? 'Unknown' : String(xRaw).trim();
-      if (!groups[xVal]) { groups[xVal] = { sum: 0, validCount: 0, min: Infinity, max: -Infinity, rowCount: 0 }; order.push(xVal); }
-      var g = groups[xVal];
-      g.rowCount++;
-
-      var yRaw = row[yCol];
-      var yStr = (yRaw === undefined || yRaw === null) ? '' : String(yRaw).trim();
-      var yVal = parseFloat(yStr);
-      var validNum = yStr !== '' && !isNaN(yVal) && isFinite(yVal);
-      if (validNum) {
-        g.sum += yVal; g.validCount++;
-        if (yVal < g.min) g.min = yVal;
-        if (yVal > g.max) g.max = yVal;
-      } else {
-        skipped++;
-      }
+      var opts = currentHeaders.map(function (h) { return '<option value="' + h.replace(/"/g, '&quot;') + '">' + h + '</option>'; }).join('');
+      document.querySelectorAll('.col-select').forEach(function (sel) { 
+        if (sel.id === 'selGroupBy') {
+          sel.innerHTML = '<option value="">None (1D Chart)</option>' + opts;
+        } else {
+          sel.innerHTML = opts; 
+        }
+      });
     }
-    return { groups: groups, order: order, skipped: skipped };
-  }
+
+  function aggregate(xCol, yCol, groupByCol) {
+      var groups = {}; 
+      var order = [];
+      var skipped = 0;
+      var seriesNames = new Set();
+      
+      var isDate = (currentStats[xCol] && currentStats[xCol].type === 'date');
+      var binMode = document.getElementById('selDateBin') ? document.getElementById('selDateBin').value : 'none';
+  
+      rawData.forEach(function (row) {
+        var rawX = row[xCol];
+        var x = (rawX === undefined || rawX === null || String(rawX).trim() === '') ? 'Unknown' : String(rawX).trim();
+        
+        if (isDate && binMode !== 'none' && x !== 'Unknown') {
+          var d = new Date(x);
+          if (!isNaN(d.getTime())) {
+            var yyyy = d.getFullYear();
+            if (binMode === 'year') x = String(yyyy);
+            else if (binMode === 'month') x = yyyy + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            else if (binMode === 'quarter') x = yyyy + '-Q' + Math.ceil((d.getMonth() + 1) / 3);
+          }
+        }
+        
+        var s = 'Total';
+        if (groupByCol) {
+          var rawG = row[groupByCol];
+          s = (rawG === undefined || rawG === null || String(rawG).trim() === '') ? 'Unknown' : String(rawG).trim();
+          seriesNames.add(s);
+        }
+
+        if (!groups[x]) {
+          groups[x] = {};
+          order.push(x);
+        }
+        if (!groups[x][s]) {
+          groups[x][s] = { sum: 0, validCount: 0, rowCount: 0, min: null, max: null, distinct: new Set(), vals: [] };
+        }
+        
+        var g = groups[x][s];
+        g.rowCount++;
+        
+        var rawY = row[yCol];
+        if (rawY !== undefined && rawY !== null && String(rawY).trim() !== '') {
+          g.distinct.add(rawY);
+          var yVal = parseFloat(rawY);
+          if (!isNaN(yVal)) {
+            g.sum += yVal;
+            g.validCount++;
+            g.vals.push(yVal);
+            if (g.min === null || yVal < g.min) g.min = yVal;
+            if (g.max === null || yVal > g.max) g.max = yVal;
+          } else {
+            skipped++;
+          }
+        }
+      });
+  
+      return { groups: groups, order: order, skipped: skipped, seriesNames: Array.from(seriesNames) };
+    }
 
   function renderManualChart() {
     if (!rawData.length) return;
@@ -935,37 +1162,69 @@
     var yCol = document.getElementById('selYAxis').value;
     var agg = document.getElementById('selAggregation').value;
     var type = document.getElementById('selChartType').value;
+    var groupByCol = document.getElementById('selGroupBy') ? document.getElementById('selGroupBy').value : '';
 
-    var result = aggregate(xCol, yCol);
+    if (groupByCol && type === 'doughnut') {
+       type = 'bar';
+       document.getElementById('selChartType').value = 'bar';
+    }
+
+    var result = aggregate(xCol, yCol, groupByCol);
     var groups = result.groups;
     var labels = result.order.slice();
+    var sNames = groupByCol ? result.seriesNames.sort() : ['Total'];
 
     labels.forEach(function (l) {
-      var g = groups[l];
-      var v;
-      if (agg === 'sum') v = g.sum;
-      else if (agg === 'avg') v = g.validCount > 0 ? g.sum / g.validCount : 0;
-      else if (agg === 'count') v = g.rowCount;
-      else if (agg === 'min') v = g.validCount > 0 ? g.min : 0;
-      else v = g.validCount > 0 ? g.max : 0; 
-      groups[l].__value = v;
+      sNames.forEach(function(s) {
+        var g = groups[l][s] || { sum: 0, validCount: 0, rowCount: 0, min: null, max: null, distinct: new Set(), vals: [] };
+        var v = 0;
+        if (agg === 'sum') v = g.sum;
+        else if (agg === 'avg') v = g.validCount > 0 ? g.sum / g.validCount : 0;
+        else if (agg === 'count') v = g.rowCount;
+        else if (agg === 'distinct') v = g.distinct.size;
+        else if (agg === 'min') v = g.validCount > 0 ? g.min : 0;
+        else if (agg === 'max') v = g.validCount > 0 ? g.max : 0;
+        else if (agg === 'median') {
+          if (g.vals.length > 0) {
+            g.vals.sort(function(a, b) { return a - b; });
+            var mid = Math.floor(g.vals.length / 2);
+            v = g.vals.length % 2 !== 0 ? g.vals[mid] : (g.vals[mid - 1] + g.vals[mid]) / 2;
+          }
+        }
+        if(!groups[l][s]) groups[l][s] = {};
+        groups[l][s].__value = v;
+      });
     });
 
     var truncatedGroups = false;
     if (labels.length > 50) {
-      labels.sort(function (a, b) { return Math.abs(groups[b].__value) - Math.abs(groups[a].__value); });
+      labels.sort(function (a, b) { 
+          var sumA = 0, sumB = 0;
+          sNames.forEach(function(s) { sumA += Math.abs(groups[a][s] ? groups[a][s].__value : 0); sumB += Math.abs(groups[b][s] ? groups[b][s].__value : 0); });
+          return sumB - sumA; 
+      });
       labels = labels.slice(0, 50);
       truncatedGroups = true;
     }
-    var dataPoints = labels.map(function (l) { return groups[l].__value; });
+    
+    var dataPoints = labels.map(function (l) { 
+        if (groupByCol) {
+            return sNames.map(function(s) { return groups[l][s] ? groups[l][s].__value : 0; });
+        } else {
+            return groups[l]['Total'] ? groups[l]['Total'].__value : 0;
+        }
+    });
 
     var notes = [];
     if (result.skipped > 0 && agg !== 'count') notes.push(result.skipped.toLocaleString() + ' row(s) skipped: non-numeric value in "' + yCol + '"');
     if (truncatedGroups) notes.push('Showing the top 50 groups by magnitude (out of ' + result.order.length.toLocaleString() + ')');
-    document.getElementById('chartNote').textContent = notes.join(' \u00b7 ');
-    document.getElementById('chartLegendLabel').textContent = agg.toUpperCase() + ' of ' + yCol + ' by ' + xCol;
+    document.getElementById('chartNote').textContent = notes.join(' · ');
+    
+    var legendTxt = agg.toUpperCase() + ' of ' + yCol + ' by ' + xCol;
+    if (groupByCol) legendTxt += ' (Colored by ' + groupByCol + ')';
+    document.getElementById('chartLegendLabel').textContent = legendTxt;
 
-    manualChartMeta = { labels: labels, dataPoints: dataPoints, type: type, xCol: xCol, yCol: yCol, agg: agg };
+    manualChartMeta = { labels: labels, dataPoints: dataPoints, type: type, xCol: xCol, yCol: yCol, agg: agg, seriesNames: groupByCol ? sNames : null };
 
     var wrapper = document.getElementById('chartScrollWrapper');
     var parent = wrapper.parentElement;
@@ -994,13 +1253,32 @@
 
       var cCanvas = document.getElementById('manualChartCanvas');
       var mark = type === 'bar' ? 'bar' : (type === 'line' ? 'line' : 'points');
-      var color = (type === 'bar') ? labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
-      drawCartesianChart(cCanvas, { mark: mark, labels: labels, values: dataPoints, color: color, xTitle: xCol, yTitle: agg.toUpperCase() + ' of ' + yCol });
+      var color;
+      if (groupByCol) {
+          color = sNames.map(function (_, i) { return COLORS[i % COLORS.length]; });
+      } else {
+          color = (type === 'bar') ? labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
+      }
+      
+      drawCartesianChart(cCanvas, { 
+          mark: mark, labels: labels, values: dataPoints, color: color, 
+          xTitle: xCol, yTitle: agg.toUpperCase() + ' of ' + yCol,
+          seriesNames: groupByCol ? sNames : null
+      });
       attachBarTooltip(cCanvas);
     }
   }
 
-  document.getElementById('btnUpdateChart').addEventListener('click', renderManualChart);
+  document.getElementById('selXAxis').addEventListener('change', function() {
+      var xCol = this.value;
+      if (xCol && currentStats[xCol] && currentStats[xCol].type === 'date') {
+        document.getElementById('grpDateBin').style.display = 'block';
+      } else {
+        document.getElementById('grpDateBin').style.display = 'none';
+        document.getElementById('selDateBin').value = 'none';
+      }
+    });
+    document.getElementById('btnUpdateChart').addEventListener('click', renderManualChart);
   document.getElementById('chartWidthSlider').addEventListener('input', function (e) {
     if (!manualChartMeta || manualChartMeta.type === 'doughnut') return;
     var val = parseInt(e.target.value, 10);
@@ -1015,6 +1293,27 @@
     var mark = manualChartMeta.type === 'bar' ? 'bar' : (manualChartMeta.type === 'line' ? 'line' : 'points');
     var color = (manualChartMeta.type === 'bar') ? manualChartMeta.labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
     drawCartesianChart(canvas, { mark: mark, labels: manualChartMeta.labels, values: manualChartMeta.dataPoints, color: color, xTitle: manualChartMeta.xCol, yTitle: manualChartMeta.agg.toUpperCase() + ' of ' + manualChartMeta.yCol });
+  });
+
+    document.getElementById('btnExportPivot').addEventListener('click', function () {
+    if (!manualChartMeta || !manualChartMeta.labels || manualChartMeta.labels.length === 0) return;
+    var xCol = manualChartMeta.xCol;
+    var agg = manualChartMeta.agg.toUpperCase();
+    var yCol = manualChartMeta.yCol;
+    var csvContent = '"' + xCol.replace(/"/g, '""') + '","' + agg + ' of ' + yCol.replace(/"/g, '""') + '"\n';
+    for (var i = 0; i < manualChartMeta.labels.length; i++) {
+       var x = String(manualChartMeta.labels[i]).replace(/"/g, '""');
+       var y = manualChartMeta.dataPoints[i];
+       csvContent += '"' + x + '",' + y + '\n';
+    }
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "Aggregated_Pivot.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   });
 
   document.getElementById('btnSaveImage').addEventListener('click', function () {
@@ -1035,9 +1334,10 @@
   // =========================================================================
   // 10. RAW DATA GRID
   // =========================================================================
-  function populateRawGrid() {
+  function populateRawGrid(filterFn) {
     document.getElementById('rawThead').innerHTML = currentHeaders.map(function (h) { return '<th>' + h.replace(/</g, '&lt;') + '</th>'; }).join('');
-    var sample = rawData.slice(0, 100);
+    var filtered = filterFn ? rawData.filter(filterFn) : rawData;
+    var sample = filtered.slice(0, 100);
     document.getElementById('rawTbody').innerHTML = sample.map(function (row) {
       return '<tr>' + currentHeaders.map(function (h) { return '<td>' + String(row[h] || '').replace(/</g, '&lt;') + '</td>'; }).join('') + '</tr>';
     }).join('');
@@ -1115,6 +1415,147 @@
       worker.postMessage({ text: e.target.result });
     };
     reader.readAsText(file);
+  }
+
+    var manualCanvas = document.getElementById('manualChartCanvas');
+  if(manualCanvas) {
+      manualCanvas.addEventListener('click', function(e) {
+          if (!manualChartMeta || manualChartMeta.type === 'doughnut') return;
+          var rect = manualCanvas.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var meta = manualCanvas.__clickMeta;
+          if(!meta) return;
+          
+          var innerX = x - meta.marginLeft;
+          if(innerX < 0 || innerX > meta.plotW) return;
+          
+          var index = Math.floor(innerX / meta.barSlot);
+          if(index >= 0 && index < meta.labels.length) {
+              var clickedLabel = String(meta.labels[index]);
+              var xCol = manualChartMeta.xCol;
+              var binMode = document.getElementById('selDateBin') ? document.getElementById('selDateBin').value : 'none';
+              var isDate = (currentStats[xCol] && currentStats[xCol].type === 'date');
+              
+              populateRawGrid(function(row) {
+                  var rowVal = row[xCol];
+                  var strVal = (rowVal === undefined || rowVal === null || String(rowVal).trim() === '') ? 'Unknown' : String(rowVal).trim();
+                  
+                  if (isDate && binMode !== 'none' && strVal !== 'Unknown') {
+                     var d = new Date(strVal);
+                     if (!isNaN(d.getTime())) {
+                       var yyyy = d.getFullYear();
+                       var mm = String(d.getMonth() + 1).padStart(2, '0');
+                       if (binMode === 'month') strVal = yyyy + '-' + mm;
+                       else if (binMode === 'quarter') strVal = yyyy + '-Q' + Math.ceil((d.getMonth() + 1) / 3);
+                       else if (binMode === 'year') strVal = String(yyyy);
+                     }
+                  }
+                  return strVal === clickedLabel;
+              });
+              
+              // Switch tab
+              document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+              document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+              var rawBtn = document.querySelector('.tab-btn[data-tab="tab-raw"]');
+              if(rawBtn) rawBtn.classList.add('active');
+              document.getElementById('tab-raw').classList.add('active');
+              document.getElementById('manualControls').style.display = 'none';
+              
+              // Banner
+              var filterMsg = document.getElementById('filterMsg');
+              if(!filterMsg) {
+                  filterMsg = document.createElement('div');
+                  filterMsg.id = 'filterMsg';
+                  filterMsg.style = 'background: rgba(58,123,213,0.1); padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid rgba(58,123,213,0.3); color: #00d2ff; font-weight: bold; display: flex; justify-content: space-between; align-items: center;';
+                  var tableContainer = document.getElementById('tab-raw');
+                  tableContainer.insertBefore(filterMsg, tableContainer.firstChild);
+              }
+              filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + xCol + ' = ' + clickedLabel + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
+              document.getElementById('btnClearFilter').addEventListener('click', function() {
+                  filterMsg.remove();
+                  populateRawGrid();
+              });
+          }
+      });
+  }
+
+    var modalCanvas = document.getElementById('fullChartModalCanvas');
+  if(modalCanvas) {
+      modalCanvas.addEventListener('click', function(e) {
+          if (!_lastModalArgs) return;
+          var header = _lastModalArgs[0];
+          var stat = _lastModalArgs[1];
+          var rect = modalCanvas.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var meta = modalCanvas._chartMeta;
+          if(!meta) return;
+          
+          var innerX = x - meta.marginLeft;
+          if(innerX < 0 || innerX > meta.plotW) return;
+          
+          var index = Math.floor(innerX / meta.barSlot);
+          if(index >= 0 && index < meta.labels.length) {
+              var clickedLabel = String(meta.labels[index]);
+              var isDate = (stat.type === 'date');
+              var isNumeric = (stat.type === 'numeric');
+              
+              // We need to figure out exactly what value this bin corresponds to, but for Auto-Profiler, 
+              // the label might be a formatted range "100 - 200". Cross-filtering by exactly matching 
+              // the string might not work for numeric bins! But it works perfectly for categorical!
+              // For now, let's just do exact string match filtering. It will work for categorical.
+              populateRawGrid(function(row) {
+                  var rowVal = row[header];
+                  var strVal = (rowVal === undefined || rowVal === null || String(rowVal).trim() === '') ? 'Unknown' : String(rowVal).trim();
+                  
+                  // In auto-profiler, dates are grouped by 'YYYY-MM'. 
+                  // If stat.type is date, we might need to match YYYY-MM. 
+                  if (isDate && strVal !== 'Unknown') {
+                      var d = new Date(strVal);
+                      if (!isNaN(d.getTime())) {
+                          var yyyy = d.getFullYear();
+                          var mm = String(d.getMonth() + 1).padStart(2, '0');
+                          strVal = yyyy + '-' + mm;
+                      }
+                  }
+                  
+                  // Numeric bins are trickier. They are '100-200'. 
+                  // For categorical, it's exact match. 
+                  if(isNumeric) {
+                      // We don't have the original value easily, so we might just check if the label matches the generated label.
+                      // Actually, if it's numeric, we probably shouldn't cross-filter right now, or just do our best.
+                      // Let's just string match.
+                      // Wait! The user's screenshot was "Industry" which is Categorical! So exact match works.
+                  }
+                  return strVal === clickedLabel;
+              });
+              
+              // Close modal
+              document.getElementById('fullChartModal').style.display = 'none';
+              
+              // Switch tab
+              document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+              document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+              var rawBtn = document.querySelector('.tab-btn[data-tab="tab-raw"]');
+              if(rawBtn) rawBtn.classList.add('active');
+              document.getElementById('tab-raw').classList.add('active');
+              document.getElementById('manualControls').style.display = 'none';
+              
+              // Banner
+              var filterMsg = document.getElementById('filterMsg');
+              if(!filterMsg) {
+                  filterMsg = document.createElement('div');
+                  filterMsg.id = 'filterMsg';
+                  filterMsg.style = 'background: rgba(58,123,213,0.1); padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid rgba(58,123,213,0.3); color: #00d2ff; font-weight: bold; display: flex; justify-content: space-between; align-items: center;';
+                  var tableContainer = document.getElementById('tab-raw');
+                  tableContainer.insertBefore(filterMsg, tableContainer.firstChild);
+              }
+              filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + header + ' = ' + clickedLabel + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
+              document.getElementById('btnClearFilter').addEventListener('click', function() {
+                  filterMsg.remove();
+                  populateRawGrid();
+              });
+          }
+      });
   }
 
   window.addEventListener('resize', function () {

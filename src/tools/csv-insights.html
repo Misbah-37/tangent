@@ -1421,9 +1421,11 @@
     reader.readAsText(file);
   }
 
-    var manualCanvas = document.getElementById('manualChartCanvas');
-  if(manualCanvas) {
-      manualCanvas.addEventListener('click', function(e) {
+    var manualWrapper = document.getElementById('manualChartWrapper');
+    if(manualWrapper) {
+      manualWrapper.addEventListener('click', function(e) {
+          var manualCanvas = document.getElementById('manualChartCanvas');
+          if (!manualCanvas || e.target !== manualCanvas) return;
           if (!manualChartMeta) return;
           var rect = manualCanvas.getBoundingClientRect();
           var x = e.clientX - rect.left;

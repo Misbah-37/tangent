@@ -1830,14 +1830,53 @@
   // =========================================================================
   // 10. RAW DATA GRID
   // =========================================================================
-  function populateRawGrid(filterFn) {
-    document.getElementById('rawThead').innerHTML = currentHeaders.map(function (h) { return '<th>' + h.replace(/</g, '&lt;') + '</th>'; }).join('');
-    var filtered = filterFn ? rawData.filter(filterFn) : rawData;
-    var sample = filtered.slice(0, 100);
-    document.getElementById('rawTbody').innerHTML = sample.map(function (row) {
-      return '<tr>' + currentHeaders.map(function (h) { return '<td>' + String(row[h] || '').replace(/</g, '&lt;') + '</td>'; }).join('') + '</tr>';
-    }).join('');
-  }
+      var rawGridCurrentPage = 0;
+    var rawGridPageSize = 100;
+    var currentFilterFn = null;
+
+    function populateRawGrid(filterFn, page) {
+      if (filterFn !== undefined && filterFn !== currentFilterFn) {
+         currentFilterFn = filterFn;
+         rawGridCurrentPage = 0; // reset on new filter
+      } else if (page !== undefined) {
+         rawGridCurrentPage = page;
+      }
+      
+      document.getElementById('rawThead').innerHTML = currentHeaders.map(function (h) { return '<th>' + h.replace(/</g, '&lt;') + '</th>'; }).join('');
+      var filtered = currentFilterFn ? rawData.filter(currentFilterFn) : rawData;
+      
+      var totalRows = filtered.length;
+      var totalPages = Math.ceil(totalRows / rawGridPageSize);
+      if (rawGridCurrentPage >= totalPages && totalPages > 0) rawGridCurrentPage = totalPages - 1;
+      
+      var startIdx = rawGridCurrentPage * rawGridPageSize;
+      var endIdx = Math.min(startIdx + rawGridPageSize, totalRows);
+      
+      var sample = filtered.slice(startIdx, endIdx);
+      document.getElementById('rawTbody').innerHTML = sample.map(function (row) {
+        return '<tr>' + currentHeaders.map(function (h) { return '<td>' + String(row[h] || '').replace(/</g, '&lt;') + '</td>'; }).join('') + '</tr>';
+      }).join('');
+      
+      var infoEl = document.getElementById('rawRowInfo');
+      if (infoEl) {
+        infoEl.innerHTML = 'Showing rows <b style="color:#fff;">' + (totalRows === 0 ? 0 : startIdx + 1) + ' - ' + endIdx + '</b> of <b style="color:#fff;">' + totalRows.toLocaleString() + '</b>';
+      }
+      var btnPrev = document.getElementById('btnPrevPage');
+      var btnNext = document.getElementById('btnNextPage');
+      if (btnPrev) btnPrev.disabled = (rawGridCurrentPage === 0);
+      if (btnNext) btnNext.disabled = (rawGridCurrentPage >= totalPages - 1);
+    }
+    
+    // Attach pagination listeners if not already attached
+    if (!window.rawPaginationAttached) {
+      document.getElementById('btnPrevPage').addEventListener('click', function() {
+        if (rawGridCurrentPage > 0) populateRawGrid(currentFilterFn, rawGridCurrentPage - 1);
+      });
+      document.getElementById('btnNextPage').addEventListener('click', function() {
+        populateRawGrid(currentFilterFn, rawGridCurrentPage + 1);
+      });
+      window.rawPaginationAttached = true;
+    }
 
   // =========================================================================
   // 11. TABS

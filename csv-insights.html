@@ -904,14 +904,20 @@
     '  var min = sorted[0], max = sorted[n-1];',
     '  var sum = 0; for (var i=0;i<n;i++) sum += sorted[i];',
     '  var mean = sum/n;',
-    '  var median = (n % 2 === 1) ? sorted[(n-1)/2] : (sorted[n/2-1] + sorted[n/2]) / 2;',
-    '  var variance = 0; for (var j=0;j<n;j++) variance += Math.pow(sorted[j]-mean, 2); variance = variance/n;',
+          '  var median = (n % 2 === 1) ? sorted[(n-1)/2] : (sorted[n/2-1] + sorted[n/2]) / 2;',
+      '  var q1 = (n % 2 === 1) ? sorted[Math.floor(n*0.25)] : sorted[Math.round(n*0.25)];',
+      '  var q3 = (n % 2 === 1) ? sorted[Math.floor(n*0.75)] : sorted[Math.round(n*0.75)];',
+      '  var iqr = q3 - q1;',
+      '  var lowerBound = q1 - 1.5 * iqr;',
+      '  var upperBound = q3 + 1.5 * iqr;',
+      '  var outliers = 0; for(var i=0; i<n; i++) { if(sorted[i] < lowerBound || sorted[i] > upperBound) outliers++; }',
+      '  var variance = 0; for (var j=0;j<n;j++) variance += Math.pow(sorted[j]-mean, 2); variance = variance/n;',
     '  var stdev = Math.sqrt(variance);',
     '  var distinctMap = {};',
     '  for (var k=0;k<n;k++) { var key = sorted[k]; distinctMap[key] = (distinctMap[key]||0)+1; }',
     '  var distinctVals = Object.keys(distinctMap).map(Number).sort(function(a,b){return a-b;});',
     '  var distinctCount = distinctVals.length;',
-    '  var out = { min:min, max:max, mean:mean, median:median, stdev:stdev, distinctCount:distinctCount };',
+    '  var out = { min:min, max:max, mean:mean, median:median, stdev:stdev, distinctCount:distinctCount, outliers:outliers };',
     '  if (distinctCount <= 20) {',
     '    out.mode = "discrete";',
     '    out.labels = distinctVals.map(function(v){ return fmtNum(v); });',
@@ -1525,7 +1531,7 @@
           '<span>Max<strong>' + stat.max.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span></div>' +
           '<div class="stats-row"><span>Mean<strong>' + stat.mean.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
           '<span>Std Dev<strong>' + stat.stdev.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
-          '<span>Unique<strong>' + stat.distinctCount.toLocaleString() + '</strong></span></div>';
+          '<span>Outliers<strong>' + (stat.outliers || 0).toLocaleString() + '</strong></span></div>';
         if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' non-numeric value(s) excluded from stats</span>');
       } else if (stat.type === 'date') {
         statsRowHtml =

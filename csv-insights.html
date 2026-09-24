@@ -794,25 +794,6 @@
   };
 </script>
 
-<!-- Global Shell Script -->
-<script src="assets/tangent.js?v=1"></script>
-
-<!-- Global TangentLoader Utility -->
-<script>
-  window.TangentLoader = {
-    show: function(msg) {
-      var el = document.getElementById('tangentLoader');
-      var msgEl = document.getElementById('tangentLoaderMsg');
-      if (msgEl) msgEl.textContent = msg || 'Processing...';
-      if (el) el.style.display = 'flex';
-    },
-    hide: function() {
-      var el = document.getElementById('tangentLoader');
-      if (el) el.style.display = 'none';
-    }
-  };
-</script>
-
 <script>
 (function () {
   "use strict";

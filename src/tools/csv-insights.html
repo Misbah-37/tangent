@@ -1053,6 +1053,7 @@
         link.download = 'profile_' + h.replace(/[^a-z0-9]/gi, '_') + '.png';
         link.href = exportCanvas.toDataURL('image/png');
         link.click();
+      if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
       });
     });
   }
@@ -1285,6 +1286,7 @@
     link.setAttribute("download", "Aggregated_Pivot.csv");
     document.body.appendChild(link);
     link.click();
+      if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
     document.body.removeChild(link);
   });
 
@@ -1301,6 +1303,7 @@
     link.download = 'tangent_chart.png';
     link.href = newCanvas.toDataURL('image/png');
     link.click();
+      if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
   });
 
   // =========================================================================

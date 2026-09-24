@@ -2872,6 +2872,7 @@
         link.href = downloadUrl;
         document.body.appendChild(link);
         link.click();
+          if(window.TangentToast) window.TangentToast.show("PDF Redacted & Saved!");
         document.body.removeChild(link);
         URL.revokeObjectURL(downloadUrl);
 

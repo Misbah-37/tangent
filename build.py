@@ -309,7 +309,7 @@ def build_all():
 '''
         hm = hm + ld_json
         
-        canonical_tag = f'<link rel="canonical" href="https://runtangent.com/{fname.replace(".html", "")}" />\n'
+        canonical_tag = f'<link rel="canonical" href="https://runtangent.com/{fname}" />\n'
         t_compiled = shell_template
         t_compiled = t_compiled.replace("<!-- INJECT_HEAD_META -->", canonical_tag + hm)
         t_compiled = t_compiled.replace("/* INJECT_TOOL_STYLES */", ts)

@@ -1930,7 +1930,8 @@
   function handleFile(file) {
     if (file.name.split('.').pop().toLowerCase() !== 'csv') { alert('Only CSV files are supported.'); return; }
     if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Profiling Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Analyzing distributions via Web Worker</span>'; window.TangentLoader.show(''); }
-    var reader = new FileReader();
+    originalData = null;
+      var reader = new FileReader();
     reader.onload = function (e) {
       if (worker) worker.terminate();
       worker = new Worker(workerUrl);
@@ -1939,6 +1940,7 @@
         currentStats = ev.data.stats;
         currentRowCount = ev.data.rowCount;
         rawData = ev.data.data;
+          if (!originalData) originalData = rawData;
 
         document.getElementById('statRows').textContent = currentRowCount.toLocaleString();
         document.getElementById('statCols').textContent = currentHeaders.length.toLocaleString();
@@ -2124,6 +2126,34 @@
     if (document.getElementById('tab-manual').classList.contains('active') && manualChartMeta) renderManualChart();
     if (modalEl.style.display === 'flex' && _lastModalArgs) openFullChartModal.apply(null, _lastModalArgs);
   });
+
+    document.getElementById('btnApplyGlobalFilter').addEventListener('click', function() {
+      if (!originalData) return;
+      var query = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
+      
+      var filtered = originalData;
+      if (query) {
+         filtered = originalData.filter(function(row) {
+             for (var i=0; i<currentHeaders.length; i++) {
+                 var val = String(row[currentHeaders[i]] || '').toLowerCase();
+                 if (query.indexOf(':') !== -1) {
+                    var parts = query.split(':');
+                    var k = parts[0].trim();
+                    var v = parts[1].trim();
+                    if (currentHeaders[i].toLowerCase() === k && val.includes(v)) return true;
+                 } else {
+                    if (val.includes(query)) return true;
+                 }
+             }
+             return false;
+         });
+      }
+      
+      if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Slicing Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Recalculating distributions</span>'; window.TangentLoader.show(''); }
+      
+      worker.postMessage({ headers: currentHeaders, data: filtered });
+    });
+
 })();
 </script>
 

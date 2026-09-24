@@ -1220,7 +1220,7 @@
         rows = outRows;
 
         // 2. Data Cleansing & Formatting Pass
-          const { trimAll, stripControl, dateCols = [], numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
+          const { trimAll, stripControl, dateCols = [], dateLocale = 'US', numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
           const cRegex = /[\x00-\x1F\x7F]/g;
           
           const wordToNum = { "zero":0, "one":1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9, "ten":10, "eleven":11, "twelve":12, "thirteen":13, "fourteen":14, "fifteen":15, "sixteen":16, "seventeen":17, "eighteen":18, "nineteen":19, "twenty":20 };
@@ -1238,17 +1238,24 @@
                 
                 if (dateCols.includes(h)) {
                    let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
-                   let d = new Date(dStr);
-                   if (!isNaN(d.getTime())) {
-                     strVal = d.toISOString().split('T')[0];
-                   } else {
-                     let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-                     if(m) {
+                   let parsed = false;
+                   let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+                   if (m) {
                        let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
-                       if(p1 > 12 && p2 <= 12) { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; }
-                       else if(p2 > 12 && p1 <= 12) { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
-                       else { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
-                     }
+                       if (p3 < 100) p3 += 2000;
+                       if(p1 > 12 && p2 <= 12) { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; parsed = true; }
+                       else if(p2 > 12 && p1 <= 12) { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; parsed = true; }
+                       else if (p1 <= 12 && p2 <= 12) {
+                          if (dateLocale === 'EU') { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; }
+                          else { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
+                          parsed = true;
+                       }
+                   }
+                   if (!parsed) {
+                       let d = new Date(dStr);
+                       if (!isNaN(d.getTime())) {
+                         strVal = d.toISOString().split('T')[0];
+                       }
                    }
                 }
                 
@@ -1314,7 +1321,7 @@
                  if(vals.length > 0) {
                    stats[newCol] = {
                       mean: vals.reduce((a,b)=>a+b, 0) / vals.length,
-                      median: vals[Math.floor(vals.length / 2)]
+                      median: (vals.length % 2 !== 0) ? vals[Math.floor(vals.length / 2)] : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2
                    };
                  }
               } else if (rule.method === 'mode') {

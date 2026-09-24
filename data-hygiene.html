@@ -657,7 +657,13 @@
             </label>
             <div class="form-group">
               <label>Standardize Dates (ISO-8601)</label>
-              <select id="selFormatDates" class="form-control col-select"></select>
+                <div style="display: flex; gap: 8px;">
+                  <select id="selFormatDates" class="form-control col-select" style="flex: 1;"></select>
+                  <select id="selDateLocale" class="form-control" style="width: 140px;" title="Date Format Assumption">
+                    <option value="US">US (MM/DD/YYYY)</option>
+                    <option value="EU">EU (DD/MM/YYYY)</option>
+                  </select>
+                </div>
               <div id="selFormatDates_pills" class="pill-container"></div>
               <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert various date formats to YYYY-MM-DD.</small>
             </div>
@@ -736,9 +742,14 @@
       </div>
 
       <button class="btn" id="btnRunRecipe" style="margin-top: 16px;" disabled>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        Execute Recipe Pipeline
-      </button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Execute Recipe Pipeline
+        </button>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-outline" id="btnExportRecipe" style="flex: 1; font-size: 0.8rem; padding: 6px;">Export (.json)</button>
+          <button class="btn btn-outline" id="btnImportRecipe" style="flex: 1; font-size: 0.8rem; padding: 6px;" onclick="document.getElementById(\'recipeFileInput\').click()">Import (.json)</button>
+          <input type="file" id="recipeFileInput" accept=".json" style="display: none;">
+        </div>
 
     </div>
   </div>
@@ -813,11 +824,18 @@
         </div>
         <div class="table-wrapper">
           <table class="preview-table" id="previewTable">
-            <thead><tr id="previewThead"></tr></thead>
-            <tbody id="previewTbody"></tbody>
-          </table>
+              <thead><tr id="previewThead"></tr></thead>
+              <tbody id="previewTbody"></tbody>
+            </table>
+          </div>
+          <div id="previewPagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 4px;">
+            <div id="previewRowInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing rows 0 - 0 of 0</div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-outline" id="btnPrevPage" style="padding: 4px 12px; font-size: 0.8rem;" disabled>Previous</button>
+              <button class="btn btn-outline" id="btnNextPage" style="padding: 4px 12px; font-size: 0.8rem;" disabled>Next</button>
+            </div>
+          </div>
         </div>
-      </div>
 
     </div>
   </div>
@@ -959,6 +977,8 @@
   let processedHeaders = [];
   let imputationRules = [];
   let originalFileName = "data.csv";
+  let previewCurrentPage = 0;
+  const previewPageSize = 100;
 
     // Pill State Manager
     let multiSelectState = {
@@ -982,6 +1002,7 @@
     function removePill(id, val) {
       multiSelectState[id] = multiSelectState[id].filter(x => x !== val);
       renderPills(id);
+      if (rawData && rawData.length > 0) document.getElementById('btnRunRecipe').click();
     }
 
     function renderPills(id) {
@@ -998,9 +1019,14 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       ['selFormatDates', 'selFormatNumbers', 'selFormatPhones', 'selTitleCase', 'selDropMissingCols', 'selDedupCols'].forEach(id => {
-        let el = document.getElementById(id);
-        if (el) el.addEventListener('change', () => addPill(id));
-      });
+          let el = document.getElementById(id);
+          if (el) el.addEventListener('change', () => addPill(id));
+        });
+        
+        let prev = document.getElementById('btnPrevPage');
+        let next = document.getElementById('btnNextPage');
+        if (prev) prev.addEventListener('click', () => updatePreview(processedHeaders, processedData, previewCurrentPage - 1));
+        if (next) next.addEventListener('click', () => updatePreview(processedHeaders, processedData, previewCurrentPage + 1));
     });
 
 
@@ -1090,7 +1116,8 @@
     }
 
   // Preview Render
-    function updatePreview(headers, data) {
+    function updatePreview(headers, data, page = 0) {
+        previewCurrentPage = page;
       // 1. Profiling pass
       let stats = {};
       headers.forEach(h => stats[h] = { missing: 0, space: 0 });
@@ -1117,30 +1144,32 @@
       }).join("");
 
       // 3. Render Body
-      const tbody = document.getElementById("previewTbody");
-      let html = "";
-      const showAnomaliesOnly = document.getElementById("chkShowAnomalies") && document.getElementById("chkShowAnomalies").checked;
-      let displayRows = [];
-      if (showAnomaliesOnly) {
-        for (let i = 0; i < data.length; i++) {
-          let row = data[i];
-          let hasAnomaly = false;
-          for (let h of headers) {
-            let val = row[h];
-            if (val === undefined || val === null || String(val).trim() === "" || String(val) !== String(val).trim()) {
-              hasAnomaly = true;
-              break;
+        const tbody = document.getElementById("previewTbody");
+        let htmlStr = "";
+        const showAnomaliesOnly = document.getElementById("chkShowAnomalies") && document.getElementById("chkShowAnomalies").checked;
+        
+        let anomalyData = [];
+        let totalRows = data.length;
+        if (showAnomaliesOnly) {
+          anomalyData = data.filter(row => {
+            for (let h of headers) {
+              let val = row[h];
+              if (val === undefined || val === null || String(val).trim() === "" || String(val) !== String(val).trim()) return true;
             }
-          }
-          if (hasAnomaly) displayRows.push(row);
-          if (displayRows.length >= 15) break;
+            return false;
+          });
+          totalRows = anomalyData.length;
         }
-      } else {
-        displayRows = data.slice(0, 15);
-      }
+        
+        let totalPages = Math.ceil(totalRows / previewPageSize);
+        if (previewCurrentPage >= totalPages && totalPages > 0) previewCurrentPage = totalPages - 1;
+        
+        let startIdx = previewCurrentPage * previewPageSize;
+        let endIdx = Math.min(startIdx + previewPageSize, totalRows);
+        let displayRows = (showAnomaliesOnly ? anomalyData : data).slice(startIdx, endIdx);
       
       for (let row of displayRows) {
-        html += "<tr>" + headers.map(h => {
+          htmlStr += "<tr>" + headers.map(h => {
            let val = row[h];
            let strVal = val !== undefined && val !== null ? String(val) : "";
            let cellClass = "";
@@ -1156,8 +1185,15 @@
            
            return `<td class="${cellClass}">${displayVal}</td>`;
         }).join("") + "</tr>";
-      }
-      tbody.innerHTML = html;
+        }
+        tbody.innerHTML = htmlStr;
+        
+        let info = document.getElementById("previewRowInfo");
+        if(info) info.innerHTML = "Showing rows <b style=\"color:#fff;\">" + (totalRows === 0 ? 0 : startIdx + 1) + " - " + endIdx + "</b> of <b style=\"color:#fff;\">" + totalRows.toLocaleString() + "</b>";
+        let btnPrev = document.getElementById("btnPrevPage");
+        let btnNext = document.getElementById("btnNextPage");
+        if (btnPrev) btnPrev.disabled = (previewCurrentPage === 0);
+        if (btnNext) btnNext.disabled = (previewCurrentPage >= totalPages - 1);
     }
 
   function updateStats(inCount, outCount, colCount, audit) {
@@ -1372,6 +1408,11 @@
                     let idx = headers.indexOf(c);
                     return idx > -1 ? r[newHeaders[idx]] : "";
                  }).join('|');
+              } else if (dedupMode === 'fuzzy') {
+                 key = dedupCols.map(c => {
+                    let idx = headers.indexOf(c);
+                    return idx > -1 ? soundex(r[newHeaders[idx]]) : "";
+                 }).join('|');
               }
               if (seen.has(key)) return false;
               seen.add(key);
@@ -1449,7 +1490,67 @@
     document.body.removeChild(link);
   });
 
-  document.getElementById('btnClear').addEventListener('click', () => {
+  
+    // JSON Recipe Export
+    document.getElementById('btnExportRecipe').addEventListener('click', () => {
+        const recipe = {
+          chkCleanHeaders: document.getElementById('chkCleanHeaders').checked,
+          chkDropEmptyRows: document.getElementById('chkDropEmptyRows').checked,
+          chkTrimAll: document.getElementById('chkTrimAll').checked,
+          chkStripControlChars: document.getElementById('chkStripControlChars').checked,
+          selDateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
+          selDedupMode: document.getElementById('selDedupMode').value,
+          multiSelectState: multiSelectState,
+          imputationRules: imputationRules
+        };
+        const blob = new Blob([JSON.stringify(recipe, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tangent_hygiene_recipe.json';
+        a.click();
+    });
+
+    // JSON Recipe Import
+    document.getElementById('recipeFileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const recipe = JSON.parse(ev.target.result);
+                document.getElementById('chkCleanHeaders').checked = !!recipe.chkCleanHeaders;
+                document.getElementById('chkDropEmptyRows').checked = !!recipe.chkDropEmptyRows;
+                document.getElementById('chkTrimAll').checked = !!recipe.chkTrimAll;
+                document.getElementById('chkStripControlChars').checked = !!recipe.chkStripControlChars;
+                if(recipe.selDateLocale && document.getElementById('selDateLocale')) document.getElementById('selDateLocale').value = recipe.selDateLocale;
+                if(recipe.selDedupMode) document.getElementById('selDedupMode').value = recipe.selDedupMode;
+                
+                if(recipe.multiSelectState) {
+                    multiSelectState = recipe.multiSelectState;
+                    Object.keys(multiSelectState).forEach(id => renderPills(id));
+                }
+                if(recipe.imputationRules) {
+                    imputationRules = recipe.imputationRules;
+                    renderImputationRules();
+                }
+                document.getElementById('recipeFileInput').value = '';
+                if (rawData.length > 0) document.getElementById('btnRunRecipe').click();
+            } catch (err) {
+                alert('Invalid recipe JSON file.');
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // Auto-Execute Live Preview on sidebar change
+    document.querySelector('.hygiene-workspace').addEventListener('change', (e) => {
+        if (e.target.id !== 'fileInput' && e.target.id !== 'recipeFileInput' && rawData.length > 0) {
+            document.getElementById('btnRunRecipe').click();
+        }
+    });
+
+    document.getElementById('btnClear').addEventListener('click', () => {
     // Reset state
     rawData = [];
     currentHeaders = [];

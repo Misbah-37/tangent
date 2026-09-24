@@ -91,6 +91,17 @@ def generate_sidebar_html(tools, current_page):
             lines.append('')
 
     lines.append('  </div>')
+    
+    # --- Sidebar Support Widget ---
+    lines.append('  <div class="sidebar-support-widget">')
+    lines.append('    <div class="support-title">Support Tangent</div>')
+    lines.append('    <div class="support-desc">If this saved you time today, help keep the suite free and ad-free.</div>')
+    lines.append('    <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="support-btn">')
+    lines.append('      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>')
+    lines.append('      Support')
+    lines.append('    </a>')
+    lines.append('  </div>')
+    
     lines.append('</aside>')
     lines.append('<!-- TANGENT_SIDEBAR_END -->')
 

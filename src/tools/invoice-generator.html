@@ -1261,6 +1261,7 @@ Account: 99482019482</div>
 
   btnPrintInvoice.addEventListener('click', () => {
     window.print();
+    if(window.TangentToast) window.TangentToast.show("PDF generated successfully!");
   });
 
   btnResetSample.addEventListener('click', () => {

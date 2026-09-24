@@ -1789,6 +1789,7 @@
   }
 
   function finishTest() {
+      if(window.TangentToast) window.TangentToast.show("Test Completed!");
     if (wpmTimer) {
       clearInterval(wpmTimer);
       wpmTimer = null;

@@ -275,7 +275,8 @@
         `;
         
         swatch.addEventListener('click', () => {
-          navigator.clipboard.writeText(hex);
+          if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
+      navigator.clipboard.writeText(hex);
           swatch.classList.add('copied');
           setTimeout(() => swatch.classList.remove('copied'), 800);
         });
@@ -297,7 +298,8 @@
   }
 
   btnCopyCss.addEventListener('click', () => {
-    navigator.clipboard.writeText(cssOutput.value);
+    if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
+      navigator.clipboard.writeText(cssOutput.value);
     const originalText = btnCopyCss.textContent;
     btnCopyCss.textContent = "Copied to Clipboard!";
     setTimeout(() => { btnCopyCss.textContent = originalText; }, 2000);

@@ -1190,6 +1190,7 @@
       a.download = `${selectedFile.name}.tangent`;
       a.click();
       URL.revokeObjectURL(url);
+      if(window.TangentToast) window.TangentToast.show("Export successful!");
 
       successAlert.textContent = `File successfully locked! Downloaded "${selectedFile.name}.tangent".`;
       successAlert.style.display = 'block';
@@ -1244,6 +1245,7 @@
       a.download = metadata.name;
       a.click();
       URL.revokeObjectURL(url);
+      if(window.TangentToast) window.TangentToast.show("Export successful!");
 
       successAlert.textContent = `File unlocked successfully! Extracted "${metadata.name}".`;
       successAlert.style.display = 'block';

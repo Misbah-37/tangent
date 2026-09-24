@@ -1985,6 +1985,7 @@
 
   downloadPdfBtn.addEventListener('click', () => {
     window.print();
+    if(window.TangentToast) window.TangentToast.show("PDF generated successfully!");
   });
 
   loadSampleBtn.addEventListener('click', () => {

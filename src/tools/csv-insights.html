@@ -264,7 +264,13 @@
         <tbody id="rawTbody"></tbody>
       </table>
     </div>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Showing first 100 rows.</p>
+    <div id="rawPagination" style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">
+        <span id="rawRowInfo">Showing rows 0 - 0 of 0</span>
+        <div style="display: flex; gap: 8px;">
+          <button id="btnPrevPage" class="btn btn-outline" style="padding: 4px 12px; height: auto;" disabled>Previous</button>
+          <button id="btnNextPage" class="btn btn-outline" style="padding: 4px 12px; height: auto;" disabled>Next</button>
+        </div>
+      </div>
   </div>
 </div>
 

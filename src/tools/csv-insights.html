@@ -131,8 +131,8 @@
   #fullChartModal .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; width: min(92vw, 980px); max-height: 85vh; display: flex; flex-direction: column; }
   #fullChartModal .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   #fullChartModal h3 { margin: 0; font-size: 1.1rem; }
-  #fullChartModal .modal-scroll { overflow-x: auto; overflow-y: hidden; flex: 1; border-top: 1px solid var(--border-color); padding-top: 14px; }
-  #fullChartModalCanvasWrap { height: 420px; min-height: 420px; position: relative; }
+  #fullChartModal .modal-scroll { overflow: auto; flex: 1; border-top: 1px solid var(--border-color); padding-top: 14px; }
+  #fullChartModalCanvasWrap { height: min(420px, 60vh); min-height: 300px; position: relative; }
   #fullChartModalCanvasWrap canvas { width: 100%; height: 100%; display: block; }
   #fullChartModal .modal-note { color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; }
 
@@ -144,9 +144,6 @@
     background-color: #1e293b;
     color: #f8fafc;
   }
-  
-  #fullChartModalCanvasWrap { height: 420px; position: relative; margin-bottom: 20px; }
-  .modal-scroll { overflow: auto; flex: 1; }
 
 </style>
 

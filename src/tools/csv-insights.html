@@ -1647,6 +1647,13 @@
       
       worker.postMessage({ headers: currentHeaders, data: filtered });
     });
+    
+    var filterInput = document.getElementById('txtGlobalFilter');
+    if (filterInput) {
+      filterInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') document.getElementById('btnApplyGlobalFilter').click();
+      });
+    }
 
 })();
 </script>

@@ -938,6 +938,24 @@
 
 </div>
 
+
+<!-- Global Success Toast -->
+<div class="tangent-toast" id="tangentToast">
+  <div class="toast-content">
+    <div class="toast-header">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      <span id="toastTitle">Success!</span>
+    </div>
+    <div class="toast-body">
+      If Tangent saved you time today, consider supporting the project to keep it 100% free and ad-free.
+    </div>
+    <div class="toast-actions">
+      <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="toast-btn toast-btn-primary">Support Tangent</a>
+      <button class="toast-btn toast-btn-ghost" id="toastCloseBtn">Dismiss</button>
+    </div>
+  </div>
+</div>
+
 <!-- Global Shell Script -->
 <script src="assets/tangent.js?v=1"></script>
 
@@ -953,6 +971,28 @@
     hide: function() {
       var el = document.getElementById('tangentLoader');
       if (el) el.style.display = 'none';
+    }
+  };
+
+  window.TangentToast = {
+    show: function(titleMsg) {
+      var toast = document.getElementById('tangentToast');
+      var title = document.getElementById('toastTitle');
+      var closeBtn = document.getElementById('toastCloseBtn');
+      if (!toast || !title) return;
+      
+      title.textContent = titleMsg || 'Task Complete!';
+      toast.classList.add('show');
+      
+      if (closeBtn) {
+        closeBtn.onclick = function() {
+          toast.classList.remove('show');
+        };
+      }
+      
+      setTimeout(function() {
+        toast.classList.remove('show');
+      }, 12000);
     }
   };
 </script>

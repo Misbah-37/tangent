@@ -1151,7 +1151,21 @@
     }
 
   function renderManualChart() {
-    if (!rawData.length) return;
+    if (!rawData.length) {
+          var wrapper = document.getElementById('chartScrollWrapper');
+          if (wrapper) {
+              wrapper.innerHTML = '<canvas id="manualChartCanvas"></canvas>';
+              var emptyCanvas = document.getElementById('manualChartCanvas');
+              emptyCanvas.width = wrapper.parentElement.clientWidth;
+              emptyCanvas.height = 300;
+              var ctx = emptyCanvas.getContext('2d');
+              ctx.fillStyle = 'rgba(255,255,255,0.5)';
+              ctx.font = '14px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText('No data available for the current filter.', emptyCanvas.width/2, emptyCanvas.height/2);
+          }
+          return;
+      }
     var xCol = document.getElementById('selXAxis').value;
     var yCol = document.getElementById('selYAxis').value;
     var agg = document.getElementById('selAggregation').value;
@@ -1622,6 +1636,7 @@
   });
 
     document.getElementById('btnApplyGlobalFilter').addEventListener('click', function() {
+        window.lastAppliedFilterQuery = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
       if (!originalData) return;
       var query = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
       
@@ -1645,7 +1660,28 @@
       
       if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Slicing Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Recalculating distributions</span>'; window.TangentLoader.show(''); }
       
-      worker.postMessage({ headers: currentHeaders, data: filtered });
+      // --- UX BANNER LOGIC ---
+        var globalMsg = document.getElementById('globalFilterBanner');
+        if (query) {
+            if (!globalMsg) {
+                globalMsg = document.createElement('div');
+                globalMsg.id = 'globalFilterBanner';
+                globalMsg.className = 'alert alert-info';
+                globalMsg.style.cssText = 'background: rgba(58, 123, 213, 0.1); border: 1px solid rgba(58, 123, 213, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;';
+                var workspace = document.getElementById('workspace');
+                workspace.insertBefore(globalMsg, workspace.firstChild);
+            }
+            globalMsg.innerHTML = '<div>Showing data sliced by search: <strong>"' + query + '"</strong></div> <button class="btn btn-sm" id="btnClearGlobalFilter" style="background: rgba(235, 94, 102, 0.2); color: #eb5e66; border-color: rgba(235, 94, 102, 0.4); height: 28px; line-height: 14px;">Clear Filter</button>';
+            
+            document.getElementById('btnClearGlobalFilter').addEventListener('click', function() {
+                document.getElementById('txtGlobalFilter').value = '';
+                document.getElementById('btnApplyGlobalFilter').click();
+            });
+        } else {
+            if (globalMsg) globalMsg.remove();
+        }
+        // -----------------------
+        worker.postMessage({ headers: currentHeaders, data: filtered });
     });
     
     var filterInput = document.getElementById('txtGlobalFilter');

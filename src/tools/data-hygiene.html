@@ -1,4 +1,4 @@
-<!-- --- HEAD_META --- -->
+﻿<!-- --- HEAD_META --- -->
 <title>Data Sanitizer & Profiler | Tangent</title>
 <meta name="description" content="Instantly clean datasets, impute missing values, and deduplicate rows. Scrub data securely with zero cloud uploads via background Web Workers.">
 <link rel="canonical" href="https://runtangent.com/data-hygiene">
@@ -51,7 +51,88 @@
       }
     ]
   }
-  </script>
+  
+  // ðŸš€ TANGENT PRO (RUST INTERCEPT)
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.__TAURI__) {
+        const invoke = window.__TAURI__.core.invoke;
+        let nativeActivePath = "";
+        
+        // Intercept File Upload
+        const origBrowse = document.querySelector('button[onclick="document.getElementById(\'fileInput\').click()"]');
+        if (origBrowse) {
+            origBrowse.removeAttribute('onclick');
+            origBrowse.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    origBrowse.innerText = "Opening Rust Pipeline...";
+                    const resultJson = await invoke('process_massive_csv');
+                    const data = JSON.parse(resultJson);
+                    nativeActivePath = data.path;
+                    
+                    // Map to existing web logic
+                    currentHeaders = data.columns;
+                    rawData = data.preview.map(rowArray => {
+                        let obj = {};
+                        data.columns.forEach((col, i) => obj[col] = rowArray[i]);
+                        return obj;
+                    });
+                    
+                    document.getElementById('dropzone').style.display = 'none';
+                    document.getElementById('dashboardArea').style.display = 'block';
+                    
+                    populateDropdowns();
+                    processedData = rawData;
+                    processedHeaders = [...currentHeaders];
+                    
+                    // Force update stats with the TRUE native rows
+                    document.getElementById('statRowsIn').innerText = data.total_rows.toLocaleString();
+                    document.getElementById('statRowsOut').innerText = data.total_rows.toLocaleString();
+                    document.getElementById('statCols').innerText = data.columns.length.toLocaleString();
+                    
+                    updatePreview(processedHeaders, processedData);
+                    const info = document.getElementById("previewRowInfo");
+                    if(info) info.innerHTML = `Showing preview of <b style="color:#fff;">${data.total_rows.toLocaleString()}</b> native rows`;
+                    
+                    document.getElementById('btnRunRecipe').disabled = false;
+                    document.getElementById('btnExport').disabled = false;
+                    document.getElementById('btnClear').disabled = false;
+                    
+                    if(window.TangentToast) window.TangentToast.show(`Loaded ${data.total_rows.toLocaleString()} rows via Native Engine!`);
+                } catch (err) {
+                    if (err !== "No file selected") alert("Native Error: " + err);
+                } finally {
+                    origBrowse.innerText = "Browse Files";
+                }
+            });
+        }
+        
+        // Intercept Recipe Execution
+        const origRun = document.getElementById('btnRunRecipe');
+        if (origRun) {
+            const newRun = origRun.cloneNode(true);
+            origRun.parentNode.replaceChild(newRun, origRun);
+            newRun.addEventListener('click', async () => {
+                if (!nativeActivePath) return;
+                newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Streaming via Rust...`;
+                newRun.disabled = true;
+                
+                try {
+                    const result = await invoke('execute_recipe', { filePath: nativeActivePath });
+                    if(window.TangentToast) window.TangentToast.show("Export Complete!");
+                    alert(result); // Show full path and success
+                } catch (err) {
+                    alert("Rust Pipeline Error: " + err);
+                } finally {
+                    newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Recipe Pipeline`;
+                    newRun.disabled = false;
+                }
+            });
+        }
+    }
+  });
+
+</script>
 
 <!-- --- TOOL_STYLES --- -->
 <style>
@@ -112,10 +193,10 @@
   .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); margin-bottom: 24px; }
   .dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
 
-  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
+  .table-wrapper { width: 100%; overflow: auto; max-height: 600px; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
   .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
   .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
-  .preview-table th { background: rgba(255,255,255,0.02); font-weight: 600; white-space: nowrap; color: var(--text-muted); }
+  .preview-table th { background: #0f172a; font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0 var(--border-color); }
   .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
@@ -135,7 +216,7 @@
 
   .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); }
   
-  /* Local spinner removed — uses global TangentLoader from shell.html */
+  /* Local spinner removed â€” uses global TangentLoader from shell.html */
   
   /* Pill Tags */
   .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -208,7 +289,7 @@
               <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
             </label>
             <div class="form-group">
-              <label>Standardize Dates (ISO-8601)</label>
+              <label>Reformat & Standardize Dates</label>
                 <div style="display: flex; gap: 8px;">
                   <select id="selFormatDates" class="form-control col-select" style="flex: 1;"></select>
                   <select id="selDateLocale" class="form-control" style="width: 140px;" title="Date Format Assumption">
@@ -217,7 +298,7 @@
                   </select>
                 </div>
               <div id="selFormatDates_pills" class="pill-container"></div>
-              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert various date formats to YYYY-MM-DD.</small>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert and unify dates to your chosen format.</small>
             </div>
             <div class="form-group">
               <label>Clean Numeric / Currency</label>
@@ -368,7 +449,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h4 style="margin: 0; color: var(--text-main);">Live Data Preview <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Max 15 Rows)</span></h4>
+          <h4 style="margin: 0; color: var(--text-main);">Live Data Preview <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Max 100 Rows)</span></h4>
           <label style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="chkShowAnomalies" onchange="if(processedData && processedData.length > 0) updatePreview(processedHeaders, processedData)">
             Show rows with anomalies only
@@ -661,7 +742,7 @@
              displayVal = "<span style=\"opacity:0.5; font-style:italic;\">null</span>";
            } else if (strVal !== strVal.trim()) {
              cellClass = "cell-whitespace";
-             displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "·"));
+             displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "Â·"));
            }
            
            return `<td class="${cellClass}">${displayVal}</td>`;
@@ -744,7 +825,7 @@
           
           for (let i=0; i < rows.length; i++) {
              let row = rows[i];
-             for (let h of newHeaders) {
+             for (let j=0; j < newHeaders.length; j++) { let h = newHeaders[j]; let orig_h = headers[j];
                 let val = row[h];
                 if (val === undefined || val === null) continue;
                 
@@ -753,30 +834,39 @@
                 if (trimAll) strVal = strVal.trim();
                 if (!strVal) continue;
                 
-                if (dateCols.includes(h)) {
-                   let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
-                   let parsed = false;
-                   let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-                   if (m) {
-                       let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
-                       if (p3 < 100) p3 += 2000;
-                       if(p1 > 12 && p2 <= 12) { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; parsed = true; }
-                       else if(p2 > 12 && p1 <= 12) { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; parsed = true; }
-                       else if (p1 <= 12 && p2 <= 12) {
-                          if (dateLocale === 'EU') { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; }
-                          else { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
-                          parsed = true;
-                       }
-                   }
-                   if (!parsed) {
-                       let d = new Date(dStr);
-                       if (!isNaN(d.getTime())) {
-                         strVal = d.toISOString().split('T')[0];
-                       }
-                   }
-                }
-                
-                if (numberCols.includes(h)) {
+                if (dateCols.includes(orig_h)) {
+                     let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
+                     let parsedDate = null;
+                     
+                     let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+                     if (m) {
+                         let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
+                         if (p3 < 100) p3 += 2000;
+                         if (p1 > 12 && p2 <= 12) { parsedDate = new Date(p3, p2-1, p1); }
+                         else if (p2 > 12 && p1 <= 12) { parsedDate = new Date(p3, p1-1, p2); }
+                         else if (p1 <= 12 && p2 <= 12) {
+                            if (dateLocale === 'EU') { parsedDate = new Date(p3, p2-1, p1); }
+                            else { parsedDate = new Date(p3, p1-1, p2); } 
+                         }
+                     }
+                     
+                     if (!parsedDate) {
+                         let d = new Date(dStr);
+                         if (!isNaN(d.getTime())) { parsedDate = d; }
+                     }
+                     
+                     if (parsedDate && !isNaN(parsedDate.getTime())) {
+                         let y = parsedDate.getFullYear();
+                         let mo = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                         let da = String(parsedDate.getDate()).padStart(2, '0');
+                         
+                         if (dateLocale === 'EU') strVal = da + '/' + mo + '/' + y;
+                         else if (dateLocale === 'US') strVal = mo + '/' + da + '/' + y;
+                         else strVal = y + '-' + mo + '-' + da; 
+                     }
+                  }
+                  
+                  if (numberCols.includes(orig_h)) {
                    let lower = strVal.toLowerCase();
                    if (wordToNum[lower] !== undefined) {
                      strVal = String(wordToNum[lower]);
@@ -788,13 +878,13 @@
                    }
                 }
                 
-                if (phoneCols.includes(h)) {
+                if (phoneCols.includes(orig_h)) {
                    let nums = strVal.replace(/[^0-9]/g, '');
                    if (nums.length === 10) { strVal = nums.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
                    else if (nums.length === 11 && nums.startsWith('1')) { strVal = nums.replace(/1(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
                 }
                 
-                if (titleCols.includes(h)) {
+                if (titleCols.includes(orig_h)) {
                    strVal = strVal.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
                 }
   
@@ -924,6 +1014,7 @@
       formats: {
         trimAll: document.getElementById('chkTrimAll').checked,
         stripControl: document.getElementById('chkStripControlChars').checked,
+          dateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
         dateCols: getMultiSelectValues('selFormatDates'),
         numberCols: getMultiSelectValues('selFormatNumbers')
       },
@@ -1052,3 +1143,4 @@
       Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
   });
 </script>
+

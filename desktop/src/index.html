@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tangent Pro</title>
+    <style>
+        
+        :root[data-theme="light"] {
+            --bg-app: #f4f4f5;
+            --bg-surface: #ffffff;
+            --bg-hover: #e4e4e7;
+            --border: #d4d4d8;
+            --text-main: #18181b;
+            --text-muted: #71717a;
+        }
+
+        :root {
+            --bg-app: #09090b;
+            --bg-surface: #18181b;
+            --bg-hover: #27272a;
+            --border: #27272a;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Custom OS Titlebar */
+        .titlebar {
+            height: 38px;
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 9999;
+        }
+        .drag-region {
+            flex-grow: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        .window-controls {
+            display: flex;
+            height: 100%;
+        }
+        .window-btn {
+            width: 46px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.1s;
+        }
+        .window-btn:hover { background-color: var(--bg-hover); color: var(--text-main); }
+        .window-btn.close:hover { background-color: #ef4444; color: white; }
+
+        /* App Layout */
+        .app-body {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100vh - 38px);
+        }
+
+        /* Slim Sidebar */
+        .sidebar {
+            width: 68px;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+            gap: 16px;
+        }
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .sidebar-icon:hover { background-color: var(--bg-hover); color: var(--text-main); }
+        .sidebar-icon.active { background-color: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        /* Main Workspace */
+        .workspace {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-app);
+        }
+        .workspace-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .workspace-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+        .workspace-header p { font-size: 13px; color: var(--text-muted); }
+
+        
+        /* Pro Dashboard */
+        .dashboard {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .pii-badge {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        .null-bar-bg { width: 100%; height: 4px; background: var(--bg-app); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+        .null-bar-fill { height: 100%; background: #ef4444; }
+
+        /* Data Hygiene Specific UI */
+        .hygiene-layout {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .recipe-panel {
+            width: 320px;
+            background-color: var(--bg-app);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .preview-panel {
+            flex-grow: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0; /* Fixes flexbox shrinking constraint */
+        }
+        
+        /* Controls */
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .btn:hover { background-color: var(--accent-hover); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        .btn-outline:hover { background-color: var(--bg-hover); }
+
+        .recipe-list {
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .rule-item {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        /* Table */
+        .table-wrapper {
+            flex-grow: 1;
+            max-width: 100%;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: auto;
+            position: relative;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            user-select: text;
+        }
+        th, td {
+            padding: 8px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            white-space: nowrap;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        th {
+            background-color: var(--bg-hover);
+            color: var(--text-muted);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .empty-state {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Titlebar -->
+    <div class="titlebar">
+        <div class="drag-region" data-tauri-drag-region>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 10px; pointer-events: none;"><path d="M12 2L2 22h20L12 2z"/></svg>
+            TANGENT PRO
+        </div>
+        <div class="window-controls">
+            
+            <div class="window-btn" id="btn-theme" title="Toggle Light/Dark Theme">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </div>
+
+            <div class="window-btn" id="btn-minimize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg></div>
+            <div class="window-btn" id="btn-maximize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
+            <div class="window-btn close" id="btn-close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        </div>
+    </div>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-icon active" title="Data Sanitizer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="sidebar-icon" title="PDF Tools (Coming Soon)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="sidebar-icon" title="Settings (Coming Soon)" style="margin-top: auto; margin-bottom: 16px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+        </div>
+
+        <!-- Workspace -->
+        <div class="workspace">
+            <div class="workspace-header">
+                <h1>Data Sanitizer & Profiler</h1>
+                <p>Native Rust Dataframe Engine • Bypasses browser memory limits to process multi-gigabyte files instantly.</p>
+            </div>
+
+            <div class="hygiene-layout">
+                <!-- Left Panel: Actions -->
+                <div class="recipe-panel">
+                    <button class="btn btn-outline" id="btn-load">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        1. Select Local CSV File
+                    </button>
+                    
+                    <div style="margin: 16px 0; border-bottom: 1px solid var(--border);"></div>
+                    
+                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main);">Pipeline Recipe</h3>
+                    <div id="recipe-list" class="recipe-list">
+                        No file loaded.
+                    </div>
+
+                    <div style="margin-top: auto;">
+                        <button class="btn" id="btn-run" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            2. Execute Native Pipeline
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Preview -->
+                <div class="preview-panel">
+                    
+                    <!-- Pro Dashboard -->
+                    <div class="dashboard" id="pro-dashboard" style="display: none;">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-health">--%</div>
+                            <div class="stat-label">Dataset Health Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-rows">--</div>
+                            <div class="stat-label">Total Rows Analyzed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-pii">--</div>
+                            <div class="stat-label">Sensitive Columns (PII)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-size">--</div>
+                            <div class="stat-label">File Size (Instant Load)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-wrapper" id="table-wrapper">
+
+                        <div class="empty-state">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                            <br>
+                            Waiting for local dataset...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const invoke = window.__TAURI__.core.invoke;
+        let activeFilePath = "";
+        
+        
+        // Theme Engine
+        const themeBtn = document.getElementById('btn-theme');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('tangent_pro_theme', theme);
+            themeBtn.innerHTML = theme === 'light' 
+              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+        }
+        const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
+        applyTheme(savedTheme);
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'light' ? 'dark' : 'light');
+        });
+
+        // Window Controls
+        document.getElementById('btn-close').addEventListener('click', () => invoke('close_window'));
+        document.getElementById('btn-maximize').addEventListener('click', () => invoke('maximize_window'));
+        document.getElementById('btn-minimize').addEventListener('click', () => invoke('minimize_window'));
+
+        // Load Logic
+        document.getElementById('btn-load').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-load');
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Reading via Rust...`;
+            
+            try {
+                const resultJson = await invoke('process_massive_csv');
+                const data = JSON.parse(resultJson);
+                activeFilePath = data.path;
+                
+                // --- PRO DASHBOARD LOGIC ---
+                document.getElementById('pro-dashboard').style.display = 'flex';
+                document.getElementById('stat-rows').innerText = data.total_rows.toLocaleString();
+                document.getElementById('stat-size').innerText = data.file_size_mb + ' MB';
+                
+                let totalCells = data.total_rows * data.columns.length;
+                let totalNulls = data.null_counts.reduce((a, b) => a + b, 0);
+                let piiCount = data.pii_flags.filter(Boolean).length;
+                
+                let healthScore = 100;
+                if (totalCells > 0) {
+                    healthScore = 100 - ((totalNulls / totalCells) * 100);
+                }
+                
+                let healthEl = document.getElementById('stat-health');
+                healthEl.innerText = healthScore.toFixed(1) + '%';
+                if(healthScore < 80) healthEl.style.color = '#ef4444';
+                else if(healthScore < 95) healthEl.style.color = '#f59e0b';
+                else healthEl.style.color = '#10b981';
+                
+                let piiEl = document.getElementById('stat-pii');
+                if (piiCount > 0) {
+                    piiEl.innerHTML = piiCount + ` <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+                    piiEl.style.color = '#ef4444';
+                } else {
+                    piiEl.innerText = "0 Detected";
+                    piiEl.style.color = '#10b981';
+                }
+                
+                // --- TABLE RENDERING WITH NULL BARS & PII FLAGS ---
+                let tableHtml = `<table><thead><tr>`;
+                data.columns.forEach((col, i) => { 
+                    let nullPct = data.total_rows > 0 ? (data.null_counts[i] / data.total_rows) * 100 : 0;
+                    let piiBadge = data.pii_flags[i] ? `<span class="pii-badge">PII DETECTED</span>` : '';
+                    
+                    tableHtml += `<th>
+                        ${col} ${piiBadge}
+                        <div class="null-bar-bg" title="${data.null_counts[i]} missing values"><div class="null-bar-fill" style="width: ${nullPct}%"></div></div>
+                    </th>`; 
+                });
+                tableHtml += `</tr></thead><tbody>`;
+                
+                data.preview.forEach(row => {
+                    tableHtml += `<tr>`;
+                    row.forEach(cell => { tableHtml += `<td>${cell}</td>`; });
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += `</tbody></table>`;
+                
+                document.getElementById('table-wrapper').innerHTML = tableHtml;
+                
+                document.getElementById('recipe-list').innerHTML = `
+                    <div class="rule-item">Drop Missing (NaN) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+                    <div class="rule-item">Remove Duplicates <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+                    <div class="rule-item">Trim Whitespace <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+                `;
+                document.getElementById('recipe-list').style.border = "none";
+                document.getElementById('recipe-list').style.padding = "0";
+                document.getElementById('recipe-list').style.textAlign = "left";
+                
+                document.getElementById('btn-run').disabled = false;
+                
+            } catch (e) {
+                if(e !== "No file selected") alert("Rust Core Error: " + e);
+            } finally {
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Change Local CSV File`;
+            }
+        });
+
+        // Run Logic
+        document.getElementById('btn-run').addEventListener('click', async () => {
+            if (!activeFilePath) return;
+            const btn = document.getElementById('btn-run');
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Compiling Dataset...`;
+            btn.disabled = true;
+            
+            try {
+                const result = await invoke('execute_recipe', { filePath: activeFilePath });
+                
+                const tableWrapper = document.getElementById('table-wrapper');
+                const banner = document.createElement('div');
+                banner.style.padding = "16px";
+                banner.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                banner.style.borderBottom = "1px solid rgba(16, 185, 129, 0.2)";
+                banner.style.color = "#10b981";
+                banner.style.position = "sticky";
+                banner.style.top = "0";
+                banner.style.zIndex = "20";
+                banner.innerHTML = `<strong style="font-size: 14px;">Pipeline Successfully Executed in Rust</strong><br><span style="font-size:13px; opacity: 0.9;">${result.replace(/\n/g, '<br>')}</span>`;
+                tableWrapper.prepend(banner);
+                
+            } catch (e) {
+                alert("Rust Core Error: " + e);
+            } finally {
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Executed Successfully`;
+                setTimeout(() => {
+                    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Native Pipeline`;
+                    btn.disabled = false;
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -44,7 +44,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -67,8 +67,8 @@
   body, html {
     margin: 0;
     padding: 0;
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--bg-base);
+    color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     line-height: 1.5;
@@ -81,7 +81,7 @@
     height: 100%;
     justify-content: space-between;
     padding: 14px 32px;
-    background-color: rgba(8, 9, 13, 0.92);
+    background-color: var(--bg-surface);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid #1a1f2e;
@@ -130,7 +130,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -150,7 +150,7 @@
   .toolkit-toggle-btn {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -166,7 +166,7 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
@@ -264,7 +264,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -299,7 +299,7 @@
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
-      background-color: rgba(8, 9, 13, 0.98);
+      background-color: var(--bg-surface);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid #1f2533;
@@ -350,7 +350,7 @@
 
   .btn-accent {
     background: linear-gradient(135deg, #0284c7 0%, #00d2ff 100%);
-    color: #ffffff;
+    color: var(--text-main);
     text-decoration: none;
     padding: 14px 34px;
     border-radius: 30px;
@@ -423,7 +423,7 @@
     height: 100%;
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--text-main);
     display: flex;
     align-items: center;
     height: 100%;
@@ -483,8 +483,8 @@
   }
 
   .tool-card {
-    background-color: #121212;
-    border: 1px solid #222222;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 24px;
     text-decoration: none;
@@ -506,7 +506,7 @@
     z-index: 2;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     border-color: #00d2ff;
-    background-color: #1a1a1a;
+    background-color: var(--bg-card-hover);
   }
   
   @media (max-width: 768px) {
@@ -574,7 +574,7 @@
 
   .tool-card:hover {
     border-color: rgba(0, 210, 255, 0.4);
-    background-color: #151820;
+    background-color: var(--bg-card-hover);
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(0, 210, 255, 0.08);
   }
@@ -606,8 +606,8 @@
     padding: 6px 14px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #222222;
-    color: #94a3b8;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
     font-size: 0.82rem;
     font-weight: 500;
   }
@@ -636,9 +636,9 @@
 
   /* --- Trust Section --- */
   .trust-section {
-    border-top: 1px solid #222222;
+    border-top: 1px solid var(--border-color);
     padding: 80px 24px;
-    background-color: #000000;
+    background-color: var(--bg-base);
   }
 
   .trust-grid {
@@ -651,7 +651,7 @@
   }
 
   .trust-item h4 {
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 1.1rem;
     margin: 0 0 10px 0;
     font-weight: 600;
@@ -666,12 +666,12 @@
 
   /* --- Global Footer --- */
   .global-footer {
-    border-top: 1px solid #222222;
+    border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: #666666;
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    background-color: #000000;
+    background-color: var(--bg-base);
   }
 
   .global-footer a {
@@ -682,7 +682,7 @@
   }
 
   .global-footer a:hover {
-    color: #ffffff;
+    color: var(--text-main);
   }
 
   /* --- Mobile Responsive Navigation & Layout --- */
@@ -736,7 +736,7 @@
   }
   .tool-card:hover {
     border-color: rgba(0, 210, 255, 0.5);
-    background-color: #151821;
+    background-color: var(--bg-card-hover);
     transform: translateY(-4px) scale(1.01);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 210, 255, 0.1);
   }
@@ -946,7 +946,7 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       100% Client-Side Privacy Guarantee
     </div>
-    <h2 style="font-size: 2.2rem; font-weight: 700; color: #ffffff; margin: 0 0 12px 0; letter-spacing: -0.02em;">Your Files Stay on Your Device. Period.</h2>
+    <h2 style="font-size: 2.2rem; font-weight: 700; color: var(--text-main); margin: 0 0 12px 0; letter-spacing: -0.02em;">Your Files Stay on Your Device. Period.</h2>
     <p style="color: #999999; max-width: 680px; margin: 0 auto; font-size: 1.05rem; line-height: 1.6;">
       Tangent executes entirely within your browser's local sandbox memory. We never transmit your files, log telemetry, or require accounts. (The sole exception is our Password Shield, which securely queries an anonymous partial hash against the HaveIBeenPwned database).
     </p>

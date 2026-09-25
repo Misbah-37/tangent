@@ -57,7 +57,88 @@
       }
     ]
   }
-  </script>
+  
+  // ðŸš€ TANGENT PRO (RUST INTERCEPT)
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.__TAURI__) {
+        const invoke = window.__TAURI__.core.invoke;
+        let nativeActivePath = "";
+        
+        // Intercept File Upload
+        const origBrowse = document.querySelector('button[onclick="document.getElementById(\'fileInput\').click()"]');
+        if (origBrowse) {
+            origBrowse.removeAttribute('onclick');
+            origBrowse.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    origBrowse.innerText = "Opening Rust Pipeline...";
+                    const resultJson = await invoke('process_massive_csv');
+                    const data = JSON.parse(resultJson);
+                    nativeActivePath = data.path;
+                    
+                    // Map to existing web logic
+                    currentHeaders = data.columns;
+                    rawData = data.preview.map(rowArray => {
+                        let obj = {};
+                        data.columns.forEach((col, i) => obj[col] = rowArray[i]);
+                        return obj;
+                    });
+                    
+                    document.getElementById('dropzone').style.display = 'none';
+                    document.getElementById('dashboardArea').style.display = 'block';
+                    
+                    populateDropdowns();
+                    processedData = rawData;
+                    processedHeaders = [...currentHeaders];
+                    
+                    // Force update stats with the TRUE native rows
+                    document.getElementById('statRowsIn').innerText = data.total_rows.toLocaleString();
+                    document.getElementById('statRowsOut').innerText = data.total_rows.toLocaleString();
+                    document.getElementById('statCols').innerText = data.columns.length.toLocaleString();
+                    
+                    updatePreview(processedHeaders, processedData);
+                    const info = document.getElementById("previewRowInfo");
+                    if(info) info.innerHTML = `Showing preview of <b style="color:#fff;">${data.total_rows.toLocaleString()}</b> native rows`;
+                    
+                    document.getElementById('btnRunRecipe').disabled = false;
+                    document.getElementById('btnExport').disabled = false;
+                    document.getElementById('btnClear').disabled = false;
+                    
+                    if(window.TangentToast) window.TangentToast.show(`Loaded ${data.total_rows.toLocaleString()} rows via Native Engine!`);
+                } catch (err) {
+                    if (err !== "No file selected") alert("Native Error: " + err);
+                } finally {
+                    origBrowse.innerText = "Browse Files";
+                }
+            });
+        }
+        
+        // Intercept Recipe Execution
+        const origRun = document.getElementById('btnRunRecipe');
+        if (origRun) {
+            const newRun = origRun.cloneNode(true);
+            origRun.parentNode.replaceChild(newRun, origRun);
+            newRun.addEventListener('click', async () => {
+                if (!nativeActivePath) return;
+                newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Streaming via Rust...`;
+                newRun.disabled = true;
+                
+                try {
+                    const result = await invoke('execute_recipe', { filePath: nativeActivePath });
+                    if(window.TangentToast) window.TangentToast.show("Export Complete!");
+                    alert(result); // Show full path and success
+                } catch (err) {
+                    alert("Rust Pipeline Error: " + err);
+                } finally {
+                    newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Recipe Pipeline`;
+                    newRun.disabled = false;
+                }
+            });
+        }
+    }
+  });
+
+</script>
 <!-- Structured Data for Data Hygiene Profiler -->
 <script type="application/ld+json">
 {
@@ -141,10 +222,10 @@
   .dropzone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.1); margin-bottom: 24px; }
   .dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
 
-  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
+  .table-wrapper { width: 100%; overflow: auto; max-height: 600px; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
   .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
   .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
-  .preview-table th { background: rgba(255,255,255,0.02); font-weight: 600; white-space: nowrap; color: var(--text-muted); }
+  .preview-table th { background: #0f172a; font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0 var(--border-color); }
   .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
@@ -164,7 +245,7 @@
 
   .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); }
   
-  /* Local spinner removed — uses global TangentLoader from shell.html */
+  /* Local spinner removed â€” uses global TangentLoader from shell.html */
   
   /* Pill Tags */
   .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -253,6 +334,63 @@
   0%, 100% { opacity: 0.5; }
   50%       { opacity: 1; }
 }
+
+    /* Tauri Native Titlebar */
+    #tauri-titlebar {
+      display: none;
+      height: 38px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 9999;
+    }
+    body.tauri-mode { padding-top: 38px; }
+    body.tauri-mode .global-nav { top: 38px; }
+    body.tauri-mode .sidebar { top: 38px; height: calc(100vh - 38px); }
+
+    /* Hide all web-centric marketing, SEO, and donation widgets in the Pro App */
+    body.tauri-mode .sidebar-support-widget,
+    body.tauri-mode .toast,
+    body.tauri-mode .info-section,
+    body.tauri-mode .faq-title,
+    body.tauri-mode .faq-box,
+    body.tauri-mode .features-grid,
+    body.tauri-mode footer,
+    body.tauri-mode .clean-header p,
+    body.tauri-mode .badge-pill {
+        display: none !important;
+    }
+
+    /* Condense the tool headers so it feels like a native desktop app */
+    body.tauri-mode .clean-header {
+        margin-bottom: 20px !important;
+        padding-top: 20px !important;
+    }
+    body.tauri-mode .clean-header h1 {
+        font-size: 1.8rem !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Make the workspace take up more vertical space since we hid the fluff */
+    body.tauri-mode .hygiene-workspace {
+        min-height: calc(100vh - 120px) !important;
+    }
+    body.tauri-mode .panel {
+        height: 100%;
+    }
+
+    
+    #tauri-titlebar .drag-region { flex-grow: 1; height: 100%; display: flex; align-items: center; padding-left: 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); }
+    #tauri-titlebar .actions { display: flex; height: 100%; }
+    #tauri-titlebar .btn { width: 46px; height: 100%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-muted); transition: 0.2s; padding: 0; background: transparent; }
+    #tauri-titlebar .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    #tauri-titlebar .btn.close:hover { background: #e81123; color: #fff; }
+
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -264,10 +402,28 @@
 </head>
 <body>
 
+  <div id="tauri-titlebar">
+    <div class="drag-region" data-tauri-drag-region>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px; pointer-events: none;"><path d="M12 2L2 22h20L12 2z"/></svg>
+      <span style="pointer-events: none;">Tangent Pro Suite</span>
+    </div>
+    <div class="actions">
+      <div class="btn" id="tauri-theme-toggle" title="Toggle Light/Dark Theme">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </div>
+      <div class="btn" id="tauri-minimize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg></div>
+      <div class="btn" id="tauri-maximize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
+      <div class="btn close" id="tauri-close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+    </div>
+  </div>
+
+
 <!-- Global Navigation -->
 <nav class="global-nav">
   <div class="nav-left">
-    <a href="/" class="nav-brand">
+    <a href="index.html" class="nav-brand">
       <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
         <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
@@ -656,7 +812,7 @@
               <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
             </label>
             <div class="form-group">
-              <label>Standardize Dates (ISO-8601)</label>
+              <label>Reformat & Standardize Dates</label>
                 <div style="display: flex; gap: 8px;">
                   <select id="selFormatDates" class="form-control col-select" style="flex: 1;"></select>
                   <select id="selDateLocale" class="form-control" style="width: 140px;" title="Date Format Assumption">
@@ -665,7 +821,7 @@
                   </select>
                 </div>
               <div id="selFormatDates_pills" class="pill-container"></div>
-              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert various date formats to YYYY-MM-DD.</small>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert and unify dates to your chosen format.</small>
             </div>
             <div class="form-group">
               <label>Clean Numeric / Currency</label>
@@ -816,7 +972,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h4 style="margin: 0; color: var(--text-main);">Live Data Preview <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Max 15 Rows)</span></h4>
+          <h4 style="margin: 0; color: var(--text-main);">Live Data Preview <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Max 100 Rows)</span></h4>
           <label style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="chkShowAnomalies" onchange="if(processedData && processedData.length > 0) updatePreview(processedHeaders, processedData)">
             Show rows with anomalies only
@@ -900,7 +1056,7 @@
   <!-- Standard Global Footer -->
   <footer class="global-footer">
     <div style="margin-bottom: 16px;">
-      <a href="/">Home</a>
+      <a href="index.html">Home</a>
       <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
       <a href="mailto:hello@runtangent.com">Contact</a>
       <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
@@ -1180,7 +1336,7 @@
              displayVal = "<span style=\"opacity:0.5; font-style:italic;\">null</span>";
            } else if (strVal !== strVal.trim()) {
              cellClass = "cell-whitespace";
-             displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "·"));
+             displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "Â·"));
            }
            
            return `<td class="${cellClass}">${displayVal}</td>`;
@@ -1263,7 +1419,7 @@
           
           for (let i=0; i < rows.length; i++) {
              let row = rows[i];
-             for (let h of newHeaders) {
+             for (let j=0; j < newHeaders.length; j++) { let h = newHeaders[j]; let orig_h = headers[j];
                 let val = row[h];
                 if (val === undefined || val === null) continue;
                 
@@ -1272,30 +1428,39 @@
                 if (trimAll) strVal = strVal.trim();
                 if (!strVal) continue;
                 
-                if (dateCols.includes(h)) {
-                   let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
-                   let parsed = false;
-                   let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-                   if (m) {
-                       let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
-                       if (p3 < 100) p3 += 2000;
-                       if(p1 > 12 && p2 <= 12) { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; parsed = true; }
-                       else if(p2 > 12 && p1 <= 12) { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; parsed = true; }
-                       else if (p1 <= 12 && p2 <= 12) {
-                          if (dateLocale === 'EU') { strVal = new Date(p3, p2-1, p1).toISOString().split('T')[0]; }
-                          else { strVal = new Date(p3, p1-1, p2).toISOString().split('T')[0]; }
-                          parsed = true;
-                       }
-                   }
-                   if (!parsed) {
-                       let d = new Date(dStr);
-                       if (!isNaN(d.getTime())) {
-                         strVal = d.toISOString().split('T')[0];
-                       }
-                   }
-                }
-                
-                if (numberCols.includes(h)) {
+                if (dateCols.includes(orig_h)) {
+                     let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
+                     let parsedDate = null;
+                     
+                     let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+                     if (m) {
+                         let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
+                         if (p3 < 100) p3 += 2000;
+                         if (p1 > 12 && p2 <= 12) { parsedDate = new Date(p3, p2-1, p1); }
+                         else if (p2 > 12 && p1 <= 12) { parsedDate = new Date(p3, p1-1, p2); }
+                         else if (p1 <= 12 && p2 <= 12) {
+                            if (dateLocale === 'EU') { parsedDate = new Date(p3, p2-1, p1); }
+                            else { parsedDate = new Date(p3, p1-1, p2); } 
+                         }
+                     }
+                     
+                     if (!parsedDate) {
+                         let d = new Date(dStr);
+                         if (!isNaN(d.getTime())) { parsedDate = d; }
+                     }
+                     
+                     if (parsedDate && !isNaN(parsedDate.getTime())) {
+                         let y = parsedDate.getFullYear();
+                         let mo = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                         let da = String(parsedDate.getDate()).padStart(2, '0');
+                         
+                         if (dateLocale === 'EU') strVal = da + '/' + mo + '/' + y;
+                         else if (dateLocale === 'US') strVal = mo + '/' + da + '/' + y;
+                         else strVal = y + '-' + mo + '-' + da; 
+                     }
+                  }
+                  
+                  if (numberCols.includes(orig_h)) {
                    let lower = strVal.toLowerCase();
                    if (wordToNum[lower] !== undefined) {
                      strVal = String(wordToNum[lower]);
@@ -1307,13 +1472,13 @@
                    }
                 }
                 
-                if (phoneCols.includes(h)) {
+                if (phoneCols.includes(orig_h)) {
                    let nums = strVal.replace(/[^0-9]/g, '');
                    if (nums.length === 10) { strVal = nums.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
                    else if (nums.length === 11 && nums.startsWith('1')) { strVal = nums.replace(/1(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
                 }
                 
-                if (titleCols.includes(h)) {
+                if (titleCols.includes(orig_h)) {
                    strVal = strVal.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
                 }
   
@@ -1443,6 +1608,7 @@
       formats: {
         trimAll: document.getElementById('chkTrimAll').checked,
         stripControl: document.getElementById('chkStripControlChars').checked,
+          dateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
         dateCols: getMultiSelectValues('selFormatDates'),
         numberCols: getMultiSelectValues('selFormatNumbers')
       },
@@ -1572,5 +1738,41 @@
   });
 </script>
 
+
+<script>
+    // Tauri Desktop Initialization
+    function initTauriMode() {
+      if (window.__TAURI__) {
+        document.body.classList.add('tauri-mode');
+        document.getElementById('tauri-titlebar').style.display = 'flex';
+        
+        // Theme Engine
+        const themeBtn = document.getElementById('tauri-theme-toggle');
+        function applyTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+          localStorage.setItem('tangent_pro_theme', theme);
+          themeBtn.innerHTML = theme === 'light' 
+            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+        }
+        
+        const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
+        applyTheme(savedTheme);
+        
+        themeBtn.addEventListener('click', () => {
+          const current = document.body.getAttribute('data-theme');
+          applyTheme(current === 'light' ? 'dark' : 'light');
+        });
+
+        const invoke = window.__TAURI__.core.invoke;
+        document.getElementById('tauri-minimize').addEventListener('click', () => invoke('minimize_window'));
+        document.getElementById('tauri-maximize').addEventListener('click', () => invoke('maximize_window'));
+        document.getElementById('tauri-close').addEventListener('click', () => invoke('close_window'));
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initTauriMode);
+    setTimeout(initTauriMode, 150); // Fallback
+</script>
 </body>
 </html>

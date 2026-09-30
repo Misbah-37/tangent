@@ -77,7 +77,7 @@
     border: none;
   }
   .btn-primary {
-    background: #00d2ff;
+    background: var(--accent);
     color: #11141d;
     padding: 14px 28px;
     box-shadow: 0 4px 14px rgba(0, 210, 255, 0.25);
@@ -89,7 +89,7 @@
   }
   .btn-secondary {
     background: rgba(255,255,255,0.05);
-    color: #fff;
+    color: var(--text-main);
     padding: 10px 18px;
     border: 1px solid var(--border-color);
   }
@@ -98,13 +98,13 @@
   }
   .btn-demo {
     background: transparent;
-    color: #94a3b8;
+    color: var(--text-muted);
     padding: 12px 24px;
-    border: 1px solid #1f2533;
+    border: 1px solid var(--border-color);
   }
   .btn-demo:hover {
     background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    color: var(--text-main);
   }
 
   /* Progress Bar */
@@ -120,7 +120,7 @@
   .progress-bar-fill {
     height: 100%;
     width: 0%;
-    background: #00d2ff;
+    background: var(--accent);
     transition: width 0.2s ease;
   }
 
@@ -129,7 +129,7 @@
     width: 100%;
     height: 100%;
     min-height: 350px;
-    background: #0d1017;
+    background: var(--bg-base);
     border: none;
     border-radius: 8px;
     color: #e2e8f0;
@@ -162,14 +162,14 @@
     border-radius: 16px;
     padding: 28px;
   }
-  .feature-icon { margin-bottom: 16px; color: #00d2ff; display: inline-flex; }
+  .feature-icon { margin-bottom: 16px; color: var(--accent); display: inline-flex; }
   .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
   .feature-card p { color: var(--text-secondary); line-height: 1.6; margin: 0; }
   .faq-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 32px; text-align: left; }
   .faq-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
   .faq-box summary { padding: 18px 24px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; }
   .faq-box summary::-webkit-details-marker { display: none; }
-  .faq-box summary::after { content: "+"; color: #00d2ff; font-size: 1.2rem; }
+  .faq-box summary::after { content: "+"; color: var(--accent); font-size: 1.2rem; }
   .faq-box details[open] summary::after { content: "−"; }
   .faq-box p { padding: 0 24px 20px 24px; margin: 0; color: var(--text-secondary); line-height: 1.6; text-align: left; }
 </style>
@@ -177,7 +177,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     <span>100% LOCAL AI PROCESSING</span>
   </div>
   <h1>Confidential Audio Transcriber</h1>
@@ -190,7 +190,7 @@
     <div class="panel-section">
       <h3>Select Audio File</h3>
       <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 12px;">
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line>
         </svg>
         <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop Audio Here</div>
@@ -202,7 +202,7 @@
     <!-- Status & Progress -->
     <div class="panel-section" id="statusSection" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-        <span id="statusText" style="font-size: 13px; font-weight: 500; color: #00d2ff;">Initializing Engine...</span>
+        <span id="statusText" style="font-size: 13px; font-weight: 500; color: var(--accent);">Initializing Engine...</span>
         <span id="statusPercent" style="font-size: 12px; color: var(--text-secondary);">0%</span>
       </div>
       <div class="progress-bar-container" id="progressBarContainer">
@@ -222,7 +222,7 @@
 
     <!-- Consent State (Hidden by default) -->
     <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">Local AI Model Required</h3>
       <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To transcribe audio offline with total privacy, your browser needs to download a high-precision AI model (~70MB). It will be permanently cached for instant future use.</p>
       <button class="btn btn-primary" id="btnConsentDownload">Download & Transcribe</button>
@@ -232,7 +232,7 @@
     <!-- Active Transcript State -->
     <div id="activeState" style="display: none; flex: 1; flex-direction: column;">
       <textarea id="transcriptOutput" class="transcript-box" placeholder="Transcribing audio..."></textarea>
-      <div style="padding: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: #0b0d13;">
+      <div style="padding: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-base);">
         <button class="btn btn-secondary" id="btnCopy">Copy Text</button>
         <button class="btn btn-secondary" id="btnDownloadTxt">Download .txt</button>
       </div>
@@ -245,21 +245,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
       <h3>Absolute Privacy Guarantee</h3>
       <p>By using WebAssembly, the transcription engine runs inside your computer's RAM. Confidential interviews, medical dictations, and private memos never leave your device.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
       <h3>Zero Throttling</h3>
       <p>Because there is no remote server processing your file, you aren't subjected to arbitrary tier limits, bandwidth throttling, or expensive transcription subscriptions.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
       </div>
       <h3>Optimized for English</h3>
       <p>To ensure the AI is lightweight enough to run securely inside your browser without crashing your computer, we utilize a specialized, highly-compressed English-only model.</p>

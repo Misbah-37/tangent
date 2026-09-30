@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  (function() {
+    try {
+      if (localStorage.getItem('tangent_theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -62,7 +71,7 @@
   "@type": "WebApplication",
   "name": "Photo Resizer | Tangent",
   "description": "Crop, resize, and compress images with exact pixel precision and binary search targeting.",
-  "applicationCategory": "Media&VideoApplication",
+  "applicationCategory": "Images&PhotosApplication",
   "operatingSystem": "All",
   "url": "https://runtangent.com/photo-resizer.html",
   "offers": {
@@ -79,24 +88,24 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=8">
+<link rel="stylesheet" href="assets/tangent.css?v=11">
 <style>
 :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --danger: #ef4444;
-    --success: #10b981;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
   }
 
   html {
@@ -111,7 +120,7 @@
   body {
     margin: 0;
 
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -127,7 +136,7 @@
     background-color: rgba(8, 9, 13, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #1a1f2e;
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     width: 100%;
     left: 0;
@@ -169,7 +178,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -181,7 +190,7 @@
   }
 
   .nav-link:hover, .nav-link.active {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Toolkit Toggle Button in Navbar */
@@ -203,14 +212,14 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
   }
 
   .toolkit-toggle-btn .sidebar-icon {
-    color: #00d2ff;
+    color: var(--accent);
     transition: transform 0.2s ease;
   }
 
@@ -301,7 +310,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -312,7 +321,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
@@ -338,7 +347,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column !important;
       align-items: stretch !important;
       padding: 16px 20px 24px 20px !important;
@@ -355,7 +364,7 @@
     .nav-link {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
     }
   }
@@ -364,7 +373,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -438,7 +447,7 @@
 
   /* --- Upload Box Drag & Drop --- */
   .upload-box {
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 2px dashed var(--border-color);
     border-radius: 14px;
     padding: 44px 24px;
@@ -466,7 +475,7 @@
   .upload-box-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 6px;
   }
 
@@ -481,7 +490,7 @@
     align-items: center;
     gap: 8px;
     background: #171b26;
-    color: #ffffff;
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     padding: 9px 20px;
     border-radius: 8px;
@@ -499,7 +508,7 @@
   /* --- Active File Card --- */
   .active-file-card {
     display: none;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px 20px;
@@ -528,7 +537,7 @@
 
   .active-file-name {
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
@@ -558,8 +567,8 @@
   }
 
   .btn-remove-file:hover {
-    border-color: var(--danger);
-    color: var(--danger);
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
   }
 
   /* --- Cropper Workspace --- */
@@ -618,7 +627,7 @@
 
   .input-group .label-desc {
     font-size: 0.78rem;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-weight: 400;
     margin-left: 6px;
   }
@@ -626,8 +635,8 @@
   input[type="number"], select {
     width: 100%;
     padding: 12px 14px;
-    background-color: var(--bg-card-inner);
-    color: #ffffff;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-family: inherit;
@@ -660,7 +669,7 @@
   }
 
   .preset-btn {
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 10px 16px;
@@ -678,7 +687,7 @@
   }
 
   .preset-btn:hover {
-    color: #ffffff;
+    color: var(--text-main);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
@@ -722,15 +731,15 @@
   .download-btn {
     display: none;
     background: transparent;
-    color: var(--success);
+    color: var(--accent-emerald);
     border: 1px solid var(--success-border);
     background-color: var(--success-bg);
   }
 
   .download-btn:hover {
     background-color: rgba(16, 185, 129, 0.25);
-    border-color: var(--success);
-    color: #ffffff;
+    border-color: var(--accent-emerald);
+    color: var(--text-main);
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
     transform: translateY(-1px);
   }
@@ -748,7 +757,7 @@
     border: 1px solid var(--success-border);
     border-radius: 10px;
     padding: 14px 18px;
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 0.92rem;
     line-height: 1.5;
     margin-bottom: 12px;
@@ -780,7 +789,7 @@
   }
 
   .seo-article h2, .seo-article h3 {
-    color: #ffffff;
+    color: var(--text-main);
     margin-top: 2rem;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
@@ -798,7 +807,7 @@
     border-radius: 10px;
     padding: 18px 20px;
     cursor: pointer;
-    color: #ffffff;
+    color: var(--text-main);
     font-weight: 600;
     transition: border-color 0.2s ease;
   }
@@ -820,9 +829,9 @@
     border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     margin-top: 60px;
   }
 
@@ -981,62 +990,6 @@
   50%       { opacity: 1; }
 }
 
-    /* Tauri Native Titlebar */
-    #tauri-titlebar {
-      display: none;
-      height: 38px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-color);
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-      width: 100%;
-      position: fixed;
-      top: 0;
-      z-index: 9999;
-    }
-    body.tauri-mode { padding-top: 38px; }
-    body.tauri-mode .global-nav { top: 38px; }
-    body.tauri-mode .sidebar { top: 38px; height: calc(100vh - 38px); }
-
-    /* Hide all web-centric marketing, SEO, and donation widgets in the Pro App */
-    body.tauri-mode .sidebar-support-widget,
-    body.tauri-mode .toast,
-    body.tauri-mode .info-section,
-    body.tauri-mode .faq-title,
-    body.tauri-mode .faq-box,
-    body.tauri-mode .features-grid,
-    body.tauri-mode footer,
-    body.tauri-mode .clean-header p,
-    body.tauri-mode .badge-pill {
-        display: none !important;
-    }
-
-    /* Condense the tool headers so it feels like a native desktop app */
-    body.tauri-mode .clean-header {
-        margin-bottom: 20px !important;
-        padding-top: 20px !important;
-    }
-    body.tauri-mode .clean-header h1 {
-        font-size: 1.8rem !important;
-        margin-bottom: 0 !important;
-    }
-    
-    /* Make the workspace take up more vertical space since we hid the fluff */
-    body.tauri-mode .hygiene-workspace {
-        min-height: calc(100vh - 120px) !important;
-    }
-    body.tauri-mode .panel {
-        height: 100%;
-    }
-
-    
-    #tauri-titlebar .drag-region { flex-grow: 1; height: 100%; display: flex; align-items: center; padding-left: 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); }
-    #tauri-titlebar .actions { display: flex; height: 100%; }
-    #tauri-titlebar .btn { width: 46px; height: 100%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-muted); transition: 0.2s; padding: 0; background: transparent; }
-    #tauri-titlebar .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-    #tauri-titlebar .btn.close:hover { background: #e81123; color: #fff; }
-
 </style>
 
 <!-- Enforce Custom Domain Canonical -->
@@ -1048,33 +1001,16 @@
 </head>
 <body>
 
-  <div id="tauri-titlebar">
-    <div class="drag-region" data-tauri-drag-region>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px; pointer-events: none;"><path d="M12 2L2 22h20L12 2z"/></svg>
-      <span style="pointer-events: none;">Tangent Pro Suite</span>
-    </div>
-    <div class="actions">
-      <div class="btn" id="tauri-theme-toggle" title="Toggle Light/Dark Theme">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </div>
-      <div class="btn" id="tauri-minimize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg></div>
-      <div class="btn" id="tauri-maximize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
-      <div class="btn close" id="tauri-close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
-    </div>
-  </div>
-
 
 <!-- Global Navigation -->
 <nav class="global-nav">
   <div class="nav-left">
     <a href="index.html" class="nav-brand">
       <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M 32 14 V 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 32 14 V 44" stroke="var(--text-main)" stroke-width="7" stroke-linecap="round"/>
       </svg>
-      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:#ffffff; font-weight:800;">Tan</span><span style="color:#00d2ff; font-weight:800;">gent</span></span>
+      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:var(--text-main); font-weight:800;">Tan</span><span style="color:var(--accent); font-weight:800;">gent</span></span>
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
@@ -1085,6 +1021,12 @@
   </div>
 
   <div class="nav-right">
+    <!-- Theme Toggle -->
+    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Light/Dark Mode" title="Toggle Theme" style="background:none; border:none; color:var(--text-main); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; border-radius:8px; margin-right:8px;">
+      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+
     <!-- Hamburger Button (Mobile Only) -->
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1115,6 +1057,12 @@
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
     </button>
+  </div>
+  <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
+    <div style="position: relative; display: flex; align-items: center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+    </div>
   </div>
 
   <div class="sidebar-nav-list">
@@ -1150,41 +1098,48 @@
           <div class="item-desc">LaTeX math, paper presets & PDF</div>
         </div>
       </a>
+      <a href="document-signer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Visual e-Signer</div>
+          <div class="item-desc">Visually sign PDFs & docs</div>
+        </div>
+      </a>
+      <a href="receipt-extractor.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
+        <div class="item-text">
+          <div class="item-title">Receipt Scanner</div>
+          <div class="item-desc">Extract expenses to CSV</div>
+        </div>
+      </a>
       </div>
     </div>
 
-    <!-- Category 2: Media & Video -->
+    <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Media & Video</div>
+      <div class="sidebar-group-title">Business & Career</div>
       <div class="sidebar-group-content">
-      <a href="screen-recorder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+      <a href="resume-builder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
-          <div class="item-title">Screen Recorder</div>
-          <div class="item-desc">No 5-min cap, zero watermarks</div>
+          <div class="item-title">Resume Studio</div>
+          <div class="item-desc">ATS-friendly resume builder</div>
         </div>
       </a>
-      <a href="mockup-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+      <a href="invoice-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
         <div class="item-text">
-          <div class="item-title">Screenshot Beautifier</div>
-          <div class="item-desc">macOS frames, gradients, & shadows</div>
+          <div class="item-title">Invoice & Receipt Studio</div>
+          <div class="item-desc">Professional PDF invoices & receipts</div>
         </div>
       </a>
-      <a href="code-to-image.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Code-to-Image</div>
-          <div class="item-desc">Carbon-style snippet frames</div>
-        </div>
-      </a>
-      <a href="svg-optimizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
-        <div class="item-text">
-          <div class="item-title">SVG Optimizer</div>
-          <div class="item-desc">Minify, clean & rasterize SVG</div>
-        </div>
-      </a>
+      </div>
+    </div>
+
+    <!-- Category 3: Images & Photos -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Images & Photos</div>
+      <div class="sidebar-group-content">
       <a href="photo-resizer.html" class="sidebar-item active">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -1227,6 +1182,48 @@
           <div class="item-desc">Apple photos to JPG</div>
         </div>
       </a>
+      </div>
+    </div>
+
+    <!-- Category 4: Design & Dev Graphics -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Design & Dev Graphics</div>
+      <div class="sidebar-group-content">
+      <a href="mockup-generator.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Screenshot Beautifier</div>
+          <div class="item-desc">macOS frames, gradients, & shadows</div>
+        </div>
+      </a>
+      <a href="code-to-image.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
+        <div class="item-text">
+          <div class="item-title">Code-to-Image</div>
+          <div class="item-desc">Carbon-style snippet frames</div>
+        </div>
+      </a>
+      <a href="svg-optimizer.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
+        <div class="item-text">
+          <div class="item-title">SVG Optimizer</div>
+          <div class="item-desc">Minify, clean & rasterize SVG</div>
+        </div>
+      </a>
+      </div>
+    </div>
+
+    <!-- Category 5: Audio & Video -->
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Audio & Video</div>
+      <div class="sidebar-group-content">
+      <a href="screen-recorder.html" class="sidebar-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        <div class="item-text">
+          <div class="item-title">Screen Recorder</div>
+          <div class="item-desc">No 5-min cap, zero watermarks</div>
+        </div>
+      </a>
       <a href="audio-transcriber.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
         <div class="item-text">
@@ -1237,17 +1234,10 @@
       </div>
     </div>
 
-    <!-- Category 3: Security & System -->
+    <!-- Category 6: Security & System -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Security & System</div>
       <div class="sidebar-group-content">
-      <a href="document-signer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
-        <div class="item-text">
-          <div class="item-title">Visual e-Signer</div>
-          <div class="item-desc">Visually sign PDFs & docs</div>
-        </div>
-      </a>
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -1272,7 +1262,7 @@
       </div>
     </div>
 
-    <!-- Category 4: Data & Analytics -->
+    <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Data & Analytics</div>
       <div class="sidebar-group-content">
@@ -1325,17 +1315,10 @@
           <div class="item-desc">Local HTML scraper to CSV</div>
         </div>
       </a>
-      <a href="receipt-extractor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
-        <div class="item-text">
-          <div class="item-title">Receipt Scanner</div>
-          <div class="item-desc">Extract expenses to CSV</div>
-        </div>
-      </a>
       </div>
     </div>
 
-    <!-- Category 5: Utilities -->
+    <!-- Category 8: Utilities -->
     <div class="sidebar-group">
       <div class="sidebar-group-title">Utilities</div>
       <div class="sidebar-group-content">
@@ -1351,20 +1334,6 @@
         <div class="item-text">
           <div class="item-title">Typing Test</div>
           <div class="item-desc">100 sentences & paragraphs</div>
-        </div>
-      </a>
-      <a href="resume-builder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">Resume Studio</div>
-          <div class="item-desc">ATS-friendly resume builder</div>
-        </div>
-      </a>
-      <a href="invoice-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Invoice & Receipt Studio</div>
-          <div class="item-desc">Professional PDF invoices & receipts</div>
         </div>
       </a>
       </div>
@@ -1391,11 +1360,11 @@
     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path class="tl-arc"
         d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14"
-        stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
+        stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
         pathLength="1"/>
       <path class="tl-line"
         d="M 32 14 V 44"
-        stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+        stroke="var(--text-main)" stroke-width="6" stroke-linecap="round"/>
     </svg>
   </div>
   <div class="tl-message" id="tangentLoaderMsg">Processing...</div>
@@ -1406,7 +1375,7 @@
 
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     100% CLIENT-SIDE PRIVACY SHIELD
@@ -1536,21 +1505,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
       </div>
       <h3>Sub-Pixel Bicubic Resampling</h3>
       <p>Resize high-resolution photographs with smooth sub-pixel bicubic interpolation directly in your browser's hardware-accelerated Canvas engine.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
       </div>
       <h3>Target File-Size Hunter</h3>
       <p>Built-in binary search compression dials in your exact target kilobyte limit (e.g., strictly under 200 KB for portal uploads) automatically.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
       <h3>Instant WebP & JPG Conversion</h3>
       <p>Convert bulky camera files into next-generation WebP or compressed JPG with zero upload queues and complete photo confidentiality.</p>
@@ -1611,7 +1580,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=1"></script>
+<script src="assets/tangent.js?v=10"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1910,43 +1879,6 @@
   }
 
   // Mobile Navigation Hamburger Toggle
-</script>
-
-
-<script>
-    // Tauri Desktop Initialization
-    function initTauriMode() {
-      if (window.__TAURI__) {
-        document.body.classList.add('tauri-mode');
-        document.getElementById('tauri-titlebar').style.display = 'flex';
-        
-        // Theme Engine
-        const themeBtn = document.getElementById('tauri-theme-toggle');
-        function applyTheme(theme) {
-          document.documentElement.setAttribute('data-theme', theme);
-            document.body.setAttribute('data-theme', theme);
-          localStorage.setItem('tangent_pro_theme', theme);
-          themeBtn.innerHTML = theme === 'light' 
-            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
-            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-        }
-        
-        const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
-        applyTheme(savedTheme);
-        
-        themeBtn.addEventListener('click', () => {
-          const current = document.body.getAttribute('data-theme');
-          applyTheme(current === 'light' ? 'dark' : 'light');
-        });
-
-        const invoke = window.__TAURI__.core.invoke;
-        document.getElementById('tauri-minimize').addEventListener('click', () => invoke('minimize_window'));
-        document.getElementById('tauri-maximize').addEventListener('click', () => invoke('maximize_window'));
-        document.getElementById('tauri-close').addEventListener('click', () => invoke('close_window'));
-      }
-    }
-    document.addEventListener('DOMContentLoaded', initTauriMode);
-    setTimeout(initTauriMode, 150); // Fallback
 </script>
 </body>
 </html>

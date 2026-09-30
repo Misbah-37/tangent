@@ -7,10 +7,10 @@
   const navLinks = document.getElementById('navLinks');
   const tangentSidebar = document.getElementById('tangentSidebar');
 
-  let isLocked = false;
-  let hoverTimeout;
+  let isSidebarOpen = false;
 
   function setSidebarState(isOpen, updateStorage = false) {
+    isSidebarOpen = isOpen;
     if (isOpen) {
       document.body.classList.add('sidebar-open');
       if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'true');
@@ -27,56 +27,27 @@
 
   // Restore desktop state on load
   try {
-    if (localStorage.getItem('tangent_sidebar_open') === 'true' && window.innerWidth > 1024) {
-      isLocked = true;
+    const stored = localStorage.getItem('tangent_sidebar_open');
+    if (stored !== 'false' && window.innerWidth > 1024) {
       setSidebarState(true, false);
     }
   } catch (e) {}
 
-  function handleMouseEnter() {
-    if (window.innerWidth <= 960) return; // Mobile uses click only
-    clearTimeout(hoverTimeout);
-    if (!isLocked) {
-      setSidebarState(true, false);
-    }
-  }
-
-  function handleMouseLeave() {
-    if (window.innerWidth <= 960) return;
-    clearTimeout(hoverTimeout);
-    hoverTimeout = setTimeout(() => {
-      if (!isLocked) {
-        setSidebarState(false, false);
-      }
-    }, 150); // Delay prevents closing immediately when moving cursor between button and sidebar
-  }
-
   if (toolkitToggle) {
-    toolkitToggle.addEventListener('mouseenter', handleMouseEnter);
-    toolkitToggle.addEventListener('mouseleave', handleMouseLeave);
-    
     toolkitToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      isLocked = !isLocked;
-      setSidebarState(isLocked, true);
+      setSidebarState(!isSidebarOpen, true);
     });
-  }
-
-  if (tangentSidebar) {
-    tangentSidebar.addEventListener('mouseenter', handleMouseEnter);
-    tangentSidebar.addEventListener('mouseleave', handleMouseLeave);
   }
 
   if (sidebarCloseBtn) {
     sidebarCloseBtn.addEventListener('click', () => {
-      isLocked = false;
       setSidebarState(false, true);
     });
   }
 
   if (sidebarBackdrop) {
     sidebarBackdrop.addEventListener('click', () => {
-      isLocked = false;
       setSidebarState(false, true);
     });
   }
@@ -101,7 +72,6 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      isLocked = false;
       setSidebarState(false, true);
       if (navLinks) {
         navLinks.classList.remove('open');
@@ -109,37 +79,101 @@
       }
     }
   });
-})();
-function scrollTrack(trackId, direction) {
-  const track = document.getElementById(trackId);
-  if (track) {
-    const scrollAmount = direction * (280 + 20); // card width + gap
-    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  // Toolkit Search / Filter
+  const toolkitSearch = document.getElementById('toolkitSearch');
+  if (toolkitSearch && tangentSidebar) {
+    toolkitSearch.addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase().trim();
+      const terms = query.split(/\s+/).filter(t => t.length > 0);
+      const categories = tangentSidebar.querySelectorAll('.sidebar-group');
+      
+      categories.forEach(cat => {
+        const links = cat.querySelectorAll('.sidebar-item');
+        let hasVisibleLink = false;
+        
+        links.forEach(link => {
+          const searchIdx = (link.getAttribute('data-search-index') || '').toLowerCase();
+          const title = (link.textContent || '').toLowerCase();
+          
+          let matches = true;
+          for (let i = 0; i < terms.length; i++) {
+            if (!searchIdx.includes(terms[i]) && !title.includes(terms[i])) {
+              matches = false;
+              break;
+            }
+          }
+          
+          if (terms.length === 0 || matches) {
+            link.style.display = 'flex';
+            hasVisibleLink = true;
+          } else {
+            link.style.display = 'none';
+          }
+        });
+        
+        // Hide category header if all links are hidden
+        if (hasVisibleLink) {
+          cat.style.display = 'block';
+          // Auto-expand the accordion if there's a search term
+          if (terms.length > 0) {
+            cat.classList.add('open');
+          }
+        } else {
+          cat.style.display = 'none';
+        }
+      });
+    });
   }
-}
 
-
-// --- Global Download Interceptor for Success Toast ---
-document.addEventListener('click', function(e) {
-  var el = e.target.closest('a[download], button, .btn');
-  if (!el) return;
-  
-  var isDownloadLink = el.hasAttribute('download');
-  var text = (el.textContent || '').toLowerCase();
-  
-  // If it's a direct download link, or a button that explicitly says Download/Export/Save Image
-  if (isDownloadLink || 
-      ( (text.includes('download') || text.includes('export') || text.includes('save image') || text.includes('save chart')) && !text.includes('upload') )
-     ) {
-     
-    // Exclude layout buttons
-    if (el.classList.contains('sidebar-item') || el.classList.contains('preset-btn') || el.classList.contains('sidebar-close-btn')) return;
-    
-    // Slight delay to allow actual JS to process
-    setTimeout(function() {
-      if(window.TangentToast && !document.getElementById('tangentToast').classList.contains('show')) {
-        window.TangentToast.show("File Saved Successfully!");
+  // Cmd/Ctrl + K to focus search
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      if (!isSidebarOpen) {
+        setSidebarState(true, true);
       }
-    }, 1500);
+      if (toolkitSearch) {
+        setTimeout(() => toolkitSearch.focus(), 50);
+      }
+    }
+  });
+
+  // Theme Toggle Logic
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+
+  function updateThemeUI(isLight) {
+    if (sunIcon && moonIcon) {
+      if (isLight) {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      }
+    }
   }
-});
+
+  // Initialize UI based on current attribute (set by head script)
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  updateThemeUI(isLight);
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isCurrentlyLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if (isCurrentlyLight) {
+        document.documentElement.removeAttribute('data-theme');
+        try { localStorage.setItem('tangent_theme', 'dark'); } catch(e){}
+        updateThemeUI(false);
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        try { localStorage.setItem('tangent_theme', 'light'); } catch(e){}
+        updateThemeUI(true);
+      }
+      
+      // Dispatch custom event for tools that use canvas (e.g. Chart.js)
+      window.dispatchEvent(new Event('themechange'));
+    });
+  }
+})();

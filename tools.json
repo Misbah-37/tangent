@@ -10,7 +10,9 @@
         "cardTitle": "Instant CSV Insights Studio",
         "changefreq": "weekly",
         "title": "CSV Insights",
-        "priority": 0.9
+        "priority": 0.9,
+        "keywords": "dashboard, pivot table, spreadsheet, excel, chart, graph, visualization",
+        "search_index": "csv insights instant dashboards & charts dashboard, pivot table, spreadsheet, excel, chart, graph, visualization"
     },
     {
         "id": "sql-studio",
@@ -23,85 +25,99 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 1.5,
-        "iconSvg": "<path d=\"M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4\"></path>"
+        "iconSvg": "<path d=\"M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4\"></path>",
+        "keywords": "database, query, duckdb, select, join, analysis",
+        "search_index": "sql analytics studio run local sql on csv/parquet database, query, duckdb, select, join, analysis"
     },
     {
         "id": "screen-recorder",
         "filename": "screen-recorder.html",
         "title": "Screen Recorder",
         "sidebarDesc": "No 5-min cap, zero watermarks",
-        "category": "Media & Video",
+        "category": "Audio & Video",
         "cardTitle": "Screen & Audio Recorder",
         "cardDesc": "Record your full screen, app window, or browser tab with microphone and system audio. No time limit, zero watermarks.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 1,
-        "iconSvg": "<circle cx=\"12\" cy=\"12\" r=\"10\"></circle><polygon points=\"10 8 16 12 10 16 10 8\"></polygon>"
+        "iconSvg": "<circle cx=\"12\" cy=\"12\" r=\"10\"></circle><polygon points=\"10 8 16 12 10 16 10 8\"></polygon>",
+        "keywords": "capture, video, record, screencast, webcam, audio",
+        "search_index": "screen recorder no 5-min cap, zero watermarks capture, video, record, screencast, webcam, audio"
     },
     {
         "id": "mockup-generator",
         "filename": "mockup-generator.html",
         "title": "Screenshot Beautifier",
         "sidebarDesc": "macOS frames, gradients, & shadows",
-        "category": "Media & Video",
+        "category": "Design & Dev Graphics",
         "cardTitle": "Screenshot Beautifier",
         "cardDesc": "Transform raw screenshots into stunning mockups with macOS window frames, gradient backgrounds, and soft 3D shadows.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 2,
-        "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\" ry=\"2\"></rect><line x1=\"8\" y1=\"21\" x2=\"16\" y2=\"21\"></line><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"21\"></line>"
+        "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\" ry=\"2\"></rect><line x1=\"8\" y1=\"21\" x2=\"16\" y2=\"21\"></line><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"21\"></line>",
+        "keywords": "screenshot, presentation, browser frame, 3d shadow, background",
+        "search_index": "screenshot beautifier macos frames, gradients, & shadows screenshot, presentation, browser frame, 3d shadow, background"
     },
     {
         "id": "code-to-image",
         "filename": "code-to-image.html",
         "title": "Code-to-Image",
         "sidebarDesc": "Carbon-style snippet frames",
-        "category": "Media & Video",
+        "category": "Design & Dev Graphics",
         "cardTitle": "Code-to-Image & Snippet Studio",
         "cardDesc": "Turn code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, macOS window chrome, and syntax themes.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 3,
-        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><circle cx=\"6.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"9.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"12.5\" cy=\"6\" r=\"1\"></circle><polyline points=\"8 15 10 13 8 11\"></polyline><line x1=\"12\" y1=\"15\" x2=\"16\" y2=\"15\"></line>"
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><circle cx=\"6.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"9.5\" cy=\"6\" r=\"1\"></circle><circle cx=\"12.5\" cy=\"6\" r=\"1\"></circle><polyline points=\"8 15 10 13 8 11\"></polyline><line x1=\"12\" y1=\"15\" x2=\"16\" y2=\"15\"></line>",
+        "keywords": "snippet, syntax highlighting, screenshot, export code",
+        "search_index": "code-to-image carbon-style snippet frames snippet, syntax highlighting, screenshot, export code"
     },
     {
         "id": "svg-optimizer",
         "filename": "svg-optimizer.html",
         "title": "SVG Optimizer",
         "sidebarDesc": "Minify, clean & rasterize SVG",
-        "category": "Media & Video",
+        "category": "Design & Dev Graphics",
         "cardTitle": "Vector & SVG Optimizer Lab",
         "cardDesc": "Inspect, clean, and compress vector SVG files. Strip hidden editor metadata, round precision, remove useless tags, and export to crisp PNG.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 4,
-        "iconSvg": "<circle cx=\"12\" cy=\"19\" r=\"2\"></circle><path d=\"M12 17V5\"></path><circle cx=\"5\" cy=\"5\" r=\"2\"></circle><circle cx=\"19\" cy=\"5\" r=\"2\"></circle><line x1=\"7\" y1=\"5\" x2=\"17\" y2=\"5\"></line><path d=\"M5 7c0 4 7 8 7 10\"></path><path d=\"M19 7c0 4-7 8-7 10\"></path>"
+        "iconSvg": "<circle cx=\"12\" cy=\"19\" r=\"2\"></circle><path d=\"M12 17V5\"></path><circle cx=\"5\" cy=\"5\" r=\"2\"></circle><circle cx=\"19\" cy=\"5\" r=\"2\"></circle><line x1=\"7\" y1=\"5\" x2=\"17\" y2=\"5\"></line><path d=\"M5 7c0 4 7 8 7 10\"></path><path d=\"M19 7c0 4-7 8-7 10\"></path>",
+        "keywords": "compress, vector, clean, minifier, minify, shrink",
+        "search_index": "svg optimizer minify, clean & rasterize svg compress, vector, clean, minifier, minify, shrink"
     },
     {
         "id": "photo-resizer",
         "filename": "photo-resizer.html",
         "title": "Photo Resizer",
         "sidebarDesc": "Scale dimensions & WebP convert",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "Photo Resizer",
         "cardDesc": "Crop, resize, and compress images with exact pixel precision and binary search targeting.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 5,
-        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><polyline points=\"21 15 16 10 5 21\"></polyline>"
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><polyline points=\"21 15 16 10 5 21\"></polyline>",
+        "keywords": "crop, scale, compress, shrink, image, picture, jpg, png",
+        "search_index": "photo resizer scale dimensions & webp convert crop, scale, compress, shrink, image, picture, jpg, png"
     },
     {
         "id": "photo-scrubber",
         "filename": "photo-scrubber.html",
         "title": "Photo Scrubber",
         "sidebarDesc": "Strip GPS & EXIF camera tags",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "Photo EXIF & GPS Scrubber",
         "cardDesc": "Inspect hidden GPS location coordinates, camera models, and timestamps, and wipe them permanently before sharing.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 6,
-        "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>"
+        "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>",
+        "keywords": "exif, metadata, gps, location, privacy, wipe, image",
+        "search_index": "photo scrubber strip gps & exif camera tags exif, metadata, gps, location, privacy, wipe, image"
     },
     {
         "id": "pdf-redactor",
@@ -114,7 +130,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 7,
-        "iconSvg": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><line x1=\"9\" y1=\"9\" x2=\"15\" y2=\"9\"></line><line x1=\"8\" y1=\"13\" x2=\"16\" y2=\"13\"></line>"
+        "iconSvg": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><line x1=\"9\" y1=\"9\" x2=\"15\" y2=\"9\"></line><line x1=\"8\" y1=\"13\" x2=\"16\" y2=\"13\"></line>",
+        "keywords": "black out, censor, hide, privacy, wipe metadata",
+        "search_index": "pdf redactor blackout data & wipe metadata black out, censor, hide, privacy, wipe metadata"
     },
     {
         "id": "pdf-converter",
@@ -127,7 +145,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 8,
-        "iconSvg": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"></path><polyline points=\"14 2 14 8 20 8\"></polyline><line x1=\"16\" y1=\"13\" x2=\"8\" y2=\"13\"></line><line x1=\"16\" y1=\"17\" x2=\"8\" y2=\"17\"></line><polyline points=\"10 9 9 9 8 9\"></polyline>"
+        "iconSvg": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"></path><polyline points=\"14 2 14 8 20 8\"></polyline><line x1=\"16\" y1=\"13\" x2=\"8\" y2=\"13\"></line><line x1=\"16\" y1=\"17\" x2=\"8\" y2=\"17\"></line><polyline points=\"10 9 9 9 8 9\"></polyline>",
+        "keywords": "merge, split, compress, shrink, extract pages, convert",
+        "search_index": "pdf suite merge, split, compress, & convert merge, split, compress, shrink, extract pages, convert"
     },
     {
         "id": "document-ocr",
@@ -140,7 +160,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 9,
-        "iconSvg": "<path d=\"M4 7V4h3\"></path><path d=\"M20 7V4h-3\"></path><path d=\"M4 17v3h3\"></path><path d=\"M20 17v3h-3\"></path><line x1=\"4\" y1=\"12\" x2=\"20\" y2=\"12\"></line><rect x=\"8\" y=\"8\" width=\"8\" height=\"8\" rx=\"1\"></rect>"
+        "iconSvg": "<path d=\"M4 7V4h3\"></path><path d=\"M20 7V4h-3\"></path><path d=\"M4 17v3h3\"></path><path d=\"M20 17v3h-3\"></path><line x1=\"4\" y1=\"12\" x2=\"20\" y2=\"12\"></line><rect x=\"8\" y=\"8\" width=\"8\" height=\"8\" rx=\"1\"></rect>",
+        "keywords": "scan, image to text, extract text, optical character recognition",
+        "search_index": "document ocr extract text from scans & images scan, image to text, extract text, optical character recognition"
     },
     {
         "id": "markdown-studio",
@@ -153,20 +175,24 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 10,
-        "iconSvg": "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"></path><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"></path><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"13\" y2=\"11\"></line>"
+        "iconSvg": "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"></path><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"></path><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"13\" y2=\"11\"></line>",
+        "keywords": "editor, latex, math, writing, export, notes",
+        "search_index": "academic markdown latex math, paper presets & pdf editor, latex, math, writing, export, notes"
     },
     {
         "id": "document-signer",
         "filename": "document-signer.html",
         "title": "Visual e-Signer",
         "sidebarDesc": "Visually sign PDFs & docs",
-        "category": "Security & System",
+        "category": "Documents & PDF",
         "cardTitle": "Visual Document e-Signer",
         "cardDesc": "Visually sign PDFs and standard documents in seconds. Draw, type, or upload your signature, place date stamps, and export with zero accounts.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 11,
-        "iconSvg": "<path d=\"M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\"></path><polygon points=\"18 2 22 6 12 16 8 16 8 12 18 2\"></polygon>"
+        "iconSvg": "<path d=\"M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\"></path><polygon points=\"18 2 22 6 12 16 8 16 8 12 18 2\"></polygon>",
+        "keywords": "e-sign, signature, draw, sign pdf, contract",
+        "search_index": "visual e-signer visually sign pdfs & docs e-sign, signature, draw, sign pdf, contract"
     },
     {
         "id": "file-vault",
@@ -179,7 +205,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 12,
-        "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path><circle cx=\"12\" cy=\"16\" r=\"1.5\"></circle>"
+        "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path><circle cx=\"12\" cy=\"16\" r=\"1.5\"></circle>",
+        "keywords": "encrypt, decrypt, password protect, lock, hide, secure",
+        "search_index": "file lockbox pin & password file safe encrypt, decrypt, password protect, lock, hide, secure"
     },
     {
         "id": "password-meter",
@@ -192,7 +220,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 13,
-        "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path>"
+        "iconSvg": "<rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path>",
+        "keywords": "strength, breach check, generator, secure passphrase",
+        "search_index": "password shield entropy meter & passphrase gen strength, breach check, generator, secure passphrase"
     },
     {
         "id": "file-organizer",
@@ -205,7 +235,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 14,
-        "iconSvg": "<path d=\"M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z\"></path>"
+        "iconSvg": "<path d=\"M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z\"></path>",
+        "keywords": "sort, folders, clean up, directory, automation",
+        "search_index": "file organizer in-browser & desktop sorter sort, folders, clean up, directory, automation"
     },
     {
         "id": "qr-generator",
@@ -218,7 +250,9 @@
         "priority": 0.8,
         "changefreq": "weekly",
         "gridOrder": 15,
-        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect>"
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect>",
+        "keywords": "barcode, link, scan, quick response",
+        "search_index": "qr generator custom styling & vector download barcode, link, scan, quick response"
     },
     {
         "id": "typing-test",
@@ -231,33 +265,39 @@
         "priority": 0.8,
         "changefreq": "weekly",
         "gridOrder": 16,
-        "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"6\" y1=\"8\" x2=\"6\" y2=\"8\"></line><line x1=\"10\" y1=\"8\" x2=\"10\" y2=\"8\"></line><line x1=\"14\" y1=\"8\" x2=\"14\" y2=\"8\"></line><line x1=\"18\" y1=\"8\" x2=\"18\" y2=\"8\"></line><line x1=\"8\" y1=\"12\" x2=\"8\" y2=\"12\"></line><line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"></line><line x1=\"16\" y1=\"12\" x2=\"16\" y2=\"12\"></line><line x1=\"7\" y1=\"16\" x2=\"17\" y2=\"16\"></line>"
+        "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"6\" y1=\"8\" x2=\"6\" y2=\"8\"></line><line x1=\"10\" y1=\"8\" x2=\"10\" y2=\"8\"></line><line x1=\"14\" y1=\"8\" x2=\"14\" y2=\"8\"></line><line x1=\"18\" y1=\"8\" x2=\"18\" y2=\"8\"></line><line x1=\"8\" y1=\"12\" x2=\"8\" y2=\"12\"></line><line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"></line><line x1=\"16\" y1=\"12\" x2=\"16\" y2=\"12\"></line><line x1=\"7\" y1=\"16\" x2=\"17\" y2=\"16\"></line>",
+        "keywords": "speed, wpm, keyboard, benchmark",
+        "search_index": "typing test 100 sentences & paragraphs speed, wpm, keyboard, benchmark"
     },
     {
         "id": "resume-builder",
         "filename": "resume-builder.html",
         "title": "Resume Studio",
         "sidebarDesc": "ATS-friendly resume builder",
-        "category": "Utilities",
+        "category": "Business & Career",
         "cardTitle": "Resume & CV Studio",
         "cardDesc": "Build ATS-friendly, professional resumes with live side-by-side preview and instant free PDF download with zero watermarks or subscriptions.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 17,
-        "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"18\" rx=\"2\"></rect><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"16\" y2=\"11\"></line><line x1=\"8\" y1=\"15\" x2=\"12\" y2=\"15\"></line><circle cx=\"5\" cy=\"7\" r=\"1\"></circle><circle cx=\"5\" cy=\"11\" r=\"1\"></circle><circle cx=\"5\" cy=\"15\" r=\"1\"></circle>"
+        "iconSvg": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"18\" rx=\"2\"></rect><line x1=\"8\" y1=\"7\" x2=\"16\" y2=\"7\"></line><line x1=\"8\" y1=\"11\" x2=\"16\" y2=\"11\"></line><line x1=\"8\" y1=\"15\" x2=\"12\" y2=\"15\"></line><circle cx=\"5\" cy=\"7\" r=\"1\"></circle><circle cx=\"5\" cy=\"11\" r=\"1\"></circle><circle cx=\"5\" cy=\"15\" r=\"1\"></circle>",
+        "keywords": "cv, curriculum vitae, cover letter, career, job",
+        "search_index": "resume studio ats-friendly resume builder cv, curriculum vitae, cover letter, career, job"
     },
     {
         "id": "invoice-generator",
         "filename": "invoice-generator.html",
         "title": "Invoice & Receipt Studio",
         "sidebarDesc": "Professional PDF invoices & receipts",
-        "category": "Utilities",
+        "category": "Business & Career",
         "cardTitle": "Invoice & Receipt Studio",
         "cardDesc": "Generate professional invoices and receipts with itemized taxes, custom branding logos, multi-currency support, and free PDF download.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 18,
-        "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><line x1=\"6\" y1=\"15\" x2=\"10\" y2=\"15\"></line><line x1=\"14\" y1=\"15\" x2=\"18\" y2=\"15\"></line>"
+        "iconSvg": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><line x1=\"6\" y1=\"15\" x2=\"10\" y2=\"15\"></line><line x1=\"14\" y1=\"15\" x2=\"18\" y2=\"15\"></line>",
+        "keywords": "bill, receipt, payment, business, create receipt",
+        "search_index": "invoice & receipt studio professional pdf invoices & receipts bill, receipt, payment, business, create receipt"
     },
     {
         "id": "data-hygiene",
@@ -270,7 +310,9 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 3,
-        "iconSvg": "<path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"></polyline><line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"></line>"
+        "iconSvg": "<path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"></polyline><line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"></line>",
+        "keywords": "clean, missing values, duplicates, trim, profile",
+        "search_index": "data hygiene profiler cleanse csvs & find anomalies clean, missing values, duplicates, trim, profile"
     },
     {
         "category": "Data & Analytics",
@@ -283,7 +325,9 @@
         "cardTitle": "Correlation Matrix & Stats",
         "changefreq": "weekly",
         "title": "Correlation Matrix Studio",
-        "priority": 0.9
+        "priority": 0.9,
+        "keywords": "statistics, pearson, relationships, heatmap",
+        "search_index": "correlation matrix studio pearson heatmaps & stats statistics, pearson, relationships, heatmap"
     },
     {
         "category": "Data & Analytics",
@@ -296,7 +340,9 @@
         "cardTitle": "Server & Application Log Analyzer",
         "changefreq": "weekly",
         "title": "Log Analyzer",
-        "priority": 0.9
+        "priority": 0.9,
+        "keywords": "apache, nginx, server, access log, parse",
+        "search_index": "log analyzer parse server & app logs apache, nginx, server, access log, parse"
     },
     {
         "id": "finance-dashboard",
@@ -309,33 +355,39 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 6,
-        "iconSvg": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><path d=\"M12 14h.01\"></path>"
+        "iconSvg": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"></rect><line x1=\"2\" y1=\"10\" x2=\"22\" y2=\"10\"></line><path d=\"M12 14h.01\"></path>",
+        "keywords": "bank statements, spending, budget, expenses",
+        "search_index": "finance dashboard bank csv visualizer bank statements, spending, budget, expenses"
     },
     {
         "id": "bulk-watermarker",
         "filename": "bulk-watermarker.html",
         "title": "Bulk Watermarker",
         "sidebarDesc": "Batch image copyright stamper",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "Bulk Image Watermarker",
         "cardDesc": "Watermark hundreds of images instantly. Add copyright text offline with zero cloud uploads or file size limits.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 7,
-        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><path d=\"M20.4 14.5L16 10 4 20\"></path>"
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"></circle><path d=\"M20.4 14.5L16 10 4 20\"></path>",
+        "keywords": "logo, copyright, stamp, batch image",
+        "search_index": "bulk watermarker batch image copyright stamper logo, copyright, stamp, batch image"
     },
     {
         "id": "color-palette",
         "filename": "color-palette.html",
         "title": "Color Palette Generator",
         "sidebarDesc": "Extract color palettes from images",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "Color Palette Generator",
         "cardDesc": "Extract beautiful, cohesive color palettes from any image. Instantly generate CSS design tokens offline.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 8,
-        "iconSvg": "<path d=\"M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z\"></path>"
+        "iconSvg": "<path d=\"M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z\"></path>",
+        "keywords": "extract colors, hex, rgb, image colors, design",
+        "search_index": "color palette generator extract color palettes from images extract colors, hex, rgb, image colors, design"
     },
     {
         "id": "data-extractor",
@@ -348,58 +400,68 @@
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 9,
-        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line>"
+        "iconSvg": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line>",
+        "keywords": "scrape, html, css selector, dom",
+        "search_index": "data extractor local html scraper to csv scrape, html, css selector, dom"
     },
     {
         "id": "background-remover",
         "filename": "background-remover.html",
         "title": "Background Remover",
         "sidebarDesc": "Local AI transparent PNG",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "AI Background Remover",
         "cardDesc": "Instantly remove backgrounds from high-resolution images using an advanced AI model running entirely in your browser memory.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 1,
-        "iconSvg": "<path d=\"M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M12 2a10 10 0 0 1 10 10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"4 4\"/><circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"currentColor\"/>"
+        "iconSvg": "<path d=\"M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M12 2a10 10 0 0 1 10 10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"4 4\"/><circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"currentColor\"/>",
+        "keywords": "cutout, transparent, erase bg, person, image",
+        "search_index": "background remover local ai transparent png cutout, transparent, erase bg, person, image"
     },
     {
         "id": "heic-converter",
         "filename": "heic-converter.html",
         "title": "HEIC Converter",
         "sidebarDesc": "Apple photos to JPG",
-        "category": "Media & Video",
+        "category": "Images & Photos",
         "cardTitle": "HEIC to JPG Converter",
         "cardDesc": "Convert iPhone HEIC photos to standard JPGs instantly on your machine. Zero cloud uploads, zero privacy risks.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 2,
-        "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>"
+        "iconSvg": "<path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle>",
+        "keywords": "apple image, ios photo, jpg, png, convert",
+        "search_index": "heic converter apple photos to jpg apple image, ios photo, jpg, png, convert"
     },
     {
         "id": "audio-transcriber",
         "filename": "audio-transcriber.html",
         "title": "Audio Transcriber",
         "sidebarDesc": "Local Whisper AI minutes",
-        "category": "Media & Video",
+        "category": "Audio & Video",
         "cardTitle": "Confidential AI Transcriber",
         "cardDesc": "Transcribe sensitive meeting recordings locally using a WebAssembly AI model. Ultimate privacy for confidential audio.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 3,
-        "iconSvg": "<path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8\"/>"
+        "iconSvg": "<path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8\"/>",
+        "keywords": "speech to text, dictate, whisper, subtitles, caption",
+        "search_index": "audio transcriber local whisper ai minutes speech to text, dictate, whisper, subtitles, caption"
     },
     {
         "id": "receipt-extractor",
         "filename": "receipt-extractor.html",
         "title": "Receipt Scanner",
         "sidebarDesc": "Extract expenses to CSV",
-        "category": "Data & Analytics",
+        "category": "Documents & PDF",
         "cardTitle": "Smart Receipt Extractor",
         "cardDesc": "Batch scan receipts and instantly extract Dates, Vendors, and Totals to a clean CSV using local OCR. No accounting subscriptions required.",
         "priority": 0.9,
         "changefreq": "weekly",
         "gridOrder": 1,
-        "iconSvg": "<path d=\"M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z\"/><path d=\"M8 10h8M8 14h8\"/>"
+        "iconSvg": "<path d=\"M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z\"/><path d=\"M8 10h8M8 14h8\"/>",
+        "keywords": "scan receipt, expense, ocr, extract prices, parse bill",
+        "search_index": "receipt scanner extract expenses to csv scan receipt, expense, ocr, extract prices, parse bill"
     }
 ]

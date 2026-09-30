@@ -52,87 +52,7 @@
     ]
   }
   
-  // ðŸš€ TANGENT PRO (RUST INTERCEPT)
-  window.addEventListener('DOMContentLoaded', () => {
-    if (window.__TAURI__) {
-        const invoke = window.__TAURI__.core.invoke;
-        let nativeActivePath = "";
-        
-        // Intercept File Upload
-        const origBrowse = document.querySelector('button[onclick="document.getElementById(\'fileInput\').click()"]');
-        if (origBrowse) {
-            origBrowse.removeAttribute('onclick');
-            origBrowse.addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    origBrowse.innerText = "Opening Rust Pipeline...";
-                    const resultJson = await invoke('process_massive_csv');
-                    const data = JSON.parse(resultJson);
-                    nativeActivePath = data.path;
-                    
-                    // Map to existing web logic
-                    currentHeaders = data.columns;
-                    rawData = data.preview.map(rowArray => {
-                        let obj = {};
-                        data.columns.forEach((col, i) => obj[col] = rowArray[i]);
-                        return obj;
-                    });
-                    
-                    document.getElementById('dropzone').style.display = 'none';
-                    document.getElementById('dashboardArea').style.display = 'block';
-                    
-                    populateDropdowns();
-                    processedData = rawData;
-                    processedHeaders = [...currentHeaders];
-                    
-                    // Force update stats with the TRUE native rows
-                    document.getElementById('statRowsIn').innerText = data.total_rows.toLocaleString();
-                    document.getElementById('statRowsOut').innerText = data.total_rows.toLocaleString();
-                    document.getElementById('statCols').innerText = data.columns.length.toLocaleString();
-                    
-                    updatePreview(processedHeaders, processedData);
-                    const info = document.getElementById("previewRowInfo");
-                    if(info) info.innerHTML = `Showing preview of <b style="color:#fff;">${data.total_rows.toLocaleString()}</b> native rows`;
-                    
-                    document.getElementById('btnRunRecipe').disabled = false;
-                    document.getElementById('btnExport').disabled = false;
-                    document.getElementById('btnClear').disabled = false;
-                    
-                    if(window.TangentToast) window.TangentToast.show(`Loaded ${data.total_rows.toLocaleString()} rows via Native Engine!`);
-                } catch (err) {
-                    if (err !== "No file selected") alert("Native Error: " + err);
-                } finally {
-                    origBrowse.innerText = "Browse Files";
-                }
-            });
-        }
-        
-        // Intercept Recipe Execution
-        const origRun = document.getElementById('btnRunRecipe');
-        if (origRun) {
-            const newRun = origRun.cloneNode(true);
-            origRun.parentNode.replaceChild(newRun, origRun);
-            newRun.addEventListener('click', async () => {
-                if (!nativeActivePath) return;
-                newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Streaming via Rust...`;
-                newRun.disabled = true;
-                
-                try {
-                    const result = await invoke('execute_recipe', { filePath: nativeActivePath });
-                    if(window.TangentToast) window.TangentToast.show("Export Complete!");
-                    alert(result); // Show full path and success
-                } catch (err) {
-                    alert("Rust Pipeline Error: " + err);
-                } finally {
-                    newRun.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Recipe Pipeline`;
-                    newRun.disabled = false;
-                }
-            });
-        }
-    }
-  });
-
-</script>
+  </script>
 
 <!-- --- TOOL_STYLES --- -->
 <style>
@@ -181,8 +101,8 @@
   
   /* Force dark background for native dropdown options so white text remains visible */
   select.form-control option {
-    background-color: #1e293b;
-    color: #ffffff;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     font-weight: 500;
     padding: 10px;
   }
@@ -196,10 +116,10 @@
   .table-wrapper { width: 100%; overflow: auto; max-height: 600px; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; }
   .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
   .preview-table th, .preview-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); text-align: left; border-right: 1px solid var(--border-color); }
-  .preview-table th { background: #0f172a; font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0 var(--border-color); }
+  .preview-table th { background: var(--bg-base); font-weight: 600; white-space: nowrap; color: var(--text-muted); position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0 var(--border-color); }
   .preview-table td { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: var(--text-main); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
   .btn:hover { filter: brightness(1.1); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   
@@ -211,7 +131,7 @@
   .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
 
   .metric-card-sm { padding: 8px; }
-  .metric-card-sm .metric-value { font-size: 1.1rem; color: #fff; }
+  .metric-card-sm .metric-value { font-size: 1.1rem; color: var(--text-main); }
   .metric-card-sm .metric-label { font-size: 0.65rem; }
 
   .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); }
@@ -226,7 +146,7 @@
     padding: 6px 12px; border-radius: 16px; font-size: 0.85rem;
     border: 1px solid rgba(58, 123, 213, 0.3);
   }
-  .pill-tag .remove { cursor: pointer; color: #fff; opacity: 0.6; transition: 0.2s; font-weight: bold; }
+  .pill-tag .remove { cursor: pointer; color: var(--text-main); opacity: 0.6; transition: 0.2s; font-weight: bold; }
   .pill-tag .remove:hover { opacity: 1; color: #ff4444; }
   .cell-missing { background: rgba(255, 68, 68, 0.1) !important; color: #ff4444; }
   .cell-whitespace { background: rgba(255, 193, 7, 0.1) !important; color: #d4a017; font-family: monospace; }
@@ -237,7 +157,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
       100% CLIENT-SIDE PRIVACY SHIELD
@@ -481,21 +401,21 @@
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
         </div>
         <h3>Zero-Cloud Privacy</h3>
         <p>100% offline architecture guarantees your financial models, customer emails, and private datasets never touch an external server or API.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         </div>
         <h3>Web Worker Performance</h3>
         <p>Processes hundreds of thousands of rows smoothly via background CPU threading without ever freezing your browser interface.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
         </div>
         <h3>Smart Data Imputation</h3>
         <p>Automatically fix gaps in your analytics by calculating Means and Medians on the fly to fill missing blanks instantly.</p>
@@ -751,7 +671,7 @@
         tbody.innerHTML = htmlStr;
         
         let info = document.getElementById("previewRowInfo");
-        if(info) info.innerHTML = "Showing rows <b style=\"color:#fff;\">" + (totalRows === 0 ? 0 : startIdx + 1) + " - " + endIdx + "</b> of <b style=\"color:#fff;\">" + totalRows.toLocaleString() + "</b>";
+        if(info) info.innerHTML = "Showing rows <b style=\"color: var(--text-main);\">" + (totalRows === 0 ? 0 : startIdx + 1) + " - " + endIdx + "</b> of <b style=\"color: var(--text-main);\">" + totalRows.toLocaleString() + "</b>";
         let btnPrev = document.getElementById("btnPrevPage");
         let btnNext = document.getElementById("btnNextPage");
         if (btnPrev) btnPrev.disabled = (previewCurrentPage === 0);

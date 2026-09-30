@@ -45,17 +45,17 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
   :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   }
 
   .clean-header {
@@ -85,7 +85,7 @@
     font-size: 2.3rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 12px;
   }
 
@@ -118,7 +118,7 @@
   .panel-section {
     margin-bottom: 22px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #1a2233;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .panel-section:last-child {
@@ -157,16 +157,16 @@
   }
 
   .field-label span.value-hint {
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-family: ui-monospace, monospace;
     font-size: 12px;
   }
 
   .custom-input, .custom-select {
     width: 100%;
-    background: #0b0e14;
+    background: var(--bg-base);
     border: 1px solid #242c3d;
-    color: #fff;
+    color: var(--text-main);
     padding: 9px 12px;
     border-radius: 6px;
     font-size: 13px;
@@ -200,7 +200,7 @@
   }
 
   .palette-btn.active {
-    border-color: #ffffff;
+    border-color: var(--text-main);
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
   }
 
@@ -250,7 +250,7 @@
 
   /* Stage & Card Canvas Preview */
   .canvas-stage-wrapper {
-    background: #0a0d14;
+    background: var(--bg-base);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 48px 36px;
@@ -316,7 +316,7 @@
 
   .window-title {
     font-size: 13px;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-family: ui-monospace, monospace;
     font-weight: 500;
     outline: none;
@@ -328,7 +328,7 @@
   .window-title:focus {
     border-color: var(--accent);
     background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    color: var(--text-main);
   }
 
   .window-spacer {
@@ -394,7 +394,7 @@
     text-align: center;
     font-size: 1.6rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 24px;
   }
 
@@ -436,7 +436,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
@@ -465,7 +465,7 @@
           <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);" data-gradient="linear-gradient(135deg, #11998e 0%, #38ef7d 100%)" title="Deep Emerald"></button>
           <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #141e30 0%, #243b55 100%);" data-gradient="linear-gradient(135deg, #141e30 0%, #243b55 100%)" title="Slate Minimal"></button>
           <button type="button" class="palette-btn" style="background: linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);" data-gradient="linear-gradient(135deg, #654ea3 0%, #eaafc8 100%)" title="Lavender Mist"></button>
-          <button type="button" class="palette-btn" style="background: #08090d;" data-gradient="#08090d" title="Onyx Dark"></button>
+          <button type="button" class="palette-btn" style="background: var(--bg-base);" data-gradient="#08090d" title="Onyx Dark"></button>
           <button type="button" class="palette-btn" style="background: transparent; border: 1px dashed #64748b;" data-gradient="transparent" title="Transparent"></button>
         </div>
       </div>
@@ -475,7 +475,7 @@
           <span>Canvas Padding</span>
           <span class="value-hint" id="paddingVal">48px</span>
         </div>
-        <input type="range" id="paddingSlider" min="16" max="80" step="8" value="48" style="width: 100%; accent-color: #00d2ff;">
+        <input type="range" id="paddingSlider" min="16" max="80" step="8" value="48" style="width: 100%; accent-color: var(--accent);">
       </div>
     </div>
 
@@ -516,12 +516,12 @@
           <span>Font Size</span>
           <span class="value-hint" id="fontSizeVal">14px</span>
         </div>
-        <input type="range" id="fontSizeSlider" min="12" max="20" step="1" value="14" style="width: 100%; accent-color: #00d2ff;">
+        <input type="range" id="fontSizeSlider" min="12" max="20" step="1" value="14" style="width: 100%; accent-color: var(--accent);">
       </div>
 
       <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
         <label for="lineNumbersToggle" style="font-size: 13px; font-weight: 600; color: #cbd5e1; cursor: pointer;">Show Line Numbers</label>
-        <input type="checkbox" id="lineNumbersToggle" checked style="width: 18px; height: 18px; accent-color: #00d2ff; cursor: pointer;">
+        <input type="checkbox" id="lineNumbersToggle" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
       </div>
     </div>
 
@@ -584,21 +584,21 @@ where
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
       <h3>Zero Outbound Code</h3>
       <p>Your confidential code snippets, API tokens, and internal algorithms are rendered 100% locally in browser memory with zero external requests.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
       <h3>2x Retina Vector Sharpness</h3>
       <p>Rendered at double device pixel ratio with sub-pixel font anti-aliasing. Produces razor-sharp typography for slides, documentation, and social posts.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
       </div>
       <h3>Native Clipboard Pipeline</h3>
       <p>Copies high-resolution binary PNGs directly into your operating system clipboard for instant pasting into Slack, Notion, Discord, or Figma.</p>
@@ -713,7 +713,7 @@ where
       if (mode === 'mac') {
         windowControls.innerHTML = '<span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>';
       } else if (mode === 'windows') {
-        windowControls.innerHTML = '<span style="color:#94a3b8; font-size:11px; font-family:monospace;">&#x2014; &#x25A1; &#x2715;</span>';
+        windowControls.innerHTML = '<span style="color: var(--text-muted); font-size:11px; font-family:monospace;">&#x2014; &#x25A1; &#x2715;</span>';
       } else if (mode === 'minimal') {
         windowControls.innerHTML = '';
       }
@@ -780,7 +780,7 @@ where
                 .dot-red { background: #ff5f56; }
                 .dot-yellow { background: #ffbd2e; }
                 .dot-green { background: #27c93f; }
-                .window-title { font-size: 13px; color: #94a3b8; font-family: ui-monospace, monospace; }
+                .window-title { font-size: 13px; color: var(--text-muted); font-family: ui-monospace, monospace; }
                 .code-body-wrapper { display: flex; padding: 22px 24px; background: #1e1e1e; }
                 .line-numbers { padding-right: 18px; margin-right: 14px; border-right: 1px solid rgba(255,255,255,0.08); color: #52525b; font-size: ${fontSizeSlider.value}px; line-height: 1.65; text-align: right; }
                 pre { margin: 0; color: #e4e4e7; font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }

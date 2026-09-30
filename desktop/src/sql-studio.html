@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="importmap">
+    {
+      "imports": {
+        "apache-arrow": "./vendor/apache-arrow/Arrow.js"
+      }
+    }
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tangent Pro - SQL Studio</title>
+    <style>
+        :root[data-theme="light"] {
+            --bg-base: #f8f9fa;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: rgba(0, 0, 0, 0.05);
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0066cc;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --item-hover: rgba(0, 0, 0, 0.05);
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        :root {
+            /* macOS Dark Mode Glassmorphism Tokens */
+            --bg-base: #121212;
+            --glass-bg: rgba(30, 30, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --accent: #0A84FF;
+            --panel-bg: rgba(40, 40, 40, 0.6);
+            --item-hover: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            /* Abstract ambient gradient background to shine through the glass */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.12), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(94, 92, 230, 0.12), transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* macOS Titlebar - Neutral Controls */
+        .titlebar {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 0 0 16px;
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--text-main);
+            opacity: 0.8;
+            padding-left: 8px;
+        }
+
+        .drag-region {
+            flex-grow: 1;
+            height: 100%;
+            -webkit-app-region: drag;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            -webkit-app-region: no-drag;
+        }
+
+        /* Neutral OS-Agnostic Window Controls */
+        .win-btn {
+            width: 46px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.1s;
+        }
+        .win-btn:hover { background: var(--item-hover); color: var(--text-main); }
+        .win-btn.close:hover { background: #E81123; color: white; }
+
+        /* Main App Grid */
+        .app-layout {
+            display: flex;
+            height: calc(100vh - 48px);
+            padding: 0 16px 16px 16px;
+            gap: 16px;
+        }
+
+        /* Glass Panel Reusable Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            padding: 16px 12px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .sidebar.collapsed {
+            width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            opacity: 0;
+            margin-right: -16px; /* Offset the flex gap */
+        }
+        #btn-toggle-sidebar:hover { background: var(--item-hover); }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        .nav-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background: var(--item-hover);
+        }
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+        .nav-item svg { opacity: 0.7; }
+        .nav-item.active svg { opacity: 1; }
+
+        /* Main Workspace Area */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0 !important;
+            overflow: hidden;
+        }
+        .workspace-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workspace-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .workspace-title p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn:hover { background: var(--item-hover); }
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+        .btn.primary:hover { filter: brightness(1.1); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Mockup Cards for Data */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .metric-card h3 {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Table Area */
+        .table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: auto;
+            flex-grow: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        
+        .status-bar {
+            height: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.1);
+        }
+        .status-right {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* --- Recipe Panel --- */
+        .recipe-panel {
+            flex: 0 0 320px !important;
+            width: 320px !important;
+            min-width: 320px !important;
+            max-width: 320px !important;
+            height: 100% !important; /* STRICT HEIGHT */
+            display: none;
+            flex-direction: column;
+            background: var(--glass-bg);
+            border-left: 1px solid var(--border);
+            box-sizing: border-box;
+            overflow: hidden !important;
+        }
+        
+        .recipe-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recipe-content {
+            padding: 16px;
+            padding-bottom: 32px;
+            overflow-y: auto !important;
+            display: block; /* Standard block layout for inner contents */
+            flex: 1 1 0 !important;
+            min-height: 0 !important;
+            height: 0; /* Forces flex child to compute height from flex-grow rather than content/100% */
+        }
+
+        /* Premium Accordion styles */
+        .accordion-item { 
+            background: var(--panel-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-bottom: 12px; 
+            box-shadow: var(--glass-shadow); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        .accordion-item:last-child { margin-bottom: 0; }
+        .accordion-header { 
+            background: transparent; 
+            padding: 14px 16px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 600; 
+            user-select: none; 
+            font-size: 13px; 
+            color: var(--text-main);
+            border-bottom: 1px solid transparent; 
+            transition: background 0.2s;
+        }
+        .accordion-header:hover { background: var(--item-hover); }
+        .accordion-header.active { 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(128,128,128,0.03); 
+        }
+        .accordion-content { 
+            padding: 16px; 
+            display: none; 
+            background: transparent; 
+        }
+        .accordion-content.active { display: block; }
+        .accordion-icon { transition: transform 0.2s; opacity: 0.7; }
+        .accordion-header.active .accordion-icon { transform: rotate(180deg); opacity: 1; }
+
+        .recipe-section h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            color: var(--text-main);
+            opacity: 0.9;
+        }
+
+        /* macOS-style Toggle */
+        .toggle-switch {
+            width: 34px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-switch.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .toggle-handle {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.active .toggle-handle {
+            transform: translateX(14px);
+        }
+
+        /* Form Controls */
+        .form-select {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            margin-top: 6px;
+        }
+
+
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: var(--text-main);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            font-size: 13px;
+            max-width: 400px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .pill-tag {
+            background: rgba(10, 132, 255, 0.15);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pill-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .pill-tag .remove:hover {
+            opacity: 1;
+            color: #ef4444;
+        }
+            100% { transform: rotate(360deg); }
+        }
+        .spin-logo {
+            animation: sweepSpin 1.2s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+        }
+    
+        /* Official Tangent Logo Animations */
+        .tl-logo-wrap { position: relative; width: 64px; height: 64px; margin: 0 auto; }
+        .tl-logo-wrap svg { width: 64px; height: 64px; overflow: visible; }
+        .tl-arc {
+            stroke-dasharray: 1;
+            stroke-dashoffset: 1;
+            animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .tl-line {
+            transform-origin: 32px 14px;
+            transform-box: fill-box;
+            animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes tlDrawArc {
+            0%   { stroke-dashoffset: 1; opacity: 0.2; }
+            20%  { opacity: 1; }
+            70%  { stroke-dashoffset: 0; }
+            90%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 1; opacity: 0.2; }
+        }
+        @keyframes tlPulseLine {
+            0%, 30%  { opacity: 0; transform: scaleY(0.1); }
+            60%, 85% { opacity: 1; transform: scaleY(1); }
+            100%     { opacity: 0; transform: scaleY(0.1); }
+        }
+        .tl-glow {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+        }
+
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.5); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-corner { background: transparent; }
+        
+        .sql-results-pane, .sql-editor-pane { border-radius: 8px; }
+        
+        #chartModal select { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border); border-radius: 4px; padding: 4px; }
+
+    </style>
+</head>
+<body>
+
+<script>
+window.addEventListener('error', function(e) {
+    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Global Error: ' + e.message + '<br>' + e.filename + ':' + e.lineno + '</div>';
+});
+window.addEventListener('unhandledrejection', function(e) {
+    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Unhandled Rejection: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason) + '</div>';
+});
+const oldError = console.error;
+console.error = function(...args) {
+    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Console Error: ' + args.join(' ') + '</div>';
+    oldError.apply(console, args);
+};
+</script>
+
+    <div id="global-loader">
+        <div class="tl-logo-wrap" style="transform: scale(1.5); margin-bottom: 20px;">
+            <div class="tl-glow"></div>
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path class="tl-arc" d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
+                <path class="tl-line" d="M 32 14 V 44" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div id="global-loader-text" style="font-weight:700; font-size:16px; letter-spacing:1px; color:#ffffff;">STREAMING DATASET...</div>
+    </div>
+
+    <div class="titlebar">
+        <div class="title-left">
+            <div id="btn-toggle-sidebar" style="cursor: pointer; display: flex; align-items: center; padding: 4px; margin-right: 4px; border-radius: 4px; opacity: 0.9; transition: opacity 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Tangent Pro
+        </div>
+        <div class="drag-region"></div>
+        <div class="top-actions">
+            <!-- Theme Toggle -->
+            <div style="padding: 0 16px; display: flex; align-items: center;">
+                <svg id="theme-btn" style="cursor:pointer; color: var(--text-muted); opacity: 0.8;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            
+            <!-- Modern Neutral Window Controls -->
+            <div class="win-btn" id="btn-minimize">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+            </div>
+            <div class="win-btn" id="btn-maximize">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+            </div>
+            <div class="win-btn close" id="btn-close">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <div class="sidebar glass-panel">
+            <div class="nav-section">
+                <div class="nav-title">Data Pipeline</div>
+                <div class="nav-item" onclick="window.location.href='index.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Data Hygiene
+                </div>
+                <div class="nav-item" onclick="window.location.href='csv-insights.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    CSV Insights
+                </div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    SQL Studio
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Documents</div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    PDF Converter
+                </div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    Document OCR
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="workspace glass-panel">
+<style>
+    :root {
+        --monaco-bg: #1e1e1e;
+        --monaco-border: rgba(255,255,255,0.1);
+    }
+    :root[data-theme="light"] {
+        --monaco-bg: #ffffff;
+        --monaco-border: rgba(0,0,0,0.15);
+    }
+    .sql-layout {
+        display: flex;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+    .sql-sidebar {
+        width: 320px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        background: var(--panel-bg, rgba(0,0,0,0.02));
+    }
+    .sql-main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .sql-editor-pane {
+        height: 45%;
+        overflow: hidden;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+    }
+    .sql-results-pane {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .sidebar-tab { flex: 1; text-align: center; padding: 12px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; }
+    .sidebar-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    
+    .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 16px; font-size: 0.9rem; }
+    
+    .table-schema-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+    :root[data-theme="light"] .table-schema-card { background: #fff; }
+    .table-schema-head { padding: 8px 12px; font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .btn-peek { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 4px; font-size: 0.75rem; padding: 2px 8px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.1s;}
+    .btn-peek:hover { background: var(--accent); color: white; }
+    
+    .query-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: var(--panel-bg); border-bottom: 1px solid var(--border); }
+    
+    .results-header { padding: 12px 16px; font-size: 0.9rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--border); }
+    :root[data-theme="light"] .results-header { background: rgba(0,0,0,0.02); }
+    
+    .results-table-wrapper { flex-grow: 1; overflow: auto; }
+    .results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .results-table th { position: sticky; top: 0; background: var(--panel-bg); padding: 8px 16px; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border); z-index: 10; white-space: nowrap; }
+    .results-table td { padding: 8px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; color: var(--text-muted); }
+    .results-table tr:hover td { background: rgba(255,255,255,0.05); color: var(--text-main); }
+    :root[data-theme="light"] .results-table tr:hover td { background: rgba(0,0,0,0.02); }
+    
+    #monaco-container { flex-grow: 1; width: 100%; }
+    
+    .dropzone { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+    .dropzone.dragover { border-color: var(--accent); background: rgba(10, 132, 255, 0.05); }
+    
+    .history-item { padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-family: monospace; font-size: 0.8rem; background: var(--panel-bg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative;}
+    .history-item:hover { border-color: var(--accent); }
+    .history-item .btn-save-query { position: absolute; right: 8px; top: 8px; display: none; background: var(--accent); color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; font-family: sans-serif; cursor: pointer;}
+    .history-item:hover .btn-save-query { display: block; }
+
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.5); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-corner { background: transparent; }
+        
+        .sql-results-pane, .sql-editor-pane { border-radius: 8px; }
+        
+        #chartModal select { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border); border-radius: 4px; padding: 4px; }
+
+    </style>
+
+    <div class="workspace-header">
+        <div class="workspace-title">
+            <h1>SQL Studio Pro</h1>
+            <p>High-performance local SQL engine natively powered by DuckDB-WASM.</p>
+        </div>
+        <div class="toolbar">
+            <button class="btn btn-outline" id="btnLoadDb" style="color: #0A84FF; border-color: rgba(10, 132, 255, 0.3);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Mount File
+            </button>
+            <input type="file" id="fileInput" style="display: none;" accept=".csv,.json,.parquet" multiple>
+        </div>
+    </div>
+    
+    <div class="sql-layout">
+        <!-- Sidebar -->
+        <div class="sql-sidebar">
+            <div class="sidebar-tabs">
+                <div class="sidebar-tab active" data-target="tab-schemas">Schemas</div>
+                <div class="sidebar-tab" data-target="tab-history">History</div>
+                <div class="sidebar-tab" data-target="tab-saved">Saved</div>
+            </div>
+            
+            <div class="sidebar-content" id="tab-schemas">
+                <div id="sqlDropzone" class="dropzone" style="margin-bottom: 24px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 8px; opacity: 0.6;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg><br>
+                    Drag & Drop CSV / JSON / Parquet
+                </div>
+                <div id="tableList"></div>
+            </div>
+            
+            <div class="sidebar-content" id="tab-history" style="display:none;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Recent Queries (Session)</div>
+                <div id="historyList"></div>
+            </div>
+            
+            <div class="sidebar-content" id="tab-saved" style="display:none;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Saved Queries</div>
+                <div id="savedList"></div>
+            </div>
+        </div>
+        
+        <!-- Main Area -->
+        <div class="sql-main">
+            <!-- Editor Pane -->
+            <div class="sql-editor-pane">
+                <div id="monaco-container"></div>
+                <div class="query-bar">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="statusIndicator">Ready</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" id="btnCancel" style="display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">Cancel</button>
+                        <button class="btn primary" id="btnRun">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Run Query (Ctrl+Enter)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lock Overlay before DB mounts -->
+                <div id="editorLock" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 10; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <div style="background: var(--panel-bg, #fff); padding: 24px 32px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 32px var(--glass-shadow); font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 16px; min-width: 250px;">
+                        <div style="display: flex; align-items: center; gap: 12px; color: var(--text-main);">
+                            <div class="loader-spinner" style="width: 20px; height: 20px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            <span id="dbInitStatus">Initializing Local Engine...</span>
+                        </div>
+                        <div id="dbInitError" style="color: #ff4757; font-size: 0.85rem; display: none; background: rgba(255,71,87,0.1); padding: 8px 12px; border-radius: 6px; width: 100%; text-align: center; word-break: break-word;"></div>
+                    </div>
+                </div>
+                <style>@keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.5); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-corner { background: transparent; }
+        
+        .sql-results-pane, .sql-editor-pane { border-radius: 8px; }
+        
+        #chartModal select { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border); border-radius: 4px; padding: 4px; }
+
+    </style>
+            </div>
+            
+            <!-- Results Pane -->
+            <div class="sql-results-pane">
+                <div class="results-header">
+                    <span id="resultsCount">No results yet.</span>
+                    <div id="paginationControls" style="display:none; gap:8px; align-items:center; margin-left: 16px;">
+                        <button class="btn" id="btnPrevPage" style="padding:4px 8px;">&lt; Prev</button>
+                        <span id="pageIndicator" style="font-size:0.8rem; color:var(--text-muted);">Page 1</span>
+                        <button class="btn" id="btnNextPage" style="padding:4px 8px;">Next &gt;</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" id="btnVisualize" style="display: none; color: #a855f7; border-color: rgba(168, 85, 247, 0.3);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            Visualize
+                        </button>
+                        <button class="btn btn-outline" id="btnFullscreen" style="display: none; color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);" title="Toggle Full Screen Table">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                            Full Screen
+                        </button>
+                        <button class="btn btn-outline" id="btnClearResults" style="display: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);" title="Clear Results">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Clear
+                        </button>
+                        <button class="btn btn-outline" id="btnExport" style="display: none; color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="results-table-wrapper">
+                    <table class="results-table" id="resultsTable">
+                        <tbody>
+                            <tr><td style="text-align: center; padding: 40px; color: var(--text-muted);">Mount a file and run a query to see results here.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Modal (Reusing structural logic) -->
+<div id="chartModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:var(--bg-base); border:1px solid var(--border); border-radius:12px; width:min(90vw, 900px); max-height:85vh; display:flex; flex-direction:column; overflow:hidden;">
+        <div style="padding:16px 24px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0;">Visualize Results</h3>
+            <button class="btn btn-outline" id="btnCloseChart" style="padding: 4px 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+        <div style="display:flex; padding: 16px; gap: 16px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1);">
+            <div style="flex:1;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">X-Axis</label>
+                <select id="selChartX" class="form-control" style="width:100%;"></select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">Y-Axis (Numeric)</label>
+                <select id="selChartY" class="form-control" style="width:100%;"></select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">Chart Type</label>
+                <select id="selChartType" class="form-control" style="width:100%;">
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="doughnut">Doughnut</option>
+                </select>
+            </div>
+        </div>
+        <div style="flex-grow:1; padding:24px; display:flex; align-items:center; justify-content:center; min-height:400px; position:relative;">
+             <canvas id="vizCanvas" style="max-height: 100%;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="vendor/chartjs/chart.umd.js"></script>
+<script src="vendor/monaco/vs/loader.js"></script>
+
+<script>
+// --- GLOBAL SHELL CONTROLS ---
+    const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
+    if(typeof applyTheme === 'function') {
+        applyTheme(savedTheme);
+    } else {
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('tangent_pro_theme', theme);
+        }
+        applyTheme(savedTheme);
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => { 
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme); 
+            if (window.updateMonacoTheme) {
+                window.updateMonacoTheme(newTheme === 'light');
+            }
+        });
+    }
+
+    if (window.__TAURI__) {
+        const btnClose = document.getElementById('btn-close');
+        if(btnClose) btnClose.addEventListener('click', () => window.__TAURI__.core.invoke('close_window'));
+        
+        const btnMin = document.getElementById('btn-minimize');
+        if(btnMin) btnMin.addEventListener('click', () => window.__TAURI__.core.invoke('minimize_window'));
+        
+        const btnMax = document.getElementById('btn-maximize');
+        if(btnMax) btnMax.addEventListener('click', () => window.__TAURI__.core.invoke('maximize_window'));
+    }
+    
+    const toggleSidebarBtn = document.getElementById('btn-toggle-sidebar');
+    if (toggleSidebarBtn) {
+        toggleSidebarBtn.addEventListener('click', () => {
+            const sidebar = document.querySelector('.sidebar');
+            if(sidebar) sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    window.updateMonacoTheme = function(isLight) {
+        if (typeof monaco !== 'undefined' && window.sqlEditorInstance) {
+            monaco.editor.setTheme(isLight ? 'vs' : 'tangent-dark');
+        }
+    };
+
+</script>
+<script type="module">
+    // Load DuckDB WASM strictly offline from vendor folder
+        
+    let duckdb = null;
+    let db = null;
+    let conn = null;
+    let editor = null; window.sqlEditorInstance = null;
+    let lastQueryRows = [];
+    let loadedSchemas = {};
+    let currentPage = 1;
+    const rowsPerPage = 100;
+    let queryHistory = JSON.parse(localStorage.getItem('tangent_sql_history') || '[]');
+    let savedQueries = JSON.parse(localStorage.getItem('tangent_sql_saved') || '[]');
+
+    // --- MONACO INITIALIZATION ---
+    require.config({ paths: { 'vs': 'vendor/monaco/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        // Theme sync
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        monaco.editor.defineTheme('tangent-dark', { base: 'vs-dark', inherit: true, rules: [], colors: { 'editor.background': '#1e293b' } });
+        
+        window.sqlEditorInstance = monaco.editor.create(document.getElementById('monaco-container'), {
+            value: localStorage.getItem('tangent_sql_query') || '-- Welcome to SQL Studio Pro\nSELECT 1;',
+            language: 'sql',
+            theme: isLight ? 'vs' : 'tangent-dark',
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+            wordWrap: 'on'
+        });
+        
+        window.sqlEditorInstance.onDidChangeModelContent(() => {
+            localStorage.setItem('tangent_sql_query', window.sqlEditorInstance.getValue());
+        });
+        
+        window.sqlEditorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function() {
+            document.getElementById('btnRun').click();
+        });
+        
+        // Listen to app theme toggles
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if(btnToggleTheme) {
+            btnToggleTheme.addEventListener('click', () => {
+                setTimeout(() => {
+                    const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
+                    monaco.editor.setTheme(nowLight ? 'vs' : 'tangent-dark');
+                }, 50);
+            });
+        }
+    });
+
+    // Dynamic Autocomplete updating
+    let sqlCompletionProvider = null;
+    function updateMonacoAutocomplete() {
+        if (sqlCompletionProvider) sqlCompletionProvider.dispose();
+        
+        sqlCompletionProvider = monaco.languages.registerCompletionItemProvider('sql', {
+            provideCompletionItems: function(model, position) {
+                let suggestions = [];
+                for(let table in loadedSchemas) {
+                    suggestions.push({
+                        label: table,
+                        kind: monaco.languages.CompletionItemKind.Struct,
+                        insertText: table,
+                        detail: 'Table'
+                    });
+                    loadedSchemas[table].forEach(col => {
+                        suggestions.push({
+                            label: col.column_name,
+                            kind: monaco.languages.CompletionItemKind.Field,
+                            insertText: col.column_name,
+                            detail: col.column_type + ' (in ' + table + ')'
+                        });
+                    });
+                }
+                return { suggestions: suggestions };
+            }
+        });
+    }
+
+    // --- DUCKDB INITIALIZATION ---
+    async function initDuckDB() {
+        const setStatus = (msg) => {
+            const el = document.getElementById('dbInitStatus');
+            if(el) el.textContent = msg;
+        };
+        const setError = (msg) => {
+            const el = document.getElementById('dbInitError');
+            if(el) { el.style.display = 'block'; el.textContent = msg; }
+            const spin = document.querySelector('.loader-spinner');
+            if(spin) spin.style.display = 'none';
+        };
+
+        try {
+                        setStatus("Loading WASM Bundle...");
+            duckdb = await import('./vendor/duckdb/duckdb-browser.js');
+            const MANUAL_BUNDLES = {
+                mvp: {
+                    mainModule: 'vendor/duckdb/duckdb-mvp.wasm',
+                    mainWorker: 'vendor/duckdb/duckdb-browser-mvp.worker.js',
+                }
+            };
+            const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
+            
+            setStatus("Spawning Worker...");
+            
+            const workerScriptUrl = new URL(bundle.mainWorker, window.location.href).href;
+            const workerBlob = new Blob([`importScripts('${workerScriptUrl}');`], { type: 'text/javascript' });
+            const workerBlobUrl = URL.createObjectURL(workerBlob);
+            
+            const worker = new Worker(workerBlobUrl);
+            worker.onerror = (e) => { setError("Worker failed to start: " + (e.message || "Network Error")); };
+            
+            setStatus("Connecting to Database...");
+            const logger = new duckdb.ConsoleLogger();
+            db = new duckdb.AsyncDuckDB(logger, worker);
+            
+            const absoluteWasmUrl = new URL(bundle.mainModule, window.location.href).href;
+            await db.instantiate(absoluteWasmUrl, bundle.pthreadWorker);
+            
+            conn = await db.connect();
+            console.log("Offline DuckDB initialized successfully.");
+            
+            document.getElementById('editorLock').style.display = 'none';
+            document.getElementById('statusIndicator').textContent = "DuckDB Engine Ready";
+
+        } catch (e) {
+            console.error(e);
+            setError("Engine Error: " + (e.message || e));
+        }
+    }
+
+    // --- INGESTION ---
+    function setupDropzone() {
+        const dropzone = document.getElementById('sqlDropzone');
+        const fileInput = document.getElementById('fileInput');
+        const btnLoad = document.getElementById('btnLoadDb');
+
+        btnLoad.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                Array.from(e.dataTransfer.files).forEach(f => handleFile(f));
+            }
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                Array.from(e.target.files).forEach(f => handleFile(f));
+            }
+        });
+    }
+
+    async function handleFile(file) {
+        if (!conn) return alert("DuckDB is loading...");
+        document.getElementById('statusIndicator').textContent = "Mounting " + file.name + "...";
+        
+        let tableName = file.name.split('.')[0].replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+        if (/^[0-9]/.test(tableName)) tableName = 'tbl_' + tableName;
+        if (!tableName) tableName = 'data_table';
+        
+        try {
+            const buffer = new Uint8Array(await file.arrayBuffer());
+            await db.registerFileBuffer(file.name, buffer);
+            
+            const ext = file.name.split('.').pop().toLowerCase();
+            let query = "";
+            if (ext === 'csv') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${file.name}')`;
+            else if (ext === 'parquet') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_parquet('${file.name}')`;
+            else if (ext === 'json') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_json_auto('${file.name}')`;
+            else return alert("Unsupported file type. Use CSV, Parquet, or JSON.");
+
+            await conn.query(query);
+            const schema = await conn.query(`DESCRIBE ${tableName}`);
+            loadedSchemas[tableName] = schema.toArray();
+            renderSchema(tableName, loadedSchemas[tableName]);
+            
+            if (window.sqlEditorInstance && window.sqlEditorInstance.getValue().trim() === "" || window.sqlEditorInstance.getValue().includes('SELECT 1')) {
+                window.sqlEditorInstance.setValue(`SELECT * FROM ${tableName};`);
+            }
+            updateMonacoAutocomplete();
+            document.getElementById('statusIndicator').textContent = "Ready";
+            
+        } catch (e) {
+            console.error(e);
+            alert("Error mounting table: " + e.message);
+            document.getElementById('statusIndicator').textContent = "Mount Error";
+        }
+    }
+
+    
+    window.closeTable = async function(tableName) {
+        if(!conn || !confirm("Unmount " + tableName + "?")) return;
+        try {
+            await conn.query(`DROP TABLE ${tableName}`);
+            delete loadedSchemas[tableName];
+            updateMonacoAutocomplete();
+            document.getElementById('tableList').innerHTML = '';
+            for (let tbl in loadedSchemas) {
+                renderSchema(tbl, loadedSchemas[tbl]);
+            }
+            if(Object.keys(loadedSchemas).length === 0) {
+                document.getElementById('resultsCount').textContent = "No results yet.";
+                document.getElementById('resultsTable').innerHTML = '<tbody><tr><td style="text-align: center; padding: 40px; color: var(--text-muted);">Mount a file and run a query to see results here.</td></tr></tbody>';
+                document.getElementById('paginationControls').style.display = 'none';
+            }
+        } catch(e) {
+            alert("Error closing table: " + e.message);
+        }
+    };
+
+    window.peekTable = async function(tableName) {
+        if(!conn) return;
+        const sql = `SELECT * FROM ${tableName} LIMIT 100;`;
+        document.getElementById('btnRun').style.display = 'none';
+        document.getElementById('btnCancel').style.display = 'block';
+        
+        try {
+            const res = await conn.query(sql);
+            lastQueryRows = res.toArray();
+            currentPage = 1;
+            renderTablePage();
+            document.getElementById('resultsCount').innerHTML = `Peeked ${lastQueryRows.length} rows of <strong>${tableName}</strong> <span style="color:var(--text-muted); font-weight:normal; margin-left:8px;">(Query untouched)</span>`;
+            
+            document.getElementById('btnExport').style.display = 'flex';
+            document.getElementById('btnVisualize').style.display = 'flex';
+            document.getElementById('btnFullscreen').style.display = 'flex';
+            document.getElementById('btnClearResults').style.display = 'flex';
+        } catch(e) {
+            alert("Peek Error: " + e.message);
+        } finally {
+            document.getElementById('btnRun').style.display = 'flex';
+            document.getElementById('btnCancel').style.display = 'none';
+        }
+    };
+
+    function renderSchema(tableName, columns) {
+        const list = document.getElementById('tableList');
+        let html = `<div class="table-schema-card">
+            <div class="table-schema-head">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    ${tableName}
+                </div>
+                <div style="display:flex; gap:4px;">
+                    <button class="btn-peek" onclick="peekTable('${tableName}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Peek</button>
+                    <button class="btn-peek" onclick="closeTable('${tableName}')" style="color:#ef4444; border-color:rgba(239,68,68,0.3); padding:2px 6px;" title="Close File"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+            </div>
+            <div style="padding: 8px 12px; font-size: 0.85rem;">`;
+          
+        columns.forEach(col => {
+            html += `<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: var(--text-main); opacity: 0.9;">${col.column_name}</span>
+                <span style="color: var(--accent); font-size: 0.75rem;">${col.column_type}</span>
+            </div>`;
+        });
+        html += `</div></div>`;
+        list.innerHTML += html;
+    }
+
+    // --- SIDEBAR TABS ---
+    document.querySelectorAll('.sidebar-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar-content').forEach(c => c.style.display = 'none');
+            tab.classList.add('active');
+            document.getElementById(tab.getAttribute('data-target')).style.display = 'block';
+        });
+    });
+
+    // --- HISTORY LOGIC ---
+    function logQuery(sql) {
+        if(!sql) return;
+        queryHistory.unshift({ id: Date.now(), sql: sql, time: new Date().toLocaleTimeString() });
+        if(queryHistory.length > 50) queryHistory.pop();
+        localStorage.setItem('tangent_sql_history', JSON.stringify(queryHistory));
+        renderHistory();
+    }
+    
+    function renderHistory() {
+        const lst = document.getElementById('historyList');
+        lst.innerHTML = '';
+        queryHistory.forEach(q => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.textContent = q.sql;
+            div.title = q.sql;
+            
+            const btn = document.createElement('button');
+            btn.className = 'btn-save-query';
+            btn.textContent = 'Save';
+            btn.onclick = (e) => { e.stopPropagation(); saveQuery(q); };
+            
+            div.appendChild(btn);
+            div.onclick = () => { if(window.sqlEditorInstance) window.sqlEditorInstance.setValue(q.sql); };
+            lst.appendChild(div);
+        });
+    }
+
+    function saveQuery(q) {
+        let name = prompt("Name this saved query:");
+        if(name) {
+            savedQueries.push({ id: Date.now(), name: name, sql: q.sql });
+            localStorage.setItem('tangent_sql_saved', JSON.stringify(savedQueries));
+            renderSaved();
+        }
+    }
+
+    function renderSaved() {
+        const lst = document.getElementById('savedList');
+        lst.innerHTML = '';
+        savedQueries.forEach(q => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `<strong>${q.name}</strong><br><span style="opacity:0.7">${q.sql}</span>`;
+            div.title = q.sql;
+            div.onclick = () => { if(window.sqlEditorInstance) window.sqlEditorInstance.setValue(q.sql); };
+            lst.appendChild(div);
+        });
+    }
+
+    // --- EXECUTION ---
+    
+    function renderTablePage() {
+        const table = document.getElementById('resultsTable');
+        const resultsCount = document.getElementById('resultsCount');
+        const totalRows = lastQueryRows ? lastQueryRows.length : 0;
+        
+        if (totalRows === 0) {
+            table.innerHTML = `<tbody><tr><td style="color: var(--text-muted); text-align:center; padding:40px;">0 rows returned.</td></tr></tbody>`;
+            document.getElementById('paginationControls').style.display = 'none';
+            return;
+        }
+
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx = Math.min(startIdx + rowsPerPage, totalRows);
+        const displayRows = lastQueryRows.slice(startIdx, endIdx);
+
+        if (totalPages > 1) {
+            document.getElementById('paginationControls').style.display = 'flex';
+            document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('btnPrevPage').disabled = currentPage === 1;
+            document.getElementById('btnNextPage').disabled = currentPage === totalPages;
+        } else {
+            document.getElementById('paginationControls').style.display = 'none';
+        }
+
+        const cols = Object.keys(lastQueryRows[0]);
+        let thead = '<thead><tr>';
+        cols.forEach(c => thead += `<th>${c}</th>`);
+        thead += '</tr></thead>';
+        
+        let tbody = '<tbody>';
+        displayRows.forEach(r => {
+            tbody += '<tr>';
+            cols.forEach(c => {
+                let val = r[c];
+                if (typeof val === 'bigint') val = val.toString();
+                if (typeof val === 'number' && !Number.isInteger(val)) val = val.toFixed(4);
+                tbody += `<td>${val !== null && val !== undefined ? val : '<em style="opacity:0.5">null</em>'}</td>`;
+            });
+            tbody += '</tr>';
+        });
+        tbody += '</tbody>';
+        table.innerHTML = thead + tbody;
+    }
+
+    document.getElementById('btnPrevPage').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTablePage();
+        }
+    });
+    
+    document.getElementById('btnNextPage').addEventListener('click', () => {
+        const totalPages = Math.ceil(lastQueryRows.length / rowsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTablePage();
+        }
+    });
+
+    document.getElementById('btnRun').addEventListener('click', async () => {
+        if (!conn || !editor) return;
+        const sql = window.sqlEditorInstance.getValue().trim();
+        if (!sql) return;
+        
+        logQuery(sql);
+        
+        const resultsCount = document.getElementById('resultsCount');
+        const table = document.getElementById('resultsTable');
+        
+        document.getElementById('btnRun').style.display = 'none';
+        document.getElementById('btnCancel').style.display = 'block';
+        
+        try {
+            resultsCount.textContent = "Executing...";
+            table.innerHTML = `<tbody><tr><td style="color: var(--text-muted); text-align:center; padding:40px;">Running query...</td></tr></tbody>`;
+            
+            const start = performance.now();
+            const res = await conn.query(sql);
+            const rows = res.toArray();
+            const ms = (performance.now() - start).toFixed(1);
+            
+            lastQueryRows = rows;
+            const totalRows = rows.length;
+            
+
+            if (totalRows > rowsPerPage) {
+                resultsCount.innerHTML = `${totalRows.toLocaleString()} rows <span style="color:var(--text-muted); font-weight:normal; margin-left:8px;">• ${ms}ms</span>`;
+            } else {
+                resultsCount.innerHTML = `${totalRows.toLocaleString()} rows <span style="color:var(--text-muted); font-weight:normal; margin-left:8px;">• ${ms}ms</span>`;
+            }
+            
+            if (totalRows > 0) {
+                document.getElementById('btnExport').style.display = 'flex';
+                document.getElementById('btnFullscreen').style.display = 'flex';
+                document.getElementById('btnClearResults').style.display = 'flex';
+                document.getElementById('btnVisualize').style.display = 'flex';
+            } else {
+                document.getElementById('btnExport').style.display = 'none';
+                document.getElementById('btnFullscreen').style.display = 'none';
+                document.getElementById('btnClearResults').style.display = 'none';
+                document.getElementById('btnVisualize').style.display = 'none';
+            }
+            
+
+            currentPage = 1;
+            renderTablePage();
+
+        } catch (e) {
+            resultsCount.textContent = "Error";
+            table.innerHTML = `<tbody><tr><td style="color: #ff4757; padding:16px;">${e.message}</td></tr></tbody>`;
+        } finally {
+            document.getElementById('btnRun').style.display = 'flex';
+            document.getElementById('btnCancel').style.display = 'none';
+        }
+    });
+
+    document.getElementById('btnCancel').addEventListener('click', () => {
+        alert("WASM Interrupt not deeply exposed in DuckDB MVP bundle yet. Reloading may be required for hard locks.");
+    });
+
+    
+    document.getElementById('btnFullscreen').addEventListener('click', () => {
+        const pane = document.querySelector('.sql-results-pane');
+        if (pane.style.position === 'fixed') {
+            pane.style.position = 'relative';
+            pane.style.inset = 'auto';
+            pane.style.zIndex = 'auto';
+            pane.style.padding = '0';
+        } else {
+            pane.style.position = 'fixed';
+            pane.style.inset = '48px 16px 16px 16px';
+            pane.style.zIndex = '999';
+            pane.style.background = 'var(--bg-base)';
+            pane.style.boxShadow = '0 8px 32px var(--glass-shadow)';
+            pane.style.borderRadius = '12px';
+            pane.style.border = '1px solid var(--glass-border)';
+            pane.style.padding = '0';
+        }
+    });
+
+    
+    document.getElementById('btnClearResults').addEventListener('click', () => {
+        lastQueryRows = [];
+        const table = document.getElementById('resultsTable');
+        table.innerHTML = `<tbody><tr><td style="text-align: center; padding: 40px; color: var(--text-muted);">Mount a file and run a query to see results here.</td></tr></tbody>`;
+        document.getElementById('resultsCount').textContent = "No results yet.";
+        document.getElementById('paginationControls').style.display = 'none';
+        document.getElementById('btnExport').style.display = 'none';
+        document.getElementById('btnVisualize').style.display = 'none';
+        document.getElementById('btnFullscreen').style.display = 'none';
+        document.getElementById('btnClearResults').style.display = 'none';
+    });
+
+    // --- NATIVE TAURI EXPORT ---
+    document.getElementById('btnExport').addEventListener('click', async () => {
+        if (!lastQueryRows || lastQueryRows.length === 0) return;
+        const cols = Object.keys(lastQueryRows[0]);
+        let csv = cols.join(',') + '\n';
+        
+        lastQueryRows.forEach(row => {
+            csv += cols.map(c => {
+                let val = row[c];
+                if (val === null || val === undefined) return '';
+                let str = String(val).replace(/"/g, '""');
+                if (str.includes(',') || str.includes('\n') || str.includes('"')) return `"${str}"`;
+                return str;
+            }).join(',') + '\n';
+        });
+        
+        if (window.__TAURI__) {
+            try {
+                if (window.TangentLoader) window.TangentLoader.show("Exporting CSV...");
+                const res = await window.__TAURI__.core.invoke('save_text_file_native', { text: csv, defaultName: 'sql_results.csv' });
+                if (window.TangentToast) window.TangentToast.show("Exported to " + res);
+                if (window.TangentLoader) window.TangentLoader.hide();
+            } catch(e) {
+                if(e !== "Cancelled") alert("Export error: " + e);
+                if (window.TangentLoader) window.TangentLoader.hide();
+            }
+        } else {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sql_results.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    });
+
+    // --- VISUALIZATION (CHART.JS) ---
+    let myChart = null;
+    document.getElementById('btnVisualize').addEventListener('click', () => {
+        if(!lastQueryRows || lastQueryRows.length === 0) return alert("No data to visualize.");
+        
+        const cols = Object.keys(lastQueryRows[0]);
+        const selX = document.getElementById('selChartX');
+        const selY = document.getElementById('selChartY');
+        
+        selX.innerHTML = ''; selY.innerHTML = '';
+        cols.forEach(c => {
+            selX.innerHTML += `<option value="${c}">${c}</option>`;
+            selY.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+        
+        document.getElementById('chartModal').style.display = 'flex';
+        renderChart();
+    });
+    
+    document.getElementById('btnCloseChart').addEventListener('click', () => {
+        document.getElementById('chartModal').style.display = 'none';
+    });
+    
+    document.getElementById('selChartX').addEventListener('change', renderChart);
+    document.getElementById('selChartY').addEventListener('change', renderChart);
+    document.getElementById('selChartType').addEventListener('change', renderChart);
+    
+    function renderChart() {
+        if(!lastQueryRows || lastQueryRows.length === 0) return;
+        const xCol = document.getElementById('selChartX').value;
+        const yCol = document.getElementById('selChartY').value;
+        const type = document.getElementById('selChartType').value;
+        
+        const labels = lastQueryRows.map(r => String(r[xCol] || ''));
+        const data = lastQueryRows.map(r => parseFloat(r[yCol]) || 0);
+        
+        const ctx = document.getElementById('vizCanvas').getContext('2d');
+        if (myChart) myChart.destroy();
+        
+        const compStyle = getComputedStyle(document.body);
+        const colorAccent = compStyle.getPropertyValue('--accent').trim() || '#0A84FF';
+        const textColor = compStyle.getPropertyValue('--text-main').trim() || '#f8fafc';
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+        
+        myChart = new Chart(ctx, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: yCol,
+                    data: data,
+                    backgroundColor: type === 'doughnut' ? ['#0A84FF', '#5E5CE6', '#30D158', '#FF9F0A', '#FF453A'] : 'rgba(10, 132, 255, 0.7)',
+                    borderColor: type === 'line' ? colorAccent : (isLight ? '#fff' : '#1e1e1e'),
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                color: textColor,
+                scales: type === 'doughnut' ? {} : {
+                    x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                    y: { grid: { color: gridColor }, ticks: { color: textColor }, beginAtZero: true }
+                },
+                plugins: {
+                    legend: { labels: { color: textColor } }
+                }
+            }
+        });
+    }
+
+    // Init Engine
+    setupDropzone();
+    renderHistory();
+    renderSaved();
+    initDuckDB();
+
+    </script>
+</body>
+</html>

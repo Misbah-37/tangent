@@ -53,21 +53,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --danger: #ef4444;
-    --success: #10b981;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
   }
 
   html {
@@ -82,7 +82,7 @@
   body {
     margin: 0;
 
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -98,7 +98,7 @@
     background-color: rgba(8, 9, 13, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #1a1f2e;
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     width: 100%;
     left: 0;
@@ -140,7 +140,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -152,7 +152,7 @@
   }
 
   .nav-link:hover, .nav-link.active {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Toolkit Toggle Button in Navbar */
@@ -174,14 +174,14 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
   }
 
   .toolkit-toggle-btn .sidebar-icon {
-    color: #00d2ff;
+    color: var(--accent);
     transition: transform 0.2s ease;
   }
 
@@ -272,7 +272,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -283,7 +283,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
@@ -309,7 +309,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column !important;
       align-items: stretch !important;
       padding: 16px 20px 24px 20px !important;
@@ -326,7 +326,7 @@
     .nav-link {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
     }
   }
@@ -335,7 +335,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -409,7 +409,7 @@
 
   /* --- Upload Box Drag & Drop --- */
   .upload-box {
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 2px dashed var(--border-color);
     border-radius: 14px;
     padding: 44px 24px;
@@ -437,7 +437,7 @@
   .upload-box-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 6px;
   }
 
@@ -452,7 +452,7 @@
     align-items: center;
     gap: 8px;
     background: #171b26;
-    color: #ffffff;
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     padding: 9px 20px;
     border-radius: 8px;
@@ -470,7 +470,7 @@
   /* --- Active File Card --- */
   .active-file-card {
     display: none;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px 20px;
@@ -499,7 +499,7 @@
 
   .active-file-name {
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
@@ -529,8 +529,8 @@
   }
 
   .btn-remove-file:hover {
-    border-color: var(--danger);
-    color: var(--danger);
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
   }
 
   /* --- Cropper Workspace --- */
@@ -589,7 +589,7 @@
 
   .input-group .label-desc {
     font-size: 0.78rem;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-weight: 400;
     margin-left: 6px;
   }
@@ -597,8 +597,8 @@
   input[type="number"], select {
     width: 100%;
     padding: 12px 14px;
-    background-color: var(--bg-card-inner);
-    color: #ffffff;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-family: inherit;
@@ -631,7 +631,7 @@
   }
 
   .preset-btn {
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 10px 16px;
@@ -649,7 +649,7 @@
   }
 
   .preset-btn:hover {
-    color: #ffffff;
+    color: var(--text-main);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
@@ -693,15 +693,15 @@
   .download-btn {
     display: none;
     background: transparent;
-    color: var(--success);
+    color: var(--accent-emerald);
     border: 1px solid var(--success-border);
     background-color: var(--success-bg);
   }
 
   .download-btn:hover {
     background-color: rgba(16, 185, 129, 0.25);
-    border-color: var(--success);
-    color: #ffffff;
+    border-color: var(--accent-emerald);
+    color: var(--text-main);
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
     transform: translateY(-1px);
   }
@@ -719,7 +719,7 @@
     border: 1px solid var(--success-border);
     border-radius: 10px;
     padding: 14px 18px;
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 0.92rem;
     line-height: 1.5;
     margin-bottom: 12px;
@@ -751,7 +751,7 @@
   }
 
   .seo-article h2, .seo-article h3 {
-    color: #ffffff;
+    color: var(--text-main);
     margin-top: 2rem;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
@@ -769,7 +769,7 @@
     border-radius: 10px;
     padding: 18px 20px;
     cursor: pointer;
-    color: #ffffff;
+    color: var(--text-main);
     font-weight: 600;
     transition: border-color 0.2s ease;
   }
@@ -791,9 +791,9 @@
     border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     margin-top: 60px;
   }
 
@@ -883,7 +883,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     100% CLIENT-SIDE PRIVACY SHIELD
@@ -1013,21 +1013,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
       </div>
       <h3>Sub-Pixel Bicubic Resampling</h3>
       <p>Resize high-resolution photographs with smooth sub-pixel bicubic interpolation directly in your browser's hardware-accelerated Canvas engine.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
       </div>
       <h3>Target File-Size Hunter</h3>
       <p>Built-in binary search compression dials in your exact target kilobyte limit (e.g., strictly under 200 KB for portal uploads) automatically.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
       <h3>Instant WebP & JPG Conversion</h3>
       <p>Convert bulky camera files into next-generation WebP or compressed JPG with zero upload queues and complete photo confidentiality.</p>

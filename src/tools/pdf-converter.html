@@ -66,7 +66,7 @@
   body, html {
     margin: 0;
 
-    background-color: #08090d;
+    background-color: var(--bg-base);
     color: #f1f5f9;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -82,7 +82,7 @@
     background-color: rgba(8, 9, 13, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #1a1f2e;
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     width: 100%;
     left: 0;
@@ -124,7 +124,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -136,7 +136,7 @@
   }
 
   .nav-link:hover, .nav-link.active {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Toolkit Toggle Button in Navbar */
@@ -158,14 +158,14 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
   }
 
   .toolkit-toggle-btn .sidebar-icon {
-    color: #00d2ff;
+    color: var(--accent);
     transition: transform 0.2s ease;
   }
 
@@ -256,7 +256,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -267,7 +267,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
@@ -293,7 +293,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column !important;
       align-items: stretch !important;
       padding: 16px 20px 24px 20px !important;
@@ -310,7 +310,7 @@
     .nav-link {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
     }
   }
@@ -320,7 +320,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -331,7 +331,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   @media (max-width: 960px) {
@@ -351,7 +351,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column;
       align-items: flex-start;
       padding: 16px 24px;
@@ -366,7 +366,7 @@
     .nav-links a {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
       text-align: left;
     }
@@ -391,7 +391,7 @@
     background: rgba(0, 210, 255, 0.1);
     border: 1px solid rgba(0, 210, 255, 0.3);
     border-radius: 999px;
-    color: #00d2ff;
+    color: var(--accent);
     font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -405,12 +405,12 @@
     letter-spacing: -0.03em;
     margin: 0 0 12px 0;
     line-height: 1.2;
-    color: #ffffff;
+    color: var(--text-main);
   }
 
   .clean-header p {
     font-size: 1.1rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     line-height: 1.6;
     margin: 0 auto;
     max-width: 680px;
@@ -429,8 +429,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    background: #11141d;
-    border: 1px solid #1f2533;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 6px;
     gap: 6px;
@@ -447,7 +447,7 @@
     white-space: nowrap;
     background: transparent;
     border: 1px solid transparent;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-size: 0.9rem;
     font-weight: 600;
     padding: 10px 16px;
@@ -463,13 +463,13 @@
   }
 
   .tab-btn:hover {
-    color: #ffffff;
+    color: var(--text-main);
     background: rgba(255, 255, 255, 0.04);
   }
 
   .tab-btn.active {
     background: #202636;
-    color: #00d2ff;
+    color: var(--accent);
     border-color: rgba(0, 210, 255, 0.35);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
@@ -497,8 +497,8 @@
   }
 
   .tool-container {
-    background-color: #11141d;
-    border: 1px solid #1f2533;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 36px 32px;
     box-sizing: border-box;
@@ -508,7 +508,7 @@
   .tool-container h3 {
     margin-top: 0;
     font-size: 1.4rem;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 8px;
     letter-spacing: -0.02em;
     display: flex;
@@ -517,7 +517,7 @@
   }
 
   .tool-desc {
-    color: #94a3b8;
+    color: var(--text-muted);
     font-size: 0.92rem;
     margin-bottom: 24px;
     line-height: 1.5;
@@ -533,7 +533,7 @@
 
   /* --- Modern Drag & Drop Upload Zone --- */
   .upload-box {
-    background: #0b0d13;
+    background: var(--bg-base);
     border: 2px dashed rgba(0, 210, 255, 0.35);
     border-radius: 16px;
     padding: 36px 20px;
@@ -544,7 +544,7 @@
   }
 
   .upload-box:hover, .upload-box.dragover {
-    border-color: #00d2ff;
+    border-color: var(--accent);
     background: rgba(0, 210, 255, 0.04);
     transform: translateY(-2px);
   }
@@ -553,7 +553,7 @@
     width: 48px;
     height: 48px;
     margin-bottom: 12px;
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   .upload-box-title {
@@ -564,7 +564,7 @@
   }
 
   .upload-box-sub {
-    color: #64748b;
+    color: var(--text-subtle);
     font-size: 0.85rem;
     margin-bottom: 14px;
   }
@@ -583,15 +583,15 @@
   }
 
   .upload-box:hover .upload-btn-pill {
-    background: #00d2ff;
+    background: var(--accent);
     color: #08090d;
-    border-color: #00d2ff;
+    border-color: var(--accent);
   }
 
   /* --- Active Single-File Card --- */
   .active-file-card {
-    background: #0b0d13;
-    border: 1px solid #1f2533;
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 14px 18px;
     display: flex;
@@ -619,7 +619,7 @@
 
   .active-file-meta {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     margin-top: 2px;
   }
 
@@ -656,13 +656,13 @@
   .queue-count {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   .btn-clear-queue {
     background: transparent;
     border: 1px solid #2f384d;
-    color: #94a3b8;
+    color: var(--text-muted);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 0.78rem;
@@ -687,8 +687,8 @@
   }
   
   .sortable-item {
-    background: #0b0d13; 
-    border: 1px solid #1f2533; 
+    background: var(--bg-base); 
+    border: 1px solid var(--border-color); 
     padding: 12px 16px;
     margin-top: 8px; 
     border-radius: 8px; 
@@ -737,8 +737,8 @@
   
   .icon-btn:hover:not(:disabled) { 
     background: #222a3a; 
-    border-color: #00d2ff;
-    color: #00d2ff; 
+    border-color: var(--accent);
+    color: var(--accent); 
   }
 
   .icon-btn-delete:hover:not(:disabled) {
@@ -756,9 +756,9 @@
   input[type="text"], select { 
     width: 100%; 
     padding: 12px 16px; 
-    background-color: #0b0d13; 
-    color: #ffffff; 
-    border: 1px solid #1f2533; 
+    background-color: var(--bg-base); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-color); 
     border-radius: 8px; 
     box-sizing: border-box; 
     margin-bottom: 20px; 
@@ -769,7 +769,7 @@
   
   input[type="text"]:focus, select:focus { 
     outline: none; 
-    border-color: #00d2ff; 
+    border-color: var(--accent); 
     box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.3);
   }
 
@@ -782,7 +782,7 @@
 
   /* --- Action Buttons (100% Emoji-Free) --- */
   .btn-accent {
-    background: #00d2ff;
+    background: var(--accent);
     color: #08090d;
     border: none;
     padding: 14px 28px;
@@ -807,7 +807,7 @@
 
   .download-btn { 
     display: none; 
-    background-color: #ffffff; 
+    background-color: var(--text-main); 
     color: #08090d;
     text-align: center; 
     text-decoration: none; 
@@ -831,7 +831,7 @@
     margin-top: 14px; 
     font-size: 0.92rem; 
     font-weight: 600; 
-    color: #94a3b8; 
+    color: var(--text-muted); 
   }
 
   /* --- SEO & Educational Section --- */
@@ -839,15 +839,15 @@
     width: 100%;
     max-width: 780px;
     margin: 40px auto 20px auto;
-    color: #94a3b8;
+    color: var(--text-muted);
     line-height: 1.7;
     font-size: 0.98rem;
-    border-top: 1px solid #1f2533;
+    border-top: 1px solid var(--border-color);
     padding-top: 40px;
   }
   
   .seo-article h2, .seo-article h3 {
-    color: #ffffff;
+    color: var(--text-main);
     margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
@@ -859,8 +859,8 @@
   
   .faq-box { margin-bottom: 16px; }
   .faq-box details {
-    background-color: #11141d;
-    border: 1px solid #1f2533;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 18px 24px;
     cursor: pointer;
@@ -868,7 +868,7 @@
   
   .faq-box summary {
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-main);
     outline: none;
     list-style: none;
     display: flex;
@@ -880,26 +880,26 @@
   .faq-box p {
     margin: 14px 0 0 0;
     font-size: 0.95rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     line-height: 1.65;
     font-weight: 400;
   }
 
   /* Global Footer */
   .global-footer {
-    border-top: 1px solid #1f2533;
+    border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: #64748b;
+    color: var(--text-subtle);
     font-size: 0.88rem;
   }
   .global-footer a {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     margin: 0 12px;
     transition: color 0.2s;
   }
-  .global-footer a:hover { color: #00d2ff; }
+  .global-footer a:hover { color: var(--accent); }
 
   @media (max-width: 640px) {
     .clean-header h1 { font-size: 2rem; }
@@ -958,7 +958,7 @@
   <div id="tab-img2pdf" class="tab-content active">
     <div class="tool-container">
         <h3>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
           <span>Images to Standardized PDF</span>
         </h3>
         <p class="tool-desc">Convert JPG, PNG, and WebP images into a standardized document. Reorder pages prior to compilation.</p>
@@ -1029,7 +1029,7 @@
   <div id="tab-merge" class="tab-content">
     <div class="tool-container">
         <h3>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg>
           <span>Merge Multiple PDFs</span>
         </h3>
         <p class="tool-desc">Combine 2 or more PDF documents into a single consolidated file in the exact order you choose.</p>
@@ -1083,7 +1083,7 @@
   <div id="tab-split" class="tab-content">
     <div class="tool-container">
         <h3>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
           <span>Extract Pages</span>
         </h3>
         <p class="tool-desc">Extract specific sheets or custom page ranges into a brand new standalone document.</p>
@@ -1104,7 +1104,7 @@
         <!-- Active File Card -->
         <div class="active-file-card" id="split-file-card" style="display:none;">
           <div class="active-file-info">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             <div style="min-width:0;">
               <div class="active-file-name" id="split-file-name">document.pdf</div>
               <div class="active-file-meta" id="split-file-meta">Detecting pages...</div>
@@ -1135,7 +1135,7 @@
   <div id="tab-compress" class="tab-content">
     <div class="tool-container">
         <h3>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
           <span>Compress & Optimize PDF</span>
         </h3>
         <p class="tool-desc">Strips out invisible bloat, deleted objects, and excess metadata while preserving visual clarity.</p>
@@ -1156,7 +1156,7 @@
         <!-- Active File Card -->
         <div class="active-file-card" id="compress-file-card" style="display:none;">
           <div class="active-file-info">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             <div style="min-width:0;">
               <div class="active-file-name" id="compress-file-name">document.pdf</div>
               <div class="active-file-meta" id="compress-file-meta">Detecting size...</div>
@@ -1184,7 +1184,7 @@
   <div id="tab-extract" class="tab-content">
     <div class="tool-container">
         <h3>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           <span>Extract Raw Text</span>
         </h3>
         <p class="tool-desc">Extract all textual contents from your PDF document without formatting artifacts.</p>
@@ -1205,7 +1205,7 @@
         <!-- Active File Card -->
         <div class="active-file-card" id="extract-file-card" style="display:none;">
           <div class="active-file-info">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             <div style="min-width:0;">
               <div class="active-file-name" id="extract-file-name">document.pdf</div>
               <div class="active-file-meta" id="extract-file-meta">Ready to read</div>
@@ -1222,7 +1222,7 @@
           <span>Read Text</span>
         </button>
         <div id="status4" class="status-text"></div>
-        <textarea id="outputArea" style="display:none; width:100%; height:220px; background:#0b0d13; color:#e2e8f0; border:1px solid #1f2533; border-radius:10px; margin-top:1.5rem; padding:16px; font-family:ui-monospace, monospace; box-sizing:border-box; line-height: 1.6;" readonly></textarea>
+        <textarea id="outputArea" style="display:none; width:100%; height:220px; background: var(--bg-base); color:#e2e8f0; border: 1px solid var(--border-color); border-radius:10px; margin-top:1.5rem; padding:16px; font-family:ui-monospace, monospace; box-sizing:border-box; line-height: 1.6;" readonly></textarea>
         <a id="downloadBtn4" class="download-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           <span>Download Text File (.txt)</span>
@@ -1235,7 +1235,7 @@
   <div id="tab-encrypt" class="tab-content">
       <div class="tool-container">
           <h3>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             Flatten & Encrypt PDF
           </h3>
           
@@ -1259,10 +1259,10 @@
             <input type="file" id="encryptInput" accept=".pdf" style="display:none;">
           </div>
 
-          <div id="encrypt-file-card" class="file-card" style="display:none; justify-content:space-between; align-items:center; background:#0b0d13; border:1px solid #1f2533; padding:12px 16px; border-radius:8px; margin-bottom:24px;">
+          <div id="encrypt-file-card" class="file-card" style="display:none; justify-content:space-between; align-items:center; background: var(--bg-base); border: 1px solid var(--border-color); padding:12px 16px; border-radius:8px; margin-bottom:24px;">
               <div>
                   <span id="encrypt-file-name" style="font-weight:600; display:block;"></span>
-                  <span id="encrypt-file-meta" style="font-size:0.8rem; color:#64748b;"></span>
+                  <span id="encrypt-file-meta" style="font-size:0.8rem; color: var(--text-subtle);"></span>
               </div>
               <button type="button" class="icon-btn icon-btn-delete" onclick="resetEncryptFile()" title="Remove">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1298,21 +1298,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
       </div>
       <h3>In-Browser PDF Assembly</h3>
       <p>Merge contracts, split specific page ranges, and rotate pages using client-side WebAssembly with zero network latency.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
       </div>
       <h3>Lossless Page Rasterization</h3>
       <p>Convert individual PDF pages into high-resolution PNG or JPG images at 2x Retina density directly inside local memory.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
       <h3>Confidential Document Isolation</h3>
       <p>Tax filings, bank statements, and legal agreements are parsed exclusively in browser RAM and destroyed when you close the tab.</p>

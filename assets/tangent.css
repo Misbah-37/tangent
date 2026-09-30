@@ -1,6 +1,9 @@
 ﻿/* ==========================================================================
    TANGENT GLOBAL BASE STYLES & LAYOUT SYSTEM
    ========================================================================== */
+
+
+
 :root {
   --bg-base: #08090d;
   --bg-surface: #0e111a;
@@ -60,7 +63,7 @@ img, canvas, video, svg, iframe {
   justify-content: space-between;
   align-items: center;
   padding: 14px 28px;
-  background: rgba(8, 9, 13, 0.88);
+  background: color-mix(in srgb, var(--bg-base) 88%, transparent);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-color);
   height: 60px;
@@ -89,9 +92,9 @@ img, canvas, video, svg, iframe {
 }
 
 .toolkit-toggle-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #cbd5e1;
+  background: color-mix(in srgb, var(--text-main) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  color: var(--text-muted);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -106,14 +109,14 @@ img, canvas, video, svg, iframe {
 
 .toolkit-toggle-btn:hover,
 body.sidebar-open .toolkit-toggle-btn {
-  color: #ffffff;
-  background-color: rgba(0, 210, 255, 0.12);
-  border-color: rgba(0, 210, 255, 0.4);
+  color: var(--text-main);
+  background-color: var(--accent-glow);
+  border-color: var(--border-highlight);
   box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
 }
 
 .toolkit-toggle-btn .sidebar-icon {
-  color: #00d2ff;
+  color: var(--accent);
   transition: transform 0.2s ease;
 }
 
@@ -158,8 +161,8 @@ body.sidebar-open .toolkit-toggle-btn .sidebar-icon {
   min-width: 280px !important;
   max-width: 280px !important;
   box-sizing: border-box !important;
-  background: #0f131f;
-  background: linear-gradient(180deg, #131826 0%, #0c0f18 100%);
+  background: var(--bg-surface);
+  background: var(--bg-surface);
   border-right: 1px solid rgba(0, 210, 255, 0.18);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
   z-index: 2500;
@@ -179,7 +182,7 @@ body.sidebar-open .tangent-sidebar {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px 12px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-title {
@@ -187,13 +190,13 @@ body.sidebar-open .tangent-sidebar {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #00d2ff;
+  color: var(--accent);
 }
 
 .sidebar-close-btn {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-subtle);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -204,8 +207,8 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .sidebar-close-btn:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  background-color: var(--bg-card-hover);
 }
 
 .sidebar-nav-list {
@@ -242,7 +245,7 @@ body.sidebar-open .tangent-sidebar {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #ffffff;
+  color: var(--text-main);
   margin-bottom: 2px;
   padding: 8px;
   cursor: pointer;
@@ -254,7 +257,7 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .sidebar-group-title:hover, .sidebar-group.open .sidebar-group-title {
-  color: #00d2ff;
+  color: var(--accent);
   background-color: rgba(0, 210, 255, 0.05);
 }
 
@@ -287,7 +290,7 @@ body.sidebar-open .tangent-sidebar {
   padding: 8px 10px;
   border-radius: 8px;
   text-decoration: none;
-  color: #ffffff;
+  color: var(--text-main);
   border: 1px solid transparent;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
@@ -299,7 +302,7 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .sidebar-item.active {
-  background-color: rgba(0, 210, 255, 0.12);
+  background-color: var(--accent-glow);
   border: 1px solid rgba(0, 210, 255, 0.35);
 }
 
@@ -315,7 +318,7 @@ body.sidebar-open .tangent-sidebar {
 .sidebar-item .item-title {
   font-size: 0.84rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-main);
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -324,12 +327,12 @@ body.sidebar-open .tangent-sidebar {
 
 .sidebar-item:hover .item-title,
 .sidebar-item.active .item-title {
-  color: #00d2ff;
+  color: var(--accent);
 }
 
 .sidebar-item .item-desc {
   font-size: 0.70rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -394,7 +397,7 @@ body.sidebar-open .tangent-sidebar {
   gap: 8px;
   background: rgba(0, 210, 255, 0.08);
   border: 1px solid rgba(0, 210, 255, 0.25);
-  color: #00d2ff;
+  color: var(--accent);
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -409,7 +412,7 @@ body.sidebar-open .tangent-sidebar {
   font-weight: 800;
   letter-spacing: -0.03em;
   margin-bottom: 12px;
-  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+  background: linear-gradient(180deg, var(--text-main) 0%, var(--text-muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -454,7 +457,7 @@ body.sidebar-open .tangent-sidebar {
   font-weight: 700;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .seo-article h3 {
@@ -484,7 +487,7 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .seo-article li strong {
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 /* ==========================================================================
@@ -494,7 +497,7 @@ body.sidebar-open .tangent-sidebar {
   max-width: 1080px;
   margin: 60px auto 40px auto;
   padding: 50px 20px 0 20px;
-  border-top: 1px solid #1f2533;
+  border-top: 1px solid var(--border-color);
   width: 100%;
   box-sizing: border-box;
 }
@@ -507,8 +510,8 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .feature-card {
-  background: #11141d;
-  border: 1px solid #1f2533;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 28px;
   text-align: left;
@@ -518,7 +521,7 @@ body.sidebar-open .tangent-sidebar {
 
 .feature-icon {
   margin-bottom: 16px;
-  color: #00d2ff;
+  color: var(--accent);
   display: inline-flex;
 }
 
@@ -526,17 +529,17 @@ body.sidebar-open .tangent-sidebar {
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 12px 0;
-  color: #f1f5f9;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 10px;
   text-align: left;
 }
 
-.feature-card h3 span { color: #00d2ff; }
+.feature-card h3 span { color: var(--accent); }
 
 .feature-card p {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.92rem;
   line-height: 1.6;
   margin: 0;
@@ -549,12 +552,12 @@ body.sidebar-open .tangent-sidebar {
   letter-spacing: -0.02em;
   text-align: left;
   margin-bottom: 24px;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .faq-box {
-  background: #11141d;
-  border: 1px solid #1f2533;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   margin-bottom: 16px;
   overflow: hidden;
@@ -571,7 +574,7 @@ body.sidebar-open .tangent-sidebar {
   font-weight: 700;
   cursor: pointer;
   font-size: 1.05rem;
-  color: #f1f5f9;
+  color: var(--text-main);
   outline: none;
   list-style: none;
   text-align: left;
@@ -579,7 +582,7 @@ body.sidebar-open .tangent-sidebar {
 }
 
 .faq-box summary:hover {
-  color: #00d2ff;
+  color: var(--accent);
   background-color: rgba(0, 210, 255, 0.03);
 }
 
@@ -588,7 +591,7 @@ body.sidebar-open .tangent-sidebar {
 .faq-box p {
   padding: 0 24px 20px 24px;
   margin: 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   line-height: 1.6;
   font-size: 0.95rem;
   text-align: left;
@@ -599,7 +602,7 @@ body.sidebar-open .tangent-sidebar {
   border-top: 1px solid var(--border-color);
   padding: 40px 24px;
   text-align: center;
-  color: #64748b;
+  color: var(--text-subtle);
   font-size: 0.9rem;
   background-color: var(--bg-base);
   margin-top: auto;
@@ -643,14 +646,14 @@ body.sidebar-open .tangent-sidebar {
 body {
   background-image: 
     radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.04) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--text-main) 4%, transparent) 1px, transparent 1px) !important;
   background-size: 100% 100%, 24px 24px !important;
   background-position: center top, center center !important;
 }
 
 /* 3. Dropzone & App Canvas Depth */
 .upload-dropzone, .app-canvas {
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02), 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 1px color-mix(in srgb, var(--text-main) 4%, transparent), 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .upload-dropzone:hover {
@@ -691,7 +694,7 @@ body {
   justify-content: center;
   gap: 6px;
   background: rgba(0, 210, 255, 0.1);
-  color: #00d2ff;
+  color: var(--accent);
   border: 1px solid rgba(0, 210, 255, 0.3);
   border-radius: 6px;
   padding: 8px 12px;
@@ -704,7 +707,7 @@ body {
 .support-btn:hover {
   background: rgba(0, 210, 255, 0.2);
   border-color: rgba(0, 210, 255, 0.5);
-  color: #fff;
+  color: var(--text-main);
 }
 
 /* --- Global Success Toast --- */
@@ -738,7 +741,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
+  color: var(--text-main);
   font-weight: 600;
   font-size: 1rem;
 }
@@ -767,13 +770,13 @@ body {
 }
 .toast-btn-primary {
   background: rgba(0, 210, 255, 0.1);
-  color: #00d2ff;
+  color: var(--accent);
   border: 1px solid rgba(0, 210, 255, 0.3);
 }
 .toast-btn-primary:hover {
   background: rgba(0, 210, 255, 0.25);
   border-color: rgba(0, 210, 255, 0.6);
-  color: #fff;
+  color: var(--text-main);
 }
 .toast-btn-ghost {
   background: transparent;
@@ -781,6 +784,26 @@ body {
   border: 1px solid transparent;
 }
 .toast-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: color-mix(in srgb, var(--text-main) 5%, transparent);
+  color: var(--text-main);
 }
+
+[data-theme="light"] {
+  --bg-base: #f8fafc;
+  --bg-surface: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #e2e8f0;
+  --border-color: var(--text-muted);
+  --border-highlight: rgba(2, 132, 199, 0.4);
+  --accent: #0284c7;
+  --accent-glow: rgba(2, 132, 199, 0.15);
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-danger: #dc2626;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+}
+
+.theme-toggle-btn { transition: 0.2s ease; }
+.theme-toggle-btn:hover { color: var(--accent) !important; background: var(--bg-card-hover) !important; }

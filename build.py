@@ -27,7 +27,10 @@ SITEMAP_PATH = os.path.join(SITE_DIR, "sitemap.xml")
 
 CATEGORY_ORDER = [
     "Documents & PDF",
-    "Media & Video",
+    "Business & Career",
+    "Images & Photos",
+    "Design & Dev Graphics",
+    "Audio & Video",
     "Security & System",
     "Data & Analytics",
     "Utilities"
@@ -64,6 +67,12 @@ def generate_sidebar_html(tools, current_page):
     lines.append('        <line x1="6" y1="6" x2="18" y2="18"></line>')
     lines.append('      </svg>')
     lines.append('    </button>')
+    lines.append('  </div>')
+    lines.append('  <div class="sidebar-search" style="padding: 0 16px 12px 16px;">')
+    lines.append('    <div style="position: relative; display: flex; align-items: center;">')
+    lines.append('      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>')
+    lines.append('      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">')
+    lines.append('    </div>')
     lines.append('  </div>')
     lines.append('')
     lines.append('  <div class="sidebar-nav-list">')

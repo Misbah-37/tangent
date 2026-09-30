@@ -52,17 +52,17 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
   :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   }
 
   .clean-header {
@@ -92,7 +92,7 @@
     font-size: 2.3rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 12px;
   }
 
@@ -147,13 +147,13 @@
 
   .tool-btn:hover {
     background: #202636;
-    color: #fff;
+    color: var(--text-main);
     border-color: var(--accent);
   }
 
   .tool-btn.primary {
-    background: #00d2ff;
-    border-color: #00d2ff;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #08090d;
     font-weight: 700;
   }
@@ -167,7 +167,7 @@
   .tool-select {
     background: #171b26;
     border: 1px solid #283042;
-    color: #fff;
+    color: var(--text-main);
     padding: 7px 12px;
     border-radius: 6px;
     font-size: 13px;
@@ -185,7 +185,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     height: 720px;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
@@ -197,7 +197,7 @@
     flex-direction: column;
     height: 100%;
     border-right: 1px solid var(--border-color);
-    background: #0d1017;
+    background: var(--bg-base);
   }
 
   .pane-header {
@@ -205,12 +205,12 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 16px;
-    background: #121622;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     text-transform: uppercase;
   }
 
@@ -233,7 +233,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #0b0e14;
+    background: var(--bg-base);
     overflow: hidden;
   }
 
@@ -262,7 +262,7 @@
   .preview-content h1 {
     font-size: 2rem;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--text-main);
     margin: 0 0 16px;
     padding-bottom: 10px;
     border-bottom: 2px solid #232a3b;
@@ -274,7 +274,7 @@
     color: #f1f5f9;
     margin: 28px 0 12px;
     padding-bottom: 6px;
-    border-bottom: 1px solid #1f273b;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .preview-content h3 {
@@ -293,7 +293,7 @@
     padding: 12px 20px;
     background: rgba(0, 210, 255, 0.05);
     border-left: 4px solid var(--accent);
-    color: #94a3b8;
+    color: var(--text-muted);
     font-style: italic;
   }
 
@@ -335,7 +335,7 @@
   }
 
   .preview-content th {
-    background: #161c2b;
+    background: var(--bg-card);
     color: #f8fafc;
     font-weight: 700;
   }
@@ -408,7 +408,7 @@
     text-align: center;
     font-size: 1.6rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 24px;
   }
 
@@ -499,7 +499,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
@@ -589,21 +589,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
       </div>
       <h3>Live KaTeX Math & Footnotes</h3>
       <p>Real-time rendering of mathematical formulas, multi-line equations, footnotes, tables, and task lists directly in browser RAM.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       </div>
       <h3>Publication-Grade CSS Presets</h3>
       <p>Switch instantly between Academic Paper, Modern Technical, Minimalist, and Dark Reader themes optimized for reading.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
       </div>
       <h3>Distraction-Free PDF Export</h3>
       <p>Compile formatted papers directly into vector PDF documents with clean page margins, running headers, and page breaks.</p>
@@ -934,7 +934,7 @@ Start writing your academic paper or technical note here...
   th, td { border: 1px solid #cbd5e1; padding: 10px 12px; text-align: left; }
   th { background: #f1f5f9; }
   blockquote { border-left: 4px solid #3b82f6; background: #f8fafc; padding: 12px 20px; margin: 16px 0; }
-  pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; }
+  pre { background: var(--bg-base); color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; }
 </style>
 </head>
 <body>

@@ -81,7 +81,7 @@
   }
   .feature-icon {
     margin-bottom: 16px;
-    color: #00d2ff;
+    color: var(--accent);
     display: inline-flex;
   }
   .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
@@ -111,7 +111,7 @@
   .faq-box summary::-webkit-details-marker { display: none; }
   .faq-box summary::after {
     content: "+";
-    color: #00d2ff;
+    color: var(--accent);
     font-size: 1.2rem;
   }
   .faq-box details[open] summary::after { content: "−"; }
@@ -127,7 +127,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     <span>ZERO CLOUD UPLOADS</span>
   </div>
   <h1>HEIC to JPG Converter</h1>
@@ -140,7 +140,7 @@
     <div class="panel-section">
       <h3>Upload HEIC Photos</h3>
       <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 12px;">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="17 8 12 3 7 8"></polyline>
           <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -156,7 +156,7 @@
       <div class="control-group">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <label style="margin: 0; font-size: 13px;">JPG Quality</label>
-          <span id="qualityVal" style="font-size: 12px; color: #00d2ff;">0.8</span>
+          <span id="qualityVal" style="font-size: 12px; color: var(--accent);">0.8</span>
         </div>
         <input type="range" id="qualitySlider" min="0.1" max="1.0" step="0.1" value="0.8" style="width: 100%;">
       </div>
@@ -190,21 +190,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       </div>
       <h3>Instant Batch Processing</h3>
       <p>Convert dozens of massive HEIC files instantly. Processing happens directly in your RAM, utilizing your machine's CPU for unparalleled speed compared to uploading over a network.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
       <h3>Zero Server Uploads</h3>
       <p>Your private iPhone photos are never uploaded. Tangent uses an advanced WebAssembly decoder to translate the Apple image format into JPG entirely inside your local browser sandbox.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
       </div>
       <h3>EXIF Metadata Preserved</h3>
       <p>Our conversion engine retains the critical metadata attached to your original HEIC file. Your timestamps, orientation, and camera models remain perfectly intact in the resulting JPG.</p>
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tasks = files.map(file => {
       const card = document.createElement('div');
       card.style.cssText = 'background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;';
-      card.innerHTML = `<div class="spinner" style="width:24px;height:24px;border:3px solid rgba(0,210,255,0.2);border-top-color:#00d2ff;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="font-size:11px; margin-top:12px; color:var(--text-secondary); text-align:center; padding:0 8px;">Processing<br>${file.name}</div>`;
+      card.innerHTML = `<div class="spinner" style="width:24px;height:24px;border:3px solid rgba(0,210,255,0.2);border-top-color: var(--accent);border-radius:50%;animation:spin 1s linear infinite;"></div><div style="font-size:11px; margin-top:12px; color:var(--text-secondary); text-align:center; padding:0 8px;">Processing<br>${file.name}</div>`;
       outputGrid.appendChild(card);
       return { file, card, quality };
     });
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
           <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 8px; backdrop-filter: blur(4px); display: flex; justify-content: space-between; align-items: center;">
             <div style="font-size: 10px; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;" title="${outName}">${outName}</div>
-            <a href="${url}" download="${outName}" style="color: #00d2ff; cursor: pointer; padding: 4px;" title="Download">
+            <a href="${url}" download="${outName}" style="color: var(--accent); cursor: pointer; padding: 4px;" title="Download">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </a>
           </div>
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   btnDownloadZip.addEventListener('click', async () => {
     if (convertedFiles.length === 0) return;
-    btnDownloadZip.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Zipping...';
+    btnDownloadZip.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color: var(--text-main);border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Zipping...';
     btnDownloadZip.style.opacity = '0.7';
     
     try {

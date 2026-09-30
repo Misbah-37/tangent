@@ -5,69 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent Pro</title>
     <style>
-        
         :root[data-theme="light"] {
-            --bg-app: #f4f4f5;
-            --bg-surface: #ffffff;
-            --bg-hover: #e4e4e7;
-            --border: #d4d4d8;
-            --text-main: #18181b;
-            --text-muted: #71717a;
+            --bg-base: #f8f9fa;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: rgba(0, 0, 0, 0.05);
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0066cc;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --item-hover: rgba(0, 0, 0, 0.05);
+            --border: rgba(0, 0, 0, 0.1);
         }
 
         :root {
-            --bg-app: #09090b;
-            --bg-surface: #18181b;
-            --bg-hover: #27272a;
-            --border: #27272a;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
+            /* macOS Dark Mode Glassmorphism Tokens */
+            --bg-base: #121212;
+            --glass-bg: rgba(30, 30, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --accent: #0A84FF;
+            --panel-bg: rgba(40, 40, 40, 0.6);
+            --item-hover: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-app);
+            background-color: var(--bg-base);
             color: var(--text-main);
             height: 100vh;
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
             user-select: none;
+            /* Abstract ambient gradient background to shine through the glass */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.12), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(94, 92, 230, 0.12), transparent 40%);
+            background-attachment: fixed;
         }
 
-        /* Custom OS Titlebar */
+        /* macOS Titlebar - Neutral Controls */
         .titlebar {
-            height: 38px;
-            background-color: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
+            height: 48px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
-            z-index: 9999;
+            padding: 0 0 0 16px;
         }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--text-main);
+            opacity: 0.8;
+            padding-left: 8px;
+        }
+
         .drag-region {
             flex-grow: 1;
             height: 100%;
+            -webkit-app-region: drag;
+        }
+
+        .top-actions {
             display: flex;
             align-items: center;
-            padding-left: 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
+            -webkit-app-region: no-drag;
         }
-        .window-controls {
-            display: flex;
-            height: 100%;
-        }
-        .window-btn {
+
+        /* Neutral OS-Agnostic Window Controls */
+        .win-btn {
             width: 46px;
-            height: 100%;
+            height: 48px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -75,457 +90,1585 @@
             color: var(--text-muted);
             transition: background 0.1s;
         }
-        .window-btn:hover { background-color: var(--bg-hover); color: var(--text-main); }
-        .window-btn.close:hover { background-color: #ef4444; color: white; }
+        .win-btn:hover { background: var(--item-hover); color: var(--text-main); }
+        .win-btn.close:hover { background: #E81123; color: white; }
 
-        /* App Layout */
-        .app-body {
+        /* Main App Grid */
+        .app-layout {
             display: flex;
-            flex-grow: 1;
-            height: calc(100vh - 38px);
+            height: calc(100vh - 48px);
+            padding: 0 16px 16px 16px;
+            gap: 16px;
         }
 
-        /* Slim Sidebar */
+        /* Glass Panel Reusable Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
         .sidebar {
-            width: 68px;
-            background-color: var(--bg-surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 16px;
-            gap: 16px;
+            width: 220px;
+            flex-shrink: 0;
+            padding: 16px 12px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            white-space: nowrap;
         }
-        .sidebar-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: 0.2s;
+        .sidebar.collapsed {
+            width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            opacity: 0;
+            margin-right: -16px; /* Offset the flex gap */
         }
-        .sidebar-icon:hover { background-color: var(--bg-hover); color: var(--text-main); }
-        .sidebar-icon.active { background-color: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
-
-        /* Main Workspace */
-        .workspace {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-app);
-        }
-        .workspace-header {
-            padding: 24px 32px;
-            border-bottom: 1px solid var(--border);
-        }
-        .workspace-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-        .workspace-header p { font-size: 13px; color: var(--text-muted); }
-
+        #btn-toggle-sidebar:hover { background: var(--item-hover); }
         
-        /* Pro Dashboard */
-        .dashboard {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
+        .nav-section {
+            margin-bottom: 24px;
         }
-        .stat-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .stat-value {
-            font-size: 24px;
+        .nav-title {
+            font-size: 11px;
             font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .stat-label {
-            font-size: 12px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-weight: 600;
+            margin-bottom: 8px;
+            padding-left: 8px;
         }
-        .pii-badge {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            margin-left: 8px;
-        }
-        .null-bar-bg { width: 100%; height: 4px; background: var(--bg-app); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-        .null-bar-fill { height: 100%; background: #ef4444; }
-
-        /* Data Hygiene Specific UI */
-        .hygiene-layout {
+        .nav-item {
             display: flex;
-            flex-grow: 1;
-            overflow: hidden;
-        }
-        .recipe-panel {
-            width: 320px;
-            background-color: var(--bg-app);
-            border-right: 1px solid var(--border);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-        }
-        .preview-panel {
-            flex-grow: 1;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-width: 0; /* Fixes flexbox shrinking constraint */
-        }
-        
-        /* Controls */
-        .btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 8px;
-            transition: 0.2s;
-            width: 100%;
-        }
-        .btn:hover { background-color: var(--accent-hover); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border);
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
             color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .btn-outline:hover { background-color: var(--bg-hover); }
+        .nav-item:hover {
+            background: var(--item-hover);
+        }
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+        .nav-item svg { opacity: 0.7; }
+        .nav-item.active svg { opacity: 1; }
 
-        .recipe-list {
-            border: 1px dashed var(--border);
-            border-radius: 6px;
-            padding: 16px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
+        /* Main Workspace Area */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0 !important;
+            overflow: hidden;
         }
-        .rule-item {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border);
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 13px;
+        .workspace-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            color: var(--text-main);
+        }
+        .workspace-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .workspace-title p {
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
-        /* Table */
-        .table-wrapper {
-            flex-grow: 1;
-            max-width: 100%;
-            background-color: var(--bg-surface);
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: var(--panel-bg);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn:hover { background: var(--item-hover); }
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+        .btn.primary:hover { filter: brightness(1.1); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Mockup Cards for Data */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .metric-card h3 {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Table Area */
+        .table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             overflow: auto;
-            position: relative;
+            flex-grow: 1;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            user-select: text;
-        }
-        th, td {
-            padding: 8px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            border-right: 1px solid var(--border);
+            font-size: 12px;
             white-space: nowrap;
-            max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         th {
-            background-color: var(--bg-hover);
+            text-align: left;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.2);
             color: var(--text-muted);
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
         }
-        .empty-state {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        
+        .status-bar {
+            height: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
             color: var(--text-muted);
+            background: rgba(0,0,0,0.1);
+        }
+        .status-right {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* --- Recipe Panel --- */
+        .recipe-panel {
+            flex: 0 0 320px !important;
+            width: 320px !important;
+            min-width: 320px !important;
+            max-width: 320px !important;
+            height: 100% !important; /* STRICT HEIGHT */
+            display: none;
+            flex-direction: column;
+            background: var(--glass-bg);
+            border-left: 1px solid var(--border);
+            box-sizing: border-box;
+            overflow: hidden !important;
+        }
+        
+        .recipe-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
             font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recipe-content {
+            padding: 16px;
+            padding-bottom: 32px;
+            overflow-y: auto !important;
+            display: block; /* Standard block layout for inner contents */
+            flex: 1 1 0 !important;
+            min-height: 0 !important;
+            height: 0; /* Forces flex child to compute height from flex-grow rather than content/100% */
+        }
+
+        /* Premium Accordion styles */
+        .accordion-item { 
+            background: var(--panel-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-bottom: 12px; 
+            box-shadow: var(--glass-shadow); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        .accordion-item:last-child { margin-bottom: 0; }
+        .accordion-header { 
+            background: transparent; 
+            padding: 14px 16px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 600; 
+            user-select: none; 
+            font-size: 13px; 
+            color: var(--text-main);
+            border-bottom: 1px solid transparent; 
+            transition: background 0.2s;
+        }
+        .accordion-header:hover { background: var(--item-hover); }
+        .accordion-header.active { 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(128,128,128,0.03); 
+        }
+        .accordion-content { 
+            padding: 16px; 
+            display: none; 
+            background: transparent; 
+        }
+        .accordion-content.active { display: block; }
+        .accordion-icon { transition: transform 0.2s; opacity: 0.7; }
+        .accordion-header.active .accordion-icon { transform: rotate(180deg); opacity: 1; }
+
+        .recipe-section h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            color: var(--text-main);
+            opacity: 0.9;
+        }
+
+        /* macOS-style Toggle */
+        .toggle-switch {
+            width: 34px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-switch.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .toggle-handle {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.active .toggle-handle {
+            transform: translateX(14px);
+        }
+
+        /* Form Controls */
+        .form-select {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            margin-top: 6px;
+        }
+
+
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: var(--text-main);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            font-size: 13px;
+            max-width: 400px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .pill-tag {
+            background: rgba(10, 132, 255, 0.15);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pill-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .pill-tag .remove:hover {
+            opacity: 1;
+            color: #ef4444;
+        }
+            100% { transform: rotate(360deg); }
+        }
+        .spin-logo {
+            animation: sweepSpin 1.2s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+        }
+    
+        /* Official Tangent Logo Animations */
+        .tl-logo-wrap { position: relative; width: 64px; height: 64px; margin: 0 auto; }
+        .tl-logo-wrap svg { width: 64px; height: 64px; overflow: visible; }
+        .tl-arc {
+            stroke-dasharray: 1;
+            stroke-dashoffset: 1;
+            animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .tl-line {
+            transform-origin: 32px 14px;
+            transform-box: fill-box;
+            animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes tlDrawArc {
+            0%   { stroke-dashoffset: 1; opacity: 0.2; }
+            20%  { opacity: 1; }
+            70%  { stroke-dashoffset: 0; }
+            90%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 1; opacity: 0.2; }
+        }
+        @keyframes tlPulseLine {
+            0%, 30%  { opacity: 0; transform: scaleY(0.1); }
+            60%, 85% { opacity: 1; transform: scaleY(1); }
+            100%     { opacity: 0; transform: scaleY(0.1); }
+        }
+        .tl-glow {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+        }
+
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
+    <div id="global-loader">
+        <div class="tl-logo-wrap" style="transform: scale(1.5); margin-bottom: 20px;">
+            <div class="tl-glow"></div>
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path class="tl-arc" d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
+                <path class="tl-line" d="M 32 14 V 44" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div id="global-loader-text" style="font-weight:700; font-size:16px; letter-spacing:1px; color:#ffffff;">STREAMING DATASET...</div>
+    </div>
 
-    <!-- Titlebar -->
     <div class="titlebar">
-        <div class="drag-region" data-tauri-drag-region>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 10px; pointer-events: none;"><path d="M12 2L2 22h20L12 2z"/></svg>
-            TANGENT PRO
+        <div class="title-left">
+            <div id="btn-toggle-sidebar" style="cursor: pointer; display: flex; align-items: center; padding: 4px; margin-right: 4px; border-radius: 4px; opacity: 0.9; transition: opacity 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Tangent Pro
         </div>
-        <div class="window-controls">
+        <div class="drag-region"></div>
+        <div class="top-actions">
+            <!-- Theme Toggle -->
+            <div style="padding: 0 16px; display: flex; align-items: center;">
+                <svg id="theme-btn" style="cursor:pointer; color: var(--text-muted); opacity: 0.8;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
             
-            <div class="window-btn" id="btn-theme" title="Toggle Light/Dark Theme">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
+            <!-- Modern Neutral Window Controls -->
+            <div class="win-btn" id="btn-minimize">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg>
             </div>
-
-            <div class="window-btn" id="btn-minimize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg></div>
-            <div class="window-btn" id="btn-maximize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
-            <div class="window-btn close" id="btn-close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+            <div class="win-btn" id="btn-maximize">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+            </div>
+            <div class="win-btn close" id="btn-close">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
         </div>
     </div>
 
-    <div class="app-body">
+    <div class="app-layout">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-icon active" title="Data Sanitizer">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <div class="sidebar glass-panel">
+            <div class="nav-section">
+                <div class="nav-title">Data Pipeline</div>
+                <div class="nav-item active" onclick="window.location.href='index.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Data Hygiene
+                </div>
+                <div class="nav-item" onclick="window.location.href='csv-insights.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    CSV Insights
+                </div>
+                <div class="nav-item" onclick="window.location.href='sql-studio.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    SQL Studio
+                </div>
             </div>
-            <div class="sidebar-icon" title="PDF Tools (Coming Soon)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <div class="sidebar-icon" title="Settings (Coming Soon)" style="margin-top: auto; margin-bottom: 16px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+
+            <div class="nav-section">
+                <div class="nav-title">Documents</div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    PDF Converter
+                </div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    Document OCR
+                </div>
             </div>
         </div>
 
-        <!-- Workspace -->
-        <div class="workspace">
+        <!-- Main Workspace -->
+        <div class="workspace glass-panel">
             <div class="workspace-header">
-                <h1>Data Sanitizer & Profiler</h1>
-                <p>Native Rust Dataframe Engine • Bypasses browser memory limits to process multi-gigabyte files instantly.</p>
+                <div class="workspace-title">
+                    <h1>Data Hygiene Pro</h1>
+                    <p>Process, clean, and standardize massive datasets instantly via Rust.</p>
+                </div>
+                <div class="toolbar">
+                    <button class="btn" id="btn-close-file" style="display: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        Close
+                    </button>
+                    <button class="btn" id="btn-load-db" style="color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        Connect DB
+                    </button>
+                    <button class="btn" id="btn-schedule" style="color: #8b5cf6; border-color: rgba(139, 92, 246, 0.3);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Schedule Task
+                    </button>
+                    <button class="btn" id="btn-load-folder" style="color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        Batch Process Folder
+                    </button>
+                    <button class="btn" id="btn-load">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Load Dataset
+                    </button>
+                    <button class="btn primary" id="btn-run" disabled>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        Execute Pipeline
+                    </button>
+                    <button class="btn" id="btn-save-export" style="display: none; background: #10b981; color: white; border-color: #059669;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        Save Export
+                    </button>
+                </div>
             </div>
 
-            <div class="hygiene-layout">
-                <!-- Left Panel: Actions -->
-                <div class="recipe-panel">
-                    <button class="btn btn-outline" id="btn-load">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                        1. Select Local CSV File
-                    </button>
-                    
-                    <div style="margin: 16px 0; border-bottom: 1px solid var(--border);"></div>
-                    
-                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main);">Pipeline Recipe</h3>
-                    <div id="recipe-list" class="recipe-list">
-                        No file loaded.
+            <div class="content-area">
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <h3>Total Rows</h3>
+                        <div class="value" id="stat-rows">--</div>
                     </div>
-
-                    <div style="margin-top: auto;">
-                        <button class="btn" id="btn-run" disabled>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            2. Execute Native Pipeline
-                        </button>
+                    <div class="metric-card">
+                        <h3>File Size</h3>
+                        <div class="value" id="stat-size">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Data Health Score</h3>
+                        <div class="value" id="stat-health" style="color: var(--accent);">--</div>
                     </div>
                 </div>
 
-                <!-- Right Panel: Preview -->
-                <div class="preview-panel">
-                    
-                    <!-- Pro Dashboard -->
-                    <div class="dashboard" id="pro-dashboard" style="display: none;">
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-health">--%</div>
-                            <div class="stat-label">Dataset Health Score</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-rows">--</div>
-                            <div class="stat-label">Total Rows Analyzed</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-pii">--</div>
-                            <div class="stat-label">Sensitive Columns (PII)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-size">--</div>
-                            <div class="stat-label">File Size (Instant Load)</div>
+                <div class="table-container">
+                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600;" id="preview-title">
+                        Live Data Preview
+                    </div>
+                                        <div id="table-wrapper" style="overflow: auto; max-height: calc(100% - 90px); flex-grow: 1;">
+                        <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px;">
+                            No dataset loaded. Click "Load Dataset" to begin.
                         </div>
                     </div>
-                    
-                    <div class="table-wrapper" id="table-wrapper">
+                    <div class="pagination-footer" id="pagination-footer" style="display: none; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); font-size: 13px; background: rgba(0,0,0,0.2);">
+                        <div id="page-info">Showing 0-0 of 0</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" id="btn-prev-page" style="padding: 6px 12px; min-height: 28px;">Previous</button>
+                            <button class="btn" id="btn-next-page" style="padding: 6px 12px; min-height: 28px;">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="empty-state">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                            <br>
-                            Waiting for local dataset...
-                        </div>
+            <div class="status-bar">
+                <div>Ready</div>
+                <div class="status-right">
+                    <span>Engine: Rust</span>
+                    <span>Mem: 14.2 MB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Recipe Panel -->
+        <div class="recipe-panel glass-panel" id="recipe-panel">
+            <div class="recipe-header" style="justify-content: space-between;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <div style="display: flex; align-items: center; gap: 8px;">Recipe Pipeline</div><div style="display: flex; gap: 6px;"><button class="btn" id="btn-load-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Load</button><button class="btn" id="btn-save-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Save</button></div></div>
+            
+            <div class="recipe-content">
+    <div class="accordion-item">
+        <div class="accordion-header active" onclick="this.nextElementSibling.classList.toggle('active'); this.classList.toggle('active');">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                Structure
+            </div>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content active">
+            <div class="setting-row">
+                <span class="setting-label">Sanitize Headers</span>
+                <div class="toggle-switch" id="chkCleanHeaders"><div class="toggle-handle"></div></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Prune Empty Rows</span>
+                <div class="toggle-switch" id="chkDropEmpty"><div class="toggle-handle"></div></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Strip Control Chars</span>
+                <div class="toggle-switch active" id="chkStripCtrl"><div class="toggle-handle"></div></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Trim Whitespace</span>
+                <div class="toggle-switch" id="chkTrimAll"><div class="toggle-handle"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="this.nextElementSibling.classList.toggle('active'); this.classList.toggle('active');">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Targeted Formatting
+            </div>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+            <div class="setting-row" style="display: block; margin-bottom: 16px;">
+                <span class="setting-label">Format as Dates</span>
+                <select class="form-select col-select" id="selDateCols"></select><div id="selDateCols_pills" class="pill-container"></div>
+                <select class="form-select" id="selDateLocale" style="margin-top: 4px;">
+                    <option value="ISO">Target: ISO (YYYY-MM-DD)</option>
+                    <option value="US">Target: US (MM/DD/YYYY)</option>
+                    <option value="EU">Target: EU (DD/MM/YYYY)</option>
+                </select>
+            </div>
+            <div class="setting-row" style="display: block; margin-bottom: 16px;">
+                <span class="setting-label">Clean Numeric / Currency</span>
+                <select class="form-select col-select" id="selNumberCols"></select><div id="selNumberCols_pills" class="pill-container"></div>
+                <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols, fixes 'k'/'m' suffixes, and parses word numbers.</small>
+                <label style="display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                    <input type="checkbox" id="chkAbsoluteNums"> Force absolute values (Remove negatives)
+                </label>
+            </div>
+            <div class="setting-row" style="display: block; margin-bottom: 16px;">
+                <span class="setting-label">Format Phone (US)</span>
+                <select class="form-select col-select" id="selPhoneCols"></select><div id="selPhoneCols_pills" class="pill-container"></div>
+            </div>
+            <div class="setting-row" style="display: block;">
+                <span class="setting-label">Title Casing</span>
+                <select class="form-select col-select" id="selTitleCols"></select><div id="selTitleCols_pills" class="pill-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="this.nextElementSibling.classList.toggle('active'); this.classList.toggle('active');">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Missing Data Handling
+            </div>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+            <div class="setting-row" style="display: block; margin-bottom: 16px;">
+                <span class="setting-label">Drop Rows Missing Critical Data In:</span>
+                <select class="form-select col-select" id="selDropMissingCols"></select>
+                <div id="selDropMissingCols_pills" class="pill-container"></div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <span class="setting-label" style="display: block; margin-bottom: 12px; font-weight: 600;">Imputation Rules</span>
+                <div class="setting-row" style="display: block; padding-left: 12px; border-left: 2px solid var(--border);">
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <select class="form-select col-select" id="selImputeCol" style="flex: 1;"></select>
+                        <select class="form-select" id="selImputeMethod" style="flex: 1;">
+                            <option value="mean">Mean (Numeric)</option>
+                            <option value="median">Median (Numeric)</option>
+                            <option value="mode">Mode (Most Frequent)</option>
+                            <option value="custom">Custom Text...</option>
+                        </select>
                     </div>
+                    <input type="text" id="txtImputeCustom" class="form-select" style="display: none; margin-bottom: 8px;" placeholder="e.g. Unknown or N/A">
+                    <button class="btn" id="btnAddImputeRule" style="width: 100%; font-size: 11px;">Add Imputation Rule</button>
+                    <div id="imputeRulesList" style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="this.nextElementSibling.classList.toggle('active'); this.classList.toggle('active');">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Deduplication
+            </div>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content">
+            <div class="setting-row">
+                <span class="setting-label">Remove Duplicates</span>
+                <div class="toggle-switch" id="chkDedupe"><div class="toggle-handle"></div></div>
+            </div>
+            <div id="rowDedupeCols" style="display: none; flex-direction: column; align-items: flex-start; margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--border);">
+                <span class="setting-label" style="margin-bottom: 4px;">Algorithm</span>
+                <select class="form-select" id="selDedupeMode" style="margin-bottom: 8px;">
+                    <option value="exact">Exact Match (O(1) Hashing)</option>
+                    <option value="fuzzy">Fuzzy Match (Jaro-Winkler > 88%)</option>
+                </select>
+                <span class="setting-label" style="margin-bottom: 6px; font-size: 11px;">Match Specific Columns (Required for Fuzzy Match)</span>
+                <select class="form-select col-select" id="selDedupeCols"></select><div id="selDedupeCols_pills" class="pill-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+
+    </div>
+
+
+    
+    <div id="db-modal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; padding: 24px; z-index: 10000; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
+        <h3 style="margin: 0 0 16px 0; font-size: 16px;">Connect Local Database</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Enter your connection string (Postgres, MySQL, or SQLite):</p>
+        <input type="text" id="db-uri" class="form-input" style="width: 100%; box-sizing: border-box; margin-bottom: 24px; font-family: monospace; font-size: 13px;" placeholder="postgres://user:pass@localhost:5432/mydb">
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button class="btn" id="btn-cancel-db">Cancel</button>
+            <button class="btn" id="btn-connect-db" style="background: var(--accent); color: white; border-color: var(--accent);">Connect</button>
+        </div>
+    </div>
+
+    
+    <div id="cron-modal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; padding: 24px; z-index: 10000; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
+        <h3 style="margin: 0 0 16px 0; font-size: 16px;">Schedule Background Pipeline</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Select a target folder and a frequency. The active recipe will run silently in the background.</p>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="cron-folder" class="form-input" style="flex: 1; font-size: 12px;" placeholder="Select a folder..." readonly>
+            <button class="btn" id="btn-pick-cron-folder">Browse</button>
+        </div>
+        
+        <select id="cron-frequency" class="form-select" style="width: 100%; margin-bottom: 24px;">
+            <option value="1/10 * * * * *">Every 10 Seconds (Test Mode)</option>
+            <option value="0 0 * * * *">Hourly (Top of the hour)</option>
+            <option value="0 0 0 * * *">Daily (Midnight)</option>
+            <option value="0 0 0 * * 0">Weekly (Sunday Midnight)</option>
+        </select>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button class="btn" id="btn-cancel-cron">Cancel</button>
+            <button class="btn" id="btn-save-cron" style="background: #8b5cf6; color: white; border-color: #8b5cf6;">Schedule</button>
+        </div>
+    </div>
+
+    <div id="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9998; transition: all 0.2s;"></div>
+    <div id="toast-container"></div>
     <script>
-        const invoke = window.__TAURI__.core.invoke;
-        let activeFilePath = "";
+        let invoke;
+        try { invoke = window.__TAURI__.core.invoke; } catch (err) { showToast("Init Error: " + err.message + "\nAre you running outside Tauri?", true); }
         
+        let activeFilePath = null;
+        let rawColumns = [];
+        let rawPreview = [];
+        let nullCounts = [];
+        let piiFlags = [];
+        let totalRows = 0;
+        let currentPage = 0;
+        const pageSize = 100;
+
         
-        // Theme Engine
-        const themeBtn = document.getElementById('btn-theme');
+        let imputationRules = [];
+        
+        document.getElementById('selImputeMethod').addEventListener('change', (e) => {
+            document.getElementById('txtImputeCustom').style.display = (e.target.value === 'custom') ? 'block' : 'none';
+        });
+
+        document.getElementById('btnAddImputeRule').addEventListener('click', () => {
+            let col = document.getElementById('selImputeCol').value;
+            let method = document.getElementById('selImputeMethod').value;
+            let customVal = document.getElementById('txtImputeCustom').value;
+            
+            if(!col) return showToast("Select a column first", true);
+            if(method === 'custom' && !customVal) return showToast("Enter a custom value", true);
+            
+            imputationRules = imputationRules.filter(r => r.col !== col);
+            imputationRules.push({ col, method, custom_val: customVal });
+            renderImputeRules();
+            
+            currentPage = 0;
+            renderPreview();
+        });
+
+        window.removeImputeRule = function(col) {
+            imputationRules = imputationRules.filter(r => r.col !== col);
+            renderImputeRules();
+            currentPage = 0;
+            renderPreview();
+        };
+
+        function renderImputeRules() {
+            let list = document.getElementById('imputeRulesList');
+            if(!list) return;
+            let out = '';
+            imputationRules.forEach(r => {
+                let desc = r.method === 'custom' ? `Fill with: "${r.custom_val}"` : `Fill with ${r.method.toUpperCase()}`;
+                out += `<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 4px; font-size: 11px;">
+                    <div><strong>${r.col}</strong> <span style="color: var(--text-muted); margin-left: 6px;">${desc}</span></div>
+                    <button class="btn" style="padding: 2px 6px; font-size: 10px; min-height: unset; color: #ef4444; border-color: rgba(239,68,68,0.3);" onclick="removeImputeRule('${r.col}')">Undo</button>
+                </div>`;
+            });
+            list.innerHTML = out;
+        }
+
+        let multiSelectState = {
+            selDateCols: [], selNumberCols: [], selPhoneCols: [], selTitleCols: [], selDedupeCols: [], selDropMissingCols: []
+        };
+
+        function addPill(id, val) {
+            if(!val) return;
+            if (!multiSelectState[id].includes(val)) {
+                multiSelectState[id].push(val);
+                renderPills(id);
+                currentPage = 0;
+                renderPreview();
+            }
+            document.getElementById(id).value = "";
+        }
+
+        window.removePill = function(id, val) {
+            multiSelectState[id] = multiSelectState[id].filter(x => x !== val);
+            renderPills(id);
+            currentPage = 0;
+            renderPreview();
+        };
+
+        function renderPills(id) {
+            const container = document.getElementById(id + '_pills');
+            if (container) {
+                container.innerHTML = multiSelectState[id].map(val => `<div class="pill-tag">${val}<span class="remove" onclick="removePill('${id}', '${val}')">✕</span></div>`).join('');
+            }
+        }
+
+        const getMulti = id => multiSelectState[id] || [];
+
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderLeft = isError ? '4px solid #ef4444' : '4px solid #10b981';
+            toast.innerHTML = message.replace(/\n/g, '<br>');
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 5000);
+        }
+
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            document.body.setAttribute('data-theme', theme);
             localStorage.setItem('tangent_pro_theme', theme);
-            themeBtn.innerHTML = theme === 'light' 
-              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
-              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            const btn = document.getElementById('theme-btn');
+            if(theme === 'light') {
+                btn.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+            } else {
+                btn.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+            }
         }
         const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
         applyTheme(savedTheme);
-        themeBtn.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            applyTheme(current === 'light' ? 'dark' : 'light');
-        });
-
-        // Window Controls
+        document.getElementById('theme-btn').addEventListener('click', () => { applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); });
         document.getElementById('btn-close').addEventListener('click', () => invoke('close_window'));
         document.getElementById('btn-maximize').addEventListener('click', () => invoke('maximize_window'));
+        document.getElementById('btn-toggle-sidebar').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
         document.getElementById('btn-minimize').addEventListener('click', () => invoke('minimize_window'));
 
-        // Load Logic
-        document.getElementById('btn-load').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-load');
-            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Reading via Rust...`;
+        
+        function jaroWinkler(s1, s2) {
+            let m = 0;
+            if (s1.length === 0 || s2.length === 0) return 0;
+            if (s1 === s2) return 1;
+            let range = Math.floor(Math.max(s1.length, s2.length) / 2) - 1;
+            let s1Matches = new Array(s1.length).fill(false);
+            let s2Matches = new Array(s2.length).fill(false);
+            for (let i = 0; i < s1.length; i++) {
+                let start = Math.max(0, i - range);
+                let end = Math.min(i + range + 1, s2.length);
+                for (let j = start; j < end; j++) {
+                    if (s2Matches[j]) continue;
+                    if (s1[i] !== s2[j]) continue;
+                    s1Matches[i] = true; s2Matches[j] = true; m++; break;
+                }
+            }
+            if (m === 0) return 0;
+            let k = 0, numTrans = 0;
+            for (let i = 0; i < s1.length; i++) {
+                if (!s1Matches[i]) continue;
+                while (k < s2.length && !s2Matches[k]) k++;
+                if (k < s2.length && s1[i] !== s2[k]) numTrans++;
+                k++;
+            }
+            let weight = (m / s1.length + m / s2.length + (m - numTrans / 2) / m) / 3;
+            let l = 0, p = 0.1;
+            if (weight > 0.7) {
+                while (s1[l] === s2[l] && l < 4) l++;
+                weight = weight + l * p * (1 - weight);
+            }
+            return weight;
+        }
+        function cleanNumericJS(val) {
+            let strVal = String(val).trim().toLowerCase();
+            const words = [["zero","0"], ["one hundred","100"], ["hundred","100"], ["one","1"], ["two","2"], ["three","3"], ["four","4"], ["five","5"], ["six","6"], ["seven","7"], ["eight","8"], ["nine","9"], ["ten","10"], ["eleven","11"], ["twelve","12"], ["thirteen","13"], ["fourteen","14"], ["fifteen","15"], ["sixteen","16"], ["seventeen","17"], ["eighteen","18"], ["nineteen","19"], ["twenty","20"]];
+            for (let w of words) {
+                strVal = strVal.replace(new RegExp('\\b' + w[0] + '\\b', 'g'), w[1]);
+            }
+            if (strVal.endsWith('k')) strVal = strVal.slice(0, -1) + "000";
+            else if (strVal.endsWith('m')) strVal = strVal.slice(0, -1) + "000000";
+            
+            let clean = strVal.replace(/[^0-9.-]/g, '');
+            return clean ? clean : String(val);
+        }
+
+        
+        function formatDateJS(val, targetFormat) {
+            let lower = String(val).trim().toLowerCase().replace(/(st|nd|rd|th)/g, '').replace(/,/g, '');
+            let y = null, m = null, d = null;
+            
+            let m1 = lower.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+            if (m1) { y = m1[1]; m = m1[2]; d = m1[3]; }
+            else {
+                let m2 = lower.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
+                if (m2) {
+                    let p1 = parseInt(m2[1], 10);
+                    let p2 = parseInt(m2[2], 10);
+                    y = m2[3];
+                    if (p1 > 12) { d = p1; m = p2; }
+                    else if (p2 > 12) { m = p1; d = p2; }
+                    else {
+                        m = p1; d = p2; // Default US assumption
+                    }
+                } else {
+                    const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+                    let foundM = 0;
+                    for(let i=0; i<12; i++) if(lower.includes(months[i])) { foundM = i+1; break; }
+                    if (foundM > 0) {
+                        let nums = lower.match(/\d+/g);
+                        if (nums) {
+                            for(let n of nums) {
+                                let num = parseInt(n,10);
+                                if(num > 1000) y = num;
+                                else if(num <= 31) d = num;
+                            }
+                            if(y && d) m = foundM;
+                        }
+                    }
+                }
+            }
+            
+            if (y && m && d) {
+                m = String(m).padStart(2, '0');
+                d = String(d).padStart(2, '0');
+                if (targetFormat === "ISO") return `${y}-${m}-${d}`;
+                if (targetFormat === "US") return `${m}/${d}/${y}`;
+                if (targetFormat === "EU") return `${d}/${m}/${y}`;
+            }
+            return val;
+        }
+
+        function renderPreview() {
+            if (rawColumns.length === 0) return;
+            const recipe = {
+                sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                  strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                absolute_nums: document.getElementById('chkAbsoluteNums').checked,
+                date_format: document.getElementById('selDateLocale').value,
+                imputation_rules: imputationRules,
+                
+                dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                dedupe_mode: document.getElementById('selDedupeMode').value,
+                dedupe_cols: getMulti('selDedupeCols'), drop_missing_cols: getMulti('selDropMissingCols'),
+                date_cols: getMulti('selDateCols'),
+                number_cols: getMulti('selNumberCols'),
+                phone_cols: getMulti('selPhoneCols'),
+                title_cols: getMulti('selTitleCols')
+            };
+
+            let displayCols = rawColumns.map(h => {
+                if (recipe.sanitize_headers) return h.trim().replace(/ /g, '_').toLowerCase().replace(/[^a-z0-9_]/g, '');
+                return h;
+            });
+
+            let tableHtml = `<table><thead><tr>`;
+            displayCols.forEach((col, i) => { 
+                let emptyBadge = nullCounts[i] > 0 ? `<span style="background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-left: 6px; font-weight: bold;">${nullCounts[i]} EMPTY</span>` : '';
+                let piiBadge = piiFlags[i] ? `<span style="background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-left: 6px; font-weight: bold;">PII DETECTED</span>` : '';
+                tableHtml += `<th style="position: relative; padding-bottom: 12px;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                        <span>${col}</span>
+                        ${emptyBadge}
+                        ${piiBadge}
+                    </div>
+                </th>`; 
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            
+            let seenHashes = new Set();
+            let seenFuzzy = [];
+            let validRows = [];
+            for (let r = 0; r < rawPreview.length; r++) {
+
+                let row = rawPreview[r];
+                let hasEmpty = false;
+                let missingCritical = false;
+                let processedRow = row.map((cell, i) => {
+                    let orig_h = rawColumns[i];
+                    let val = cell;
+                    let isEmptyCell = false;
+                    
+                    if (recipe.strip_ctrl) val = val.replace(/[\x00-\x1F\x7F]/g, '');
+                    if (recipe.trim_all) val = val.trim();
+                    
+                    let testVal = val.trim(); // Always trim for empty check
+                    if (testVal === '' || testVal === 'NaN' || testVal.toLowerCase() === 'null' || testVal === 'N/A' || testVal === '-') {
+                        
+                        let rule = typeof imputationRules !== 'undefined' ? imputationRules.find(r => r.col === orig_h) : null;
+                        if (rule) {
+                            if (rule.method === 'custom') {
+                                val = rule.custom_val;
+                            } else {
+                                let methodLbl = rule.method.toUpperCase();
+                                val = `<span style="background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px;"><svg width="10" height="10" style="margin-right:3px; vertical-align:middle; margin-top:-2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>AUTO-${methodLbl}</span>`;
+                            }
+                        } else {
+                            isEmptyCell = true;
+                            hasEmpty = true; // Only flag if not imputed
+                            if (recipe.drop_missing_cols && recipe.drop_missing_cols.includes(orig_h)) {
+                                missingCritical = true; // Only flag if not imputed
+                            }
+                            val = `<span style="color: #ef4444; font-style: italic; opacity: 0.8;">null</span>`;
+                        }
+                    } else {
+                        if (recipe.number_cols.includes(orig_h)) {
+                            val = cleanNumericJS(val);
+                            if (recipe.absolute_nums) val = val.replace(/-/g, '');
+                        }
+                        if (recipe.phone_cols.includes(orig_h)) {
+                            let d = val.replace(/\D/g, '');
+                            if (d.length >= 11 && d.startsWith('1')) d = d.slice(1);
+                            if (d.length >= 10) {
+                                let core = d.slice(0, 10);
+                                let ext = d.slice(10);
+                                val = `(${core.slice(0,3)}) ${core.slice(3,6)}-${core.slice(6)}`;
+                                if (!recipe.strip_phone_ext && ext.length > 0) val += ` ext ${ext}`;
+                            }
+                        }
+                        if (recipe.title_cols.includes(orig_h)) {
+                            val = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                        }
+                        if (recipe.date_cols.includes(orig_h)) val = formatDateJS(val, recipe.date_format);
+                    }
+                    
+                    return isEmptyCell ? val : `<span style="color: var(--text-main);">${val}</span>`;
+                });
+                
+                if (missingCritical) continue;
+                if (recipe.drop_empty && hasEmpty) continue;
+                
+                // Deduplication Filter for Preview
+                if (recipe.dedupe) {
+                    let isDup = false;
+                    let key = '';
+                    if (recipe.dedupe_cols.length === 0) {
+                        key = processedRow.join('|');
+                    } else {
+                        processedRow.forEach((cell, i) => { if (recipe.dedupe_cols.includes(rawColumns[i])) key += cell + '|'; });
+                    }
+                    
+                    if (recipe.dedupe_mode === 'fuzzy' && recipe.dedupe_cols.length > 0) {
+                        for(let seen of seenFuzzy) {
+                            if(jaroWinkler(key, seen) > 0.88) { isDup = true; break; }
+                        }
+                        if(isDup) continue;
+                        seenFuzzy.push(key);
+                    } else {
+                        if (seenHashes.has(key)) continue;
+                        seenHashes.add(key);
+                    }
+                }
+                
+                validRows.push(processedRow);
+
+            }
+            
+            let totalPages = Math.ceil(validRows.length / pageSize);
+            if (currentPage >= totalPages && totalPages > 0) currentPage = totalPages - 1;
+            
+            let startIdx = currentPage * pageSize;
+            let pagedRows = validRows.slice(startIdx, startIdx + pageSize);
+            
+            pagedRows.forEach(row => {
+                tableHtml += `<tr>`;
+                row.forEach(cell => { tableHtml += `<td>${cell}</td>`; });
+                tableHtml += `</tr>`;
+            });
+            tableHtml += `</tbody></table>`;
+            
+            document.getElementById('table-wrapper').innerHTML = tableHtml;
+            document.getElementById('pagination-footer').style.display = 'flex';
+            document.getElementById('page-info').innerText = `Showing ${validRows.length > 0 ? startIdx + 1 : 0}-${Math.min(startIdx + pageSize, validRows.length)} of ${validRows.length} (Preview Limit)`;
+            document.getElementById('btn-prev-page').disabled = currentPage === 0;
+            document.getElementById('btn-next-page').disabled = currentPage >= totalPages - 1 || validRows.length === 0;
+        }
+
+        document.getElementById('btn-prev-page').addEventListener('click', () => { if (currentPage > 0) { currentPage--; renderPreview(); } });
+        document.getElementById('btn-next-page').addEventListener('click', () => { currentPage++; renderPreview(); });
+
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+                if (toggle.id === 'chkDedupe') {
+                    document.getElementById('rowDedupeCols').style.display = toggle.classList.contains('active') ? 'flex' : 'none';
+                }
+                currentPage = 0;
+                renderPreview();
+            });
+        });
+
+        document.querySelectorAll('.form-select').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                if (e.target.classList.contains('col-select')) { addPill(e.target.id, e.target.value); return; }
+                
+                currentPage = 0;
+                renderPreview();
+            });
+        });
+        
+        
+
+        
+        
+        document.getElementById('chkAbsoluteNums').addEventListener('change', () => {
+            currentPage = 0;
+            renderPreview();
+        });
+        document.getElementById('btn-save-recipe').addEventListener('click', async () => {
+            const recipe = {
+                sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                  strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                absolute_nums: document.getElementById('chkAbsoluteNums').checked,
+                date_format: document.getElementById('selDateLocale').value,
+                imputation_rules: imputationRules,
+                
+                dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                dedupe_mode: document.getElementById('selDedupeMode').value,
+                dedupe_cols: getMulti('selDedupeCols'), drop_missing_cols: getMulti('selDropMissingCols'),
+                date_cols: getMulti('selDateCols'),
+                number_cols: getMulti('selNumberCols'),
+                phone_cols: getMulti('selPhoneCols'),
+                title_cols: getMulti('selTitleCols')
+            };
+            try {
+                const path = await invoke('save_recipe_native', { recipeStr: JSON.stringify(recipe, null, 2) });
+                showToast("Recipe saved to:\n" + path);
+            } catch (e) {
+                if(e !== "Cancelled") showToast("Error saving recipe: " + e, true);
+            }
+        });
+
+        document.getElementById('btn-load-recipe').addEventListener('click', async () => {
+            try {
+                const recipeStr = await invoke('load_recipe_native');
+                const recipe = JSON.parse(recipeStr);
+                
+                if (recipe.sanitize_headers) document.getElementById('chkCleanHeaders').classList.add('active'); else document.getElementById('chkCleanHeaders').classList.remove('active');
+                  if (recipe.strip_phone_ext) document.getElementById('chkStripPhoneExt').classList.add('active'); else document.getElementById('chkStripPhoneExt').classList.remove('active');
+                if (recipe.drop_empty) document.getElementById('chkDropEmpty').classList.add('active'); else document.getElementById('chkDropEmpty').classList.remove('active');
+                if (recipe.strip_ctrl) document.getElementById('chkStripCtrl').classList.add('active'); else document.getElementById('chkStripCtrl').classList.remove('active');
+                if (recipe.trim_all) document.getElementById('chkTrimAll').classList.add('active'); else document.getElementById('chkTrimAll').classList.remove('active');
+                
+                if (recipe.dedupe_mode) document.getElementById('selDedupeMode').value = recipe.dedupe_mode;
+                if (recipe.dedupe) { 
+                    document.getElementById('chkDedupe').classList.add('active'); 
+                    document.getElementById('rowDedupeCols').style.display = 'flex'; 
+                } else { 
+                    document.getElementById('chkDedupe').classList.remove('active'); 
+                    document.getElementById('rowDedupeCols').style.display = 'none'; 
+                }
+                
+                if (recipe.date_format) document.getElementById('selDateLocale').value = recipe.date_format;
+                imputationRules = recipe.imputation_rules || [];
+                renderImputeRules();
+                
+                multiSelectState.selDedupeCols = recipe.dedupe_cols || []; renderPills('selDedupeCols'); multiSelectState.selDropMissingCols = recipe.drop_missing_cols || []; renderPills('selDropMissingCols');
+                multiSelectState.selDateCols = recipe.date_cols || []; renderPills('selDateCols');
+                multiSelectState.selNumberCols = recipe.number_cols || []; renderPills('selNumberCols');
+                multiSelectState.selPhoneCols = recipe.phone_cols || []; renderPills('selPhoneCols');
+                multiSelectState.selTitleCols = recipe.title_cols || []; renderPills('selTitleCols');
+                
+                showToast("Recipe loaded successfully!");
+                currentPage = 0;
+                renderPreview();
+                
+            } catch (e) {
+                if(e !== "Cancelled") showToast("Error loading recipe: " + e, true);
+            }
+        });
+
+        
+        document.getElementById('btn-close-file').addEventListener('click', () => {
+            activeFilePath = null;
+            rawColumns = [];
+            rawPreview = [];
+            nullCounts = [];
+            piiFlags = [];
+            totalRows = 0;
+            currentPage = 0;
+            
+            document.getElementById('stat-rows').innerText = '--';
+            document.getElementById('stat-size').innerText = '--';
+            document.getElementById('stat-health').innerText = '--';
+            document.getElementById('stat-health').style.color = 'inherit';
+            
+            document.getElementById('recipe-panel').style.display = 'none';
+            document.getElementById('btn-run').disabled = true;
+            document.getElementById('btn-save-export').style.display = 'none';
+            document.getElementById('btn-close-file').style.display = 'none';
+            
+            document.getElementById('table-wrapper').innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px;">No dataset loaded. Click "Load Dataset" to begin.</div>`;
+            document.getElementById('pagination-footer').style.display = 'none';
+        });
+        
+        
+        
+        function resetRecipeState() {
+            document.querySelectorAll('.toggle-switch.active').forEach(el => el.classList.remove('active'));
+            if (typeof multiSelectState !== 'undefined') {
+                Object.keys(multiSelectState).forEach(id => {
+                    multiSelectState[id] = [];
+                    renderPills(id);
+                });
+            }
+            if (typeof imputationRules !== 'undefined') {
+                imputationRules = [];
+                renderImputeRules();
+            }
+            document.getElementById('selDateLocale').value = 'US';
+            document.getElementById('selDedupeMode').value = 'hash';
+            document.getElementById('rowDedupeCols').style.display = 'none';
+        }
+
+        document.getElementById('btn-load-db').addEventListener('click', () => {
+            document.getElementById('db-modal').style.display = 'block'; document.getElementById('modal-backdrop').style.display = 'block';
+        });
+        document.getElementById('btn-cancel-db').addEventListener('click', () => {
+            document.getElementById('db-modal').style.display = 'none'; document.getElementById('modal-backdrop').style.display = 'none';
+        });
+        document.getElementById('btn-connect-db').addEventListener('click', async () => {
+            const uri = document.getElementById('db-uri').value;
+            if (!uri) return;
+            
+            document.getElementById('global-loader-text').innerText = "CONNECTING TO DATABASE...";
+            document.getElementById('global-loader').style.display = 'flex';
             
             try {
-                const resultJson = await invoke('process_massive_csv');
+                resetRecipeState();
+                const resultStr = await invoke('connect_db', { uri: uri });
+                const result = JSON.parse(resultStr);
+                showToast(result.msg);
+                document.getElementById('db-modal').style.display = 'none'; document.getElementById('modal-backdrop').style.display = 'none';
+                
+                let tblHtml = `<div style="padding: 32px; max-width: 600px; margin: 0 auto;">
+                    <h2 style="margin-bottom: 8px;">Select Table</h2>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Connected to: ${uri.split('@').pop()}</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">`;
+                result.tables.forEach(t => {
+                    tblHtml += `<button class="btn" style="justify-content: flex-start; padding: 16px; font-size: 13px; font-weight: 600; border-radius: 8px;" onclick="loadDbTable('${t}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        ${t}
+                    </button>`;
+                });
+                tblHtml += `</div></div>`;
+                document.getElementById('table-wrapper').innerHTML = tblHtml;
+                window.activeDbUri = uri;
+                
+            } catch (e) {
+                showToast("Database Error: " + e, true);
+            } finally {
+                document.getElementById('global-loader').style.display = 'none';
+            }
+        });
+        
+        window.loadDbTable = async function(tableName) {
+            document.getElementById('global-loader-text').innerText = `STREAMING DATA FROM ${tableName}...`;
+            document.getElementById('global-loader').style.display = 'flex';
+            
+            try {
+                const resultJson = await invoke('preview_db_table', { uri: window.activeDbUri, tableName: tableName });
                 const data = JSON.parse(resultJson);
                 activeFilePath = data.path;
+                rawColumns = data.columns;
+                rawPreview = data.preview;
+                nullCounts = data.null_counts;
+                piiFlags = data.pii_flags;
+                totalRows = data.total_rows;
                 
-                // --- PRO DASHBOARD LOGIC ---
-                document.getElementById('pro-dashboard').style.display = 'flex';
+                document.getElementById('recipe-panel').style.display = 'flex';
                 document.getElementById('stat-rows').innerText = data.total_rows.toLocaleString();
-                document.getElementById('stat-size').innerText = data.file_size_mb + ' MB';
+                document.getElementById('stat-size').innerText = data.file_size_mb;
                 
                 let totalCells = data.total_rows * data.columns.length;
                 let totalNulls = data.null_counts.reduce((a, b) => a + b, 0);
-                let piiCount = data.pii_flags.filter(Boolean).length;
-                
                 let healthScore = 100;
-                if (totalCells > 0) {
-                    healthScore = 100 - ((totalNulls / totalCells) * 100);
-                }
-                
+                if (totalCells > 0) { healthScore = 100 - ((totalNulls / totalCells) * 100); }
                 let healthEl = document.getElementById('stat-health');
                 healthEl.innerText = healthScore.toFixed(1) + '%';
                 if(healthScore < 80) healthEl.style.color = '#ef4444';
                 else if(healthScore < 95) healthEl.style.color = '#f59e0b';
                 else healthEl.style.color = '#10b981';
                 
-                let piiEl = document.getElementById('stat-pii');
-                if (piiCount > 0) {
-                    piiEl.innerHTML = piiCount + ` <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
-                    piiEl.style.color = '#ef4444';
-                } else {
-                    piiEl.innerText = "0 Detected";
-                    piiEl.style.color = '#10b981';
-                }
+                Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
+                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${c}">${c}</option>`).join("");
+                document.querySelectorAll('.col-select').forEach(el => el.innerHTML = options);
                 
-                // --- TABLE RENDERING WITH NULL BARS & PII FLAGS ---
-                let tableHtml = `<table><thead><tr>`;
-                data.columns.forEach((col, i) => { 
-                    let nullPct = data.total_rows > 0 ? (data.null_counts[i] / data.total_rows) * 100 : 0;
-                    let piiBadge = data.pii_flags[i] ? `<span class="pii-badge">PII DETECTED</span>` : '';
-                    
-                    tableHtml += `<th>
-                        ${col} ${piiBadge}
-                        <div class="null-bar-bg" title="${data.null_counts[i]} missing values"><div class="null-bar-fill" style="width: ${nullPct}%"></div></div>
-                    </th>`; 
-                });
-                tableHtml += `</tr></thead><tbody>`;
-                
-                data.preview.forEach(row => {
-                    tableHtml += `<tr>`;
-                    row.forEach(cell => { tableHtml += `<td>${cell}</td>`; });
-                    tableHtml += `</tr>`;
-                });
-                tableHtml += `</tbody></table>`;
-                
-                document.getElementById('table-wrapper').innerHTML = tableHtml;
-                
-                document.getElementById('recipe-list').innerHTML = `
-                    <div class="rule-item">Drop Missing (NaN) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
-                    <div class="rule-item">Remove Duplicates <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
-                    <div class="rule-item">Trim Whitespace <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
-                `;
-                document.getElementById('recipe-list').style.border = "none";
-                document.getElementById('recipe-list').style.padding = "0";
-                document.getElementById('recipe-list').style.textAlign = "left";
+                // Clear active rule UI state
+                imputationRules = [];
+                renderImputeRules();
                 
                 document.getElementById('btn-run').disabled = false;
+                document.getElementById('btn-close-file').style.display = 'flex';
                 
-            } catch (e) {
-                if(e !== "No file selected") alert("Rust Core Error: " + e);
+                renderPreview();
+                showToast("Connected to table: " + tableName);
+            } catch(e) {
+                showToast("DB Stream Error: " + e, true);
             } finally {
-                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Change Local CSV File`;
+                document.getElementById('global-loader').style.display = 'none';
+            }
+        };
+
+        
+        document.getElementById('btn-schedule').addEventListener('click', () => {
+            document.getElementById('cron-modal').style.display = 'block'; document.getElementById('modal-backdrop').style.display = 'block';
+        });
+        document.getElementById('btn-cancel-cron').addEventListener('click', () => {
+            document.getElementById('cron-modal').style.display = 'none'; document.getElementById('modal-backdrop').style.display = 'none';
+        });
+        document.getElementById('btn-pick-cron-folder').addEventListener('click', async () => {
+            const folderPath = await invoke('pick_directory');
+            if(folderPath) document.getElementById('cron-folder').value = folderPath;
+        });
+        document.getElementById('btn-save-cron').addEventListener('click', async () => {
+            const folderPath = document.getElementById('cron-folder').value;
+            const cronExpr = document.getElementById('cron-frequency').value;
+            
+            if (!folderPath) {
+                showToast("Please select a target folder first.", true);
+                return;
+            }
+            
+            // Get current recipe
+            const recipe = {
+                sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                  strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                absolute_nums: document.getElementById('chkAbsoluteNums').checked,
+                date_format: document.getElementById('selDateLocale').value,
+                imputation_rules: typeof imputationRules !== 'undefined' ? imputationRules : [],
+                dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                dedupe_mode: document.getElementById('selDedupeMode').value,
+                dedupe_cols: getMulti('selDedupeCols'), drop_missing_cols: getMulti('selDropMissingCols'),
+                date_cols: getMulti('selDateCols'),
+                number_cols: getMulti('selNumberCols'),
+                phone_cols: getMulti('selPhoneCols'),
+                title_cols: getMulti('selTitleCols')
+            };
+            
+            try {
+                const resultStr = await invoke('schedule_batch_job', { cronExpr: cronExpr, folderPath: folderPath, recipeStr: JSON.stringify(recipe) });
+                const result = JSON.parse(resultStr);
+                showToast(result.msg);
+                document.getElementById('cron-modal').style.display = 'none'; document.getElementById('modal-backdrop').style.display = 'none';
+            } catch (e) {
+                showToast("Scheduler Error: " + e, true);
             }
         });
 
-        // Run Logic
+        document.getElementById('btn-load-folder').addEventListener('click', async () => {
+            try {
+                const folderPath = await invoke('pick_directory');
+                if(!folderPath) return;
+                
+                // Get current recipe
+                const recipe = {
+                    sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                  strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                    drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                    strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                    trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                absolute_nums: document.getElementById('chkAbsoluteNums').checked,
+                    date_format: document.getElementById('selDateLocale').value,
+                    imputation_rules: typeof imputationRules !== 'undefined' ? imputationRules : [],
+                    dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                    dedupe_mode: document.getElementById('selDedupeMode').value,
+                    dedupe_cols: getMulti('selDedupeCols'), drop_missing_cols: getMulti('selDropMissingCols'),
+                    date_cols: getMulti('selDateCols'),
+                    number_cols: getMulti('selNumberCols'),
+                    phone_cols: getMulti('selPhoneCols'),
+                    title_cols: getMulti('selTitleCols')
+                };
+                
+                document.getElementById('global-loader-text').innerText = "BATCH PROCESSING FOLDER...";
+                document.getElementById('global-loader').style.display = 'flex';
+                
+                const resultStr = await invoke('execute_recipe_bulk', { folderPath: folderPath, recipeStr: JSON.stringify(recipe) });
+                const result = JSON.parse(resultStr);
+                
+                showToast(result.msg);
+                
+            } catch (e) {
+                showToast("Rust Core Error: " + e, true);
+            } finally {
+                document.getElementById('global-loader').style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-load').addEventListener('click', async () => {
+            try {
+                const filePath = await invoke('pick_csv_file');
+                if(!filePath) return;
+                
+                document.getElementById('global-loader-text').innerText = "STREAMING INITIAL PREVIEW...";
+                document.getElementById('global-loader').style.display = 'flex';
+                
+                resetRecipeState();
+                const resultJson = await invoke('process_massive_csv', { filePath: filePath });
+                const data = JSON.parse(resultJson);
+                activeFilePath = data.path;
+                rawColumns = data.columns;
+                rawPreview = data.preview;
+                nullCounts = data.null_counts;
+                piiFlags = data.pii_flags;
+                totalRows = data.total_rows;
+                
+                document.getElementById('recipe-panel').style.display = 'flex';
+                document.getElementById('stat-rows').innerText = data.total_rows.toLocaleString();
+                document.getElementById('stat-size').innerText = data.file_size_mb + ' MB';
+                
+                let totalCells = data.total_rows * data.columns.length;
+                let totalNulls = data.null_counts.reduce((a, b) => a + b, 0);
+                let healthScore = 100;
+                if (totalCells > 0) { healthScore = 100 - ((totalNulls / totalCells) * 100); }
+                let healthEl = document.getElementById('stat-health');
+                healthEl.innerText = healthScore.toFixed(1) + '%';
+                if(healthScore < 80) healthEl.style.color = '#ef4444';
+                else if(healthScore < 95) healthEl.style.color = '#f59e0b';
+                else healthEl.style.color = '#10b981';
+                
+                Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
+                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${c}">${c}</option>`).join("");
+                document.querySelectorAll('.col-select').forEach(el => el.innerHTML = options);
+                
+                document.getElementById('btn-run').disabled = false;
+                document.getElementById('btn-close-file').style.display = 'flex';
+                currentPage = 0;
+                renderPreview();
+                document.getElementById('global-loader').style.display = 'none';
+                
+            } catch (e) {
+                document.getElementById('global-loader').style.display = 'none';
+                if(e !== "No file selected") showToast("Rust Core Error: " + e, true);
+            }
+        });
+
+        
+        document.getElementById('btn-save-export').addEventListener('click', async () => {
+            if (!window.lastExportTempPath) return;
+            try {
+                const finalPath = await invoke('save_export_as', { tempPath: window.lastExportTempPath });
+                showToast("Data saved successfully to:\n" + finalPath);
+            } catch (e) {
+                if (e !== "Cancelled") showToast("Error saving: " + e, true);
+            }
+        });
         document.getElementById('btn-run').addEventListener('click', async () => {
             if (!activeFilePath) return;
             const btn = document.getElementById('btn-run');
-            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Compiling Dataset...`;
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Compiling Dataset...`;
             btn.disabled = true;
             
+            document.getElementById('global-loader-text').innerText = "EXECUTING PRO PIPELINE...";
+            document.getElementById('global-loader').style.display = 'flex';
+            
             try {
-                const result = await invoke('execute_recipe', { filePath: activeFilePath });
+                const recipe = {
+                    sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                  strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                    drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                    strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                    trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                absolute_nums: document.getElementById('chkAbsoluteNums').checked,
+                    date_format: document.getElementById('selDateLocale').value,
+                    imputation_rules: imputationRules,
+                    
+                    dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                dedupe_mode: document.getElementById('selDedupeMode').value,
+                    dedupe_cols: getMulti('selDedupeCols'), drop_missing_cols: getMulti('selDropMissingCols'),
+                    date_cols: getMulti('selDateCols'),
+                    number_cols: getMulti('selNumberCols'),
+                    phone_cols: getMulti('selPhoneCols'),
+                    title_cols: getMulti('selTitleCols')
+                };
                 
-                const tableWrapper = document.getElementById('table-wrapper');
-                const banner = document.createElement('div');
-                banner.style.padding = "16px";
-                banner.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
-                banner.style.borderBottom = "1px solid rgba(16, 185, 129, 0.2)";
-                banner.style.color = "#10b981";
-                banner.style.position = "sticky";
-                banner.style.top = "0";
-                banner.style.zIndex = "20";
-                banner.innerHTML = `<strong style="font-size: 14px;">Pipeline Successfully Executed in Rust</strong><br><span style="font-size:13px; opacity: 0.9;">${result.replace(/\n/g, '<br>')}</span>`;
-                tableWrapper.prepend(banner);
+                const resultStr = await invoke('execute_recipe', { filePath: activeFilePath, recipeStr: JSON.stringify(recipe) });
+                const result = JSON.parse(resultStr);
+                window.lastExportTempPath = result.temp_path;
+                document.getElementById('btn-save-export').style.display = 'flex';
+                showToast(result.msg);
+                
+                if (result.final_headers && result.final_preview) {
+                    let tHtml = `<table><thead><tr>`;
+                    result.final_headers.forEach(h => {
+                        tHtml += `<th style="padding-bottom: 12px; color: #10b981;">${h}</th>`;
+                    });
+                    tHtml += `</tr></thead><tbody>`;
+                    
+                    result.final_preview.forEach(row => {
+                        tHtml += `<tr>`;
+                        row.forEach(cell => {
+                            tHtml += `<td>${cell === null || cell === undefined || cell === '' ? '<span style="color: var(--text-muted); font-style: italic;">null</span>' : cell}</td>`;
+                        });
+                        tHtml += `</tr>`;
+                    });
+                    tHtml += `</tbody></table>`;
+                    
+                    document.getElementById('table-wrapper').innerHTML = tHtml;
+                    let titleEl = document.getElementById('preview-title');
+                    if (titleEl) {
+                        titleEl.innerHTML = `FINAL EXPORT PREVIEW <span style="font-size: 10px; font-weight: normal; color: var(--text-muted); margin-left: 8px;">(Ready to Save)</span>`;
+                    }
+                }
                 
             } catch (e) {
-                alert("Rust Core Error: " + e);
+                showToast("Rust Core Error: " + e, true);
             } finally {
-                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Executed Successfully`;
-                setTimeout(() => {
-                    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Native Pipeline`;
-                    btn.disabled = false;
-                }, 3000);
+                document.getElementById('global-loader').style.display = 'none';
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Execute Pipeline`;
+                btn.disabled = false;
             }
         });
-    </script>
+</script>
 </body>
 </html>

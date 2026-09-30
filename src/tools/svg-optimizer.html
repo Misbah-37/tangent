@@ -45,18 +45,18 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
   :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
-    --success: #10b981;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     --success-bg: rgba(16, 185, 129, 0.12);
   }
 
@@ -87,7 +87,7 @@
     font-size: 2.3rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 12px;
   }
 
@@ -107,7 +107,7 @@
 
   /* Drag & Drop Upload Zone */
   .drop-zone {
-    background: #0e121a;
+    background: var(--bg-base);
     border: 2px dashed #242e42;
     border-radius: 12px;
     padding: 32px 20px;
@@ -137,7 +137,7 @@
   .drop-zone h3 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 6px;
   }
 
@@ -194,7 +194,7 @@
   .toggle-row input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #00d2ff;
+    accent-color: var(--accent);
     cursor: pointer;
   }
 
@@ -212,9 +212,9 @@
 
   .custom-select {
     width: 100%;
-    background: #0b0e14;
+    background: var(--bg-base);
     border: 1px solid #242c3d;
-    color: #fff;
+    color: var(--text-main);
     padding: 8px 12px;
     border-radius: 6px;
     font-size: 13px;
@@ -228,8 +228,8 @@
 
   /* Metric Savings Bar */
   .metrics-card {
-    background: #0b0e14;
-    border: 1px solid #1f2738;
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 20px;
@@ -244,7 +244,7 @@
 
   .savings-badge {
     background: var(--success-bg);
-    color: var(--success);
+    color: var(--accent-emerald);
     border: 1px solid rgba(16, 185, 129, 0.35);
     padding: 4px 10px;
     border-radius: 9999px;
@@ -326,7 +326,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 18px;
-    background: #141824;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
   }
 
@@ -363,7 +363,7 @@
 
   .zoom-btn:hover {
     background: #2b354b;
-    color: #fff;
+    color: var(--text-main);
   }
 
   .bg-toggles {
@@ -394,7 +394,7 @@
     background: repeating-conic-gradient(#222a3a 0% 25%, #141a24 0% 50%) 50% / 16px 16px;
   }
   .stage-display.bg-dark {
-    background: #08090d;
+    background: var(--bg-base);
   }
   .stage-display.bg-light {
     background: #ffffff;
@@ -414,7 +414,7 @@
 
   /* Code Tabs & Textarea */
   .code-inspector {
-    background: #0a0d14;
+    background: var(--bg-base);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
@@ -448,7 +448,7 @@
     text-align: center;
     font-size: 1.6rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 24px;
   }
 
@@ -483,7 +483,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
@@ -549,7 +549,7 @@
       <!-- Real-time Metrics Card -->
       <div class="metrics-card">
         <div class="metrics-header">
-          <span style="font-size: 13px; font-weight: 700; color: #fff;">Compression Gain</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">Compression Gain</span>
           <span class="savings-badge" id="savingsBadge">-0.0%</span>
         </div>
         <div class="metrics-row">
@@ -558,7 +558,7 @@
         </div>
         <div class="metrics-row">
           <span>Optimized Size:</span>
-          <strong id="optSizeText" style="color: #00d2ff;">0 B</strong>
+          <strong id="optSizeText" style="color: var(--accent);">0 B</strong>
         </div>
         <div class="metrics-row">
           <span>Bytes Saved:</span>
@@ -598,9 +598,9 @@
             </div>
             <div class="bg-toggles">
               <button type="button" class="bg-btn" style="background: repeating-conic-gradient(#222a3a 0% 25%, #141a24 0% 50%) 50% / 10px 10px;" data-bg="bg-checker" title="Checkerboard"></button>
-              <button type="button" class="bg-btn" style="background: #08090d;" data-bg="bg-dark" title="Dark"></button>
+              <button type="button" class="bg-btn" style="background: var(--bg-base);" data-bg="bg-dark" title="Dark"></button>
               <button type="button" class="bg-btn" style="background: #ffffff;" data-bg="bg-light" title="White"></button>
-              <button type="button" class="bg-btn" style="background: #00d2ff;" data-bg="bg-accent" title="Accent Glow"></button>
+              <button type="button" class="bg-btn" style="background: var(--accent);" data-bg="bg-accent" title="Accent Glow"></button>
             </div>
           </div>
         </div>
@@ -628,21 +628,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
       </div>
       <h3>Editor Bloat Elimination</h3>
       <p>Safely strip Adobe Illustrator, Inkscape, Sketch, and Figma metadata, unreferenced IDs, doctype declarations, and redundant XML comments.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
       </div>
       <h3>Precision Decimal Rounding</h3>
       <p>Round excessive coordinate decimals from 6+ digits down to 1-2 places, drastically slashing file byte sizes without visible geometry distortion.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
       </div>
       <h3>Real-Time Visual Diff</h3>
       <p>Inspect original vs minified SVGs side-by-side with live zoom, byte counter metrics, and instant 2x Retina PNG rasterization.</p>
@@ -699,7 +699,7 @@
     <circle cx="60.00000" cy="60.00000" r="42.00000" fill="none" stroke="#1e293b" stroke-width="1.50000" stroke-dasharray="4 4"/>
     <path d="M 60.00000 95.00000 C 40.67000 95.00000 25.00000 79.33000 25.00000 60.00000 C 25.00000 40.67000 40.67000 25.00000 60.00000 25.00000 L 98.00000 25.00000" 
           fill="none" stroke="url(#cyanGrad)" stroke-width="7.00000" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="98.00000" cy="25.00000" r="5.00000" fill="#00d2ff"/>
+    <circle cx="98.00000" cy="25.00000" r="5.00000" fill="var(--accent)"/>
   </g>
   <g display="none"><rect width="120" height="120" fill="#ff0000"/></g>
 </svg>`;
@@ -954,7 +954,7 @@
     savedBytesText.textContent = `${formatBytes(Math.abs(saved))} (${saved >= 0 ? '-' : '+'}${pct}%)`;
 
     savingsBadge.textContent = `${saved >= 0 ? '-' : '+'}${Math.abs(pct)}%`;
-    savingsBadge.style.color = saved >= 0 ? 'var(--success)' : 'var(--accent)';
+    savingsBadge.style.color = saved >= 0 ? 'var(--accent-emerald)' : 'var(--accent)';
   }
 
   function formatBytes(bytes) {

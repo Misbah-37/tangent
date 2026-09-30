@@ -37,18 +37,18 @@
   .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
   
   .btn { display: inline-flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; border: none; }
-  .btn-primary { background: #00d2ff; color: #11141d; padding: 14px 28px; box-shadow: 0 4px 14px rgba(0, 210, 255, 0.25); }
+  .btn-primary { background: var(--accent); color: #11141d; padding: 14px 28px; box-shadow: 0 4px 14px rgba(0, 210, 255, 0.25); }
   .btn-primary:hover { background: #33dcff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 210, 255, 0.35); }
-  .btn-demo { background: transparent; color: #94a3b8; padding: 12px 24px; border: 1px solid #1f2533; }
-  .btn-demo:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
+  .btn-demo { background: transparent; color: var(--text-muted); padding: 12px 24px; border: 1px solid var(--border-color); }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
 
   .progress-bar-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 8px; display: none; }
-  .progress-bar-fill { height: 100%; width: 0%; background: #00d2ff; transition: width 0.2s ease; }
+  .progress-bar-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s ease; }
 
   .info-section { margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 50px; }
   .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px; }
   .feature-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; }
-  .feature-icon { margin-bottom: 16px; color: #00d2ff; display: inline-flex; }
+  .feature-icon { margin-bottom: 16px; color: var(--accent); display: inline-flex; }
   .feature-card h3 { font-size: 1.2rem; margin-top: 0; margin-bottom: 12px; }
   .feature-card p { color: var(--text-secondary); line-height: 1.6; margin: 0; }
   
@@ -56,14 +56,14 @@
     background-image: linear-gradient(45deg, #11141d 25%, transparent 25%), linear-gradient(-45deg, #11141d 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #11141d 75%), linear-gradient(-45deg, transparent 75%, #11141d 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    background-color: #0b0d13;
+    background-color: var(--bg-base);
   }
 </style>
 
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     <span>100% LOCAL AI PROCESSING</span>
   </div>
   <h1>AI Background Remover</h1>
@@ -75,7 +75,7 @@
     <div class="panel-section">
       <h3>Select Image</h3>
       <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" style="margin-bottom: 12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 12px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop Image Here</div>
         <div style="font-size: 12px; color: var(--text-secondary);">Supports JPG, PNG, WebP</div>
         <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -88,7 +88,7 @@
     
     <div class="panel-section" id="statusSection" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-        <span id="statusText" style="font-size: 13px; font-weight: 500; color: #00d2ff;">Initializing AI Model...</span>
+        <span id="statusText" style="font-size: 13px; font-weight: 500; color: var(--accent);">Initializing AI Model...</span>
         <span id="statusPercent" style="font-size: 12px; color: var(--text-secondary);">0%</span>
       </div>
       <div class="progress-bar-container" id="progressBarContainer">
@@ -97,7 +97,7 @@
     </div>
     
     <div class="panel-section" id="actionSection" style="display: none;">
-        <div id="refinementToolbar" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; background: var(--bg-card-inner); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <div id="refinementToolbar" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; background: var(--bg-surface); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
           <h4 style="margin: 0; color: var(--text-main); font-size: 14px;">Manual Refinement (Brush over mistakes)</h4>
           <div style="display: flex; gap: 10px;">
             <button class="btn btn-primary" id="btnErase" style="flex: 1; padding: 8px;">Erase</button>
@@ -127,7 +127,7 @@
     </div>
     
     <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">One-Time Model Download</h3>
       <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To remove backgrounds locally, your browser needs to download a 17MB AI vision model. It will be cached for instant offline use in the future.</p>
       <button class="btn btn-primary" id="btnConsentDownload">Download & Process Image</button>
@@ -141,17 +141,17 @@
 <div class="info-section">
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
       <h3>Zero-Upload Privacy</h3>
       <p>Your photos contain highly sensitive personal information. Tangent runs the background removal algorithm locally in your browser memory.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
       <h3>Apache 2.0 Engine</h3>
       <p>Powered by Xenova/modnet via Transformers.js. No toxic AGPL or GPL dependencies. 100% cleared for commercial use.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
+      <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
       <h3>Instant Caching</h3>
       <p>After the initial 17MB model download, the tool caches the weights directly in your browser. All future background removals happen instantly offline.</p>
     </div>

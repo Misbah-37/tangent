@@ -50,21 +50,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --danger: #ef4444;
-    --success: #10b981;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
   }
 
   html {
@@ -79,7 +79,7 @@
   body {
     margin: 0;
 
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -95,7 +95,7 @@
     background-color: rgba(8, 9, 13, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #1a1f2e;
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     width: 100%;
     left: 0;
@@ -137,7 +137,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -149,7 +149,7 @@
   }
 
   .nav-link:hover, .nav-link.active {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Toolkit Toggle Button in Navbar */
@@ -171,14 +171,14 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
   }
 
   .toolkit-toggle-btn .sidebar-icon {
-    color: #00d2ff;
+    color: var(--accent);
     transition: transform 0.2s ease;
   }
 
@@ -269,7 +269,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -280,7 +280,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
@@ -306,7 +306,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column !important;
       align-items: stretch !important;
       padding: 16px 20px 24px 20px !important;
@@ -323,7 +323,7 @@
     .nav-link {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
     }
   }
@@ -332,7 +332,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -413,7 +413,7 @@
   }
 
   .diff-card {
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 16px 14px;
@@ -438,7 +438,7 @@
   .diff-card-title {
     font-weight: 700;
     font-size: 1rem;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 4px;
   }
 
@@ -482,14 +482,14 @@
 
   .btn-secondary {
     background: #171b26;
-    color: #ffffff;
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     margin-top: 20px;
   }
 
   .btn-secondary:hover {
     border-color: rgba(255, 255, 255, 0.3);
-    color: #ffffff;
+    color: var(--text-main);
     box-shadow: none;
     transform: translateY(-1px);
   }
@@ -519,7 +519,7 @@
   }
 
   .typing-box {
-    background-color: var(--bg-card-inner);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 32px 28px;
@@ -580,13 +580,13 @@
     border: 1px solid var(--accent);
   }
   .current.enter-char.error-flash {
-    color: var(--danger) !important;
+    color: var(--accent-danger) !important;
     background-color: rgba(239, 68, 68, 0.25) !important;
-    border-color: var(--danger) !important;
+    border-color: var(--accent-danger) !important;
   }
 
   .correct {
-    color: #ffffff;
+    color: var(--text-main);
     font-weight: 500;
   }
 
@@ -601,9 +601,9 @@
   }
 
   .current.error-flash {
-    color: var(--danger) !important;
+    color: var(--accent-danger) !important;
     background-color: rgba(239, 68, 68, 0.25) !important;
-    border-bottom-color: var(--danger) !important;
+    border-bottom-color: var(--accent-danger) !important;
     text-shadow: 0 0 10px rgba(239, 68, 68, 0.8) !important;
     animation: shake 0.2s ease-in-out;
   }
@@ -617,7 +617,7 @@
   /* --- Results Card --- */
   .results-card {
     display: none;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 24px;
@@ -670,7 +670,7 @@
   }
 
   .hint-box {
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.86rem;
     text-align: center;
     margin-top: 14px;
@@ -688,7 +688,7 @@
   }
 
   .seo-article h2, .seo-article h3 {
-    color: #ffffff;
+    color: var(--text-main);
     margin-top: 2rem;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
@@ -706,7 +706,7 @@
     border-radius: 10px;
     padding: 18px 20px;
     cursor: pointer;
-    color: #ffffff;
+    color: var(--text-main);
     font-weight: 600;
     transition: border-color 0.2s ease;
   }
@@ -728,9 +728,9 @@
     border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     margin-top: 60px;
   }
 
@@ -814,7 +814,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     100% CLIENT-SIDE PRIVACY SHIELD
@@ -898,7 +898,7 @@
 
       <!-- Results Card -->
       <div class="results-card" id="resultsCard">
-        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #ffffff;">Benchmark Results</h3>
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Benchmark Results</h3>
         
         <div class="results-metrics">
           <div class="metric-box">
@@ -923,7 +923,7 @@
             <span>Accuracy Text Review</span>
             <span style="font-size: 0.74rem; font-weight: 500;"><span style="color:#34d399;">●</span> Clean Hit &nbsp; <span style="color:#f87171;">●</span> Typo</span>
           </div>
-          <div id="accuracyReviewBox" style="padding: 14px 16px; background: var(--bg-card-inner); border: 1px solid var(--border-color); border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; line-height: 1.8; max-height: 160px; overflow-y: auto;"></div>
+          <div id="accuracyReviewBox" style="padding: 14px 16px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; line-height: 1.8; max-height: 160px; overflow-y: auto;"></div>
         </div>
       </div>
 
@@ -945,21 +945,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
       <h3>Sub-Millisecond Keystroke Velocity</h3>
       <p>Tracks real-time typing speed with sub-millisecond event polling, calculating Net WPM, Gross WPM, accuracy, and keystroke consistency.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
       </div>
       <h3>Syntax Drills & Prose Modes</h3>
       <p>Practice coding syntax drills with JavaScript, Python, brackets, punctuation, and common English word lists to eliminate keyboard friction.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
       </div>
       <h3>Private In-Browser Analytics</h3>
       <p>Detailed session burst graphs and speed percentiles are computed and stored in your browser's private localStorage with zero user tracking.</p>
@@ -1328,7 +1328,7 @@
     const bestScore = Math.max(wpm, previousBest);
     highScoreContainer.innerHTML = `
       <div class="high-score-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="7"></circle>
           <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
         </svg>

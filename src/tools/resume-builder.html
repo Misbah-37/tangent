@@ -45,17 +45,17 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
   :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   }
 
   .clean-header {
@@ -85,7 +85,7 @@
     font-size: 2.3rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 12px;
   }
 
@@ -133,7 +133,7 @@
   .section-box {
     margin-bottom: 24px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #1a2233;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .section-box:last-child {
@@ -179,9 +179,9 @@
 
   .form-input, .form-textarea {
     width: 100%;
-    background: #0b0e14;
+    background: var(--bg-base);
     border: 1px solid #242c3d;
-    color: #fff;
+    color: var(--text-main);
     padding: 9px 12px;
     border-radius: 6px;
     font-size: 13px;
@@ -201,8 +201,8 @@
   }
 
   .item-card {
-    background: #0d111a;
-    border: 1px solid #1e2638;
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 14px;
     margin-bottom: 12px;
@@ -215,7 +215,7 @@
     right: 10px;
     background: transparent;
     border: none;
-    color: #64748b;
+    color: var(--text-subtle);
     cursor: pointer;
     font-size: 16px;
   }
@@ -267,7 +267,7 @@
 
   .btn-aux:hover {
     background: #202636;
-    color: #fff;
+    color: var(--text-main);
     border-color: var(--accent);
   }
 
@@ -310,7 +310,7 @@
 
   /* Paper Document Sheet */
   .paper-stage {
-    background: #0a0d14;
+    background: var(--bg-base);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 28px 20px;
@@ -531,15 +531,15 @@
   /* --- Template 6: Creative Bold --- */
   .resume-sheet.tpl-creative .sheet-header {
     background: var(--tpl-accent);
-    color: #fff;
+    color: var(--text-main);
     padding: 20px;
     margin: -24mm -22mm 20mm -22mm;
   }
-  .resume-sheet.tpl-creative .sheet-name { font-size: 30px; font-weight: 900; color: #fff; text-transform: uppercase; }
+  .resume-sheet.tpl-creative .sheet-name { font-size: 30px; font-weight: 900; color: var(--text-main); text-transform: uppercase; }
   .resume-sheet.tpl-creative .sheet-title { color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 8px; }
   .resume-sheet.tpl-creative .sheet-contact { color: rgba(255,255,255,0.8); }
   .resume-sheet.tpl-creative .sheet-sec-title { font-size: 16px; font-weight: 900; color: var(--tpl-accent); margin-bottom: 12px; border-left: 4px solid var(--tpl-accent); padding-left: 8px; }
-  .resume-sheet.tpl-creative .sheet-photo { border-color: #fff; border-radius: 8px; }
+  .resume-sheet.tpl-creative .sheet-photo { border-color: var(--text-main); border-radius: 8px; }
 
   /* --- Template 7: Academic CV --- */
   .resume-sheet.tpl-academic { font-family: Palatino, "Palatino Linotype", serif; }
@@ -584,7 +584,7 @@
 
   /* --- Template 12: Startup Tech --- */
   .resume-sheet.tpl-startup .sheet-name { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
-  .resume-sheet.tpl-startup .sheet-sec-title { font-family: monospace; font-size: 14px; background: #0f172a; color: #fff; padding: 4px 10px; display: inline-block; margin-bottom: 16px; }
+  .resume-sheet.tpl-startup .sheet-sec-title { font-family: monospace; font-size: 14px; background: var(--bg-base); color: var(--text-main); padding: 4px 10px; display: inline-block; margin-bottom: 16px; }
   .resume-sheet.tpl-startup .sheet-item-head span:last-child { font-family: monospace; color: var(--tpl-accent); }
   .resume-sheet.tpl-startup .skill-badge { font-family: monospace; border: 1px dashed #94a3b8; background: transparent; }
 
@@ -604,12 +604,12 @@
   .resume-sheet.tpl-portfolio .sheet-sec-title { font-size: 18px; font-weight: 800; border-bottom: 4px solid var(--tpl-accent); display: inline-block; padding-bottom: 2px; margin-bottom: 16px; }
 
   /* --- Template 15: Sleek Dark Accent --- */
-  .resume-sheet.tpl-sleek .sheet-header { background: #0f172a; color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; }
-  .resume-sheet.tpl-sleek .sheet-name { color: #fff; font-size: 26px; }
+  .resume-sheet.tpl-sleek .sheet-header { background: var(--bg-base); color: var(--text-main); padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; }
+  .resume-sheet.tpl-sleek .sheet-name { color: var(--text-main); font-size: 26px; }
   .resume-sheet.tpl-sleek .sheet-title { color: var(--tpl-accent); }
   .resume-sheet.tpl-sleek .sheet-contact { color: #cbd5e1; }
   .resume-sheet.tpl-sleek .sheet-sec-title { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--tpl-accent); padding-bottom: 4px; margin-bottom: 12px; }
-  .resume-sheet.tpl-sleek .skill-badge { background: #0f172a; color: #fff; border: none; }
+  .resume-sheet.tpl-sleek .skill-badge { background: var(--bg-base); color: var(--text-main); border: none; }
   
   /* General sheet elements */
   .sheet-header {
@@ -699,7 +699,7 @@
     text-align: center;
     font-size: 1.6rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-main);
     margin-bottom: 24px;
   }
 
@@ -777,9 +777,9 @@
     /* --- ZOOM & PAN --- */
     .zoom-toolbar { position: absolute; bottom: 24px; right: 24px; background: rgba(18, 22, 33, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; display: flex; align-items: center; gap: 4px; padding: 6px; z-index: 100; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
     .zoom-btn { background: transparent; border: none; color: #cbd5e1; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s ease; }
-    .zoom-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-    .zoom-label { color: #94a3b8; font-size: 0.75rem; font-weight: 600; padding: 0 8px; min-width: 48px; text-align: center; cursor: pointer; user-select: none; }
-    .zoom-label:hover { color: #fff; }
+    .zoom-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+    .zoom-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; padding: 0 8px; min-width: 48px; text-align: center; cursor: pointer; user-select: none; }
+    .zoom-label:hover { color: var(--text-main); }
     .zoom-divider { width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0 4px; }
     .paper-stage { overflow-y: scroll !important; overflow-x: auto !important; cursor: grab; align-items: flex-start !important; justify-content: flex-start !important; }
     .paper-stage.is-dragging { cursor: grabbing; }
@@ -791,7 +791,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
@@ -886,8 +886,8 @@
     <div class="preview-toolbar" style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center;">
       <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 6px;">
-          <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Template:</label>
-          <select id="tplSelect" class="form-input" style="width: auto; padding: 6px 12px; font-size: 12.5px; font-weight: 600; background: #131722; color: #fff; border: 1px solid #283347; border-radius: 6px; cursor: pointer;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Template:</label>
+          <select id="tplSelect" class="form-input" style="width: auto; padding: 6px 12px; font-size: 12.5px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border: 1px solid #283347; border-radius: 6px; cursor: pointer;">
             <option value="modern">Modern Minimal</option>
             <option value="executive">Executive Serif</option>
             <option value="sidebar">Tech 2-Column Sidebar</option>
@@ -907,7 +907,7 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 6px;">
-          <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Accent:</label>
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Accent:</label>
           <div class="color-dots" style="display: flex; gap: 6px;">
             <div class="color-dot active" style="background: #0284c7; width: 18px; height: 18px;" data-tpl-color="#0284c7" title="Navy Sky"></div>
             <div class="color-dot" style="background: #059669; width: 18px; height: 18px;" data-tpl-color="#059669" title="Forest Emerald"></div>
@@ -938,21 +938,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
       </div>
       <h3>ATS-Compliant Vector Typography</h3>
       <p>Semantic layout hierarchies and standard system typography ensure Applicant Tracking Systems (ATS) parse your skills cleanly.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
       </div>
       <h3>15 Professional Layouts & Accent Themes</h3>
       <p>Choose from 15 curated styles including Executive, Classic, Minimalist, Tech, Creative, and Timeline with optional photo support and live accent themes.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
       <h3>100% Free Forever Without Watermarks</h3>
       <p>No credit cards, no trial periods, and zero paywalls. Download print-ready high-resolution A4 PDFs without watermarks anytime.</p>

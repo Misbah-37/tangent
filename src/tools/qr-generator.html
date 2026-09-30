@@ -53,21 +53,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    --bg-page: #08090d;
-    --bg-card: #11141d;
-    --bg-card-inner: #0b0d13;
-    --border-color: #1f2533;
-    --border-hover: rgba(0, 210, 255, 0.4);
-    --accent: #00d2ff;
-    --accent-glow: rgba(0, 210, 255, 0.15);
-    --accent-hover: #33dcff;
-    --danger: #ef4444;
-    --success: #10b981;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
+    
+    
+    
   }
 
   html {
@@ -82,7 +82,7 @@
   body {
     margin: 0;
 
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -98,7 +98,7 @@
     background-color: rgba(8, 9, 13, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #1a1f2e;
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     width: 100%;
     left: 0;
@@ -140,7 +140,7 @@
   }
 
   .nav-link {
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -152,7 +152,7 @@
   }
 
   .nav-link:hover, .nav-link.active {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Toolkit Toggle Button in Navbar */
@@ -174,14 +174,14 @@
 
   .toolkit-toggle-btn:hover,
   body.sidebar-open .toolkit-toggle-btn {
-    color: #ffffff;
+    color: var(--text-main);
     background-color: rgba(0, 210, 255, 0.12);
     border-color: rgba(0, 210, 255, 0.4);
     box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
   }
 
   .toolkit-toggle-btn .sidebar-icon {
-    color: #00d2ff;
+    color: var(--accent);
     transition: transform 0.2s ease;
   }
 
@@ -272,7 +272,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -283,7 +283,7 @@
   }
 
   .menu-toggle:hover {
-    color: #00d2ff;
+    color: var(--accent);
   }
 
   /* Consolidated Mobile Navigation & Overlay Sidebar (<= 960px) */
@@ -309,7 +309,7 @@
       background-color: rgba(8, 9, 13, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid #1f2533;
+      border-bottom: 1px solid var(--border-color);
       flex-direction: column !important;
       align-items: stretch !important;
       padding: 16px 20px 24px 20px !important;
@@ -326,7 +326,7 @@
     .nav-link {
       font-size: 1rem;
       padding: 10px 0;
-      border-bottom: 1px solid #161a24;
+      border-bottom: 1px solid var(--border-color);
       width: 100%;
     }
   }
@@ -335,7 +335,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     cursor: pointer;
     padding: 8px;
     margin-left: auto;
@@ -418,7 +418,7 @@
   .mode-selector {
     display: flex;
     gap: 8px;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     padding: 6px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
@@ -445,7 +445,7 @@
   }
 
   .mode-btn:hover {
-    color: #ffffff;
+    color: var(--text-main);
   }
 
   .mode-btn.active {
@@ -471,8 +471,8 @@
   textarea, input[type="text"], input[type="password"], select {
     width: 100%;
     padding: 12px 14px;
-    background-color: var(--bg-card-inner);
-    color: #ffffff;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-family: inherit;
@@ -508,7 +508,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     padding: 6px 12px;
     border-radius: 8px;
@@ -544,7 +544,7 @@
     font-size: 0.78rem;
     font-weight: 500;
     cursor: pointer;
-    background: var(--bg-card-inner);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     transition: all 0.2s ease;
@@ -552,7 +552,7 @@
 
   .palette-chip:hover {
     border-color: var(--accent);
-    color: #ffffff;
+    color: var(--text-main);
   }
 
   /* --- Output Preview Section --- */
@@ -561,7 +561,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--bg-card-inner);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 28px 20px;
@@ -588,7 +588,7 @@
   }
 
   .placeholder-info {
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.92rem;
     text-align: center;
     line-height: 1.6;
@@ -633,7 +633,7 @@
 
   .btn-secondary {
     background: #171b26;
-    color: #ffffff;
+    color: var(--text-main);
     border: 1px solid var(--border-color);
   }
   .btn-secondary:hover {
@@ -655,7 +655,7 @@
   }
 
   .seo-article h2, .seo-article h3 {
-    color: #ffffff;
+    color: var(--text-main);
     margin-top: 2rem;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
@@ -673,7 +673,7 @@
     border-radius: 10px;
     padding: 18px 20px;
     cursor: pointer;
-    color: #ffffff;
+    color: var(--text-main);
     font-weight: 600;
     transition: border-color 0.2s ease;
   }
@@ -695,9 +695,9 @@
     border-top: 1px solid var(--border-color);
     padding: 40px 24px;
     text-align: center;
-    color: var(--text-dim);
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    background-color: var(--bg-page);
+    background-color: var(--bg-base);
     margin-top: 60px;
   }
 
@@ -866,7 +866,7 @@
 <!-- --- CONTENT --- -->
 <div class="clean-header">
   <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
     100% CLIENT-SIDE PRIVACY SHIELD
@@ -1044,21 +1044,21 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
       </div>
       <h3>Permanent Static QR Codes</h3>
       <p>Direct matrix encoding means your QR codes never expire and require no intermediary URL redirection services or subscription fees.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
       </div>
       <h3>One-Tap Wi-Fi & vCard Formats</h3>
       <p>Create Wi-Fi login codes that connect guests instantly without typing passwords, plus digital business cards and geo-bookmarks.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       </div>
       <h3>Vector SVG & High-DPI PNG</h3>
       <p>Download infinite-resolution vector SVGs for print billboards, packaging, and t-shirts, or high-res PNGs for websites and menus.</p>

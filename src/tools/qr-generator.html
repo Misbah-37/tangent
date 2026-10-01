@@ -95,7 +95,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
-    background-color: rgba(8, 9, 13, 0.92);
+    background: color-mix(in srgb, var(--bg-base) 88%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
@@ -159,7 +159,7 @@
   .toolkit-toggle-btn {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -306,7 +306,7 @@
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
@@ -449,7 +449,7 @@
   }
 
   .mode-btn.active {
-    background: #171b26;
+    background: var(--bg-surface);
     color: var(--accent);
     border: 1px solid rgba(0, 210, 255, 0.3);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -465,7 +465,7 @@
     font-size: 0.88rem;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #e2e8f0;
+    color: var(--text-main);
   }
 
   textarea, input[type="text"], input[type="password"], select {
@@ -632,7 +632,7 @@
   }
 
   .btn-secondary {
-    background: #171b26;
+    background: var(--bg-surface);
     color: var(--text-main);
     border: 1px solid var(--border-color);
   }
@@ -728,7 +728,7 @@
       top: 100%;
       left: 0;
       width: 100%;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);

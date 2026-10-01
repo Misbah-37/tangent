@@ -454,11 +454,11 @@
   }
   
   .scroll-btn.left {
-    background: linear-gradient(to right, var(--bg-base) 10%, transparent 100%);
+    background: linear-gradient(to right, var(--bg-base) 10%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
   
   .scroll-btn.right {
-    background: linear-gradient(to left, var(--bg-base) 10%, transparent 100%);
+    background: linear-gradient(to left, var(--bg-base) 10%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
   
   .carousel-container:hover .scroll-btn {
@@ -469,10 +469,10 @@
     color: var(--accent);
   }
   .scroll-btn.left:hover {
-    background: linear-gradient(to right, var(--bg-base) 40%, transparent 100%);
+    background: linear-gradient(to right, var(--bg-base) 40%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
   .scroll-btn.right:hover {
-    background: linear-gradient(to left, var(--bg-base) 40%, transparent 100%);
+    background: linear-gradient(to left, var(--bg-base) 40%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
   
   .track-mask-wrapper {
@@ -1910,6 +1910,15 @@
   };
 </script>
 
-
+<script>
+function scrollTrack(trackId, direction) {
+  const track = document.getElementById(trackId);
+  if (track) {
+    const cardWidth = 320; // Approx card width + gap
+    const scrollAmount = track.clientWidth > cardWidth * 2 ? track.clientWidth * 0.75 : cardWidth;
+    track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  }
+}
+</script>
 </body>
 </html>

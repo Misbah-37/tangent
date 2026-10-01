@@ -211,14 +211,14 @@
     display: block;
     font-size: 12.5px;
     font-weight: 600;
-    color: #cbd5e1;
+    color: var(--text-muted);
     margin-bottom: 5px;
   }
 
   .form-input, .form-textarea {
     width: 100%;
     background: var(--bg-base);
-    border: 1px solid #242c3d;
+    border: 1px solid var(--border-color);
     color: var(--text-main);
     padding: 9px 12px;
     border-radius: 6px;
@@ -267,7 +267,7 @@
     align-items: center;
     gap: 6px;
     background: #171c28;
-    border: 1px dashed #2b364d;
+    border: 1px dashed var(--border-color);
     color: var(--accent);
     padding: 8px 14px;
     border-radius: 6px;
@@ -280,7 +280,7 @@
   }
 
   .btn-add:hover {
-    background: #1e2536;
+    background: var(--bg-surface);
     border-color: var(--accent);
   }
 
@@ -293,8 +293,8 @@
   .btn-aux {
     flex: 1;
     padding: 8px;
-    background: #171b26;
-    border: 1px solid #283042;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     color: var(--text-muted);
     border-radius: 6px;
     font-size: 12px;
@@ -304,7 +304,7 @@
   }
 
   .btn-aux:hover {
-    background: #202636;
+    background: var(--bg-surface);
     color: var(--text-main);
     border-color: var(--accent);
   }
@@ -645,7 +645,7 @@
   .resume-sheet.tpl-sleek .sheet-header { background: var(--bg-base); color: var(--text-main); padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; }
   .resume-sheet.tpl-sleek .sheet-name { color: var(--text-main); font-size: 26px; }
   .resume-sheet.tpl-sleek .sheet-title { color: var(--tpl-accent); }
-  .resume-sheet.tpl-sleek .sheet-contact { color: #cbd5e1; }
+  .resume-sheet.tpl-sleek .sheet-contact { color: var(--text-muted); }
   .resume-sheet.tpl-sleek .sheet-sec-title { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--tpl-accent); padding-bottom: 4px; margin-bottom: 12px; }
   .resume-sheet.tpl-sleek .skill-badge { background: var(--bg-base); color: var(--text-main); border: none; }
   
@@ -752,7 +752,7 @@
   .faq-card h3 {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--text-main);
     margin-bottom: 8px;
   }
 
@@ -814,7 +814,7 @@
 
     /* --- ZOOM & PAN --- */
     .zoom-toolbar { position: absolute; bottom: 24px; right: 24px; background: rgba(18, 22, 33, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; display: flex; align-items: center; gap: 4px; padding: 6px; z-index: 100; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
-    .zoom-btn { background: transparent; border: none; color: #cbd5e1; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s ease; }
+    .zoom-btn { background: transparent; border: none; color: var(--text-muted); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s ease; }
     .zoom-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
     .zoom-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; padding: 0 8px; min-width: 48px; text-align: center; cursor: pointer; user-select: none; }
     .zoom-label:hover { color: var(--text-main); }
@@ -1379,7 +1379,7 @@
       <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 6px;">
           <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Template:</label>
-          <select id="tplSelect" class="form-input" style="width: auto; padding: 6px 12px; font-size: 12.5px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border: 1px solid #283347; border-radius: 6px; cursor: pointer;">
+          <select id="tplSelect" class="form-input" style="width: auto; padding: 6px 12px; font-size: 12.5px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer;">
             <option value="modern">Modern Minimal</option>
             <option value="executive">Executive Serif</option>
             <option value="sidebar">Tech 2-Column Sidebar</option>

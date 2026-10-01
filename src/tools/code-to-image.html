@@ -152,7 +152,7 @@
     justify-content: space-between;
     font-size: 13px;
     font-weight: 600;
-    color: #cbd5e1;
+    color: var(--text-muted);
     margin-bottom: 6px;
   }
 
@@ -165,7 +165,7 @@
   .custom-input, .custom-select {
     width: 100%;
     background: var(--bg-base);
-    border: 1px solid #242c3d;
+    border: 1px solid var(--border-color);
     color: var(--text-main);
     padding: 9px 12px;
     border-radius: 6px;
@@ -238,13 +238,13 @@
   }
 
   .btn-secondary {
-    background: #19202f;
-    border: 1px solid #2b364d;
-    color: #f1f5f9;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
   }
 
   .btn-secondary:hover {
-    background: #232c40;
+    background: var(--bg-surface);
     border-color: var(--accent);
   }
 
@@ -294,7 +294,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 18px;
-    background: #181818;
+    background: var(--bg-surface);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     user-select: none;
   }
@@ -364,7 +364,7 @@
     min-width: 420px;
     background: transparent;
     border: none;
-    color: #e4e4e7;
+    color: var(--text-main);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 14px;
     line-height: 1.65;
@@ -409,7 +409,7 @@
   .faq-card h3 {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--text-main);
     margin-bottom: 8px;
   }
 
@@ -520,7 +520,7 @@
       </div>
 
       <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
-        <label for="lineNumbersToggle" style="font-size: 13px; font-weight: 600; color: #cbd5e1; cursor: pointer;">Show Line Numbers</label>
+        <label for="lineNumbersToggle" style="font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;">Show Line Numbers</label>
         <input type="checkbox" id="lineNumbersToggle" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
       </div>
     </div>
@@ -774,7 +774,7 @@ where
                 * { box-sizing: border-box; }
                 .snippet-card { border-radius: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: inline-flex; justify-content: center; }
                 .window-container { background: #1e1e1e; border-radius: 10px; box-shadow: 0 20px 68px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; width: ${windowContainer.offsetWidth}px; }
-                .window-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #181818; border-bottom: 1px solid rgba(255,255,255,0.06); }
+                .window-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--bg-surface); border-bottom: 1px solid rgba(255,255,255,0.06); }
                 .window-controls { display: flex; align-items: center; gap: 8px; }
                 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
                 .dot-red { background: #ff5f56; }
@@ -783,7 +783,7 @@ where
                 .window-title { font-size: 13px; color: var(--text-muted); font-family: ui-monospace, monospace; }
                 .code-body-wrapper { display: flex; padding: 22px 24px; background: #1e1e1e; }
                 .line-numbers { padding-right: 18px; margin-right: 14px; border-right: 1px solid rgba(255,255,255,0.08); color: #52525b; font-size: ${fontSizeSlider.value}px; line-height: 1.65; text-align: right; }
-                pre { margin: 0; color: #e4e4e7; font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }
+                pre { margin: 0; color: var(--text-main); font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }
               </style>
               <div class="snippet-card" style="padding: ${paddingSlider.value}px; background: ${activeGradient === 'transparent' ? 'transparent' : activeGradient};">
                 <div class="window-container">

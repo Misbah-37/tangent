@@ -124,7 +124,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
-    background-color: rgba(8, 9, 13, 0.92);
+    background: color-mix(in srgb, var(--bg-base) 88%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
@@ -188,7 +188,7 @@
   .toolkit-toggle-btn {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -335,7 +335,7 @@
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
@@ -478,7 +478,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #2a3346;
+    background: var(--bg-surface);
     transition: .25s ease;
     border-radius: 24px;
   }
@@ -514,7 +514,7 @@
   .vu-bar-bg {
     flex: 1;
     height: 6px;
-    background: #1e2533;
+    background: var(--bg-surface);
     border-radius: 999px;
     overflow: hidden;
   }
@@ -653,13 +653,13 @@
   .btn-pause {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    color: #cbd5e1;
+    color: var(--text-muted);
   }
 
   .btn-pause:hover {
-    background: #1e2436;
+    background: var(--bg-surface);
     color: var(--text-main);
-    border-color: #2e384d;
+    border-color: var(--border-color);
   }
 
   .btn-stop {
@@ -759,7 +759,7 @@
     flex: 1;
     min-width: 140px;
     background: var(--bg-surface);
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-weight: 600;
     font-size: 0.92rem;
     padding: 14px 20px;
@@ -775,9 +775,9 @@
   }
 
   .btn-reset-video:hover {
-    background: #1e2436;
+    background: var(--bg-surface);
     color: var(--text-main);
-    border-color: #2e384d;
+    border-color: var(--border-color);
   }
 
   /* FAQ Accordion Section */

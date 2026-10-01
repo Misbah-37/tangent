@@ -130,7 +130,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
-    background-color: rgba(8, 9, 13, 0.92);
+    background: color-mix(in srgb, var(--bg-base) 88%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
@@ -194,7 +194,7 @@
   .toolkit-toggle-btn {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -341,7 +341,7 @@
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
@@ -519,7 +519,7 @@
   }
 
   .btn-secondary {
-    background: #171b26;
+    background: var(--bg-surface);
     color: var(--text-main);
     border: 1px solid var(--border-color);
     margin-top: 20px;
@@ -671,7 +671,7 @@
   }
 
   .metric-box {
-    background: #171b26;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 16px 12px;
@@ -799,7 +799,7 @@
       top: 100%;
       left: 0;
       width: 100%;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
@@ -1321,7 +1321,7 @@
     
     <!-- Setup Screen -->
     <div id="setup-screen">
-      <label style="display:block; font-size:0.92rem; font-weight:600; color:#e2e8f0; margin-bottom:14px;">Select Difficulty Mode</label>
+      <label style="display:block; font-size:0.92rem; font-weight:600; color: var(--text-main); margin-bottom:14px;">Select Difficulty Mode</label>
       
       <div class="diff-grid">
         <div class="diff-card active" onclick="selectDifficulty('easy')" id="card-easy">

@@ -172,8 +172,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #171b26;
-    border: 1px solid #283042;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 7px 12px;
     border-radius: 6px;
@@ -184,7 +184,7 @@
   }
 
   .tool-btn:hover {
-    background: #202636;
+    background: var(--bg-surface);
     color: var(--text-main);
     border-color: var(--accent);
   }
@@ -203,8 +203,8 @@
   }
 
   .tool-select {
-    background: #171b26;
-    border: 1px solid #283042;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     color: var(--text-main);
     padding: 7px 12px;
     border-radius: 6px;
@@ -258,7 +258,7 @@
     background: transparent;
     border: none;
     padding: 20px;
-    color: #e2e8f0;
+    color: var(--text-main);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 14px;
     line-height: 1.7;
@@ -279,7 +279,7 @@
     flex: 1;
     padding: 32px 40px;
     overflow-y: auto;
-    color: #cbd5e1;
+    color: var(--text-muted);
     line-height: 1.75;
     font-size: 15px;
   }
@@ -287,7 +287,7 @@
   /* Academic Document Styles within Preview */
   .preview-content.theme-academic {
     font-family: "Georgia", "Cambria", "Times New Roman", serif;
-    color: #e2e8f0;
+    color: var(--text-main);
   }
   .preview-content.theme-modern {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -303,13 +303,13 @@
     color: var(--text-main);
     margin: 0 0 16px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #232a3b;
+    border-bottom: 2px solid var(--border-color);
   }
 
   .preview-content h2 {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #f1f5f9;
+    color: var(--text-main);
     margin: 28px 0 12px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--border-color);
@@ -336,7 +336,7 @@
   }
 
   .preview-content code {
-    background: #1a202c;
+    background: var(--bg-surface);
     color: #38bdf8;
     padding: 2px 6px;
     border-radius: 4px;
@@ -345,8 +345,8 @@
   }
 
   .preview-content pre {
-    background: #111520;
-    border: 1px solid #232b3d;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
     overflow-x: auto;
@@ -356,7 +356,7 @@
   .preview-content pre code {
     background: transparent;
     padding: 0;
-    color: #e2e8f0;
+    color: var(--text-main);
   }
 
   .preview-content table {
@@ -368,13 +368,13 @@
 
   .preview-content th, .preview-content td {
     padding: 10px 14px;
-    border: 1px solid #263147;
+    border: 1px solid var(--border-color);
     text-align: left;
   }
 
   .preview-content th {
     background: var(--bg-card);
-    color: #f8fafc;
+    color: var(--text-main);
     font-weight: 700;
   }
 
@@ -384,7 +384,7 @@
 
   .preview-content hr {
     border: none;
-    border-top: 1px solid #263147;
+    border-top: 1px solid var(--border-color);
     margin: 28px 0;
   }
 
@@ -432,7 +432,7 @@
   }
 
   .stat-badge strong {
-    color: #f1f5f9;
+    color: var(--text-main);
   }
 
   /* FAQ Section */
@@ -461,7 +461,7 @@
   .faq-card h3 {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--text-main);
     margin-bottom: 8px;
   }
 
@@ -497,12 +497,12 @@
     }
     .preview-content h1, .preview-content h2, .preview-content h3 {
       color: #000000 !important;
-      border-bottom-color: #cccccc !important;
+      border-bottom-color: var(--text-main) !important;
     }
     .preview-content code, .preview-content pre {
       background: #f3f4f6 !important;
       color: #111827 !important;
-      border-color: #e5e7eb !important;
+      border-color: var(--text-main) !important;
     }
     .preview-content blockquote {
       background: #f9fafb !important;
@@ -510,7 +510,7 @@
       color: #374151 !important;
     }
     .preview-content table, .preview-content th, .preview-content td {
-      border-color: #d1d5db !important;
+      border-color: var(--text-muted) !important;
       color: #111827 !important;
     }
     .preview-content th {
@@ -1343,7 +1343,7 @@ Start writing your academic paper or technical note here...
   const mathCountEl = document.getElementById('mathCount');
 
   // Configure Marked
-  marked.setOptions({
+  marked.use({
     gfm: true,
     breaks: true
   });
@@ -1497,7 +1497,7 @@ Start writing your academic paper or technical note here...
   th, td { border: 1px solid #cbd5e1; padding: 10px 12px; text-align: left; }
   th { background: #f1f5f9; }
   blockquote { border-left: 4px solid #3b82f6; background: #f8fafc; padding: 12px 20px; margin: 16px 0; }
-  pre { background: var(--bg-base); color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; }
+  pre { background: var(--bg-base); color: var(--text-main); padding: 16px; border-radius: 8px; overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -1530,8 +1530,7 @@ ${preview.innerHTML}
   // Copy Markdown
   copyMarkdownBtn.addEventListener('click', async () => {
     try {
-      await if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
-      navigator.clipboard.writeText(editor.value);
+      await navigator.clipboard.writeText(editor.value); if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
       copyMdText.textContent = "Copied!";
       setTimeout(() => { copyMdText.textContent = "Copy Markdown"; }, 2000);
     } catch (err) {

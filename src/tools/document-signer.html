@@ -115,7 +115,7 @@
   /* Upload Dropzone */
   .upload-dropzone {
     background: var(--bg-base);
-    border: 2px dashed #242e42;
+    border: 2px dashed var(--border-color);
     border-radius: 12px;
     padding: 48px 24px;
     text-align: center;
@@ -183,9 +183,9 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #171b26;
-    border: 1px solid #283042;
-    color: #cbd5e1;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
     padding: 8px 14px;
     border-radius: 6px;
     font-size: 13px;
@@ -195,7 +195,7 @@
   }
 
   .tool-btn:hover {
-    background: #202636;
+    background: var(--bg-surface);
     color: var(--text-main);
     border-color: var(--accent);
   }
@@ -404,7 +404,7 @@
   .pad-canvas-wrap {
     background: #ffffff;
     border-radius: 8px;
-    border: 1px solid #334155;
+    border: 1px solid var(--border-color);
     height: 180px;
     position: relative;
     overflow: hidden;
@@ -469,7 +469,7 @@
   .faq-card h3 {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--text-main);
     margin-bottom: 8px;
   }
 
@@ -519,7 +519,7 @@
         <button type="button" class="tool-btn" id="prevPageBtn" title="Previous Page">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <span style="font-size: 13px; font-weight: 600; color: #cbd5e1;" id="pageIndicator">Page 1 of 1</span>
+        <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);" id="pageIndicator">Page 1 of 1</span>
         <button type="button" class="tool-btn" id="nextPageBtn" title="Next Page">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
@@ -598,7 +598,7 @@
 
       <!-- Type Pane -->
       <div id="paneType" style="display: none;">
-        <input type="text" id="typeSigInput" placeholder="Type your full name here..." style="width: 100%; padding: 12px; background: var(--bg-base); border: 1px solid #242c3d; color: var(--text-main); border-radius: 6px; font-size: 15px; margin-bottom: 16px;">
+        <input type="text" id="typeSigInput" placeholder="Type your full name here..." style="width: 100%; padding: 12px; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 15px; margin-bottom: 16px;">
         <div style="background: #ffffff; padding: 24px; border-radius: 8px; text-align: center; color: #000000; font-family: 'Brush Script MT', 'Segoe Script', cursive, sans-serif; font-size: 2.2rem;" id="typeSigPreview">
           Your Signature
         </div>
@@ -606,7 +606,7 @@
 
       <!-- Upload Pane -->
       <div id="paneUpload" style="display: none;">
-        <div class="upload-dropzone" id="sigUploadDropzone" style="padding: 24px 16px; margin-bottom: 14px; cursor: pointer; border: 2px dashed #242e42; border-radius: 8px; text-align: center; background: var(--bg-base);">
+        <div class="upload-dropzone" id="sigUploadDropzone" style="padding: 24px 16px; margin-bottom: 14px; cursor: pointer; border: 2px dashed var(--border-color); border-radius: 8px; text-align: center; background: var(--bg-base);">
           <input type="file" id="sigImageFileInput" accept="image/*" style="display: none;">
           <div style="color: var(--accent); margin-bottom: 8px; display: flex; justify-content: center;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -617,18 +617,18 @@
 
         <div id="sigUploadControls" style="display: none;">
           <!-- Transparent Checkerboard Preview -->
-          <div style="background: repeating-conic-gradient(#1e2433 0% 25%, #141923 0% 50%) 50% / 16px 16px; border: 1px solid #242c3d; border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px; padding: 8px;">
+          <div style="background: repeating-conic-gradient(#1e2433 0% 25%, #141923 0% 50%) 50% / 16px 16px; border: 1px solid var(--border-color); border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px; padding: 8px;">
             <canvas id="uploadPreviewCanvas" style="max-width: 100%; max-height: 100%; object-fit: contain;"></canvas>
           </div>
 
           <!-- Processing Controls -->
           <div style="background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); cursor: pointer;">
                 <input type="checkbox" id="chkAutoRemoveBg" checked style="accent-color: var(--accent); width: 15px; height: 15px;">
                 <span style="font-weight: 600;">Remove Paper Background</span>
               </label>
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); cursor: pointer;">
                 <input type="checkbox" id="chkAutoCrop" checked style="accent-color: var(--accent); width: 15px; height: 15px;">
                 <span style="font-weight: 600;">Auto-Crop Margins</span>
               </label>

@@ -93,7 +93,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
-    background-color: rgba(8, 9, 13, 0.92);
+    background: color-mix(in srgb, var(--bg-base) 88%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
@@ -137,7 +137,7 @@
     gap: 7px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    color: var(--text-muted);
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -284,7 +284,7 @@
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
-      background-color: rgba(8, 9, 13, 0.98);
+      background: color-mix(in srgb, var(--bg-base) 88%, transparent);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
@@ -365,7 +365,7 @@
   .upload-box {
     border: 2px dashed rgba(0, 210, 255, 0.3);
     border-radius: 14px;
-    background: rgba(8, 9, 13, 0.6);
+    background: var(--bg-surface);
     padding: 40px 20px;
     text-align: center;
     cursor: pointer;
@@ -427,7 +427,7 @@
     gap: 16px;
     margin-top: 24px;
     padding: 16px 20px;
-    background: rgba(8, 9, 13, 0.5);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
   }
@@ -441,11 +441,11 @@
   .control-label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #cbd5e1;
+    color: var(--text-muted);
   }
 
   select.custom-select {
-    background: #171c2a;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-main);
     font-size: 0.85rem;
@@ -464,7 +464,7 @@
     align-items: center;
     gap: 8px;
     font-size: 0.85rem;
-    color: #cbd5e1;
+    color: var(--text-muted);
     cursor: pointer;
     user-select: none;
   }
@@ -481,7 +481,7 @@
     display: none;
     margin-top: 24px;
     padding: 24px;
-    background: rgba(8, 9, 13, 0.8);
+    background: var(--bg-surface);
     border: 1px solid rgba(0, 210, 255, 0.3);
     border-radius: 12px;
     text-align: center;
@@ -510,7 +510,7 @@
   .progress-bar-bg {
     width: 100%;
     height: 8px;
-    background: #1a2030;
+    background: var(--bg-surface);
     border-radius: 999px;
     overflow: hidden;
     position: relative;
@@ -539,7 +539,7 @@
 
   /* Left Pane: Preview */
   .preview-pane {
-    background: rgba(8, 9, 13, 0.7);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
@@ -597,7 +597,7 @@
 
   .page-indicator {
     font-size: 0.8rem;
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-weight: 600;
   }
 
@@ -606,7 +606,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #050608;
+    background: var(--bg-surface);
     border-radius: 8px;
     overflow: hidden;
     position: relative;
@@ -622,7 +622,7 @@
 
   /* Right Pane: OCR Output Editor */
   .editor-pane {
-    background: rgba(8, 9, 13, 0.7);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
@@ -640,7 +640,7 @@
   }
 
   .stat-badge {
-    color: #cbd5e1;
+    color: var(--text-muted);
     font-weight: 600;
   }
 
@@ -653,8 +653,8 @@
     flex: 1;
     width: 100%;
     min-height: 380px;
-    background: #050608;
-    color: #f1f5f9;
+    background: var(--bg-surface);
+    color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
@@ -705,7 +705,7 @@
     align-items: center;
     gap: 8px;
     background: rgba(255, 255, 255, 0.05);
-    color: #f1f5f9;
+    color: var(--text-main);
     font-weight: 600;
     font-size: 0.88rem;
     padding: 10px 18px;
@@ -792,7 +792,7 @@
 
   details summary {
     font-weight: 600;
-    color: #e2e8f0;
+    color: var(--text-main);
     outline: none;
   }
 
@@ -810,11 +810,11 @@
     text-align: center;
     color: var(--text-muted);
     font-size: 0.85rem;
-    background-color: #06070a;
+    background: var(--bg-surface);
   }
 
   .global-footer a {
-    color: #cbd5e1;
+    color: var(--text-muted);
     text-decoration: none;
     margin: 0 12px;
     transition: color 0.2s ease;

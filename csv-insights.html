@@ -67,12 +67,7 @@
 
 <link rel="stylesheet" href="assets/tangent.css?v=11">
 <style>
-:root {
-    
-    
-    
-    
-  }
+:root {}
   
   /* ---------- Hero ---------- */
   .clean-header { text-align: center; margin: 48px auto 40px; padding: 0 32px; max-width: 700px; }
@@ -104,13 +99,13 @@
   .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .tab-content { display: none; }
   .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); }}
 
   /* ---------- Auto-Profiler ---------- */
   .profiler-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
-  @media (max-width: 1200px) { .profiler-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 900px) { .profiler-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 650px) { .profiler-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1200px) { .profiler-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }}
+  @media (max-width: 900px) { .profiler-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+  @media (max-width: 650px) { .profiler-grid { grid-template-columns: 1fr; }}
   .profile-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
   .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
   .profile-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; }

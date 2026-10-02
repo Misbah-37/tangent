@@ -4,219 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent Pro</title>
+    <link rel="stylesheet" href="global.css">
     <style>
-        :root[data-theme="light"] {
-            --bg-base: #f8f9fa;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: rgba(0, 0, 0, 0.05);
-            --text-main: #1d1d1f;
-            --text-muted: #86868b;
-            --accent: #0066cc;
-            --panel-bg: rgba(255, 255, 255, 0.85);
-            --item-hover: rgba(0, 0, 0, 0.05);
-            --border: rgba(0, 0, 0, 0.1);
-        }
-
-        :root {
-            /* macOS Dark Mode Glassmorphism Tokens */
-            --bg-base: #121212;
-            --glass-bg: rgba(30, 30, 30, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: rgba(0, 0, 0, 0.3);
-            --text-main: #f5f5f7;
-            --text-muted: #86868b;
-            --accent: #0A84FF;
-            --panel-bg: rgba(40, 40, 40, 0.6);
-            --item-hover: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-            /* Abstract ambient gradient background to shine through the glass */
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.12), transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(94, 92, 230, 0.12), transparent 40%);
-            background-attachment: fixed;
-        }
-
-        /* macOS Titlebar - Neutral Controls */
-        .titlebar {
-            height: 48px;
-            display: flex;
-            align-items: center;
-            padding: 0 0 0 16px;
-        }
-
-        .title-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            color: var(--text-main);
-            opacity: 0.8;
-            padding-left: 8px;
-        }
-
-        .drag-region {
-            flex-grow: 1;
-            height: 100%;
-            -webkit-app-region: drag;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            -webkit-app-region: no-drag;
-        }
-
-        /* Neutral OS-Agnostic Window Controls */
-        .win-btn {
-            width: 46px;
-            height: 48px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: background 0.1s;
-        }
-        .win-btn:hover { background: var(--item-hover); color: var(--text-main); }
-        .win-btn.close:hover { background: #E81123; color: white; }
-
-        /* Main App Grid */
-        .app-layout {
-            display: flex;
-            height: calc(100vh - 48px);
-            padding: 0 16px 16px 16px;
-            gap: 16px;
-        }
-
-        /* Glass Panel Reusable Class */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 220px;
-            flex-shrink: 0;
-            padding: 16px 12px;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .sidebar.collapsed {
-            width: 0;
-            padding-left: 0;
-            padding-right: 0;
-            opacity: 0;
-            margin-right: -16px; /* Offset the flex gap */
-        }
-        #btn-toggle-sidebar:hover { background: var(--item-hover); }
-        
-        .nav-section {
-            margin-bottom: 24px;
-        }
-        .nav-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            padding-left: 8px;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .nav-item:hover {
-            background: var(--item-hover);
-        }
-        .nav-item.active {
-            background: var(--accent);
-            color: white;
-        }
-        .nav-item svg { opacity: 0.7; }
-        .nav-item.active svg { opacity: 1; }
-
-        /* Main Workspace Area */
-        .workspace {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0 !important;
-            overflow: hidden;
-        }
-        .workspace-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .workspace-title h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .workspace-title p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
 
         .toolbar {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-        .btn {
-            background: var(--panel-bg);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.2s;
-        }
-        .btn:hover { background: var(--item-hover); }
-        .btn.primary {
-            background: var(--accent);
-            color: white;
-            border: none;
-        }
-        .btn.primary:hover { filter: brightness(1.1); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Content Area */
@@ -587,7 +382,7 @@
         <div class="sidebar glass-panel">
             <div class="nav-section">
                 <div class="nav-title">Data Pipeline</div>
-                <div class="nav-item active" onclick="window.location.href='index.html'">
+                <div class="nav-item active">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                     Data Hygiene
                 </div>
@@ -596,8 +391,24 @@
                     CSV Insights
                 </div>
                 <div class="nav-item" onclick="window.location.href='sql-studio.html'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                     SQL Studio
+                </div>
+                <div class="nav-item" onclick="window.location.href='finance-dashboard.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Finance Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='correlation-matrix.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Correlation Matrix
+                </div>
+                <div class="nav-item" onclick="window.location.href='data-extractor.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Data Extractor
+                </div>
+                <div class="nav-item" onclick="window.location.href='log-analyzer.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Log Analyzer
                 </div>
             </div>
 
@@ -613,7 +424,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Main Workspace -->
         <div class="workspace glass-panel">
             <div class="workspace-header">
@@ -622,19 +432,19 @@
                     <p>Process, clean, and standardize massive datasets instantly via Rust.</p>
                 </div>
                 <div class="toolbar">
-                    <button class="btn" id="btn-close-file" style="display: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                    <button class="btn btn-outline-danger" id="btn-close-file" style="display: none;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         Close
                     </button>
-                    <button class="btn" id="btn-load-db" style="color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+                    <button class="btn btn-outline-success" id="btn-load-db">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                         Connect DB
                     </button>
-                    <button class="btn" id="btn-schedule" style="color: #8b5cf6; border-color: rgba(139, 92, 246, 0.3);">
+                    <button class="btn btn-outline-purple" id="btn-schedule">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         Schedule Task
                     </button>
-                    <button class="btn" id="btn-load-folder" style="color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">
+                    <button class="btn btn-outline-accent" id="btn-load-folder">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                         Batch Process Folder
                     </button>
@@ -646,7 +456,7 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                         Execute Pipeline
                     </button>
-                    <button class="btn" id="btn-save-export" style="display: none; background: #10b981; color: white; border-color: #059669;">
+                    <button class="btn btn-success" id="btn-save-export" style="display: none;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                         Save Export
                     </button>
@@ -701,7 +511,7 @@
         <div class="recipe-panel glass-panel" id="recipe-panel">
             <div class="recipe-header" style="justify-content: space-between;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <div style="display: flex; align-items: center; gap: 8px;">Recipe Pipeline</div><div style="display: flex; gap: 6px;"><button class="btn" id="btn-load-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Load</button><button class="btn" id="btn-save-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Save</button></div></div>
+                <div style="display: flex; align-items: center; gap: 8px;">Recipe Pipeline</div><div style="display: flex; gap: 6px;"><button class="btn btn-outline-purple" id="btn-show-code" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Python</button><button class="btn" id="btn-load-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Load</button><button class="btn" id="btn-save-recipe" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 4px;">Save</button></div></div>
             
             <div class="recipe-content">
     <div class="accordion-item">
@@ -840,12 +650,26 @@
         <input type="text" id="db-uri" class="form-input" style="width: 100%; box-sizing: border-box; margin-bottom: 24px; font-family: monospace; font-size: 13px;" placeholder="postgres://user:pass@localhost:5432/mydb">
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
             <button class="btn" id="btn-cancel-db">Cancel</button>
-            <button class="btn" id="btn-connect-db" style="background: var(--accent); color: white; border-color: var(--accent);">Connect</button>
+            <button class="btn btn-primary" id="btn-connect-db">Connect</button>
         </div>
     </div>
 
     
-    <div id="cron-modal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; padding: 24px; z-index: 10000; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
+    <div 
+    <!-- Code Escape Hatch Modal -->
+    <div class="modal" id="code-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-surface); padding: 24px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 10001; width: 600px; max-width: 90vw;">
+        <h3 style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Python / Pandas Pipeline</span>
+            <button class="btn" id="btn-copy-code" style="font-size: 11px; padding: 4px 8px;">Copy Code</button>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">This is the exact Pandas code that replicates your current Data Hygiene recipe.</p>
+        <pre style="background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-size: 12px; overflow-x: auto; border: 1px solid #333;"><code id="python-code-block"></code></pre>
+        <div style="margin-top: 16px; text-align: right;">
+            <button class="btn" id="btn-close-code">Close</button>
+        </div>
+    </div>
+
+    <div class="modal" id="cron-modal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; padding: 24px; z-index: 10000; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
         <h3 style="margin: 0 0 16px 0; font-size: 16px;">Schedule Background Pipeline</h3>
         <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Select a target folder and a frequency. The active recipe will run silently in the background.</p>
         
@@ -863,7 +687,7 @@
         
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
             <button class="btn" id="btn-cancel-cron">Cancel</button>
-            <button class="btn" id="btn-save-cron" style="background: #8b5cf6; color: white; border-color: #8b5cf6;">Schedule</button>
+            <button class="btn btn-purple" id="btn-save-cron">Schedule</button>
         </div>
     </div>
 
@@ -920,7 +744,7 @@
                 let desc = r.method === 'custom' ? `Fill with: "${r.custom_val}"` : `Fill with ${r.method.toUpperCase()}`;
                 out += `<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 4px; font-size: 11px;">
                     <div><strong>${r.col}</strong> <span style="color: var(--text-muted); margin-left: 6px;">${desc}</span></div>
-                    <button class="btn" style="padding: 2px 6px; font-size: 10px; min-height: unset; color: #ef4444; border-color: rgba(239,68,68,0.3);" onclick="removeImputeRule('${r.col}')">Undo</button>
+                    <button class="btn btn-outline-danger" style="padding: 2px 6px; font-size: 10px; min-height: unset;" onclick="removeImputeRule('${r.col}')">Undo</button>
                 </div>`;
             });
             list.innerHTML = out;
@@ -1669,6 +1493,118 @@
                 btn.disabled = false;
             }
         });
+
+        document.getElementById('btn-close-code')?.addEventListener('click', () => {
+            document.getElementById('code-modal').style.display = 'none';
+            document.getElementById('modal-backdrop').style.display = 'none';
+        });
+
+        document.getElementById('btn-copy-code')?.addEventListener('click', () => {
+            const code = document.getElementById('python-code-block').innerText;
+            navigator.clipboard.writeText(code);
+            showToast("Copied to clipboard!");
+        });
+
+        document.getElementById('btn-show-code')?.addEventListener('click', () => {
+            const recipe = {
+                sanitize_headers: document.getElementById('chkCleanHeaders').classList.contains('active'),
+                strip_phone_ext: document.getElementById('chkStripPhoneExt') ? document.getElementById('chkStripPhoneExt').classList.contains('active') : false,
+                drop_empty: document.getElementById('chkDropEmpty').classList.contains('active'),
+                strip_ctrl: document.getElementById('chkStripCtrl').classList.contains('active'),
+                trim_all: document.getElementById('chkTrimAll').classList.contains('active'),
+                dedupe: document.getElementById('chkDedupe').classList.contains('active'),
+                dedupe_mode: document.getElementById('selDedupeMode').value,
+                dedupe_cols: multiSelectState.selDedupeCols || [],
+                drop_missing_cols: multiSelectState.selDropMissingCols || [],
+                date_cols: multiSelectState.selDateCols || [],
+                date_format: document.getElementById('selDateLocale').value,
+                number_cols: multiSelectState.selNumberCols || [],
+                phone_cols: multiSelectState.selPhoneCols || [],
+                title_cols: multiSelectState.selTitleCols || [],
+                imputation_rules: typeof imputationRules !== 'undefined' ? imputationRules : []
+            };
+
+            let py = "import pandas as pd\nimport numpy as np\nimport re\n\n";
+            py += "# 1. Load Dataset\n";
+            py += "df = pd.read_csv('dataset.csv')\n\n";
+
+            if (recipe.sanitize_headers) {
+                py += "# 2. Sanitize Headers\n";
+                py += "df.columns = df.columns.str.strip().str.lower().str.replace('[^a-z0-9_]', '_', regex=True)\n\n";
+            }
+
+            if (recipe.drop_empty) {
+                py += "# Drop completely empty rows\n";
+                py += "df.dropna(how='all', inplace=True)\n\n";
+            }
+
+            if (recipe.dedupe) {
+                py += "# Deduplicate Rows\n";
+                const subset = recipe.dedupe_cols.length > 0 ? `subset=${JSON.stringify(recipe.dedupe_cols)}, ` : "";
+                const keep = recipe.dedupe_mode === 'keep_last' ? "keep='last'" : "keep='first'";
+                py += `df.drop_duplicates(${subset}${keep}, inplace=True)\n\n`;
+            }
+            
+            if (recipe.drop_missing_cols.length > 0) {
+                py += "# Drop specific rows with missing values\n";
+                py += `df.dropna(subset=${JSON.stringify(recipe.drop_missing_cols)}, inplace=True)\n\n`;
+            }
+
+            let text_cleanup = false;
+            if (recipe.trim_all || recipe.strip_ctrl) {
+                py += "# Text Cleanup (Trim / Control Chars)\n";
+                py += "str_cols = df.select_dtypes(include=['object']).columns\n";
+                py += "for col in str_cols:\n";
+                if (recipe.strip_ctrl) py += "    df[col] = df[col].apply(lambda x: re.sub(r'[\\x00-\\x1F\\x7F]', '', str(x)) if pd.notnull(x) else x)\n";
+                if (recipe.trim_all) py += "    df[col] = df[col].str.strip()\n";
+                py += "\n";
+            }
+
+            if (recipe.title_cols.length > 0) {
+                py += "# Proper Case Titles\n";
+                py += `for col in ${JSON.stringify(recipe.title_cols)}:\n`;
+                py += "    df[col] = df[col].str.title()\n\n";
+            }
+
+            if (recipe.number_cols.length > 0) {
+                py += "# Extract Numbers\n";
+                py += `for col in ${JSON.stringify(recipe.number_cols)}:\n`;
+                py += "    df[col] = df[col].astype(str).str.extract(r'(\\d+\\.?\\d*)')[0].astype(float)\n\n";
+            }
+
+            if (recipe.date_cols.length > 0) {
+                py += "# Parse Dates\n";
+                py += `for col in ${JSON.stringify(recipe.date_cols)}:\n`;
+                py += "    df[col] = pd.to_datetime(df[col], errors='coerce')\n";
+                if (recipe.date_format === 'us') py += "    df[col] = df[col].dt.strftime('%m/%d/%Y')\n\n";
+                else if (recipe.date_format === 'eu') py += "    df[col] = df[col].dt.strftime('%d/%m/%Y')\n\n";
+                else py += "    df[col] = df[col].dt.strftime('%Y-%m-%d')\n\n";
+            }
+
+            if (recipe.imputation_rules && recipe.imputation_rules.length > 0) {
+                py += "# Imputation Rules\n";
+                recipe.imputation_rules.forEach(rule => {
+                    let val = rule.val;
+                    if (rule.strategy === 'exact') {
+                        val = isNaN(val) ? `'${val}'` : val;
+                        py += `df['${rule.col}'].fillna(${val}, inplace=True)\n`;
+                    } else if (rule.strategy === 'mean') {
+                        py += `df['${rule.col}'].fillna(df['${rule.col}'].mean(), inplace=True)\n`;
+                    } else if (rule.strategy === 'median') {
+                        py += `df['${rule.col}'].fillna(df['${rule.col}'].median(), inplace=True)\n`;
+                    }
+                });
+                py += "\n";
+            }
+
+            py += "# Export Cleaned Data\n";
+            py += "df.to_csv('cleaned_dataset.csv', index=False)\n";
+
+            document.getElementById('python-code-block').innerText = py;
+            document.getElementById('code-modal').style.display = 'block';
+            document.getElementById('modal-backdrop').style.display = 'block';
+        });
 </script>
+
 </body>
 </html>

@@ -12,219 +12,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent Pro - SQL Studio</title>
+    <link rel="stylesheet" href="global.css">
     <style>
-        :root[data-theme="light"] {
-            --bg-base: #f8f9fa;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: rgba(0, 0, 0, 0.05);
-            --text-main: #1d1d1f;
-            --text-muted: #86868b;
-            --accent: #0066cc;
-            --panel-bg: rgba(255, 255, 255, 0.85);
-            --item-hover: rgba(0, 0, 0, 0.05);
-            --border: rgba(0, 0, 0, 0.1);
-        }
-
-        :root {
-            /* macOS Dark Mode Glassmorphism Tokens */
-            --bg-base: #121212;
-            --glass-bg: rgba(30, 30, 30, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: rgba(0, 0, 0, 0.3);
-            --text-main: #f5f5f7;
-            --text-muted: #86868b;
-            --accent: #0A84FF;
-            --panel-bg: rgba(40, 40, 40, 0.6);
-            --item-hover: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-            /* Abstract ambient gradient background to shine through the glass */
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.12), transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(94, 92, 230, 0.12), transparent 40%);
-            background-attachment: fixed;
-        }
-
-        /* macOS Titlebar - Neutral Controls */
-        .titlebar {
-            height: 48px;
-            display: flex;
-            align-items: center;
-            padding: 0 0 0 16px;
-        }
-
-        .title-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            color: var(--text-main);
-            opacity: 0.8;
-            padding-left: 8px;
-        }
-
-        .drag-region {
-            flex-grow: 1;
-            height: 100%;
-            -webkit-app-region: drag;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            -webkit-app-region: no-drag;
-        }
-
-        /* Neutral OS-Agnostic Window Controls */
-        .win-btn {
-            width: 46px;
-            height: 48px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: background 0.1s;
-        }
-        .win-btn:hover { background: var(--item-hover); color: var(--text-main); }
-        .win-btn.close:hover { background: #E81123; color: white; }
-
-        /* Main App Grid */
-        .app-layout {
-            display: flex;
-            height: calc(100vh - 48px);
-            padding: 0 16px 16px 16px;
-            gap: 16px;
-        }
-
-        /* Glass Panel Reusable Class */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 220px;
-            flex-shrink: 0;
-            padding: 16px 12px;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .sidebar.collapsed {
-            width: 0;
-            padding-left: 0;
-            padding-right: 0;
-            opacity: 0;
-            margin-right: -16px; /* Offset the flex gap */
-        }
-        #btn-toggle-sidebar:hover { background: var(--item-hover); }
-        
-        .nav-section {
-            margin-bottom: 24px;
-        }
-        .nav-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            padding-left: 8px;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .nav-item:hover {
-            background: var(--item-hover);
-        }
-        .nav-item.active {
-            background: var(--accent);
-            color: white;
-        }
-        .nav-item svg { opacity: 0.7; }
-        .nav-item.active svg { opacity: 1; }
-
-        /* Main Workspace Area */
-        .workspace {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0 !important;
-            overflow: hidden;
-        }
-        .workspace-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .workspace-title h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .workspace-title p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
 
         .toolbar {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-        .btn {
-            background: var(--panel-bg);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.2s;
-        }
-        .btn:hover { background: var(--item-hover); }
-        .btn.primary {
-            background: var(--accent);
-            color: white;
-            border: none;
-        }
-        .btn.primary:hover { filter: brightness(1.1); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Content Area */
@@ -563,19 +358,36 @@
 </head>
 <body>
 
+
+
+
+    <!-- DB Connect Modal -->
+    <div id="db-modal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; padding: 24px; z-index: 10000; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
+        <h3 style="margin: 0 0 16px 0; font-size: 16px;">Connect External Database</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Enter your connection string (Postgres, MySQL, or SQLite). Queries will be routed securely via Rust.</p>
+        <input type="text" id="db-uri" class="form-input" style="width: 100%; box-sizing: border-box; margin-bottom: 24px; font-family: monospace; font-size: 13px;" placeholder="postgres://user:pass@localhost:5432/mydb">
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button class="btn" id="btn-cancel-db">Cancel</button>
+            <button class="btn btn-primary" id="btn-connect-db-action">Connect</button>
+        </div>
+    </div>
+
+    
 <script>
 window.addEventListener('error', function(e) {
-    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Global Error: ' + e.message + '<br>' + e.filename + ':' + e.lineno + '</div>';
+    const d = document.createElement('div');
+    d.style.cssText = "position:fixed;top:0;left:0;right:0;background:red;color:white;z-index:999999;padding:10px;";
+    d.innerHTML = 'Global Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno;
+    document.body.appendChild(d);
 });
 window.addEventListener('unhandledrejection', function(e) {
-    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Unhandled Rejection: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason) + '</div>';
+    const d = document.createElement('div');
+    d.style.cssText = "position:fixed;top:40px;left:0;right:0;background:orange;color:black;z-index:999999;padding:10px;";
+    d.innerHTML = 'Promise Rej: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason);
+    document.body.appendChild(d);
 });
-const oldError = console.error;
-console.error = function(...args) {
-    alert('JS Error: ' + e.message); document.getElementById('editorLock').innerHTML += '<div style="color:red; z-index:9999; position:relative;">Console Error: ' + args.join(' ') + '</div>';
-    oldError.apply(console, args);
-};
 </script>
+
 
     <div id="global-loader">
         <div class="tl-logo-wrap" style="transform: scale(1.5); margin-bottom: 20px;">
@@ -629,9 +441,25 @@ console.error = function(...args) {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     CSV Insights
                 </div>
-                <div class="nav-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                <div class="nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                     SQL Studio
+                </div>
+                <div class="nav-item" onclick="window.location.href='finance-dashboard.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Finance Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='correlation-matrix.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Correlation Matrix
+                </div>
+                <div class="nav-item" onclick="window.location.href='data-extractor.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Data Extractor
+                </div>
+                <div class="nav-item" onclick="window.location.href='log-analyzer.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Log Analyzer
                 </div>
             </div>
 
@@ -647,7 +475,6 @@ console.error = function(...args) {
                 </div>
             </div>
         </div>
-
         <!-- Main Workspace -->
         <div class="workspace glass-panel">
 <style>
@@ -746,10 +573,15 @@ console.error = function(...args) {
             <p>High-performance local SQL engine natively powered by DuckDB-WASM.</p>
         </div>
         <div class="toolbar">
-            <button class="btn btn-outline" id="btnLoadDb" style="color: #0A84FF; border-color: rgba(10, 132, 255, 0.3);">
+            <button class="btn btn-outline btn-outline-accent" id="btnLoadDb">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 Mount File
             </button>
+            <button class="btn btn-outline btn-outline-success" id="btnConnectRemoteDb">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                Connect Database
+            </button>
+
             <input type="file" id="fileInput" style="display: none;" accept=".csv,.json,.parquet" multiple>
         </div>
     </div>
@@ -790,7 +622,7 @@ console.error = function(...args) {
                 <div class="query-bar">
                     <div style="font-size: 0.8rem; color: var(--text-muted);" id="statusIndicator">Ready</div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn" id="btnCancel" style="display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">Cancel</button>
+                        <button class="btn btn-outline-danger" id="btnCancel" style="display: none;">Cancel</button>
                         <button class="btn primary" id="btnRun">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             Run Query (Ctrl+Enter)
@@ -832,19 +664,19 @@ console.error = function(...args) {
                         <button class="btn" id="btnNextPage" style="padding:4px 8px;">Next &gt;</button>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-outline" id="btnVisualize" style="display: none; color: #a855f7; border-color: rgba(168, 85, 247, 0.3);">
+                        <button class="btn btn-outline btn-outline-purple" id="btnVisualize" style="display: none;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             Visualize
                         </button>
-                        <button class="btn btn-outline" id="btnFullscreen" style="display: none; color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);" title="Toggle Full Screen Table">
+                        <button class="btn btn-outline btn-outline-accent" id="btnFullscreen" style="display: none;" title="Toggle Full Screen Table">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
                             Full Screen
                         </button>
-                        <button class="btn btn-outline" id="btnClearResults" style="display: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);" title="Clear Results">
+                        <button class="btn btn-outline btn-outline-danger" id="btnClearResults" style="display: none;" title="Clear Results">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             Clear
                         </button>
-                        <button class="btn btn-outline" id="btnExport" style="display: none; color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+                        <button class="btn btn-outline btn-outline-success" id="btnExport" style="display: none;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             Export CSV
                         </button>
@@ -955,6 +787,55 @@ console.error = function(...args) {
     let editor = null; window.sqlEditorInstance = null;
     let lastQueryRows = [];
     let loadedSchemas = {};
+
+    let activeRemoteDb = null;
+
+    document.getElementById('btnConnectRemoteDb').addEventListener('click', () => {
+        document.getElementById('db-modal').style.display = 'block';
+    });
+
+    document.getElementById('btn-cancel-db').addEventListener('click', () => {
+        document.getElementById('db-modal').style.display = 'none';
+    });
+
+    document.getElementById('btn-connect-db-action').addEventListener('click', async () => {
+        const uri = document.getElementById('db-uri').value;
+        if (!uri) return;
+        
+        document.getElementById('db-modal').style.display = 'none';
+        document.getElementById('statusIndicator').textContent = "Connecting to DB...";
+        console.log("Starting DB Connection to:", uri);
+        try {
+            console.log("Calling invoke('connect_db')...");
+            const resultStr = await window.__TAURI__.core.invoke('connect_db', { uri: uri });
+            console.log("Got response:", resultStr);
+            const result = JSON.parse(resultStr);
+            activeRemoteDb = uri;
+            console.log("Set active remote db. Tables:", result.tables);
+            
+            document.getElementById('tableList').innerHTML = '';
+            loadedSchemas = {}; 
+            
+            result.tables.forEach(tbl => {
+                loadedSchemas[tbl] = [];
+                renderSchema(tbl, []);
+            });
+            
+            document.getElementById('statusIndicator').textContent = `Connected to ${uri.split('@').pop()}`;
+            document.getElementById('sqlDropzone').style.display = 'none';
+            document.getElementById('resultsTable').innerHTML = '<tbody><tr><td style="text-align: center; padding: 40px; color: var(--text-muted);">Database connected. Run a query to fetch rows.</td></tr></tbody>';
+            
+            if (window.sqlEditorInstance) {
+                window.sqlEditorInstance.setValue(`SELECT * FROM ${result.tables[0]} LIMIT 100;`);
+            }
+            updateMonacoAutocomplete();
+            
+        } catch (e) {
+            document.getElementById('statusIndicator').textContent = "Connection Error";
+            console.error("DB_ERR:", e);
+        }
+    });
+
     let currentPage = 1;
     const rowsPerPage = 100;
     let queryHistory = JSON.parse(localStorage.getItem('tangent_sql_history') || '[]');
@@ -1141,7 +1022,8 @@ console.error = function(...args) {
 
     
     window.closeTable = async function(tableName) {
-        if(!conn || !confirm("Unmount " + tableName + "?")) return;
+        if (activeRemoteDb) { console.error("DB_ERR: Cannot unmount individual tables from a remote database. To disconnect, refresh the app (Ctrl+R)."); return; }
+        if(!conn) return;
         try {
             await conn.query(`DROP TABLE ${tableName}`);
             delete loadedSchemas[tableName];
@@ -1167,8 +1049,13 @@ console.error = function(...args) {
         document.getElementById('btnCancel').style.display = 'block';
         
         try {
-            const res = await conn.query(sql);
-            lastQueryRows = res.toArray();
+            if (activeRemoteDb) {
+                const resStr = await window.__TAURI__.core.invoke('execute_db_query', { uri: activeRemoteDb, query: sql });
+                lastQueryRows = JSON.parse(resStr);
+            } else {
+                const res = await conn.query(sql);
+                lastQueryRows = res.toArray();
+            }
             currentPage = 1;
             renderTablePage();
             document.getElementById('resultsCount').innerHTML = `Peeked ${lastQueryRows.length} rows of <strong>${tableName}</strong> <span style="color:var(--text-muted); font-weight:normal; margin-left:8px;">(Query untouched)</span>`;
@@ -1195,7 +1082,7 @@ console.error = function(...args) {
                 </div>
                 <div style="display:flex; gap:4px;">
                     <button class="btn-peek" onclick="peekTable('${tableName}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Peek</button>
-                    <button class="btn-peek" onclick="closeTable('${tableName}')" style="color:#ef4444; border-color:rgba(239,68,68,0.3); padding:2px 6px;" title="Close File"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                    <button class="btn-peek btn-outline-danger" onclick="closeTable('${tableName}')" style="padding:2px 6px;" title="Close File"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
             </div>
             <div style="padding: 8px 12px; font-size: 0.85rem;">`;
@@ -1337,7 +1224,7 @@ console.error = function(...args) {
     });
 
     document.getElementById('btnRun').addEventListener('click', async () => {
-        if (!conn || !editor) return;
+        if (!conn || !window.sqlEditorInstance) return;
         const sql = window.sqlEditorInstance.getValue().trim();
         if (!sql) return;
         
@@ -1354,8 +1241,16 @@ console.error = function(...args) {
             table.innerHTML = `<tbody><tr><td style="color: var(--text-muted); text-align:center; padding:40px;">Running query...</td></tr></tbody>`;
             
             const start = performance.now();
-            const res = await conn.query(sql);
-            const rows = res.toArray();
+            let rows = [];
+            
+            if (activeRemoteDb) {
+                const resStr = await window.__TAURI__.core.invoke('execute_db_query', { uri: activeRemoteDb, query: sql });
+                rows = JSON.parse(resStr);
+            } else {
+                const res = await conn.query(sql);
+                rows = res.toArray();
+            }
+            
             const ms = (performance.now() - start).toFixed(1);
             
             lastQueryRows = rows;

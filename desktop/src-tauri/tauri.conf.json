@@ -1,0 +1,27 @@
+{
+  "productName": "Tangent Pro",
+  "version": "1.0.0",
+  "identifier": "com.tangent.desktop",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Tangent Pro",
+        "width": 1200,
+        "height": 800,
+        "center": true,
+        "decorations": false
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "withGlobalTauri": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  }
+}

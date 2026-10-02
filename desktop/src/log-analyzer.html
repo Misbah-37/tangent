@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analyzer | Tangent Pro</title>
+    <link rel="stylesheet" href="global.css">
+    <style>
+        
+        .workspace-content { flex: 1; padding: 24px; overflow-y: auto; overflow-x: hidden; }
+        .workspace-content::-webkit-scrollbar { width: 8px; }
+        .workspace-content::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 4px; }
+        .workspace-content::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
+        .workspace-content::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+
+        
+        #global-loader { position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000000; z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div id="global-loader">
+        <div id="global-loader-text" style="font-weight:700; font-size:16px; color:#ffffff;">PARSING LOGS...</div>
+    </div>
+
+    <div class="titlebar">
+        <div class="title-left">
+            <div id="btn-toggle-sidebar" style="cursor: pointer; display: flex; align-items: center; padding: 4px; margin-right: 4px; border-radius: 4px; opacity: 0.9; transition: opacity 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            Tangent Pro
+        </div>
+        <div class="drag-region"></div>
+        <div class="top-actions">
+            <div style="padding: 0 16px; display: flex; align-items: center;">
+                <svg id="theme-btn" style="cursor:pointer; color:var(--text-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            <div class="win-btn" id="btn-minimize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+            <div class="win-btn" id="btn-maximize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
+            <div class="win-btn close" id="btn-close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <div class="sidebar glass-panel">
+            <div class="nav-section">
+                <div class="nav-title">Data Pipeline</div>
+                <div class="nav-item" onclick="window.location.href='index.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Data Hygiene
+                </div>
+                <div class="nav-item" onclick="window.location.href='csv-insights.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    CSV Insights
+                </div>
+                <div class="nav-item" onclick="window.location.href='sql-studio.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    SQL Studio
+                </div>
+                <div class="nav-item" onclick="window.location.href='finance-dashboard.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Finance Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='correlation-matrix.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Correlation Matrix
+                </div>
+                <div class="nav-item" onclick="window.location.href='data-extractor.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Data Extractor
+                </div>
+                <div class="nav-item active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Log Analyzer
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Documents</div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    PDF Converter
+                </div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    Document OCR
+                </div>
+            </div>
+        </div>
+        <div id="mainWorkspace" class="workspace glass-panel">
+            <div class="workspace-header">
+                <div class="workspace-title">
+                    <h1>Log Analyzer Pro</h1>
+                    <p>Stream and parse multi-gigabyte server logs securely offline.</p>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div id="setupHeaderActions" style="display: flex; gap: 12px; align-items: center;">
+                        <button id="btnToggleAdvanced" class="btn btn-outline-base">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            Advanced
+                        </button>
+                        <button id="btnPickFiles" class="btn btn-outline-base">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            Select Log Files
+                        </button>
+                    </div>
+                    <div id="headerActions" style="display: none; align-items: center; gap: 12px;">
+                        <button id="btnExport" class="btn btn-outline-accent">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export to CSV
+                        </button>
+                        <button id="btnReset" class="btn btn-outline-danger">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Close Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="advancedPanel" style="display: none; background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 16px 24px;">
+                <h3 style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 12px;">Advanced Format Builder</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Override the native engine with a custom proprietary log regex.</p>
+                <input type="text" id="txtCustomRegex" placeholder="e.g. ^(?P<ip>[\d\.]+).*?(?P<timestamp>\[.*?\]).*?(?P<url>/\S+).*?(?P<status>\d{3})" style="width: 100%; max-width: 600px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-base); color: var(--text-main); font-family: monospace; font-size: 0.85rem;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                    <strong>Required Capture Groups:</strong> 1 = IP Address | 2 = Timestamp | 4 = Request Path | 5 = Status Code
+                </div>
+            </div>
+
+            <div class="workspace-content">
+                <div id="setupArea" style="position: relative; display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center;">
+                    <div style="opacity: 0.7; pointer-events: none; filter: blur(1.5px); position: absolute; inset: 0; display: flex; flex-direction: column; padding: 24px; gap: 24px;">
+                          <div style="border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; height: 180px; width: 100%;"></div>
+                          <div style="display: flex; gap: 24px;">
+                              <div style="flex: 1; border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; height: 140px;"></div>
+                              <div style="flex: 1; border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; height: 140px;"></div>
+                              <div style="flex: 1; border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; height: 140px;"></div>
+                          </div>
+                          <div style="border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; flex: 1; width: 100%;"></div>
+                      </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; position: relative; z-index: 10;">No log files loaded. Click "Select Log Files" in the top right to begin.</p>
+                </div>
+
+                <div id="statsArea" style="display: none; flex-direction: column;">
+                    <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+                        <div style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--text-main);" id="statLines">0</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Lines Parsed</div>
+                        </div>
+                        <div style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #ef4444;" id="statErrors">0</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Total Errors</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Traffic & Error Timeline (Requests per Hour)</h3>
+                        <canvas id="timelineChart" style="width: 100%; height: 250px;"></canvas>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                            <h3 style="margin-top: 0; color: #f97316; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Threat: Brute-Force Attacks</h3>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 12px;">IPs with > 10 failed auths per minute</div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+                                <thead style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                                    <tr><th style="padding-bottom:8px;">IP Address</th><th style="padding-bottom:8px;">Burst Count</th></tr>
+                                </thead>
+                                <tbody id="tblBruteForce"></tbody>
+                            </table>
+                        </div>
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                            <h3 style="margin-top: 0; color: #f97316; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Vulnerability Scanners</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+                                <thead style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                                    <tr><th style="padding-bottom:8px;">IP Address</th><th style="padding-bottom:8px;">Hits</th></tr>
+                                </thead>
+                                <tbody id="tblScanners"></tbody>
+                            </table>
+                        </div>
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                            <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Top IPs</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+                                <thead style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                                    <tr><th style="padding-bottom:8px;">IP Address</th><th style="padding-bottom:8px;">Requests</th></tr>
+                                </thead>
+                                <tbody id="tblIps"></tbody>
+                            </table>
+                        </div>
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                            <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Missing Paths (404)</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+                                <thead style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                                    <tr><th style="padding-bottom:8px;">Path</th><th style="padding-bottom:8px;">Hits</th></tr>
+                                </thead>
+                                <tbody id="tbl404s"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btnToggleAdvanced = document.getElementById('btnToggleAdvanced');
+        if (btnToggleAdvanced) {
+            btnToggleAdvanced.addEventListener('click', () => {
+                const panel = document.getElementById('advancedPanel');
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                btnToggleAdvanced.style.background = panel.style.display === 'none' ? 'transparent' : 'var(--item-hover)';
+            });
+        }
+        
+        const { invoke } = window.__TAURI__.core;
+        
+        document.getElementById('btnPickFiles').addEventListener('click', async () => {
+            try {
+                const files = await invoke('pick_multiple_log_files');
+                if (!files || files.length === 0) return;
+                
+                document.getElementById('global-loader').style.opacity = '1';
+                document.getElementById('global-loader').style.pointerEvents = 'all';
+                
+                const customRegex = document.getElementById('txtCustomRegex') ? document.getElementById('txtCustomRegex').value : null;
+                window.report = await invoke('parse_logs', { files, customRegex });
+                
+                document.getElementById('global-loader').style.opacity = '0';
+                document.getElementById('global-loader').style.pointerEvents = 'none';
+                
+                document.getElementById('setupArea').style.display = 'none';
+                document.getElementById('setupHeaderActions').style.display = 'none';
+                document.getElementById('advancedPanel').style.display = 'none';
+                document.getElementById('headerActions').style.display = 'flex';
+                document.getElementById('statsArea').style.display = 'flex';
+                
+                document.getElementById('statLines').innerText = window.report.total_lines.toLocaleString();
+                document.getElementById('statErrors').innerText = window.report.total_errors.toLocaleString();
+                
+                const renderTable = (tbodyId, data) => {
+                    const tbody = document.getElementById(tbodyId);
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px 0; color: var(--text-muted); font-style: italic;">No data found</td></tr>';
+                        return;
+                    }
+                    data.forEach(row => {
+                        tbody.innerHTML += `<tr><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${row[0]}</td><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${row[1].toLocaleString()}</td></tr>`;
+                    });
+                };
+                
+                renderTable('tblBruteForce', window.report.brute_force_ips);
+                renderTable('tblScanners', window.report.scanner_ips);
+                renderTable('tblIps', window.report.top_ips);
+                renderTable('tbl404s', window.report.top_404s);
+                
+                // Canvas Timeline
+                const canvas = document.getElementById('timelineChart');
+                const ctx = canvas.getContext('2d');
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = rect.width * dpr;
+                canvas.height = 250 * dpr;
+                ctx.scale(dpr, dpr);
+                
+                const labels = window.report.timeline_labels;
+                const traffic = window.report.timeline_traffic;
+                const errors = window.report.timeline_errors;
+                
+                if (labels.length === 0) return;
+                
+                const maxVal = Math.max(...traffic, 10);
+                const w = rect.width;
+                const h = 250;
+                const padX = 40;
+                const padY = 30;
+                
+                ctx.clearRect(0, 0, w, h);
+                
+                const stepX = (w - padX * 2) / Math.max(labels.length - 1, 1);
+                
+                // Draw Grid
+                ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border');
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for (let i = 0; i <= 4; i++) {
+                    const y = padY + (h - padY * 2) * (i / 4);
+                    ctx.moveTo(padX, y);
+                    ctx.lineTo(w - padX, y);
+                }
+                ctx.stroke();
+                
+                // Draw Data
+                const drawLine = (data, color, fill = null) => {
+                    ctx.beginPath();
+                    data.forEach((val, i) => {
+                        const x = padX + i * stepX;
+                        const y = h - padY - ((val / maxVal) * (h - padY * 2));
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    });
+                    
+                    if (fill) {
+                        const bgPath = new Path2D();
+                        data.forEach((val, i) => {
+                            const x = padX + i * stepX;
+                            const y = h - padY - ((val / maxVal) * (h - padY * 2));
+                            if (i === 0) bgPath.moveTo(x, y);
+                            else bgPath.lineTo(x, y);
+                        });
+                        bgPath.lineTo(w - padX, h - padY);
+                        bgPath.lineTo(padX, h - padY);
+                        bgPath.closePath();
+                        ctx.fillStyle = fill;
+                        ctx.fill(bgPath);
+                    }
+                    
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                };
+                
+                drawLine(traffic, '#0A84FF', 'rgba(10, 132, 255, 0.1)');
+                drawLine(errors, '#ef4444', 'rgba(239, 68, 68, 0.1)');
+                
+                // Labels
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted');
+                ctx.font = '10px -apple-system';
+                ctx.textAlign = 'center';
+                const skip = Math.max(1, Math.ceil(labels.length / 8));
+                for (let i = 0; i < labels.length; i += skip) {
+                    let lbl = labels[i].split(':');
+                    let displayStr = lbl.length > 1 ? lbl[1] + ':00' : lbl[0];
+                    ctx.fillText(displayStr, padX + i * stepX, h - padY + 16);
+                }
+                
+                // Legend
+                ctx.textAlign = 'right';
+                for (let i = 0; i <= 4; i++) {
+                    const y = padY + (h - padY * 2) * (i / 4);
+                    const val = Math.round(maxVal * (1 - i / 4));
+                    ctx.fillText(val.toLocaleString(), padX - 8, y + 4);
+                }
+            } catch (e) {
+                if (e !== 'Cancelled') alert('Error: ' + e);
+                document.getElementById('global-loader').style.opacity = '0';
+                document.getElementById('global-loader').style.pointerEvents = 'none';
+            }
+        });
+        
+        const btnReset = document.getElementById('btnReset');
+        if (btnReset) {
+            btnReset.addEventListener('click', () => {
+                document.getElementById('statsArea').style.display = 'none';
+                document.getElementById('headerActions').style.display = 'none';
+                document.getElementById('setupArea').style.display = 'flex';
+                document.getElementById('setupHeaderActions').style.display = 'flex';
+                document.getElementById('advancedPanel').style.display = 'none';
+                if(document.getElementById('btnToggleAdvanced')) document.getElementById('btnToggleAdvanced').style.background = 'transparent';
+                window.report = null;
+            });
+        }
+
+        const btnExport = document.getElementById('btnExport');
+        if (btnExport) {
+            btnExport.addEventListener('click', async () => {
+                if (!window.report) return alert("No report generated yet.");
+                let csvStr = "Category,IP_Address,Count_or_Detail\n";
+                window.report.brute_force_ips.forEach(r => csvStr += `"Brute-Force Threat","${r[0]}","${r[1]} bursts"\n`);
+                window.report.scanner_ips.forEach(r => csvStr += `"Scanner Threat","${r[0]}","${r[1]} hits"\n`);
+                window.report.top_ips.forEach(r => csvStr += `"Top IP","${r[0]}","${r[1]} requests"\n`);
+                window.report.top_404s.forEach(r => csvStr += `"Missing Path (404)","${r[0]}","${r[1]} hits"\n`);
+                window.report.top_500s.forEach(r => csvStr += `"Server Error (500)","${r[0]}","${r[1]} errors"\n`);
+                
+                try {
+                    await invoke('save_text_file_native', { text: csvStr, defaultName: "Tangent_Log_Security_Report.csv" });
+                    alert("Security Report saved successfully!");
+                } catch (e) {
+                    if (e !== 'Cancelled' && e !== 'cancelled') alert("Tauri save error: " + e);
+                }
+            });
+        }
+        
+        // --- GLOBAL SHELL CONTROLS ---
+        const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
+        if(typeof applyTheme === 'function') { applyTheme(savedTheme); }
+        else {
+            function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('tangent_pro_theme', theme); }
+            applyTheme(savedTheme);
+        }
+        const themeBtn = document.getElementById('theme-btn');
+        if (themeBtn) { themeBtn.addEventListener('click', () => { applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }); }
+        
+        if (window.__TAURI__) {
+            const { getCurrentWindow } = window.__TAURI__.window;
+            const appWindow = getCurrentWindow();
+            document.getElementById('btn-minimize')?.addEventListener('click', () => appWindow.minimize());
+            document.getElementById('btn-maximize')?.addEventListener('click', () => appWindow.toggleMaximize());
+            document.getElementById('btn-close')?.addEventListener('click', () => appWindow.close());
+        }
+        
+        const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        if(btnToggleSidebar && sidebar) { btnToggleSidebar.addEventListener('click', () => sidebar.classList.toggle('collapsed')); }
+    </script>
+</body>
+</html>

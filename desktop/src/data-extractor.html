@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extractor | Tangent Pro</title>
+    <link rel="stylesheet" href="global.css">
+    <style>
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Mockup Cards for Data */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .metric-card h3 {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Table Area */
+        .table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: auto;
+            flex-grow: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        
+        .status-bar {
+            height: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.1);
+        }
+        .status-right {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* --- Recipe Panel --- */
+        .recipe-panel {
+            flex: 0 0 320px !important;
+            width: 320px !important;
+            min-width: 320px !important;
+            max-width: 320px !important;
+            height: 100% !important; /* STRICT HEIGHT */
+            display: none;
+            flex-direction: column;
+            background: var(--glass-bg);
+            border-left: 1px solid var(--border);
+            box-sizing: border-box;
+            overflow: hidden !important;
+        }
+        
+        .recipe-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recipe-content {
+            padding: 16px;
+            padding-bottom: 32px;
+            overflow-y: auto !important;
+            display: block; /* Standard block layout for inner contents */
+            flex: 1 1 0 !important;
+            min-height: 0 !important;
+            height: 0; /* Forces flex child to compute height from flex-grow rather than content/100% */
+        }
+
+        /* Premium Accordion styles */
+        .accordion-item { 
+            background: var(--panel-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-bottom: 12px; 
+            box-shadow: var(--glass-shadow); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        .accordion-item:last-child { margin-bottom: 0; }
+        .accordion-header { 
+            background: transparent; 
+            padding: 14px 16px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 600; 
+            user-select: none; 
+            font-size: 13px; 
+            color: var(--text-main);
+            border-bottom: 1px solid transparent; 
+            transition: background 0.2s;
+        }
+        .accordion-header:hover { background: var(--item-hover); }
+        .accordion-header.active { 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(128,128,128,0.03); 
+        }
+        .accordion-content { 
+            padding: 16px; 
+            display: none; 
+            background: transparent; 
+        }
+        .accordion-content.active { display: block; }
+        .accordion-icon { transition: transform 0.2s; opacity: 0.7; }
+        .accordion-header.active .accordion-icon { transform: rotate(180deg); opacity: 1; }
+
+        .recipe-section h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            color: var(--text-main);
+            opacity: 0.9;
+        }
+
+        /* macOS-style Toggle */
+        .toggle-switch {
+            width: 34px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-switch.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .toggle-handle {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.active .toggle-handle {
+            transform: translateX(14px);
+        }
+
+        /* Form Controls */
+        .form-select {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            margin-top: 6px;
+        }
+
+
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: var(--text-main);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            font-size: 13px;
+            max-width: 400px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .pill-tag {
+            background: rgba(10, 132, 255, 0.15);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pill-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .pill-tag .remove:hover {
+            opacity: 1;
+            color: #ef4444;
+        }
+            100% { transform: rotate(360deg); }
+        }
+        .spin-logo {
+            animation: sweepSpin 1.2s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+        }
+    
+        /* Official Tangent Logo Animations */
+        .tl-logo-wrap { position: relative; width: 64px; height: 64px; margin: 0 auto; }
+        .tl-logo-wrap svg { width: 64px; height: 64px; overflow: visible; }
+        .tl-arc {
+            stroke-dasharray: 1;
+            stroke-dashoffset: 1;
+            animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .tl-line {
+            transform-origin: 32px 14px;
+            transform-box: fill-box;
+            animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes tlDrawArc {
+            0%   { stroke-dashoffset: 1; opacity: 0.2; }
+            20%  { opacity: 1; }
+            70%  { stroke-dashoffset: 0; }
+            90%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 1; opacity: 0.2; }
+        }
+        @keyframes tlPulseLine {
+            0%, 30%  { opacity: 0; transform: scaleY(0.1); }
+            60%, 85% { opacity: 1; transform: scaleY(1); }
+            100%     { opacity: 0; transform: scaleY(0.1); }
+        }
+        .tl-glow {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+        }
+
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="global-loader">
+        <div class="tl-logo-wrap" style="transform: scale(1.5); margin-bottom: 20px;">
+            <div class="tl-glow"></div>
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path class="tl-arc" d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
+                <path class="tl-line" d="M 32 14 V 44" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div id="global-loader-text" style="font-weight:700; font-size:16px; letter-spacing:1px; color:#ffffff;">STREAMING DATASET...</div>
+    </div>
+
+    <div class="titlebar">
+        <div class="title-left">
+            <div id="btn-toggle-sidebar" style="cursor: pointer; display: flex; align-items: center; padding: 4px; margin-right: 4px; border-radius: 4px; opacity: 0.9; transition: opacity 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Tangent Pro
+        </div>
+        <div class="drag-region"></div>
+        <div class="top-actions">
+            <!-- Theme Toggle -->
+            <div style="padding: 0 16px; display: flex; align-items: center;">
+                <svg id="theme-btn" style="cursor:pointer; color: var(--text-muted); opacity: 0.8;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            
+            <!-- Modern Neutral Window Controls -->
+            <div class="win-btn" id="btn-minimize">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+            </div>
+            <div class="win-btn" id="btn-maximize">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+            </div>
+            <div class="win-btn close" id="btn-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <div class="sidebar glass-panel">
+            <div class="nav-section">
+                <div class="nav-title">Data Pipeline</div>
+                <div class="nav-item" onclick="window.location.href='index.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Data Hygiene
+                </div>
+                <div class="nav-item" onclick="window.location.href='csv-insights.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    CSV Insights
+                </div>
+                <div class="nav-item" onclick="window.location.href='sql-studio.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    SQL Studio
+                </div>
+                <div class="nav-item" onclick="window.location.href='finance-dashboard.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Finance Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='correlation-matrix.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Correlation Matrix
+                </div>
+                <div class="nav-item active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Data Extractor
+                </div>
+                <div class="nav-item" onclick="window.location.href='log-analyzer.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Log Analyzer
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Documents</div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    PDF Converter
+                </div>
+                <div class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    Document OCR
+                </div>
+            </div>
+        </div>
+        <!-- Main Workspace -->
+        
+          <div id="mainWorkspace" class="workspace glass-panel" style="">
+              <div class="workspace-header" style="border-bottom: 1px solid var(--border); padding: 24px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="workspace-title">
+        <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Data Extractor Pro</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Extract structured data from live URLs and HTML files perfectly natively.</p>
+    </div>
+</div>
+<div class="workspace-content" style="flex: 1; padding: 24px; overflow-y: auto; overflow-x: hidden;">
+      
+      <div class="tabs-nav" style="display: inline-flex; gap: 8px; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px;">
+        <button class="tab-btn active btn btn-outline-base" id="tabUrl" style="border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">Live URL</button>
+        <button class="tab-btn btn btn-outline-base" id="tabRaw" style="border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.95rem;">Raw HTML</button>
+      </div>
+      
+      <div id="urlContainer" style="margin-bottom: 24px;">
+        <div style="display:flex; gap:12px;">
+            <input type="url" id="urlInput" placeholder="https://example.com/products" style="flex:1; height: 32px; padding: 0 12px; background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 13px;">
+            <button id="btnFetch" class="btn btn-outline-accent" style="padding: 0 16px; height: 32px; font-size: 13px; white-space: nowrap; font-weight: 500; display: inline-flex; align-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Fetch HTML</button>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px; color: #22c55e;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Native Fetch: Downloads directly from your machine. No proxy servers, no privacy leaks.
+        </div>
+      </div>
+      
+      <div id="rawContainer" style="display:none; margin-bottom: 24px;">
+          <textarea id="htmlInput" class="code-input" placeholder="<!-- Paste raw HTML source code here... -->" style="width: 100%; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; min-height: 120px; outline: none; margin-bottom: 16px;"></textarea>
+      </div>
+      
+      <div id="htmlStatus" style="margin-bottom: 24px; padding: 12px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 6px; color: #22c55e; display: none; font-weight: 500;">
+          HTML Loaded successfully (0 bytes)
+      </div>
+
+    <div class="panel" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+      <h3 style="margin-top:0; margin-bottom:16px;">Extraction Rules</h3>
+      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+        <div class="control-group">
+          <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Extraction Mode</label>
+          <select id="extractMode" style="width: 100%; height: 32px; padding: 0 12px; border-radius: 6px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border); font-size: 13px;">
+            <option value="tables">Auto-Detect HTML Tables</option>
+            <option value="selector">Custom CSS Selector</option>
+          </select>
+        </div>
+        <div class="control-group" id="selectorGroup" style="opacity:0.5; pointer-events:none;">
+          <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Parent Selector (Rows)</label>
+          <input type="text" id="parentSelector" placeholder="e.g. .product-card, ul > li" value=".product-card" style="width: 100%; height: 32px; padding: 0 12px; border-radius: 6px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border); font-size: 13px;">
+          
+          <div style="margin-top: 16px;">
+            <label style="display:flex; justify-content:space-between; align-items:center; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                Child Columns (Fields)
+                <button class="btn btn-outline-accent" id="addFieldBtn" style="border:none; cursor:pointer; font-size:0.85rem; font-weight:600;">+ Add Column</button>
+            </label>
+            <div id="fieldsContainer" style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="btnExtract" class="btn btn-outline-accent" style="width: 100%; margin-top: 24px; justify-content: center; padding: 8px; height: 36px; font-size: 13px; font-weight: 500;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Extract Data</button>
+    </div>
+    
+    <div class="panel" id="resultsPanel" style="display:none; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">Preview & Export <span class="badge" id="rowBadge" style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 8px;">0 rows</span></h3>
+        <button id="btnExportCsv" class="btn btn-outline-purple" style="height: 32px; font-size: 12px; padding: 0 16px; font-weight: 500; display: inline-flex; align-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Export to CSV</button>
+      </div>
+      <div id="tablePicker" style="display:none; margin-bottom:16px; padding: 16px; background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px;">
+          <strong style="display:block; margin-bottom:12px; color: var(--text-main);">Select Tables to Export</strong>
+          <div id="tableCheckboxes" style="display:flex; flex-wrap:wrap; gap:16px;"></div>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table id="previewTable" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <thead id="previewThead" style="background: rgba(0,0,0,0.05);"></thead>
+          <tbody id="previewTbody"></tbody>
+        </table>
+      </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+    const { invoke } = window.__TAURI__.core;
+
+
+    const tabUrl = document.getElementById('tabUrl');
+    const tabRaw = document.getElementById('tabRaw');
+    const urlContainer = document.getElementById('urlContainer');
+    const rawContainer = document.getElementById('rawContainer');
+    const urlInput = document.getElementById('urlInput');
+    const btnFetch = document.getElementById('btnFetch');
+    const htmlInput = document.getElementById('htmlInput');
+    const htmlStatus = document.getElementById('htmlStatus');
+    
+    const extractMode = document.getElementById('extractMode');
+    const selectorGroup = document.getElementById('selectorGroup');
+    const parentSelector = document.getElementById('parentSelector');
+    const fieldsContainer = document.getElementById('fieldsContainer');
+    const addFieldBtn = document.getElementById('addFieldBtn');
+    
+    const btnExtract = document.getElementById('btnExtract');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const previewThead = document.getElementById('previewThead');
+    const previewTbody = document.getElementById('previewTbody');
+    const btnExportCsv = document.getElementById('btnExportCsv');
+    const rowBadge = document.getElementById('rowBadge');
+    
+    const tablePicker = document.getElementById('tablePicker');
+    const tableCheckboxes = document.getElementById('tableCheckboxes');
+
+    let currentHtml = "";
+    let extractedTables = []; 
+    let structuredData = []; 
+    let fieldCount = 0;
+
+    tabUrl.onclick = () => {
+        tabUrl.style.background = 'var(--bg-card, rgba(255,255,255,0.1))'; tabUrl.style.color = 'var(--text-main)'; tabUrl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+        tabRaw.style.background = 'transparent'; tabRaw.style.color = 'var(--text-muted)'; tabRaw.style.boxShadow = 'none';
+        urlContainer.style.display = 'block';
+        rawContainer.style.display = 'none';
+    };
+    tabRaw.onclick = () => {
+        tabRaw.style.background = 'var(--bg-card, rgba(255,255,255,0.1))'; tabRaw.style.color = 'var(--text-main)'; tabRaw.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+        tabUrl.style.background = 'transparent'; tabUrl.style.color = 'var(--text-muted)'; tabUrl.style.boxShadow = 'none';
+        rawContainer.style.display = 'block';
+        urlContainer.style.display = 'none';
+    };
+
+    btnFetch.onclick = async () => {
+        const url = urlInput.value.trim();
+        if (!url) return alert("Enter a URL first.");
+        btnFetch.innerText = "Fetching...";
+        try {
+            currentHtml = await invoke('fetch_live_url', { url });
+            htmlStatus.style.display = 'block';
+            htmlStatus.innerText = `Live HTML fetched successfully (${(currentHtml.length / 1024).toFixed(1)} KB)`;
+        } catch (e) {
+            alert("Failed to fetch URL: " + e);
+            htmlStatus.style.display = 'none';
+        }
+        btnFetch.innerText = "Fetch HTML";
+    };
+
+    htmlInput.addEventListener('input', () => {
+        currentHtml = htmlInput.value;
+        if(currentHtml.trim().length > 0) {
+            htmlStatus.style.display = 'block';
+            htmlStatus.innerText = `Raw HTML loaded (${(currentHtml.length / 1024).toFixed(1)} KB)`;
+        } else {
+            htmlStatus.style.display = 'none';
+        }
+    });
+
+    extractMode.addEventListener('change', () => {
+        if(extractMode.value === 'selector') {
+            selectorGroup.style.opacity = '1';
+            selectorGroup.style.pointerEvents = 'auto';
+        } else {
+            selectorGroup.style.opacity = '0.5';
+            selectorGroup.style.pointerEvents = 'none';
+        }
+    });
+
+    function createFieldUI() {
+        fieldCount++;
+        const id = fieldCount;
+        const div = document.createElement('div');
+        div.style = "display:flex; gap:8px; align-items:center; background: var(--bg-base); padding:8px; border: 1px solid var(--border); border-radius: 6px;";
+        div.innerHTML = `
+            <input type="text" id="fname_${id}" placeholder="Column Name" style="flex:1; height: 28px; padding: 0 8px; font-size: 12px; background:var(--bg-base); border:1px solid var(--border); border-radius:4px; color:var(--text-main);">
+            <input type="text" id="fsel_${id}" placeholder="Selector (e.g. h2)" style="flex:1; height: 28px; padding: 0 8px; font-size: 12px; background:var(--bg-base); border:1px solid var(--border); border-radius:4px; color:var(--text-main);">
+            <select id="ftype_${id}" style="width: 120px; height: 28px; padding: 0 8px; font-size: 12px; background:var(--bg-base); border:1px solid var(--border); border-radius:4px; color:var(--text-main);" onchange="document.getElementById('fattr_${id}').style.display = this.value === 'attribute' ? 'block' : 'none';">
+                <option value="text">Text Content</option>
+                <option value="attribute">Attribute</option>
+            </select>
+            <input type="text" id="fattr_${id}" placeholder="e.g. href" style="width: 100px; display:none; height: 28px; padding: 0 8px; font-size: 12px; background:var(--bg-base); border:1px solid var(--border); border-radius:4px; color:var(--text-main);">
+            <button class="btn btn-outline-danger" onclick="this.parentElement.remove()" style="border:none; cursor:pointer; padding:4px;">✖</button>
+        `;
+        fieldsContainer.appendChild(div);
+    }
+    addFieldBtn.onclick = createFieldUI;
+    createFieldUI(); 
+
+    btnExtract.onclick = async () => {
+        if (!currentHtml.trim()) return alert("Please provide HTML either via URL or Raw Input.");
+        
+        btnExtract.innerText = "Extracting...";
+        tablePicker.style.display = 'none';
+        
+        try {
+            if (extractMode.value === 'tables') {
+                extractedTables = await invoke('extract_tables', { html: currentHtml });
+                if (extractedTables.length === 0) {
+                    alert("No valid HTML tables found.");
+                } else {
+                    renderTablePicker();
+                    renderPreview();
+                }
+            } else {
+                const parentSel = parentSelector.value.trim();
+                const fields = [];
+                for (let i = 1; i <= fieldCount; i++) {
+                    const nameEl = document.getElementById(`fname_${i}`);
+                    if (!nameEl) continue; 
+                    fields.push({
+                        name: nameEl.value.trim() || `Column ${i}`,
+                        selector: document.getElementById(`fsel_${i}`).value.trim(),
+                        extract_type: document.getElementById(`ftype_${i}`).value,
+                        attribute_name: document.getElementById(`ftype_${i}`).value === 'attribute' ? document.getElementById(`fattr_${i}`).value.trim() : null
+                    });
+                }
+                
+                structuredData = await invoke('extract_structured', { html: currentHtml, parentSelector: parentSel, fields });
+                renderPreview();
+            }
+        } catch (e) {
+            alert("Extraction Error: " + e);
+        }
+        btnExtract.innerText = "Extract Data";
+    };
+
+    function renderTablePicker() {
+        tablePicker.style.display = 'block';
+        tableCheckboxes.innerHTML = '';
+        extractedTables.forEach((t, i) => {
+            const lbl = document.createElement('label');
+            lbl.style = "display:flex; align-items:center; gap:6px; cursor:pointer; color:var(--text-main);";
+            lbl.innerHTML = `<input type="checkbox" class="table-cb" value="${i}" ${i === 0 ? 'checked' : ''} onchange="renderPreview()"> Table ${i + 1} (${t.rows.length} rows)`;
+            tableCheckboxes.appendChild(lbl);
+        });
+    }
+
+    window.renderPreview = function() {
+        resultsPanel.style.display = 'block';
+        previewThead.innerHTML = '';
+        previewTbody.innerHTML = '';
+        
+        let finalData = [];
+        
+        if (extractMode.value === 'tables') {
+            const checkboxes = document.querySelectorAll('.table-cb:checked');
+            checkboxes.forEach(cb => {
+                const tIdx = parseInt(cb.value);
+                finalData = finalData.concat(extractedTables[tIdx].rows);
+            });
+        } else {
+            finalData = structuredData;
+        }
+        
+        if (finalData.length === 0) {
+            rowBadge.textContent = "0 rows";
+            return;
+        }
+        
+        rowBadge.textContent = `${finalData.length > 1 ? finalData.length - 1 : 0} rows`;
+        
+        const headerRow = document.createElement('tr');
+        finalData[0].forEach(h => {
+            const th = document.createElement('th');
+            th.textContent = h;
+            th.style.padding = "8px";
+            th.style.border = "1px solid var(--border)";
+            headerRow.appendChild(th);
+        });
+        previewThead.appendChild(headerRow);
+        
+        const limit = Math.min(finalData.length, 501); // Increased preview to 500 rows
+        for (let i = 1; i < limit; i++) {
+            const tr = document.createElement('tr');
+            finalData[i].forEach(cell => {
+                const td = document.createElement('td');
+                td.textContent = cell;
+                td.style.border = "1px solid var(--border)";
+                td.style.padding = "6px 8px";
+                tr.appendChild(td);
+            });
+            previewTbody.appendChild(tr);
+        }
+        
+        // Add a helpful footer if the data exceeds the preview limit
+        if (finalData.length > limit) {
+            const footerTr = document.createElement('tr');
+            const footerTd = document.createElement('td');
+            footerTd.colSpan = finalData[0].length || 1;
+            footerTd.style.textAlign = 'center';
+            footerTd.style.padding = '16px';
+            footerTd.style.color = 'var(--text-muted)';
+            footerTd.style.fontStyle = 'italic';
+            footerTd.style.border = "1px solid var(--border)";
+            footerTd.textContent = `... plus ${finalData.length - limit} more rows saved in the final CSV export ...`;
+            footerTr.appendChild(footerTd);
+            previewTbody.appendChild(footerTr);
+        }
+    };
+
+    btnExportCsv.onclick = async () => {
+        let finalData = [];
+        if (extractMode.value === 'tables') {
+            const checkboxes = document.querySelectorAll('.table-cb:checked');
+            checkboxes.forEach(cb => {
+                const tIdx = parseInt(cb.value);
+                finalData = finalData.concat(extractedTables[tIdx].rows);
+            });
+        } else {
+            finalData = structuredData;
+        }
+        
+        if (finalData.length === 0) return alert("No data to export.");
+        
+        const escapeCSV = (val) => {
+            if(val === null || val === undefined) return '""';
+            let str = String(val);
+            if(str.includes('"') || str.includes(',') || str.includes('\n')) {
+                str = '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        };
+        const csvStr = finalData.map(row => row.map(escapeCSV).join(",")).join("\n");
+        
+        try {
+            await window.__TAURI__.core.invoke('save_text_file_native', { text: csvStr, defaultName: "Extracted_Data.csv" });
+            alert("Data saved successfully!");
+        } catch (e) {
+            if (e !== 'Cancelled' && e !== 'cancelled') alert("Tauri save error: " + e);
+        }
+    };
+</script>
+
+<script>
+  // --- GLOBAL SHELL CONTROLS ---
+    const savedTheme = localStorage.getItem('tangent_pro_theme') || 'dark';
+    if(typeof applyTheme === 'function') {
+        applyTheme(savedTheme);
+    } else {
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('tangent_pro_theme', theme);
+        }
+        applyTheme(savedTheme);
+    }
+  
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => { 
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme); 
+        });
+    }
+  
+    if (window.__TAURI__) {
+        const btnClose = document.getElementById('btn-close');
+        if(btnClose) btnClose.addEventListener('click', () => window.__TAURI__.core.invoke('close_window'));
+        
+        const btnMin = document.getElementById('btn-minimize');
+        if(btnMin) btnMin.addEventListener('click', () => window.__TAURI__.core.invoke('minimize_window'));
+        
+        const btnMax = document.getElementById('btn-maximize');
+        if(btnMax) btnMax.addEventListener('click', () => window.__TAURI__.core.invoke('maximize_window'));
+    }
+    
+    const toggleSidebar = document.getElementById('btn-toggle-sidebar');
+    if (toggleSidebar) {
+        toggleSidebar.addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+    }
+</script>
+</body>
+</html>

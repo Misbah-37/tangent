@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <script type="importmap">
     {
       "imports": {
@@ -569,8 +571,8 @@ window.addEventListener('unhandledrejection', function(e) {
 
     <div class="workspace-header">
         <div class="workspace-title">
-            <h1>SQL Studio Pro</h1>
-            <p>High-performance local SQL engine natively powered by DuckDB-WASM.</p>
+            <h1>SQL Studio</h1>
+            <p>Query local files, inspect results, and save the data you need.</p>
         </div>
         <div class="toolbar">
             <button class="btn btn-outline btn-outline-accent" id="btnLoadDb">
@@ -582,7 +584,7 @@ window.addEventListener('unhandledrejection', function(e) {
                 Connect Database
             </button>
 
-            <input type="file" id="fileInput" style="display: none;" accept=".csv,.json,.parquet" multiple>
+            <input type="file" id="fileInput" style="display: none;" accept=".csv,.tsv,.xlsx,.json,.parquet" multiple>
         </div>
     </div>
     
@@ -590,9 +592,9 @@ window.addEventListener('unhandledrejection', function(e) {
         <!-- Sidebar -->
         <div class="sql-sidebar">
             <div class="sidebar-tabs">
-                <div class="sidebar-tab active" data-target="tab-schemas">Schemas</div>
-                <div class="sidebar-tab" data-target="tab-history">History</div>
-                <div class="sidebar-tab" data-target="tab-saved">Saved</div>
+                <button type="button" class="sidebar-tab active" data-target="tab-schemas">Schemas</button>
+                <button type="button" class="sidebar-tab" data-target="tab-history">History</button>
+                <button type="button" class="sidebar-tab" data-target="tab-saved">Saved</button>
             </div>
             
             <div class="sidebar-content" id="tab-schemas">
@@ -842,6 +844,8 @@ window.addEventListener('unhandledrejection', function(e) {
     let savedQueries = JSON.parse(localStorage.getItem('tangent_sql_saved') || '[]');
 
     // --- MONACO INITIALIZATION ---
+    let resolveLaunchpadEditor;
+    window.launchpadEditorReady = new Promise(resolve => { resolveLaunchpadEditor = resolve; });
     require.config({ paths: { 'vs': 'vendor/monaco/vs' }});
     require(['vs/editor/editor.main'], function() {
         // Theme sync
@@ -877,6 +881,7 @@ window.addEventListener('unhandledrejection', function(e) {
                 }, 50);
             });
         }
+        resolveLaunchpadEditor();
     });
 
     // Dynamic Autocomplete updating
@@ -973,17 +978,24 @@ window.addEventListener('unhandledrejection', function(e) {
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault(); dropzone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
-                Array.from(e.dataTransfer.files).forEach(f => handleFile(f));
+                importSelectedFiles(e.dataTransfer.files);
             }
         });
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length) {
-                Array.from(e.target.files).forEach(f => handleFile(f));
+                importSelectedFiles(e.target.files);
             }
         });
     }
 
+    async function importSelectedFiles(files) {
+        try { for (const file of Array.from(files)) await handleFile(file); }
+        catch (err) { if (err.name !== 'AbortError') window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId, err); }
+    }
+
     async function handleFile(file) {
+        file = await window.TangentTabular.prepareFile(file);
+        const typedInput = await window.TangentTabular.data({tabularId:file.tabularId});
         if (!conn) return alert("DuckDB is loading...");
         document.getElementById('statusIndicator').textContent = "Mounting " + file.name + "...";
         
@@ -992,22 +1004,36 @@ window.addEventListener('unhandledrejection', function(e) {
         if (!tableName) tableName = 'data_table';
         
         try {
-            const buffer = new Uint8Array(await file.arrayBuffer());
-            await db.registerFileBuffer(file.name, buffer);
-            
-            const ext = file.name.split('.').pop().toLowerCase();
-            let query = "";
-            if (ext === 'csv') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${file.name}')`;
-            else if (ext === 'parquet') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_parquet('${file.name}')`;
-            else if (ext === 'json') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_json_auto('${file.name}')`;
-            else return alert("Unsupported file type. Use CSV, Parquet, or JSON.");
-
-            await conn.query(query);
+            if (typedInput) {
+                const arrow = await import('apache-arrow');
+                const vectors = Object.create(null);
+                if (new Set(typedInput.columns).size !== typedInput.columns.length) throw new Error('The dataset contains duplicate column names. Rename them before querying.');
+                for (let i = 0; i < typedInput.columns.length; i++) {
+                    const kinds = new Set(typedInput.rows.map(row=>row[i].kind).filter(kind=>kind !== 'null'));
+                    const numeric = kinds.size === 1 && kinds.has('number');
+                    const boolean = kinds.size === 1 && kinds.has('boolean');
+                    const values = typedInput.rows.map(row=>row[i].kind === 'null' ? null : numeric || boolean ? row[i].value : String(row[i].value));
+                    vectors[typedInput.columns[i]] = arrow.vectorFromArray(values, numeric ? new arrow.Float64() : boolean ? new arrow.Bool() : new arrow.Utf8());
+                }
+                const table = new arrow.Table(vectors).select(typedInput.columns);
+                await conn.insertArrowTable(table, {name:tableName,create:true});
+            } else {
+                const buffer = new Uint8Array(await file.arrayBuffer());
+                await db.registerFileBuffer(file.name, buffer);
+                const ext = file.name.split('.').pop().toLowerCase();
+                const sqlFilename = file.name.replace(/'/g, "''");
+                let query = '';
+                if (ext === 'csv') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${sqlFilename}')`;
+                else if (ext === 'parquet') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_parquet('${sqlFilename}')`;
+                else if (ext === 'json') query = `CREATE TABLE ${tableName} AS SELECT * FROM read_json_auto('${sqlFilename}')`;
+                else throw new Error('Unsupported file type. Use CSV, TSV, XLSX, Parquet, or JSON.');
+                await conn.query(query);
+            }
             const schema = await conn.query(`DESCRIBE ${tableName}`);
             loadedSchemas[tableName] = schema.toArray();
             renderSchema(tableName, loadedSchemas[tableName]);
             
-            if (window.sqlEditorInstance && window.sqlEditorInstance.getValue().trim() === "" || window.sqlEditorInstance.getValue().includes('SELECT 1')) {
+            if (window.sqlEditorInstance && (window.sqlEditorInstance.getValue().trim() === "" || window.sqlEditorInstance.getValue().includes('SELECT 1'))) {
                 window.sqlEditorInstance.setValue(`SELECT * FROM ${tableName};`);
             }
             updateMonacoAutocomplete();
@@ -1017,6 +1043,7 @@ window.addEventListener('unhandledrejection', function(e) {
             console.error(e);
             alert("Error mounting table: " + e.message);
             document.getElementById('statusIndicator').textContent = "Mount Error";
+                if (window._launchpadImporting) throw e;
         }
     }
 
@@ -1327,39 +1354,8 @@ window.addEventListener('unhandledrejection', function(e) {
 
     // --- NATIVE TAURI EXPORT ---
     document.getElementById('btnExport').addEventListener('click', async () => {
-        if (!lastQueryRows || lastQueryRows.length === 0) return;
-        const cols = Object.keys(lastQueryRows[0]);
-        let csv = cols.join(',') + '\n';
-        
-        lastQueryRows.forEach(row => {
-            csv += cols.map(c => {
-                let val = row[c];
-                if (val === null || val === undefined) return '';
-                let str = String(val).replace(/"/g, '""');
-                if (str.includes(',') || str.includes('\n') || str.includes('"')) return `"${str}"`;
-                return str;
-            }).join(',') + '\n';
-        });
-        
-        if (window.__TAURI__) {
-            try {
-                if (window.TangentLoader) window.TangentLoader.show("Exporting CSV...");
-                const res = await window.__TAURI__.core.invoke('save_text_file_native', { text: csv, defaultName: 'sql_results.csv' });
-                if (window.TangentToast) window.TangentToast.show("Exported to " + res);
-                if (window.TangentLoader) window.TangentLoader.hide();
-            } catch(e) {
-                if(e !== "Cancelled") alert("Export error: " + e);
-                if (window.TangentLoader) window.TangentLoader.hide();
-            }
-        } else {
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'sql_results.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+        try { await window.TangentTabular.exportResult(await window.tangentCurrentResult(), 'sql_results.csv'); }
+        catch(e) { window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,e); }
     });
 
     // --- VISUALIZATION (CHART.JS) ---
@@ -1439,8 +1435,37 @@ window.addEventListener('unhandledrejection', function(e) {
     setupDropzone();
     renderHistory();
     renderSaved();
-    initDuckDB();
+window.tangentCurrentResult = async function() {
+  if (!lastQueryRows.length) throw new Error("Run a query with results first.");
+  const columns = Object.keys(lastQueryRows[0]);
+  return { dataset:window.TangentTabular?.fromRows(columns, lastQueryRows.map(row=>columns.map(col=>row[col]))), text: window.TangentToolWorkspace.csv([columns, ...lastQueryRows.map(row => columns.map(col => row[col]))]), ext: 'csv', label: 'Current query results' };
+};
+    window.launchpadEngineReady = initDuckDB();
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+    let readinessTimer;
+    try {
+        await Promise.race([
+            Promise.all([window.launchpadEngineReady, window.launchpadEditorReady]),
+            new Promise((_, reject) => { readinessTimer = setTimeout(() => reject(new Error('SQL engine or editor did not initialize within 30 seconds.')), 30000); })
+        ]);
+    } finally { clearTimeout(readinessTimer); }
+        if (!conn) throw new Error('DuckDB could not initialize.');
+        for (const table of Object.keys(loadedSchemas)) await conn.query('DROP TABLE IF EXISTS "' + table.replace(/"/g, '""') + '"');
+        loadedSchemas = {}; lastQueryRows = []; activeRemoteDb = null;
+        document.getElementById('tableList').replaceChildren();
+        for (const path of paths) await handleFile(await window.TangentLaunchpad.nativeFile(path));
+    } finally { window._launchpadImporting = false; }
+};
 
     </script>
+
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+
+
+</script>
 </body>
 </html>

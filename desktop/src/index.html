@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent Pro</title>
@@ -428,8 +430,8 @@
         <div class="workspace glass-panel">
             <div class="workspace-header">
                 <div class="workspace-title">
-                    <h1>Data Hygiene Pro</h1>
-                    <p>Process, clean, and standardize massive datasets instantly via Rust.</p>
+                    <h1>Data Hygiene</h1>
+                    <p>Clean, validate, and standardize CSV data with a reusable pipeline.</p>
                 </div>
                 <div class="toolbar">
                     <button class="btn btn-outline-danger" id="btn-close-file" style="display: none;">
@@ -484,9 +486,7 @@
                         Live Data Preview
                     </div>
                                         <div id="table-wrapper" style="overflow: auto; max-height: calc(100% - 90px); flex-grow: 1;">
-                        <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px;">
-                            No dataset loaded. Click "Load Dataset" to begin.
-                        </div>
+                        <div class="launch-empty"><h2>Start with a clean dataset</h2><p>Load a CSV to inspect data quality, then build a cleaning pipeline.</p><small>Your source file stays unchanged until you choose to save an export.</small></div>
                     </div>
                     <div class="pagination-footer" id="pagination-footer" style="display: none; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); font-size: 13px; background: rgba(0,0,0,0.2);">
                         <div id="page-info">Showing 0-0 of 0</div>
@@ -1152,6 +1152,8 @@
         
         document.getElementById('btn-close-file').addEventListener('click', () => {
             activeFilePath = null;
+            window.TangentToolWorkspace?.setState({hasData:false,dirty:false});
+            window.lastExportTempPath = null;
             rawColumns = [];
             rawPreview = [];
             nullCounts = [];
@@ -1240,6 +1242,7 @@
             try {
                 const resultJson = await invoke('preview_db_table', { uri: window.activeDbUri, tableName: tableName });
                 const data = JSON.parse(resultJson);
+                window.lastExportTempPath = null;
                 activeFilePath = data.path;
                 rawColumns = data.columns;
                 rawPreview = data.preview;
@@ -1369,10 +1372,11 @@
             }
         });
 
-        document.getElementById('btn-load').addEventListener('click', async () => {
+        async function loadHygieneFile(filePath) {
             try {
-                const filePath = await invoke('pick_csv_file');
+                if (!filePath) filePath = await invoke('pick_csv_file');
                 if(!filePath) return;
+                filePath = (await window.TangentTabular.prepare(filePath)).path;
                 
                 document.getElementById('global-loader-text').innerText = "STREAMING INITIAL PREVIEW...";
                 document.getElementById('global-loader').style.display = 'flex';
@@ -1380,6 +1384,7 @@
                 resetRecipeState();
                 const resultJson = await invoke('process_massive_csv', { filePath: filePath });
                 const data = JSON.parse(resultJson);
+                window.lastExportTempPath = null;
                 activeFilePath = data.path;
                 rawColumns = data.columns;
                 rawPreview = data.preview;
@@ -1414,15 +1419,17 @@
             } catch (e) {
                 document.getElementById('global-loader').style.display = 'none';
                 if(e !== "No file selected") showToast("Rust Core Error: " + e, true);
+                if (window._launchpadImporting) throw e;
             }
-        });
+        }
+        document.getElementById('btn-load').addEventListener('click', () => loadHygieneFile());
 
         
         document.getElementById('btn-save-export').addEventListener('click', async () => {
             if (!window.lastExportTempPath) return;
             try {
-                const finalPath = await invoke('save_export_as', { tempPath: window.lastExportTempPath });
-                showToast("Data saved successfully to:\n" + finalPath);
+                const finalPath = await window.TangentTabular.exportResult(await window.tangentCurrentResult(), 'cleaned_data.csv');
+                if (finalPath) showToast("Data saved successfully to:\n" + finalPath);
             } catch (e) {
                 if (e !== "Cancelled") showToast("Error saving: " + e, true);
             }
@@ -1606,5 +1613,21 @@
         });
 </script>
 
+
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+window.tangentCurrentResult = async function() {
+  const path = window.lastExportTempPath || activeFilePath;
+  if (!path) throw new Error("Load a CSV and run your cleaning recipe first.");
+  return { sourcePath: path, ext: 'csv', label: window.lastExportTempPath ? 'Cleaned dataset' : 'Loaded dataset (recipe not run)' };
+};
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+        await loadHygieneFile(paths[0]);
+    } finally { window._launchpadImporting = false; }
+};
+</script>
 </body>
 </html>

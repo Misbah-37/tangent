@@ -120,7 +120,22 @@ fn parse_date_to_iso(raw: &str) -> String {
     if let Ok(d) = NaiveDate::parse_from_str(c, "%m/%d/%Y") { return d.format("%Y-%m-%d").to_string(); }
     if let Ok(d) = NaiveDate::parse_from_str(c, "%Y-%m-%d") { return d.format("%Y-%m-%d").to_string(); }
     if let Ok(d) = NaiveDate::parse_from_str(c, "%d/%m/%Y") { return d.format("%Y-%m-%d").to_string(); }
+    if let Ok(d) = chrono::NaiveDateTime::parse_from_str(c, "%Y-%m-%dT%H:%M:%S%.f") { return d.date().to_string(); }
+    if let Ok(d) = chrono::DateTime::parse_from_rfc3339(c) { return d.date_naive().to_string(); }
     c.to_string() // Fallback
+}
+
+#[cfg(test)]
+mod date_import_tests {
+    use super::parse_date_to_iso;
+
+    #[test]
+    fn preserves_statement_dates_from_excel_and_delimited_files() {
+        for input in ["10/08/2026", "2026-10-08", "2026-10-08T00:00:00", "2026-10-08T00:00:00.125", "2026-10-08T00:00:00+05:30"] {
+            assert_eq!(parse_date_to_iso(input), "2026-10-08");
+        }
+        assert_eq!(parse_date_to_iso("unknown"), "unknown");
+    }
 }
 
 #[tauri::command]

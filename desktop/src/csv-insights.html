@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent Pro</title>
@@ -428,8 +430,8 @@
         <div class="workspace glass-panel">
             <div class="workspace-header">
     <div class="workspace-title">
-        <h1>CSV Insights Pro</h1>
-        <p>Instantly profile columns, build pivot charts, and visualize data natively.</p>
+        <h1>CSV Insights</h1>
+        <p>Understand your columns, explore patterns, and build charts from local CSV data.</p>
     </div>
     <div class="toolbar">
         <button class="btn btn-outline btn-outline-accent" id="btnLoadDashboard">
@@ -446,76 +448,17 @@
         </button>
                 <button class="btn btn-outline-danger" id="btn-close-file" style="display: none;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            Close
+            Close dataset
         </button>
         <button class="btn" id="btn-load">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             Load Dataset
         </button>
-        <input type="file" id="fileInput" accept=".csv" style="display:none;">
+        <input type="file" id="fileInput" accept=".csv,.tsv,.xlsx" style="display:none;">
     </div>
 </div>
 <div class="content-area" style="overflow-y: auto; display: flex; flex-direction: column;">
-    <div id="emptyState" style="position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 400px;">
-      
-      <!-- Ghost Tabs -->
-      <div class="tabs-nav" style="opacity: 0.3; pointer-events: none; margin-bottom: 16px; width: max-content;">
-        <button class="tab-btn active">Auto-Profiler</button>
-        <button class="tab-btn">Manual Explorer</button>
-        <button class="tab-btn">Raw Data Grid</button>
-      </div>
-
-      
-      <!-- Bordered Workspace Container -->
-      <div style="position: relative; flex-grow: 1; border: 1px solid var(--border-color); border-radius: 10px; background: var(--panel-bg, rgba(0,0,0,0.01)); padding: 24px; overflow: hidden;">
-      
-      <!-- Ghost Grid -->
-      <div class="profiler-grid" style="opacity: 0.15; pointer-events: none; filter: blur(1px);">
-        <div class="profile-card" style="height: 320px; display: flex; flex-direction: column;">
-          <div style="height: 18px; width: 45%; background: var(--border-color); border-radius: 4px; margin-bottom: 24px;"></div>
-          <div style="height: 12px; width: 80%; background: var(--border-color); border-radius: 4px; margin-bottom: 12px;"></div>
-          <div style="height: 12px; width: 60%; background: var(--border-color); border-radius: 4px; margin-bottom: 32px;"></div>
-          <div style="flex-grow: 1; display: flex; gap: 8px; align-items: flex-end;">
-            <div style="width: 100%; height: 40%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 80%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 60%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 90%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 30%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-          </div>
-        </div>
-        <div class="profile-card" style="height: 320px; display: flex; flex-direction: column;">
-          <div style="height: 18px; width: 35%; background: var(--border-color); border-radius: 4px; margin-bottom: 24px;"></div>
-          <div style="height: 12px; width: 70%; background: var(--border-color); border-radius: 4px; margin-bottom: 12px;"></div>
-          <div style="height: 12px; width: 90%; background: var(--border-color); border-radius: 4px; margin-bottom: 32px;"></div>
-          <div style="flex-grow: 1; display: flex; gap: 8px; align-items: flex-end;">
-            <div style="width: 100%; height: 70%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 50%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 20%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 80%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-          </div>
-        </div>
-        <div class="profile-card" style="height: 320px; display: flex; flex-direction: column;">
-          <div style="height: 18px; width: 60%; background: var(--border-color); border-radius: 4px; margin-bottom: 24px;"></div>
-          <div style="height: 12px; width: 50%; background: var(--border-color); border-radius: 4px; margin-bottom: 12px;"></div>
-          <div style="height: 12px; width: 75%; background: var(--border-color); border-radius: 4px; margin-bottom: 32px;"></div>
-          <div style="flex-grow: 1; display: flex; gap: 8px; align-items: flex-end;">
-            <div style="width: 100%; height: 30%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 60%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 100%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 40%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-            <div style="width: 100%; height: 20%; background: var(--border-color); border-radius: 4px 4px 0 0;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Center Prompt (Just Text) -->
-      <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
-          <div style="font-size: 13px; color: var(--text-muted); text-align: center;">
-              No dataset loaded. Click "Load Dataset" to begin.
-          </div>
-      </div>
-      </div>
-    </div>
+    <div id="emptyState" class="launch-empty"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg><h2>Explore your next dataset</h2><p>Load a CSV to profile columns, compare distributions, and build charts.</p><small>CSV files · processed on your device</small></div>
 <style>
 
       :root {
@@ -557,8 +500,6 @@
   .workspace-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 16px; }
   .workspace-stats { display: flex; gap: 24px; color: var(--text-muted); font-size: 0.9rem; }
   .workspace-stats strong { color: var(--text-main); font-size: 1.1rem; }
-  #btnCloseFile { border-color: rgba(239,68,68,0.4); color: var(--danger); padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; }
-  #btnCloseFile:hover { background: rgba(239,68,68,0.1); border-color: var(--danger) !important; }
 
   .tabs-nav { display: inline-flex; gap: 8px; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px; }
   .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
@@ -641,12 +582,8 @@
 
 
 </style><div class="workspace-container" id="workspace">
-  <div class="workspace-header" style="display:none;">
+  <div class="workspace-header" style="display:flex;">
     <div style="display:flex; align-items:center; gap:20px;">
-      <button class="btn btn-outline" id="btnCloseFile">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        Close Dataset
-      </button>
       <div class="workspace-stats" style="border-left: 1px solid var(--border-color); padding-left: 20px;">
         <span>Rows: <strong id="statRows">0</strong></span>
         <span>Columns: <strong id="statCols">0</strong></span>
@@ -1854,7 +1791,7 @@
     drawCartesianChart(canvas, { mark: mark, labels: manualChartMeta.labels, values: manualChartMeta.dataPoints, color: color, xTitle: manualChartMeta.xCol, yTitle: manualChartMeta.agg.toUpperCase() + ' of ' + manualChartMeta.yCol });
   });
 
-    document.getElementById('btnExportPivot').addEventListener('click', function () {
+    document.getElementById('btnExportPivot').addEventListener('click', async function () {
     if (!manualChartMeta || !manualChartMeta.labels || manualChartMeta.labels.length === 0) return;
     var xCol = manualChartMeta.xCol;
     var agg = manualChartMeta.agg.toUpperCase();
@@ -1865,15 +1802,9 @@
        var y = manualChartMeta.dataPoints[i];
        csvContent += '"' + x + '",' + y + '\n';
     }
-    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Aggregated_Pivot.csv");
-    document.body.appendChild(link);
-    link.click();
-      if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
-    document.body.removeChild(link);
+    try {
+      await window.TangentTabular.exportResult({dataset:window.TangentTabular.fromRows([xCol, agg + ' of ' + yCol], manualChartMeta.labels.map((label,i)=>[label,manualChartMeta.dataPoints[i]])),label:'Aggregated pivot'}, 'Aggregated_Pivot.csv');
+    } catch(err) { window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,err); }
   });
 
   document.getElementById('btnSaveImage').addEventListener('click', function () {
@@ -1965,13 +1896,6 @@
   var dropzone = document.getElementById('emptyState');
   var fileInput = document.getElementById('fileInput');
 
-    var btnCloseMain = document.getElementById('btn-close-file');
-    if (btnCloseMain) {
-        btnCloseMain.addEventListener('click', function() {
-            var hiddenClose = document.getElementById('btnCloseFile');
-            if (hiddenClose) hiddenClose.click();
-        });
-    }
 
 
   var nativeBtn = document.getElementById('btn-load'); if(nativeBtn) nativeBtn.addEventListener('click', function() { document.getElementById('fileInput').click(); });
@@ -1979,12 +1903,13 @@
   dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
   dropzone.addEventListener('drop', function (e) {
     e.preventDefault(); dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files.length) importSelectedFile(e.dataTransfer.files[0]);
   });
-  fileInput.addEventListener('change', function (e) { if (e.target.files.length) handleFile(e.target.files[0]); });
+  fileInput.addEventListener('change', function (e) { if (e.target.files.length) importSelectedFile(e.target.files[0]); });
 
-  document.getElementById('btnCloseFile').addEventListener('click', function () {
+  document.getElementById('btn-close-file').addEventListener('click', function () {
     rawData = []; currentHeaders = []; currentStats = null; manualChartMeta = null;
+            window.TangentToolWorkspace?.setState({hasData:false,dirty:false});
     fileInput.value = '';
       document.getElementById('emptyState').style.display = 'flex';
       if(document.getElementById('btn-close-file')) document.getElementById('btn-close-file').style.display = 'none';
@@ -1995,15 +1920,25 @@
       if(document.getElementById('btn-close-file')) document.getElementById('btn-close-file').style.display = 'none';
   });
 
-  function handleFile(file) {
-    if (file.name.split('.').pop().toLowerCase() !== 'csv') { alert('Only CSV files are supported.'); return; }
+  async function importSelectedFile(file) {
+    try { await handleFile(file); }
+    catch (err) { if (err.name !== 'AbortError') window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId, err); }
+  }
+
+  async function handleFile(file) {
+    file = await window.TangentTabular.prepareFile(file);
+    const typedInput = await window.TangentTabular.data({tabularId:file.tabularId});
+    return new Promise(function(resolve, reject) {
+    if (file.name.split('.').pop().toLowerCase() !== 'csv') { reject(new Error('Only CSV files are supported.')); return; }
     if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Profiling Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Analyzing distributions via Web Worker</span>'; window.TangentLoader.show(''); }
     originalData = null;
       var reader = new FileReader();
     reader.onload = function (e) {
       if (worker) worker.terminate();
       worker = new Worker(workerUrl);
+      worker.onerror = function(ev) { reject(new Error(ev.message || "CSV profiling failed.")); };
       worker.onmessage = function (ev) {
+        try {
         currentHeaders = ev.data.headers;
         currentStats = ev.data.stats;
         currentRowCount = ev.data.rowCount;
@@ -2023,10 +1958,20 @@
 
         renderAutoProfilerGrid();
         renderManualChart();
+          if (!window._launchpadImporting) window.parent.TangentShell?.registerSource(window.frameElement?.dataset.workspaceId, [file.sourceName || file.name]);
+        resolve();
+        } catch (err) {
+          reject(err);
+        }
       };
-      worker.postMessage({ text: e.target.result });
+      if (typedInput) {
+        const records = typedInput.rows.map(row=>Object.fromEntries(typedInput.columns.map((col,i)=>[col,row[i].kind === 'null' ? null : row[i].value])));
+        worker.postMessage({headers:typedInput.columns,data:records});
+      } else worker.postMessage({ text: e.target.result });
     };
+    reader.onerror = function() { reject(reader.error || new Error("Could not read CSV.")); };
     reader.readAsText(file);
+    });
   }
 
     var manualWrapper = document.getElementById('chartScrollWrapper');
@@ -2330,6 +2275,12 @@
     }
 
 
+window.tangentCurrentResult = async function() {
+  if (!currentHeaders.length) throw new Error("Load and profile a CSV first.");
+  const data = currentFilterFn ? rawData.filter(currentFilterFn) : rawData;
+  return { dataset:window.TangentTabular?.fromRows(currentHeaders, data.map(row=>currentHeaders.map(col=>row[col]))), text: window.TangentToolWorkspace.csv([currentHeaders, ...data.map(row => currentHeaders.map(col => row[col]))]), ext: 'csv', label: 'Current filtered dataset' };
+};
+window.tangentImportProfile = handleFile;
 })();
 </script>
 </div>
@@ -2371,4 +2322,15 @@
     }
 </script>
 
-</div></div></body></html>
+</div></div>
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+    await window.tangentImportProfile(await window.TangentLaunchpad.nativeFile(paths[0]));
+    } finally { window._launchpadImporting = false; }
+};
+</script>
+</body></html>

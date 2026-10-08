@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Extractor | Tangent Pro</title>
@@ -429,8 +431,8 @@
           <div id="mainWorkspace" class="workspace glass-panel" style="">
               <div class="workspace-header" style="border-bottom: 1px solid var(--border); padding: 24px; display: flex; justify-content: space-between; align-items: center;">
     <div class="workspace-title">
-        <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Data Extractor Pro</h1>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Extract structured data from live URLs and HTML files perfectly natively.</p>
+        <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Data Extractor</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Extract tables and structured data from HTML, then export to CSV.</p>
     </div>
 </div>
 <div class="workspace-content" style="flex: 1; padding: 24px; overflow-y: auto; overflow-x: hidden;">
@@ -447,7 +449,7 @@
         </div>
         <div style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px; color: #22c55e;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Native Fetch: Downloads directly from your machine. No proxy servers, no privacy leaks.
+            Fetching a URL contacts that website directly and reveals your network address. Pasted HTML is processed locally.
         </div>
       </div>
       
@@ -504,7 +506,7 @@
       </div>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
 <script>
     const { invoke } = window.__TAURI__.core;
 
@@ -552,6 +554,8 @@
         urlContainer.style.display = 'none';
     };
 
+    tabRaw.click();
+
     btnFetch.onclick = async () => {
         const url = urlInput.value.trim();
         if (!url) return alert("Enter a URL first.");
@@ -568,6 +572,8 @@
     };
 
     htmlInput.addEventListener('input', () => {
+        extractedTables = []; structuredData = [];
+        tableCheckboxes.replaceChildren();
         currentHtml = htmlInput.value;
         if(currentHtml.trim().length > 0) {
             htmlStatus.style.display = 'block';
@@ -744,7 +750,8 @@
         const csvStr = finalData.map(row => row.map(escapeCSV).join(",")).join("\n");
         
         try {
-            await window.__TAURI__.core.invoke('save_text_file_native', { text: csvStr, defaultName: "Extracted_Data.csv" });
+            const saved = await window.TangentTabular.exportResult({text:csvStr,label:'Selected extracted data'}, 'Extracted_Data.csv');
+            if (!saved) return;
             alert("Data saved successfully!");
         } catch (e) {
             if (e !== 'Cancelled' && e !== 'cancelled') alert("Tauri save error: " + e);
@@ -790,6 +797,26 @@
             document.querySelector('.sidebar').classList.toggle('collapsed');
         });
     }
+</script>
+
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+window.tangentCurrentResult = async function() {
+  let rows = structuredData;
+  if (extractMode.value === 'tables') rows = [...document.querySelectorAll('.table-cb:checked')].flatMap(cb => extractedTables[parseInt(cb.value)].rows);
+  if (!rows.length) throw new Error("Extract data and select at least one table first.");
+  return { dataset:window.TangentTabular?.fromRows(rows[0],rows.slice(1)), text: window.TangentToolWorkspace.csv(rows), ext: 'csv', label: 'Selected extracted data' };
+};
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+        const text = await window.__TAURI__.core.invoke('read_file_to_string_native', { path: paths[0] });
+        document.getElementById('tabRaw').click();
+        const input = document.getElementById('htmlInput');
+        input.value = text; input.dispatchEvent(new Event('input'));
+    } finally { window._launchpadImporting = false; }
+};
 </script>
 </body>
 </html>

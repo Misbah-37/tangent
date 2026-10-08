@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Dashboard | Tangent Pro</title>
@@ -108,8 +110,8 @@
         <div id="mainWorkspace" class="workspace glass-panel">
             <div class="workspace-header">
                 <div class="workspace-title">
-                    <h1>Finance Budget Dashboard Pro</h1>
-                    <p>Track cashflow, detect subscriptions, and monitor budgets natively offline.</p>
+                    <h1>Finance Dashboard</h1>
+                    <p>Review statement transactions, categories, and budgets on your device.</p>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
                     <div id="setupHeaderActions" style="display: flex; gap: 12px; align-items: center;">
@@ -119,7 +121,7 @@
                         </button>
                         <button id="btnPickMultiple" class="btn btn-outline-accent">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            Merge CSVs
+                            Merge files
                         </button>
                     </div>
                     <div id="headerActions" style="display: none; align-items: center; gap: 12px;">
@@ -205,7 +207,7 @@
                         </div>
                     </div>
                     
-                    <p id="emptyMsg" style="color: var(--text-muted); font-size: 0.95rem; position: relative; z-index: 10;">No statements loaded. Click "Load Statements" to begin.</p>
+                    <div id="emptyMsg"><div class="launch-empty"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg><h2>Understand your spending</h2><p>Load a statement, then map its date, description, and amount columns. Use Merge files to combine statements.</p><small>CSV statements · local analysis</small></div></div>
                 </div>
 
                 <div id="dashboardArea" style="display: none; flex-direction: column;">
@@ -318,6 +320,10 @@
         // File Picking & Mapping
         async function proceedWithFiles(files) {
             if (!files || files.length === 0) return;
+            const prepared = [];
+            for (const file of files) prepared.push((await window.TangentTabular.prepare(file)).path);
+            files = prepared;
+            currentReport = null;
             loadedFiles = files;
             const res = await invoke('extract_financial_headers', { files });
             parsedHeaders = res.headers;
@@ -357,7 +363,7 @@
             try {
                 const files = await invoke('pick_multiple_csv_files');
                 if (files && files.length === 1) {
-                    alert('Please select at least two CSV files to merge. For a single file, use the "Load Statement" button.');
+                    alert('Please select at least two data files to merge. For a single file, use the "Load Statement" button.');
                     return;
                 }
                 await proceedWithFiles(files);
@@ -546,12 +552,10 @@
         
         document.getElementById('btnExport').addEventListener('click', async () => {
             if (!currentReport) return;
-            let csv = "Date,Description,Category,Amount\n";
-            currentReport.transactions.forEach(t => csv += `"${t.date}","${t.desc}","${t.category}",${t.amount}\n`);
             try {
-                await invoke('save_text_file_native', { text: csv, defaultName: "Unified_Ledger.csv" });
-                alert("Ledger exported successfully!");
-            } catch(e) {}
+                const saved = await window.TangentTabular.exportResult(await window.tangentCurrentResult(), 'Unified_Ledger.csv');
+                if(saved) alert('Ledger exported successfully!');
+            } catch(e) { window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId, e); }
         });
         
         document.getElementById('btnReset').addEventListener('click', () => {
@@ -563,6 +567,7 @@
             document.getElementById('emptyMsg').style.display = 'block';
             currentReport = null;
             loadedFiles = [];
+            window.TangentToolWorkspace?.setState({hasData:false,dirty:false});
         });
 
         // --- GLOBAL SHELL CONTROLS ---
@@ -585,5 +590,20 @@
         const sidebar = document.querySelector('.sidebar');
         if(btnToggleSidebar && sidebar) { btnToggleSidebar.addEventListener('click', () => sidebar.classList.toggle('collapsed')); }
     </script>
+
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+window.tangentCurrentResult = async function() {
+  if (!currentReport) throw new Error("Analyze your statements first.");
+  return { dataset:window.TangentTabular?.fromRows(['Date','Description','Category','Amount'], currentReport.transactions.map(t=>[t.date,t.desc,t.category,t.amount])), text: window.TangentToolWorkspace.csv([['Date','Description','Category','Amount'], ...currentReport.transactions.map(t => [t.date,t.desc,t.category,t.amount])]), ext: 'csv', label: 'Analyzed transactions (all rows)' };
+};
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+        await proceedWithFiles(paths);
+    } finally { window._launchpadImporting = false; }
+};
+</script>
 </body>
 </html>

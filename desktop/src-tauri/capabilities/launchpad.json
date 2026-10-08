@@ -1,0 +1,13 @@
+{
+  "identifier": "launchpad",
+  "description": "Allow local workspace shell drag/drop, titlebar dragging, and confirmed native close.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:window:allow-start-dragging",
+    "core:window:allow-destroy"
+  ]
+}

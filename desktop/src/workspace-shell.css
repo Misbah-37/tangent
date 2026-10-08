@@ -1,0 +1,323 @@
+[hidden] {
+  display: none !important;
+}
+:root {
+  --brand-cyan:#00d2ff;
+}
+.launchpad-titlebar {
+  height: 44px;
+  padding-left: 8px;
+}
+.brand-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 0 10px;
+}
+.brand-button svg {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.brand-word {
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -.7px;
+}
+.brand-word span {
+  color: var(--brand-cyan);
+}
+.brand-edition {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+#toolkit-toggle {
+  color: var(--text-main);
+  display: flex;
+  padding: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#toolkit-toggle:hover {
+  background: var(--item-hover);
+}
+.shell-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.shell-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--panel-bg);
+  padding: 18px 12px;
+  overflow: auto;
+}
+.shell-sidebar.is-collapsed {
+  width: 64px;
+  padding: 18px 8px;
+}
+.shell-home {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  color: var(--text-main);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.shell-home[aria-pressed=true] {
+  background: var(--item-hover);
+  color: var(--accent);
+}
+.sidebar-section-label {
+  margin: 28px 12px 10px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+#workspace-count {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+#empty-workspaces {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  padding: 12px;
+}
+.workspace-entry {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  border-radius: 8px;
+}
+.workspace-entry:has([aria-pressed=true]) {
+  background: var(--item-hover);
+}
+.workspace-switch {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: var(--text-main);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.workspace-switch span {
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+}
+.workspace-switch small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 10px;
+  margin-top: 5px;
+}
+.workspace-switch[aria-pressed=true] span {
+  color: var(--accent);
+}
+.workspace-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.workspace-close:hover {
+  background: var(--item-hover);
+  color: var(--text-main);
+}
+.sidebar-privacy {
+  margin-top: auto;
+  padding: 28px 12px 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.shell-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.shell-workspace-bar {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 22px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  gap: 12px;
+}
+.workspace-retention {
+  font-size: 10px;
+}
+#workspace-status {
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 150px;
+  overflow: auto;
+  flex-shrink: 0;
+}
+#home-panel {
+  min-height: 0;
+}
+#workspace-panels {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.tool-panel {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg-base);
+}
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.hero-brand svg {
+  width: 44px;
+  height: 44px;
+}
+.hero-brand .brand-word {
+  font-size: 34px;
+}
+.hero-brand .brand-edition {
+  font-size: 12px;
+}
+.hero h1 {
+  font-size: clamp(26px, 3vw, 36px);
+}
+.tool-card .tool-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--item-hover);
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+#workspace-confirm {
+  max-width: 440px;
+}
+#confirm-message {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+@media (max-width: 800px) {
+  .brand-edition {
+    display: none;
+  }
+  .workspace-retention {
+    display: none;
+  }
+}
+@media (max-width: 580px) {
+  .brand-word {
+    font-size: 17px;
+  }
+  .launchpad-titlebar {
+    padding-left: 6px;
+  }
+  .brand-button {
+    padding: 0 6px;
+    gap: 6px;
+  }
+  .launchpad-titlebar .win-btn {
+    width: 32px;
+  }
+  .launchpad-titlebar .btn {
+    font-size: 10px;
+    margin-right: 4px;
+    padding: 6px;
+  }
+  .shell-workspace-bar {
+    padding: 8px 14px;
+  }
+  .hero-brand .brand-word {
+    font-size: 28px;
+  }
+}
+
+#workspace-open-in{margin-left:auto;white-space:nowrap}#open-in-dialog{max-width:640px;width:calc(100% - 40px);padding:28px;border:1px solid var(--border);border-radius:12px;background:var(--bg-base);color:var(--text-main)}#open-in-dialog::backdrop{background:rgba(0,0,0,.55)}#open-in-dialog p{line-height:1.6}#open-in-dialog select{display:block;width:100%;margin:10px 0 18px;padding:10px;background:var(--bg-base);color:var(--text-main)}#open-in-choices{margin-bottom:18px}#open-in-error{color:var(--brand-cyan);overflow-wrap:anywhere}
+
+/* Permanent tools remain available even when their workspaces are closed. */
+.shell-sidebar { overflow: hidden; }
+#permanent-tools { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+.tool-nav { display: flex; align-items: center; gap: 11px; position: relative; width: 100%; min-height: 38px; padding: 9px 12px; color: var(--text-main); background: transparent; border: 0; border-radius: 7px; text-align: left; font-size: 13px; cursor: pointer; }
+.tool-nav svg, .shell-home svg { flex-shrink: 0; color: var(--text-muted); }
+.tool-nav:hover { background: var(--item-hover); }
+.tool-nav[aria-pressed=true] { background: var(--item-hover); color: var(--accent); box-shadow: inset 2px 0 var(--accent); }
+.tool-nav[aria-pressed=true] svg { color: var(--accent); }
+.nav-label { flex: 1; min-width: 0; }
+.tool-open-count { font-size: 10px; min-width: 18px; text-align: center; color: var(--text-muted); border: 1px solid var(--border); border-radius: 5px; padding: 1px 3px; }
+#workspace-section { display: flex; flex-direction: column; min-height: 70px; flex: 1; margin-top: 16px; border-top: 1px solid var(--border); }
+#workspace-section .sidebar-section-label { margin-top: 16px; }
+#open-workspaces { overflow-y: auto; min-height: 0; }
+.sidebar-section-label { margin-top: 20px; flex-shrink: 0; }
+.sidebar-privacy { flex-shrink: 0; }
+.workspace-switch span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.unsaved-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warn); margin-left: 8px; flex-shrink: 0; }
+.shell-sidebar.is-collapsed :is(.nav-label,.sidebar-section-label,#workspace-section,.sidebar-privacy) { display: none; }
+.shell-sidebar.is-collapsed :is(.shell-home,.tool-nav) { justify-content: center; padding: 11px 0; }
+.shell-sidebar.is-collapsed .tool-open-count { position: absolute; right: 0; top: 0; padding: 0 2px; min-width: 12px; font-size: 9px; background: var(--bg-surface); }
+.shell-sidebar.is-collapsed #permanent-tools { margin-top: 16px; }
+@media(max-width:760px) {
+  .shell-sidebar.is-collapsed { display: none; }
+  .shell-sidebar:not(.is-collapsed) { position: absolute; top: 44px; bottom: 0; left: 0; z-index: 20; background: var(--bg-surface); box-shadow: 12px 0 32px #0003; }
+}
+@media(max-height:660px) and (min-width:761px) { .tool-nav { min-height: 32px; padding-top: 6px; padding-bottom: 6px; } .sidebar-privacy { display: none; } }

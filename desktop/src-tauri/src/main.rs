@@ -2,11 +2,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde_json::json;
+use tauri::Manager;
 use serde::Deserialize;
 mod correlation;
 mod log_analyzer;
 mod finance;
 mod extractor;
+mod snapshots;
+mod tabular;
 use regex::Regex;
 use futures::TryStreamExt;
 
@@ -33,7 +36,7 @@ fn get_preview_from_csv(path: &std::path::Path) -> Result<(Vec<String>, Vec<Vec<
 
 #[tauri::command]
 async fn pick_multiple_csv_files() -> Result<Vec<String>, String> {
-    match rfd::FileDialog::new().add_filter("CSV Files", &["csv", "txt"]).pick_files() {
+    match rfd::FileDialog::new().add_filter("Tabular Data", &["csv", "tsv", "xlsx"]).pick_files() {
         Some(paths) => Ok(paths.into_iter().map(|p| p.display().to_string()).collect()),
         None => Err("Cancelled".to_string()),
     }
@@ -141,7 +144,7 @@ async fn get_csv_headers(file_path: String) -> Result<Vec<String>, String> {
 
 #[tauri::command]
 async fn pick_csv_file() -> Result<String, String> {
-    match rfd::FileDialog::new().add_filter("CSV Files", &["csv"]).pick_file() {
+    match rfd::FileDialog::new().add_filter("Tabular Data", &["csv", "tsv", "xlsx"]).pick_file() {
         Some(path) => Ok(path.to_string_lossy().to_string()),
         None => Err("No file selected".into()),
     }
@@ -1255,6 +1258,25 @@ async fn save_text_file_native(text: String, default_name: String) -> Result<Str
     Err("Cancelled".to_string())
 }
 
+
+#[tauri::command]
+async fn pick_launchpad_files() -> Result<Vec<String>, String> {
+    Ok(rfd::FileDialog::new()
+        .add_filter("Tangent Data Files", &["csv", "tsv", "xlsx", "json", "parquet", "log", "txt", "gz", "html", "htm"])
+        .pick_files()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|path| path.to_string_lossy().into_owned())
+        .collect())
+}
+
+#[tauri::command]
+async fn read_launchpad_file(path: String) -> Result<Vec<u8>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        std::fs::read(path).map_err(|error| error.to_string())
+    }).await.map_err(|error| error.to_string())?
+}
+
 fn main() {
     println!("Rebooting asset server: Pro Dashboard...");
     
@@ -1306,8 +1328,19 @@ async fn execute_db_query(uri: String, query: String) -> Result<String, String> 
 
 tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .manage(snapshots::SnapshotStore::default())
         .manage(SchedulerState { sched: Arc::new(Mutex::new(None)) })
         .invoke_handler(tauri::generate_handler![
+            snapshots::create_dataset_snapshot,
+            tabular::stage_tabular_file,
+            tabular::preview_tabular_import,
+            tabular::import_tabular_file,
+            tabular::read_tabular_dataset,
+            tabular::create_tabular_snapshot,
+            tabular::export_tabular_result,
+
+            pick_launchpad_files,
+            read_launchpad_file,
             extractor::fetch_live_url,
             extractor::extract_structured,
             extractor::extract_tables,
@@ -1341,7 +1374,12 @@ tauri::Builder::default()
             schedule_batch_job,
             execute_db_query
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if matches!(event, tauri::RunEvent::Exit) {
+                app.state::<snapshots::SnapshotStore>().cleanup();
+            }
+        });
 }
 

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="tabular-formats.js"></script>
+    <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Analyzer | Tangent Pro</title>
@@ -90,8 +92,8 @@
         <div id="mainWorkspace" class="workspace glass-panel">
             <div class="workspace-header">
                 <div class="workspace-title">
-                    <h1>Log Analyzer Pro</h1>
-                    <p>Stream and parse multi-gigabyte server logs securely offline.</p>
+                    <h1>Log Analyzer</h1>
+                    <p>Explore traffic, errors, and suspicious patterns in local server logs.</p>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
                     <div id="setupHeaderActions" style="display: flex; gap: 12px; align-items: center;">
@@ -137,7 +139,7 @@
                           </div>
                           <div style="border: 2px dashed var(--border); background: var(--item-hover); border-radius: 12px; flex: 1; width: 100%;"></div>
                       </div>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; position: relative; z-index: 10;">No log files loaded. Click "Select Log Files" in the top right to begin.</p>
+                    <div class="launch-empty"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg><h2>See the story in your logs</h2><p>Select log files to inspect traffic trends, errors, and suspicious activity. Custom formats are available in Advanced settings.</p><small>LOG, TXT, and GZ files · local analysis</small></div>
                 </div>
 
                 <div id="statsArea" style="display: none; flex-direction: column;">
@@ -213,9 +215,9 @@
         
         const { invoke } = window.__TAURI__.core;
         
-        document.getElementById('btnPickFiles').addEventListener('click', async () => {
+        async function loadLogFiles(files) {
             try {
-                const files = await invoke('pick_multiple_log_files');
+                if (!files) files = await invoke('pick_multiple_log_files');
                 if (!files || files.length === 0) return;
                 
                 document.getElementById('global-loader').style.opacity = '1';
@@ -344,8 +346,10 @@
                 if (e !== 'Cancelled') alert('Error: ' + e);
                 document.getElementById('global-loader').style.opacity = '0';
                 document.getElementById('global-loader').style.pointerEvents = 'none';
+                if (window._launchpadImporting) throw e;
             }
-        });
+        }
+        document.getElementById('btnPickFiles').addEventListener('click', () => loadLogFiles());
         
         const btnReset = document.getElementById('btnReset');
         if (btnReset) {
@@ -357,6 +361,7 @@
                 document.getElementById('advancedPanel').style.display = 'none';
                 if(document.getElementById('btnToggleAdvanced')) document.getElementById('btnToggleAdvanced').style.background = 'transparent';
                 window.report = null;
+            window.TangentToolWorkspace?.setState({hasData:false,dirty:false});
             });
         }
 
@@ -372,7 +377,8 @@
                 window.report.top_500s.forEach(r => csvStr += `"Server Error (500)","${r[0]}","${r[1]} errors"\n`);
                 
                 try {
-                    await invoke('save_text_file_native', { text: csvStr, defaultName: "Tangent_Log_Security_Report.csv" });
+                    const saved = await window.TangentTabular.exportResult({text:csvStr,label:'Log security report'}, 'Tangent_Log_Security_Report.csv');
+            if (!saved) return;
                     alert("Security Report saved successfully!");
                 } catch (e) {
                     if (e !== 'Cancelled' && e !== 'cancelled') alert("Tauri save error: " + e);
@@ -402,5 +408,24 @@
         const sidebar = document.querySelector('.sidebar');
         if(btnToggleSidebar && sidebar) { btnToggleSidebar.addEventListener('click', () => sidebar.classList.toggle('collapsed')); }
     </script>
+
+<script src="launchpad-routing.js"></script>
+<script src="launchpad-handoff.js"></script>
+<script>
+window.tangentCurrentResult = async function() {
+  if (!window.report) throw new Error("Analyze your logs first.");
+  const rows = [['Category','IP_Address','Count_or_Detail']];
+  for (const [key, label, suffix] of [['brute_force_ips','Brute-Force Threat','bursts'],['scanner_ips','Scanner Threat','hits'],['top_ips','Top IP','requests'],['top_404s','Missing Path (404)','hits'],['top_500s','Server Error (500)','errors']]) {
+    for (const r of window.report[key]) rows.push([label,r[0],r[1] + ' ' + suffix]);
+  }
+  return { dataset:window.TangentTabular?.fromRows(rows[0],rows.slice(1)), text: window.TangentToolWorkspace.csv(rows), ext: 'csv', label: 'Log analysis summary' };
+};
+window.launchpadImport = async function(paths) {
+    window._launchpadImporting = true;
+    try {
+        await loadLogFiles(paths);
+    } finally { window._launchpadImporting = false; }
+};
+</script>
 </body>
 </html>

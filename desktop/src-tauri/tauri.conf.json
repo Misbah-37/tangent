@@ -12,7 +12,8 @@
         "width": 1200,
         "height": 800,
         "center": true,
-        "decorations": false
+        "decorations": false,
+        "url": "launchpad.html"
       }
     ],
     "security": {

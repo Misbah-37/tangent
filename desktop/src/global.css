@@ -1,19 +1,19 @@
 /* GLOBAL STYLESHEET */
 :root[data-theme="light"] {
     --bg-base: #f8f9fa; --glass-bg: rgba(255, 255, 255, 0.7); --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-shadow: rgba(0, 0, 0, 0.05); --text-main: #1d1d1f; --text-muted: #86868b;
+    --glass-shadow: rgba(0, 0, 0, 0.05); --text-main: #20242b; --text-muted: #5d6470;
     --accent: #0A84FF; --panel-bg: rgba(255, 255, 255, 0.85); --item-hover: rgba(0, 0, 0, 0.05);
     --border: rgba(0, 0, 0, 0.1); --bg-surface: #ffffff; --warn: #ff9500; --danger: #ff3b30; --success: #34c759;
 }
 
 :root {
     --bg-base: #121212; --glass-bg: rgba(30, 30, 30, 0.6); --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: rgba(0, 0, 0, 0.3); --text-main: #f5f5f7; --text-muted: #86868b;
+    --glass-shadow: rgba(0, 0, 0, 0.3); --text-main: #f4f5f7; --text-muted: #a8abb3;
     --accent: #0A84FF; --panel-bg: rgba(40, 40, 40, 0.6); --item-hover: rgba(255, 255, 255, 0.1);
     --border: rgba(255, 255, 255, 0.1); --bg-surface: #1e1e1e; --warn: #ff9f0a; --danger: #ff453a; --success: #32d74b;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", sans-serif; }
 
 body { background-color: var(--bg-base); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 .titlebar { height: 48px; display: flex; align-items: center; padding: 0 0 0 16px; }

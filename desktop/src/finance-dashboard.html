@@ -183,8 +183,8 @@
                     </div>
                     
                     <div id="mappingBox" class="panel" style="display: none; position: relative; z-index: 10; min-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-                        <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Map CSV Columns</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">We skipped preamble rows. Map your data:</p>
+                        <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Map Statement Columns</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Choose the columns used for your ledger:</p>
                         
                         <div style="display: flex; flex-direction: column; gap: 12px;">
                             <div>
@@ -245,12 +245,13 @@
                         
                         <div class="panel">
                             <div class="panel-header">
-                                <h3 class="panel-title">Detected Subscriptions</h3>
+                                <h3 class="panel-title">Recurring-payment Hints</h3>
                             </div>
                             <table class="table">
-                                <thead><tr><th>Payee</th><th>Amount</th><th>Interval</th></tr></thead>
+                                <thead><tr><th>Payee</th><th>Amount</th><th>Matches</th></tr></thead>
                                 <tbody id="tblSubs"></tbody>
                             </table>
+                            <p style="font-size:0.8rem;color:var(--text-muted);">Repeated description and amount matches; these hints do not verify subscriptions or billing intervals.</p>
                         </div>
                     </div>
                     
@@ -267,6 +268,13 @@
                                 <tbody id="tblLedger"></tbody>
                             </table>
                         </div>
+                        <p id="ledgerWarnings" role="status" style="color:var(--text-muted);font-size:0.85rem;"></p>
+                        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;">
+                            <span id="ledgerRange" role="status" style="flex:1;">No transactions</span>
+                            <button id="ledgerPrevious" class="btn" disabled>Previous</button>
+                            <button id="ledgerNext" class="btn" disabled>Next</button>
+                        </div>
+                        <p style="font-size:0.8rem;color:var(--text-muted);">Search filters this ledger view. Totals, budget spending, export and Open in include all analyzed transactions.</p>
                     </div>
                 </div>
             </div>
@@ -279,6 +287,10 @@
         let loadedFiles = [];
         let parsedHeaders = [];
         let currentReport = null;
+        let ledgerOffset=0, ledgerSequence=0, searchTimer=null, financeBusy=false, financeImporting=false;
+        let ownedInputs=new Set();
+        const financeError=e=>{if(e?.name==='AbortError')return;window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,e);alert('Finance: '+(e?.message||e));};
+        const escapeFinance=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         
         let budgetTargets = [];
         let categoryRules = [];
@@ -303,7 +315,7 @@
             
             const list = document.getElementById('budgetList');
             list.innerHTML += `<div style="font-size: 0.85rem; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">
-                <strong>${cat}</strong>: $${amt} <span style="color:var(--text-muted)">${kw ? '(Auto: '+kw+')' : ''}</span>
+                <strong>${escapeFinance(cat)}</strong>: $${amt} <span style="color:var(--text-muted)">${kw ? '(Auto: '+escapeFinance(kw)+')' : ''}</span>
             </div>`;
             
             document.getElementById('txtBudgetCateg').value = '';
@@ -320,13 +332,28 @@
         // File Picking & Mapping
         async function proceedWithFiles(files) {
             if (!files || files.length === 0) return;
+            if(financeBusy||financeImporting)throw new Error('Finish the current financial import or analysis first.');
+            financeImporting=true;
             const prepared = [];
-            for (const file of files) prepared.push((await window.TangentTabular.prepare(file)).path);
-            files = prepared;
-            currentReport = null;
-            loadedFiles = files;
-            const res = await invoke('extract_financial_headers', { files });
-            parsedHeaders = res.headers;
+            const newlyOwned=[];
+            try {
+                for (const file of files) {
+                    const snapshot=window._launchpadImporting ? window._tabularSnapshot : null;
+                    const metadata=snapshot?.path===file ? snapshot : window.TangentTabular.metadata(file);
+                    if(metadata?.tabularId) {
+                        const opened=await invoke('open_editor_dataset',{id:metadata.tabularId,native:Boolean(metadata.native || window.TangentTabular.nativeMetadata(metadata.tabularId))});
+                        prepared.push({path:file,nativeId:opened.tabularId});newlyOwned.push(opened.tabularId);
+                    } else if(/\.(tsv|xlsx)$/i.test(file)) {
+                        const opened=await window.TangentTabular.prepare(file,{editor:true,review:true});
+                        prepared.push({path:file,nativeId:opened.tabularId});newlyOwned.push(opened.tabularId);
+                    } else prepared.push({path:file,nativeId:null});
+                }
+                const headers=await invoke('finance_headers',{inputs:prepared});
+                const previous=ownedInputs;ownedInputs=new Set(newlyOwned);loadedFiles=prepared;parsedHeaders=headers;
+                await Promise.all([...previous].map(id=>invoke('release_editor_dataset',{id})));
+                if(!window._launchpadImporting)window.parent.TangentShell?.registerSource(window.frameElement?.dataset.workspaceId,files);
+            } catch(error){await Promise.all(newlyOwned.map(id=>invoke('release_editor_dataset',{id})));throw error;}
+            finally{financeImporting=false;}
             
             document.getElementById('emptyMsg').style.display = 'none';
             const mappingBox = document.getElementById('mappingBox');
@@ -373,6 +400,9 @@
         });
         
         document.getElementById('btnAnalyze').addEventListener('click', async () => {
+            if(financeBusy||financeImporting)return;
+            financeBusy=true;
+            const trace=window.parent.TangentTransferDiagnostics?.begin('Statements','Finance Dashboard',window.parent.document.body);
             try {
                 document.getElementById('global-loader').style.opacity = '1';
                 
@@ -383,8 +413,15 @@
                     cat_col: document.getElementById('mapCategory').value || null
                 };
                 
-                const report = await invoke('parse_financial_statements', { files: loadedFiles, mapping, rules: categoryRules });
-                currentReport = report;
+                await trace?.stage('Finance: native parsing, rules and summaries');
+                const report = await invoke('open_finance_ledger', { inputs: loadedFiles, mapping, rules: categoryRules,budgetCategories:budgetTargets.map(b=>b.category) });
+                try {
+                    await trace?.stage('Finance: fetch first ledger page');
+                    const firstPage=await invoke('read_finance_page',{id:report.native_id,query:'',offset:0,limit:100});
+                    const previous=currentReport;currentReport=report;++ledgerSequence;ledgerOffset=0;document.getElementById('txtSearch').value='';
+                    renderLedgerPage(firstPage);
+                    if(previous)await invoke('release_editor_dataset',{id:previous.native_id});
+                }catch(error){await invoke('release_editor_dataset',{id:report.native_id});throw error;}
                 
                 document.getElementById('global-loader').style.opacity = '0';
                 document.getElementById('setupArea').style.display = 'none';
@@ -397,34 +434,47 @@
                 document.getElementById('valNet').innerText = formatMoney(report.net_cashflow);
                 document.getElementById('valNet').style.color = report.net_cashflow >= 0 ? 'var(--success)' : 'var(--text-main)';
                 
-                renderLedger(report.transactions);
                 renderSubs(report.subscriptions);
                 renderBudgetBars(report.category_totals);
                 renderTimeline(report);
+                window.TangentToolWorkspace?.setState({hasData:true,dirty:false});
+                trace?.finish('Analysis complete');
                 
             } catch(e) {
                 alert('Analysis Error: ' + e);
                 document.getElementById('global-loader').style.opacity = '0';
-            }
+                trace?.finish('Analysis failed',e);
+            } finally {financeBusy=false;}
         });
         
-        function renderLedger(txs) {
+        function renderLedgerPage(page) {
             const tbody = document.getElementById('tblLedger');
-            tbody.innerHTML = '';
-            txs.forEach(tx => {
+            tbody.replaceChildren();
+            page.rows.forEach(row => {
                 const tr = document.createElement('tr');
-                const c = tx.amount >= 0 ? 'var(--success)' : 'var(--text-main)';
-                tr.innerHTML = `<td>${tx.date}</td><td>${tx.desc}</td><td><span style="background:rgba(0,0,0,0.1); padding:2px 6px; border-radius:4px;">${tx.category}</span></td><td style="text-align:right; color:${c}; font-weight:500;">${formatMoney(tx.amount)}</td>`;
+                row.forEach((cell,i)=>{const td=document.createElement('td');td.textContent=i===3?formatMoney(cell.value):cell.kind==='null'?'':String(cell.value);if(i===3){td.style.textAlign='right';td.style.color=cell.value>=0?'var(--success)':'var(--text-main)';}tr.append(td);});
                 tbody.appendChild(tr);
             });
+            ledgerOffset=page.offset;
+            document.getElementById('ledgerRange').textContent=page.rowCount?`Showing ${page.offset+1}–${page.offset+page.rows.length} of ${page.rowCount.toLocaleString()} matching transactions`:'No matching transactions';
+            document.getElementById('ledgerPrevious').disabled=page.offset===0;
+            document.getElementById('ledgerNext').disabled=page.offset+page.rows.length>=page.rowCount;
+            document.getElementById('ledgerWarnings').textContent=[...(currentReport?.warnings||[]),...(page.truncated?['Long text is shortened in this preview; export retains the full values.']:[])].join(' ');
         }
+        async function loadLedger(offset=0){
+            if(!currentReport)return;const sequence=++ledgerSequence,id=currentReport.native_id;
+            try{const page=await invoke('read_finance_page',{id,query:document.getElementById('txtSearch').value,offset,limit:100});if(sequence===ledgerSequence&&currentReport?.native_id===id)renderLedgerPage(page);}
+            catch(error){if(sequence===ledgerSequence)financeError(error);}
+        }
+        document.getElementById('ledgerPrevious').onclick=()=>loadLedger(Math.max(0,ledgerOffset-100));
+        document.getElementById('ledgerNext').onclick=()=>loadLedger(ledgerOffset+100);
         
         function renderSubs(subs) {
             const tbody = document.getElementById('tblSubs');
             tbody.innerHTML = '';
             if (subs.length === 0) tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted); font-style:italic;">No recurring subscriptions detected</td></tr>';
             subs.forEach(s => {
-                tbody.innerHTML += `<tr><td>${s[0]}</td><td style="color:var(--danger); font-weight:500;">${formatMoney(s[1])}</td><td><span style="font-size:0.8rem; background:rgba(255,69,58,0.1); color:var(--danger); padding:2px 6px; border-radius:4px;">${s[2]}</span></td></tr>`;
+                tbody.innerHTML += `<tr><td>${escapeFinance(s[0])}</td><td style="color:var(--danger); font-weight:500;">${formatMoney(s[1])}</td><td><span style="font-size:0.8rem; background:rgba(255,69,58,0.1); color:var(--danger); padding:2px 6px; border-radius:4px;">${escapeFinance(s[2])}</span></td></tr>`;
             });
         }
         
@@ -442,7 +492,7 @@
                 container.innerHTML += `
                     <div>
                         <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:4px;">
-                            <strong>${b.category}</strong>
+                            <strong>${escapeFinance(b.category)}</strong>
                             <span>${formatMoney(spent)} / ${formatMoney(b.target)}</span>
                         </div>
                         <div class="prog-bg">
@@ -544,10 +594,7 @@
         }
         
         document.getElementById('txtSearch').addEventListener('input', (e) => {
-            const q = e.target.value.toLowerCase();
-            if(!currentReport) return;
-            const filtered = currentReport.transactions.filter(t => t.desc.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
-            renderLedger(filtered);
+            ++ledgerSequence;clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadLedger(0),200);
         });
         
         document.getElementById('btnExport').addEventListener('click', async () => {
@@ -558,7 +605,9 @@
             } catch(e) { window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId, e); }
         });
         
-        document.getElementById('btnReset').addEventListener('click', () => {
+        document.getElementById('btnReset').addEventListener('click', async () => {
+            if(financeBusy)return;
+            await window.releaseWorkspace();
             document.getElementById('dashboardArea').style.display = 'none';
             document.getElementById('headerActions').style.display = 'none';
             document.getElementById('setupArea').style.display = 'flex';
@@ -596,7 +645,13 @@
 <script>
 window.tangentCurrentResult = async function() {
   if (!currentReport) throw new Error("Analyze your statements first.");
-  return { dataset:window.TangentTabular?.fromRows(['Date','Description','Category','Amount'], currentReport.transactions.map(t=>[t.date,t.desc,t.category,t.amount])), text: window.TangentToolWorkspace.csv([['Date','Description','Category','Amount'], ...currentReport.transactions.map(t => [t.date,t.desc,t.category,t.amount])]), ext: 'csv', label: 'Analyzed transactions (all rows)' };
+  return { nativeId:currentReport.native_id, ext:'csv', label:'Analyzed transactions (all rows)' };
+};
+window.releaseWorkspace=async function(){
+  if(financeBusy||financeImporting)throw new Error('Wait for the current financial import or analysis to finish before closing this workspace.');
+  ++ledgerSequence;clearTimeout(searchTimer);
+  const ids=[...ownedInputs,...(currentReport?[currentReport.native_id]:[])];await Promise.all(ids.map(id=>invoke('release_editor_dataset',{id})));
+  ownedInputs.clear();currentReport=null;loadedFiles=[];
 };
 window.launchpadImport = async function(paths) {
     window._launchpadImporting = true;

@@ -27,7 +27,7 @@ impl EditorStore {
     pub(crate) fn get(&self, id: &str) -> Result<Session, String> {
         self.sessions.lock().map_err(|_| "Editor store unavailable")?.get(id).cloned().ok_or_else(|| "This native dataset is no longer available".into())
     }
-    fn insert(&self, session: Session) -> Result<String, String> {
+    pub(crate) fn insert(&self, session: Session) -> Result<String, String> {
         let id = uuid::Uuid::new_v4().to_string();
         self.sessions.lock().map_err(|_| "Editor store unavailable")?.insert(id.clone(), session);
         Ok(id)
@@ -62,7 +62,7 @@ fn page(session: &Session, offset: usize, limit: usize) -> Result<Page, String> 
     let end = offset.saturating_add(limit).min(session.len());
     Ok(Page { offset, row_count:session.len(), rows:(offset..end).map(|r| (0..session.base.columns.len()).map(|c|session.cell(r,c).clone()).collect()).collect() })
 }
-fn write_csv(session: &Session, path: &Path, delimiter: u8) -> Result<(), String> {
+pub(crate) fn write_csv(session: &Session, path: &Path, delimiter: u8) -> Result<(), String> {
     let mut writer = csv::WriterBuilder::new().delimiter(delimiter).from_path(path).map_err(|e|e.to_string())?;
     writer.write_record(&session.base.columns).map_err(|e|e.to_string())?;
     for r in 0..session.len() { writer.write_record((0..session.base.columns.len()).map(|c|session.cell(r,c).text())).map_err(|e|e.to_string())?; }

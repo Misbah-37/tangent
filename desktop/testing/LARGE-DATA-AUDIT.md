@@ -8,6 +8,8 @@ Recheck after the successful million-row Insights retest, 2026-10-09: Finance st
 
 ## Evidence and priorities
 
+Finance implementation update: the desktop page now uses `finance_native.rs` with prefix header discovery, streaming CSV parsing/native input handles, a native four-column ledger, summary responses and 100-row pages. Native export/snapshot writers retain all ledger rows. Failed inputs reject replacement; invalid dates and blank amounts generate visible warnings. The native million-row financial fixture and targeted UI tests passed; real laptop WebView testing remains pending. See `NATIVE-FINANCE-PLAN.md`. SQL result materialization is the next major outstanding tool path. The table below retains the historical audit baseline.
+
 The user's million-row editor import improved from 238.4 seconds to 6.7 seconds after switching to Rust-owned cells and bounded grid pages. CSV Insights subsequently crashed the WebView with `STATUS_BREAKPOINT`. That code does not establish the crash's precise cause or prove an out-of-memory condition. The source does establish avoidable full-dataset copies that must be removed before retesting the same workload.
 
 | Tool | Current large-data path | Required work | Priority |

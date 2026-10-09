@@ -7,6 +7,7 @@ use serde::Deserialize;
 mod correlation;
 mod log_analyzer;
 mod finance;
+mod finance_native;
 mod extractor;
 mod snapshots;
 mod tabular;
@@ -1367,6 +1368,9 @@ tauri::Builder::default()
             log_analyzer::parse_logs,
             finance::extract_financial_headers,
             finance::parse_financial_statements,
+            finance_native::finance_headers,
+            finance_native::open_finance_ledger,
+            finance_native::read_finance_page,
             pick_multiple_log_files,
             pick_multiple_csv_files,
             read_file_to_string_native,

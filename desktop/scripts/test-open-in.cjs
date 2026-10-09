@@ -44,7 +44,7 @@ async function registryAndProviders() {
     'csv-insights.html': { nativeInsights:null, currentHeaders: ['name','zero'], rawData: [{name:'keep',zero:0},{name:'omit',zero:1}], currentFilterFn: row => row.name === 'keep' },
     'sql-studio.html': { lastQueryRows: [{ name:'Ada', zero:0, large:9007199254740993n, empty:null }] },
     'correlation-matrix.html': { matrixData: { columns:['a','b'], matrix:[[{r:1},{r:0.125}],[{r:0.125},{r:1}]] } },
-    'finance-dashboard.html': { currentReport: { transactions:[{ date:'2026-10-08',desc:'Store, "A"',category:'Food',amount:-12.50 }] } },
+    'finance-dashboard.html': { currentReport: { native_id:'financial-ledger',row_count:1000000 } },
     'log-analyzer.html': { window: { report:{brute_force_ips:[],scanner_ips:[],top_ips:[['127.0.0.1',2]],top_404s:[['/a,"b"',1]],top_500s:[]} } },
     'data-extractor.html': { structuredData:[], extractMode:{value:'tables'}, extractedTables:[{rows:[['name'],['a,"b"']]}], document:{querySelectorAll:()=>[{value:'0'}]} }
   };
@@ -56,10 +56,10 @@ async function registryAndProviders() {
     const result = await context.window.tangentCurrentResult();
     assert.equal(result.ext, 'csv', file);
     if (file === 'index.html') assert.equal(result.sourcePath, 'cleaned.csv');
+    else if(file === 'finance-dashboard.html'){assert.equal(result.nativeId,'financial-ledger');assert.equal(result.text,undefined);assert.equal(result.dataset,undefined);}
     else assert.ok(result.text.length > 0, file);
     if (file === 'csv-insights.html') { assert.match(result.text,/keep,0/); assert.doesNotMatch(result.text,/omit/); }
     if (file === 'sql-studio.html') assert.match(result.text,/9007199254740993/);
-    if (file === 'finance-dashboard.html') assert.match(result.text,/"Store, ""A""",Food,-12.5/);
     if (file === 'data-editor.html' || file === 'data-extractor.html') assert.match(result.text,/"a,""b"""/);
   }
 }

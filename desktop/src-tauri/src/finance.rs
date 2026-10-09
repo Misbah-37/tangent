@@ -115,7 +115,7 @@ fn parse_amount(raw: &str) -> f64 {
     cleaned.parse::<f64>().unwrap_or(0.0)
 }
 
-fn parse_date_to_iso(raw: &str) -> String {
+pub(crate) fn parse_date_to_iso(raw: &str) -> String {
     let c = raw.trim();
     if let Ok(d) = NaiveDate::parse_from_str(c, "%m/%d/%Y") { return d.format("%Y-%m-%d").to_string(); }
     if let Ok(d) = NaiveDate::parse_from_str(c, "%Y-%m-%d") { return d.format("%Y-%m-%d").to_string(); }

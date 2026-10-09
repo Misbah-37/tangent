@@ -45,6 +45,7 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
     if(command==='export_tabular_result'){if(window.__failExport)throw new Error('Fixture disk full');window.__exports.push(args);return 'C:\\exports\\result.'+args.format;}
     if(command==='process_massive_csv')return JSON.stringify({path:args.filePath,columns:['id','amount'],preview:[['00123','0']],null_counts:[0,0],pii_flags:[false,false],total_rows:1,file_size_mb:.01});
     if(command==='extract_financial_headers')return {headers:['date','note','amount']};
+    if(command==='finance_headers')return ['date','note','amount'];
     if(command==='get_csv_headers')return ['id','amount'];
     if(command==='compute_correlation_matrix')return {columns:['a','b'],matrix:[[{r:1,n:2,p:0},{r:.5,n:2,p:.1}],[{r:.5,n:2,p:.1},{r:1,n:2,p:0}]],raw_rows:[],all_headers:['id','amount']};
     return null;

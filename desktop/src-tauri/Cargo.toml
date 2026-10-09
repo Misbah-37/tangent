@@ -34,3 +34,7 @@ tauri-plugin-dialog = "2.8.1"
 
 calamine = { version = "0.36.1", features = ["chrono"] }
 rust_xlsxwriter = "0.99.1"
+arrow-array = "58.1.0"
+arrow-schema = "58.1.0"
+arrow-ipc = "58.1.0"
+arrow-cast = "58.1.0"

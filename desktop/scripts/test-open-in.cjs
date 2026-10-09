@@ -42,7 +42,7 @@ async function registryAndProviders() {
     'index.html': { activeFilePath: 'original.csv', window: { lastExportTempPath: 'cleaned.csv' } },
     'data-editor.html': { headers: ['name','zero'], rows: [['a,"b"',0]] },
     'csv-insights.html': { nativeInsights:null, currentHeaders: ['name','zero'], rawData: [{name:'keep',zero:0},{name:'omit',zero:1}], currentFilterFn: row => row.name === 'keep' },
-    'sql-studio.html': { lastQueryRows: [{ name:'Ada', zero:0, large:9007199254740993n, empty:null }] },
+    'sql-studio.html': { sqlOperation:null,nativeResult:{tabularId:'sql-result',rowCount:1000000},resultCount:()=>1000000 },
     'correlation-matrix.html': { matrixData: { columns:['a','b'], matrix:[[{r:1},{r:0.125}],[{r:0.125},{r:1}]] } },
     'finance-dashboard.html': { currentReport: { native_id:'financial-ledger',row_count:1000000 } },
     'log-analyzer.html': { window: { report:{brute_force_ips:[],scanner_ips:[],top_ips:[['127.0.0.1',2]],top_404s:[['/a,"b"',1]],top_500s:[]} } },
@@ -57,9 +57,9 @@ async function registryAndProviders() {
     assert.equal(result.ext, 'csv', file);
     if (file === 'index.html') assert.equal(result.sourcePath, 'cleaned.csv');
     else if(file === 'finance-dashboard.html'){assert.equal(result.nativeId,'financial-ledger');assert.equal(result.text,undefined);assert.equal(result.dataset,undefined);}
+    else if(file === 'sql-studio.html'){assert.equal(result.nativeId,'sql-result');assert.equal(result.text,undefined);assert.equal(result.dataset,undefined);}
     else assert.ok(result.text.length > 0, file);
     if (file === 'csv-insights.html') { assert.match(result.text,/keep,0/); assert.doesNotMatch(result.text,/omit/); }
-    if (file === 'sql-studio.html') assert.match(result.text,/9007199254740993/);
     if (file === 'data-editor.html' || file === 'data-extractor.html') assert.match(result.text,/"a,""b"""/);
   }
 }
@@ -77,6 +77,7 @@ async function browserTransfers() {
     browser = await chromium.launch({ channel:'msedge', headless:true });
     const page = await browser.newPage({viewport:{width:1280,height:900}});
     await require('./insights-fixture-helper.cjs')(page);
+    await require('./sql-arrow-fixture.cjs')(page);
     const errors=[]; page.on('pageerror', error=>errors.push(error.stack));
     page.on('dialog', dialog=>dialog.dismiss());
     await page.addInitScript(() => {
@@ -84,7 +85,9 @@ async function browserTransfers() {
       if (window.parent !== window) return;
       window.__snapshots = {}; window.__tabular = {}; window.__snapshotCount = 0; window.__failSnapshot = false;
       window.__TAURI__ = {
-        core:{invoke:async (command,args={})=>{
+        core:{invoke:async (command,args={},options)=>{
+          [command,args]=await window.__sqlArrowFixture(command,args,options);
+          if(command==='__sql_arrow_response')return args.bytes;
           if (command==='create_dataset_snapshot' || command==='create_tabular_snapshot') {
             if (window.__failSnapshot) throw new Error('Fixture snapshot write failed');
             const id='snapshot-'+(++window.__snapshotCount), path='C:\\session\\'+id+'.csv';
@@ -102,6 +105,11 @@ async function browserTransfers() {
             const id='import-'+(++window.__snapshotCount),path='C:\\session\\'+id+'.csv';window.__tabular[id]=dataset;window.__snapshots[path]=window.TangentDatasets.csv(records);return {id,tabularId:id,path,source:args.path,columns:dataset.columns,rowCount:dataset.rows.length,native:command==='import_editor_file'};
           }
           if(command==='open_editor_dataset'){const id='editor-'+(++window.__snapshotCount),dataset=structuredClone(window.__tabular[args.id]);window.__tabular[id]=dataset;return {id,tabularId:id,native:true,columns:dataset.columns,rowCount:dataset.rows.length};}
+          if(command==='begin_sql_result'){const id='sql-'+(++window.__snapshotCount);window.__tabular[id]={columns:args.columns,rows:[],source:'SQL',warnings:[]};return id;}
+          if(command==='append_sql_result'){const d=window.__tabular[args.id];if(d.rows.length!==args.offset)throw Error('SQL batch out of sequence');d.rows.push(...args.rows);return null;}
+          if(command==='abort_sql_result'){delete window.__tabular[args.id];return null;}
+          if(command==='finish_sql_result'){const d=window.__tabular[args.id];return {tabularId:args.id,columns:d.columns,rowCount:d.rows.length,native:true};}
+          if(command==='read_sql_page'){const d=window.__tabular[args.id];return {rows:d.rows.slice(args.offset,args.offset+args.limit),rowCount:d.rows.length,truncated:false};}
           if(command==='read_editor_page'){const d=window.__tabular[args.id];return {offset:args.offset,rows:structuredClone(d.rows.slice(args.offset,args.offset+args.limit)),rowCount:d.rows.length};}
           if(command==='edit_editor_cell'){window.__tabular[args.id].rows[args.row][args.column]=args.value;return null;}
           if(command==='release_editor_dataset'){delete window.__tabular[args.id];return null;}
@@ -198,9 +206,9 @@ async function browserTransfers() {
     const realSql=page.frameLocator('iframe[data-workspace-id^="sql-studio.html::"]').last();
     await realSql.locator('body').evaluate(()=>window.sqlEditorInstance.setValue('SELECT * FROM sql;'));
     await realSql.locator('#btnRun').click();
-    await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].filter(f=>f.dataset.workspaceId.startsWith('sql-studio.html::')).at(-1)?.contentWindow.document.getElementById('resultsCount').textContent.startsWith('1 rows'));
+    await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].filter(f=>f.dataset.workspaceId.startsWith('sql-studio.html::')).at(-1)?.contentWindow.document.getElementById('resultsCount').textContent.includes('1 rows'));
     const sqlResult=await realSql.locator('body').evaluate(()=>window.tangentCurrentResult());
-    assert.match(sqlResult.text,/Ada,0/);
+    assert.ok(sqlResult.nativeId);const sqlText=await page.evaluate(id=>{const d=window.__tabular[id];return window.TangentDatasets.csv([d.columns,...d.rows.map(row=>row.map(c=>c.kind==='null'?null:c.value))]);},sqlResult.nativeId);assert.match(sqlText,/Ada,0/);
     await switchWorkspace(page,'csv-insights.html::',true);
     assert.deepEqual(errors,[]);
     await page.locator('#workspace-open-in').click();

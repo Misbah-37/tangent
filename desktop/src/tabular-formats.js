@@ -115,33 +115,36 @@
     if (!metadata) return invoke('read_tabular_dataset',{id:result.tabularId});
     // Compatibility for analysis tools: bounded IPC, rather than one massive response.
     const rows = [];
-    const pageSize=Math.max(1,Math.min(2048,Math.floor(32768/metadata.columns.length)));
-    for (let offset=0;offset<metadata.rowCount;offset+=pageSize) {
-      const batch = await invoke('read_editor_page',{id:result.tabularId,offset,limit:pageSize});
-      if (!batch.rows.length) throw new Error('Native dataset page was empty before the end');
-      for (const row of batch.rows) rows.push(row);
+    const compatibilityPageSize=Math.max(1,Math.min(2048,Math.floor(32768/metadata.columns.length)));
+    for(let offset=0;offset<metadata.rowCount;offset+=compatibilityPageSize){
+      const batch=await invoke('read_editor_page',{id:result.tabularId,offset,limit:compatibilityPageSize});
+      if(!batch.rows.length)throw new Error('Native dataset page was empty before the end');
+      rows.push(...batch.rows);
       await new Promise(resolve=>setTimeout(resolve,0));
     }
     return {...metadata,rows};
   }
-  async function insertNativeArrow(conn, arrow, id, name, report) {
+  async function insertNativeArrow(conn,arrow,id,name,report,measure){
     const metadata=nativeDatasets.get(id);
-    if (!metadata) throw new Error('Native dataset metadata is unavailable');
-    if (new Set(metadata.columns).size!==metadata.columns.length) throw new Error('The dataset contains duplicate column names. Rename them before querying.');
+    if(!metadata)throw new Error('Native dataset metadata is unavailable');
+    if(new Set(metadata.columns).size!==metadata.columns.length)throw new Error('The dataset contains duplicate column names. Rename them before querying.');
+    const timings={kinds:0,read:0,arrow:0,insert:0,yield:0,batches:0};
+    let started=performance.now();
     const kinds=await invoke('editor_column_kinds',{id});
-    const pageSize=Math.max(1,Math.min(2048,Math.floor(32768/metadata.columns.length)));
-    for (let offset=0;offset<Math.max(1,metadata.rowCount);offset+=pageSize) {
-      const batch=await invoke('read_editor_page',{id,offset,limit:pageSize});
-      const vectors=Object.create(null);
-      metadata.columns.forEach((column,index)=>{
-        const numeric=kinds[index]==='number', boolean=kinds[index]==='boolean';
-        const values=batch.rows.map(row=>row[index].kind==='null'?null:numeric||boolean?row[index].value:String(row[index].value));
-        vectors[column]=arrow.vectorFromArray(values,numeric?new arrow.Float64():boolean?new arrow.Bool():new arrow.Utf8());
-      });
-      await conn.insertArrowTable(new arrow.Table(vectors).select(metadata.columns),{name,create:offset===0});
-      report?.(Math.min(offset+batch.rows.length,metadata.rowCount),metadata.rowCount);
-      await new Promise(resolve=>setTimeout(resolve,0));
+    timings.kinds=performance.now()-started;
+    let pageSize=Math.max(1,Math.min(16384,Math.floor(131072/metadata.columns.length)));
+    for (let offset=0;offset<Math.max(1,metadata.rowCount);) {
+      started=performance.now();let bytes;
+      try{bytes=await invoke('read_editor_arrow',{id,offset,limit:pageSize,kinds});}
+      catch(error){if(String(error).includes('ARROW_PAGE_TOO_LARGE')&&pageSize>1){timings.read+=performance.now()-started;pageSize=Math.max(1,Math.floor(pageSize/2));continue;}throw error;}
+      timings.read+=performance.now()-started;
+      const loaded=Math.min(pageSize,metadata.rowCount-offset);
+      started=performance.now();await conn.insertArrowFromIPCStream(new Uint8Array(bytes),{name,create:offset===0});timings.insert+=performance.now()-started;timings.batches++;
+      offset+=loaded;report?.(offset,metadata.rowCount);
+      if(!loaded)break;
+      started=performance.now();await new Promise(resolve=>setTimeout(resolve,0));timings.yield+=performance.now()-started;
     }
+    measure?.(timings);
   }
   async function exportResult(output, name = 'dataset.csv') {
     const {d, promise} = start();

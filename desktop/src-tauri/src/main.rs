@@ -12,6 +12,8 @@ mod extractor;
 mod snapshots;
 mod tabular;
 mod editor;
+mod sql_results;
+mod sql_arrow;
 mod insights;
 use regex::Regex;
 use futures::TryStreamExt;
@@ -1333,8 +1335,16 @@ tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(snapshots::SnapshotStore::default())
         .manage(editor::EditorStore::default())
+        .manage(sql_results::SqlResults::default())
         .manage(SchedulerState { sched: Arc::new(Mutex::new(None)) })
         .invoke_handler(tauri::generate_handler![
+            sql_results::begin_sql_result,
+            sql_arrow::append_sql_arrow,
+            sql_arrow::read_editor_arrow,
+            sql_results::append_sql_result,
+            sql_results::abort_sql_result,
+            sql_results::finish_sql_result,
+            sql_results::read_sql_page,
             snapshots::create_dataset_snapshot,
             tabular::stage_tabular_file,
             tabular::preview_tabular_import,

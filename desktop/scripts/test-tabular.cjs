@@ -5,8 +5,9 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
 (async()=>{
  const server=http.createServer((req,res)=>{const f=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.wasm':'application/wasm','.html':'text/html'})[path.extname(f)]||'application/octet-stream');res.end(fs.readFileSync(f));});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
  try {
-  browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1366,height:900}});const errors=[],network=[];page.on('pageerror',e=>errors.push(e.stack));page.on('dialog',d=>d.dismiss());page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1')&&!/^(blob:|data:)/.test(r.url()))network.push(r.url());});
+  browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1366,height:900}});const errors=[],network=[];page.on('pageerror',e=>{errors.push(e.stack);console.error(e.stack)});page.on('dialog',d=>d.dismiss());page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1')&&!/^(blob:|data:)/.test(r.url()))network.push(r.url());});
   await require('./insights-fixture-helper.cjs')(page);
+  await require('./sql-arrow-fixture.cjs')(page);
   await page.addInitScript(()=>{if(window.parent!==window)return;
    const text=value=>({kind:'text',value}),number=value=>({kind:'number',value}),bool=value=>({kind:'boolean',value});
    const originals={
@@ -19,7 +20,7 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
    const projected=d=>window.TangentDatasets.csv([d.columns,...d.rows.map(row=>row.map(c=>c.kind==='null'?null:c.value))]);
    function source(args){const name=args.path.split(/[\\/]/).pop();const original=originals[name]||originals['input.tsv'];let d=structuredClone(original);if(args.sheet==='Cover')d={...d,columns:[],rows:[],sheet:'Cover',warnings:['This sheet is empty. Choose another worksheet.']};else if(!args.firstRowHeader){d.rows.unshift(d.columns.map(text));d.columns=d.columns.map((_,i)=>'Column '+(i+1));}return d;}
    function snap(d){const id=crypto.randomUUID(),p='C:\\session\\'+id+'.csv';window.__tabular[id]=structuredClone(d);window.__csv[p]=projected(d);return {id,tabularId:id,path:p,bytes:window.__csv[p].length,source:d.source,columns:d.columns,rowCount:d.rows.length,sheet:d.sheet,warnings:d.warnings};}
-   window.__TAURI__={core:{Channel:class { onmessage() {} },invoke:async(command,args={})=>{window.__calls.push({command,args});
+   window.__TAURI__={core:{Channel:class { onmessage() {} },invoke:async(command,args={},options)=>{[command,args]=await window.__sqlArrowFixture(command,args,options);if(command==='__sql_arrow_response')return args.bytes;window.__calls.push({command,args});
     if(command==='preview_tabular_import'){const d=source({...args,sheet:args.sheet||(/xlsx$/i.test(args.path)?'Cover':null)});return {...d,sheets:/xlsx$/i.test(args.path)?['Cover','Records']:[],selectedSheet:d.sheet};}
     if(command==='import_tabular_file' || command==='import_editor_file'){
       if(args.progress)for(const stage of ['File read, parsing and normalization','JSON snapshot serialization','JSON snapshot disk write','CSV snapshot serialization and disk write']){
@@ -28,6 +29,11 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
       const result=snap(source(args));if(command==='import_editor_file')result.native=true;return result;
     }
     if(command==='open_editor_dataset'){const result=snap(window.__tabular[args.id]);result.native=true;return result;}
+    if(command==='begin_sql_result'){const id=crypto.randomUUID();window.__tabular[id]={columns:args.columns,rows:[],source:'SQL',warnings:[]};return id;}
+    if(command==='append_sql_result'){const d=window.__tabular[args.id];if(d.rows.length!==args.offset)throw Error('SQL batch out of sequence');d.rows.push(...args.rows);return null;}
+    if(command==='abort_sql_result'){delete window.__tabular[args.id];return null;}
+    if(command==='finish_sql_result'){const d=window.__tabular[args.id];if(d.rows.length!==args.expected)throw Error('Incomplete SQL result');return {tabularId:args.id,columns:d.columns,rowCount:d.rows.length,native:true};}
+    if(command==='read_sql_page'){const d=window.__tabular[args.id];return {rowCount:d.rows.length,rows:d.rows.slice(args.offset,args.offset+args.limit),truncated:false};}
     if(command==='read_editor_page'){const d=window.__tabular[args.id];return {offset:args.offset,rowCount:d.rows.length,rows:structuredClone(d.rows.slice(args.offset,args.offset+args.limit))};}
     if(command==='edit_editor_cell'){window.__tabular[args.id].rows[args.row][args.column]=args.value;return null;}
     if(command==='editor_column_kinds'){const d=window.__tabular[args.id];return d.columns.map((_,i)=>{const kinds=new Set(d.rows.map(row=>row[i].kind).filter(kind=>kind!=='null'));return kinds.size===1&&kinds.has('number')?'number':kinds.size===1&&kinds.has('boolean')?'boolean':'text';});}
@@ -71,12 +77,14 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
   const sql=page.frameLocator('iframe[data-workspace-id="sql-studio.html"]');await sql.locator('.table-schema-card').waitFor({timeout:60000});
   await page.waitForFunction(()=>document.querySelector('#active-workspace-title')?.dataset.hasData==='true');
   await sql.locator('#statusIndicator').filter({hasText:'Ready'}).waitFor();
+  const diagnostics=await page.evaluate(()=>window.TangentTransferDiagnostics.last);
+  await page.screenshot({path:path.join(out,'transfer-diagnostics.png')});
+  await page.locator('#transfer-diagnostics button').click();
   await sql.locator('#btnRun').click();
   await sql.locator('#resultsCount').filter({hasText:'2 rows'}).waitFor();
-  const results=await sql.locator('body').evaluate(()=>window.tangentCurrentResult());assert.equal(results.dataset.rows[0][0].value,'00123');assert.equal(results.dataset.rows[0][1].value,5);assert.equal(results.dataset.rows[0][2].value,false);
-  const diagnostics=await page.evaluate(()=>window.TangentTransferDiagnostics.last);
+  const output=await sql.locator('body').evaluate(()=>window.tangentCurrentResult());assert.ok(output.nativeId);const results=await page.evaluate(id=>window.__tabular[id],output.nativeId);assert.equal(results.rows[0][0].value,'00123');assert.equal(results.rows[0][1].value,5);assert.equal(results.rows[0][2].value,false);
   assert.equal(diagnostics.result,'Complete');assert.ok(diagnostics.entries.some(entry=>entry.stage==='Editor: flush cell edits'));assert.equal(diagnostics.entries.some(entry=>entry.stage.includes('generate CSV')),false);assert.ok(diagnostics.entries.some(entry=>entry.stage.startsWith('Native snapshot request')));
-  await page.screenshot({path:path.join(out,'transfer-diagnostics.png')});
+  for(const label of ['Import: native Arrow encoding and transfer (IPC included)','Import: compatibility conversion','Import: DuckDB worker insertion'])assert.ok(diagnostics.entries.some(entry=>entry.stage===label&&Number.isFinite(entry.milliseconds)&&entry.milliseconds>=0),label);
   await page.locator('#workspace-open-in').click();await page.locator('[data-transfer-target="data-editor.html"]').click();
   const copy=page.frameLocator('iframe[data-workspace-id^="data-editor.html::"]');await copy.locator('#grid-container').waitFor();assert.equal((await inspect(copy)).rows[0][1].kind,'number');
   assert.equal((await inspect(editor)).rows[0][1].value,5);
@@ -125,10 +133,11 @@ const root=path.resolve(__dirname,'../src'),out=path.resolve(__dirname,'../test-
   const batchTarget=await batchedSql.locator('body').evaluate(()=>({savedQuery:window.sqlEditorInstance.getValue(),mountedTable:document.querySelector('.table-schema-head > div').textContent.trim()}));
   console.log('SQL batch target diagnostic: '+JSON.stringify(batchTarget));
   await batchedSql.locator('body').evaluate((_element,table)=>{window.sqlEditorInstance.setValue('SELECT COUNT(*) AS count, MIN(id) AS first, MAX(mixed) AS last FROM '+table);},batchTarget.mountedTable);
+  if(await page.locator('#transfer-diagnostics button').isVisible())await page.locator('#transfer-diagnostics button').click();
   await batchedSql.locator('#btnRun').click();
   await batchedSql.locator('#resultsCount').filter({hasText:/1 rows|Error/}).waitFor();
   if((await batchedSql.locator('#resultsCount').textContent())==='Error')throw new Error(await batchedSql.locator('body').evaluate(()=>JSON.stringify({query:window.sqlEditorInstance.getValue(),error:document.getElementById('resultsTable').textContent,status:document.getElementById('statusIndicator').textContent})));
-  const batchedResult=await batchedSql.locator('body').evaluate(()=>window.tangentCurrentResult());assert.equal(String(batchedResult.dataset.rows[0][0].value),'4100');assert.equal(batchedResult.dataset.rows[0][1].value,'000000');assert.equal(batchedResult.dataset.rows[0][2].value,'last text');
+  const batchedOutput=await batchedSql.locator('body').evaluate(()=>window.tangentCurrentResult());assert.ok(batchedOutput.nativeId);const batchedResult=await page.evaluate(id=>window.__tabular[id],batchedOutput.nativeId);assert.equal(String(batchedResult.rows[0][0].value),'4100');assert.equal(batchedResult.rows[0][1].value,'000000');assert.equal(batchedResult.rows[0][2].value,'last text');
   await page.evaluate(()=>window.TangentShell.open('csv-insights.html'));
   assert.equal(await profile.locator('#btnCloseFile').count(),0);
   await profile.locator('#btn-close-file').click();await profile.locator('#emptyState').waitFor({state:'visible'});assert.equal(await profile.locator('#workspace').isVisible(),false);

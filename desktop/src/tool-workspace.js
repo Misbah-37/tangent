@@ -30,8 +30,8 @@
   const changedCommands = /* @__PURE__ */ new Set(["execute_recipe", "execute_recipe_bulk", "extract_tables", "extract_structured"]);
   if (parentTauri) {
     const originalInvoke = parentTauri.core.invoke;
-    window.__TAURI__ = { ...parentTauri, core: { ...parentTauri.core, invoke: async function(command, args) {
-      const result = await originalInvoke(command, args);
+    window.__TAURI__ = { ...parentTauri, core: { ...parentTauri.core, invoke: async function(command, args, options) {
+      const result = await originalInvoke(command, args, options);
       if (loadedCommands.has(command) && result !== null && result !== void 0 && result !== "" && (!Array.isArray(result) || result.length)) shell.updateState(id, { hasData: true });
       if (changedCommands.has(command)) shell.updateState(id, { hasData: true, dirty: true });
       if (!window._launchpadImporting && result && args) {

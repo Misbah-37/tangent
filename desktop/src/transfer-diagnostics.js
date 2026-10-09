@@ -26,6 +26,7 @@
       get running() { return !done; },
       async stage(next) { if(done)return; completeStage();label=next;stageStarted=performance.now();sample();await paint(); },
       note(text) { if(done)return;entries.push({stage:text,milliseconds:0});log.textContent=entries.map(entry=>entry.stage+': '+(entry.milliseconds/1000).toFixed(2)+'s').join('\n'); },
+      measure(stage, milliseconds) { if(done)return;entries.push({stage,milliseconds:Math.round(milliseconds)});log.textContent=entries.map(entry=>entry.stage+': '+(entry.milliseconds/1000).toFixed(2)+'s').join('\n'); },
       detach() { document.body.append(box); },
       attach(host) { if(!done)host.append(box); },
       finish(result, error) { if(done)return;completeStage();done=true;clearInterval(timer);label=result;sample();close.hidden=false;box.dataset.result=result; if(error){const detail=document.createElement('pre');detail.textContent=error.stack||error.message||String(error);box.append(detail);} global.TangentTransferDiagnostics.last={result,entries:entries.slice(),heartbeatGapMs:Math.round(maxGap),observedJsHeapBytes:peakHeap,error:error?.stack||error?.message||null}; }

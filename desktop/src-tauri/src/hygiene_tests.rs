@@ -1,4 +1,24 @@
 use super::*;
+#[test]
+fn formatted_revenue_is_imputed_after_numeric_normalization() {
+ for method in ["mean","median"] {
+  let input=fixture(&format!("revenue-{method}.csv"));std::fs::write(&input,"id,revenue\n1,\"$1,000\"\n2,\"$3,000\"\n3,\n").unwrap();
+  let output=input.with_file_name("cleaned.csv");let mut r=recipe();r.number_cols.push("revenue".into());r.imputation_rules.push(ImputationRule{col:"revenue".into(),method:method.into(),custom_val:String::new()});process_csv_file(&input,&output,&r).unwrap();
+  let rows=csv::Reader::from_path(output).unwrap().records().collect::<Result<Vec<_>,_>>().unwrap();assert_eq!(rows[2][1].parse::<f64>().unwrap(),2000.);
+ }
+}
+#[test]
+fn mixed_revenue_words_shorthand_and_missing_tokens() {
+ let input=fixture("mixed-revenue.csv");std::fs::write(&input,"id, Revenue ($) \n1,0.001m\n2,4.4k\n3,twenty\n4,one hundred\n5,zero\n6,\n7,-\n8,null\n9,NaN\n10,N/A\n").unwrap();
+ for (method,expected) in [("mean",1104.),("median",100.)] {
+  let output=input.with_file_name(format!("{method}.csv"));let mut r=recipe();r.number_cols.push(" Revenue ($) ".into());r.imputation_rules.push(ImputationRule{col:" Revenue ($) ".into(),method:method.into(),custom_val:String::new()});process_csv_file(&input,&output,&r).unwrap();
+  let rows=csv::Reader::from_path(output).unwrap().records().collect::<Result<Vec<_>,_>>().unwrap();for row in &rows[5..]{assert_eq!(row[1].parse::<f64>().unwrap(),expected);}
+ }
+}
+#[test]
+fn unavailable_numeric_imputation_reports_error() {
+ let input=fixture("empty-revenue.csv");std::fs::write(&input,"Revenue\nnull\nN/A\n-\n").unwrap();let mut r=recipe();r.imputation_rules.push(ImputationRule{col:"Revenue".into(),method:"median".into(),custom_val:String::new()});assert!(process_csv_file(&input,&input.with_file_name("cleaned.csv"),&r).unwrap_err().contains("no usable numeric values"));
+}
 fn recipe() -> Recipe {
     serde_json::from_value(json!({"sanitize_headers":false,"drop_empty":false,"strip_ctrl":false,"trim_all":false,"date_format":"ISO","imputation_rules":[],"dedupe":false,"dedupe_mode":"exact","dedupe_cols":[],"drop_missing_cols":[],"date_cols":[],"number_cols":[],"absolute_nums":false,"phone_cols":[],"title_cols":[]})).unwrap()
 }

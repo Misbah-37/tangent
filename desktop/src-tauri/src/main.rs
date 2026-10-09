@@ -382,6 +382,17 @@ struct Recipe {
     title_cols: Vec<String>,
 }
 
+fn hygiene_missing(value: &str) -> bool {
+    let value=value.trim();value.is_empty() || value.eq_ignore_ascii_case("nan") || value.eq_ignore_ascii_case("null") || value.eq_ignore_ascii_case("n/a") || value=="-"
+}
+fn imputation_number(value:&str, column:&str, recipe:&Recipe) -> Option<f64> {
+    let mut value=value.trim().to_string();
+    if recipe.strip_ctrl {value.retain(|c| !c.is_ascii_control());}
+    if hygiene_missing(&value){return None;}
+    if recipe.number_cols.iter().any(|c|c==column){value=clean_numeric(&value);if recipe.absolute_nums{value=value.replace("-","");}}
+    value.parse::<f64>().ok().filter(|v|v.is_finite())
+}
+
 fn process_csv_file(file_path: &std::path::Path, out_path: &std::path::Path, recipe: &Recipe) -> Result<(usize, usize, usize), String> {
     
 let mut reader = csv::ReaderBuilder::new().has_headers(true).from_path(file_path).map_err(|e| e.to_string())?;
@@ -415,11 +426,11 @@ let mut reader = csv::ReaderBuilder::new().has_headers(true).from_path(file_path
         for result in pass1_reader.records() {
             if let Ok(record) = result {
                 for (i, field) in record.iter().enumerate() {
-                    let is_empty = field.is_empty() || field == "NaN" || field.eq_ignore_ascii_case("null") || field == "N/A";
+                    let is_empty = hygiene_missing(field);
                     if !is_empty {
                         if let Some(rule) = impute_targets.get(&i) {
                             if rule.method == "mean" || rule.method == "median" {
-                                if let Ok(val) = field.trim().parse::<f64>() {
+                                if let Some(val) = imputation_number(field, &rule.col, recipe) {
                                     col_sums[i] += val;
                                     col_counts[i] += 1;
                                     if rule.method == "median" {
@@ -439,6 +450,7 @@ let mut reader = csv::ReaderBuilder::new().has_headers(true).from_path(file_path
     // Finalize statistics
     let mut final_imputes: Vec<String> = vec![String::new(); num_cols];
     for (i, rule) in impute_targets.iter() {
+        if (rule.method == "mean" || rule.method == "median") && col_counts[*i]==0 {return Err(format!("Cannot impute {} for column '{}': no usable numeric values. Enable Numeric formatting for formatted numbers, or choose a custom fill.",rule.method,rule.col));}
         if rule.method == "mean" {
             if col_counts[*i] > 0 {
                 final_imputes[*i] = format!("{:.2}", col_sums[*i] / (col_counts[*i] as f64));
@@ -543,12 +555,12 @@ let mut reader = csv::ReaderBuilder::new().has_headers(true).from_path(file_path
             if recipe.trim_all { processed = processed.trim().to_string(); }
             
             let test_val = processed.trim();
-                let mut cell_is_empty = test_val.is_empty() || test_val == "NaN" || test_val.eq_ignore_ascii_case("null") || test_val == "N/A" || test_val == "-";
+                let mut cell_is_empty = hygiene_missing(test_val);
                 
                 if cell_is_empty {
                     if impute_targets.contains_key(&i) {
                         processed = final_imputes[i].clone();
-                        cell_is_empty = false;
+                        cell_is_empty = hygiene_missing(&processed);
                     }
                 }
                 
@@ -669,10 +681,10 @@ async fn process_db_table(uri: &str, table_name: &str, out_path: &std::path::Pat
                     }
                 };
                 let field = val.trim();
-                let is_empty = field.is_empty() || field == "NaN" || field.eq_ignore_ascii_case("null") || field == "N/A";
+                let is_empty = hygiene_missing(field);
                 if !is_empty {
                     if rule.method == "mean" || rule.method == "median" {
-                        if let Ok(num) = field.parse::<f64>() {
+                        if let Some(num) = imputation_number(field, &rule.col, recipe) {
                             col_sums[*i] += num;
                             col_counts[*i] += 1;
                             if rule.method == "median" {
@@ -689,6 +701,7 @@ async fn process_db_table(uri: &str, table_name: &str, out_path: &std::path::Pat
     
     let mut final_imputes: Vec<String> = vec![String::new(); num_cols];
     for (i, rule) in impute_targets.iter() {
+        if (rule.method == "mean" || rule.method == "median") && col_counts[*i]==0 {return Err(format!("Cannot impute {} for column '{}': no usable numeric values. Enable Numeric formatting for formatted numbers, or choose a custom fill.",rule.method,rule.col));}
         if rule.method == "mean" {
             if col_counts[*i] > 0 {
                 final_imputes[*i] = format!("{:.2}", col_sums[*i] / (col_counts[*i] as f64));
@@ -815,12 +828,12 @@ async fn process_db_table(uri: &str, table_name: &str, out_path: &std::path::Pat
             if recipe.trim_all { processed = processed.trim().to_string(); }
             
             let test_val = processed.trim();
-                let mut cell_is_empty = test_val.is_empty() || test_val == "NaN" || test_val.eq_ignore_ascii_case("null") || test_val == "N/A" || test_val == "-";
+                let mut cell_is_empty = hygiene_missing(test_val);
                 
                 if cell_is_empty {
                     if impute_targets.contains_key(&i) {
                         processed = final_imputes[i].clone();
-                        cell_is_empty = false;
+                        cell_is_empty = hygiene_missing(&processed);
                     }
                 }
                 

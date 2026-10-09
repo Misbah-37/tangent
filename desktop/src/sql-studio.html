@@ -995,7 +995,8 @@ window.addEventListener('unhandledrejection', function(e) {
 
     async function handleFile(file) {
         file = await window.TangentTabular.prepareFile(file);
-        const typedInput = await window.TangentTabular.data({tabularId:file.tabularId});
+        const nativeInput = window.TangentTabular.nativeMetadata(file.tabularId);
+        const typedInput = nativeInput ? null : await window.TangentTabular.data({tabularId:file.tabularId});
         if (!conn) return alert("DuckDB is loading...");
         document.getElementById('statusIndicator').textContent = "Mounting " + file.name + "...";
         
@@ -1004,7 +1005,12 @@ window.addEventListener('unhandledrejection', function(e) {
         if (!tableName) tableName = 'data_table';
         
         try {
-            if (typedInput) {
+            if (nativeInput) {
+                const arrow = await import('apache-arrow');
+                await window.TangentTabular.insertNativeArrow(conn,arrow,file.tabularId,tableName,(loaded,total)=>{
+                    document.getElementById('statusIndicator').textContent='Mounting '+loaded.toLocaleString()+' / '+total.toLocaleString()+' rows...';
+                });
+            } else if (typedInput) {
                 const arrow = await import('apache-arrow');
                 const vectors = Object.create(null);
                 if (new Set(typedInput.columns).size !== typedInput.columns.length) throw new Error('The dataset contains duplicate column names. Rename them before querying.');

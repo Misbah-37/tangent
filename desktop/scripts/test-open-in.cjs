@@ -41,7 +41,7 @@ async function registryAndProviders() {
   const cases = {
     'index.html': { activeFilePath: 'original.csv', window: { lastExportTempPath: 'cleaned.csv' } },
     'data-editor.html': { headers: ['name','zero'], rows: [['a,"b"',0]] },
-    'csv-insights.html': { currentHeaders: ['name','zero'], rawData: [{name:'keep',zero:0},{name:'omit',zero:1}], currentFilterFn: row => row.name === 'keep' },
+    'csv-insights.html': { nativeInsights:null, currentHeaders: ['name','zero'], rawData: [{name:'keep',zero:0},{name:'omit',zero:1}], currentFilterFn: row => row.name === 'keep' },
     'sql-studio.html': { lastQueryRows: [{ name:'Ada', zero:0, large:9007199254740993n, empty:null }] },
     'correlation-matrix.html': { matrixData: { columns:['a','b'], matrix:[[{r:1},{r:0.125}],[{r:0.125},{r:1}]] } },
     'finance-dashboard.html': { currentReport: { transactions:[{ date:'2026-10-08',desc:'Store, "A"',category:'Food',amount:-12.50 }] } },
@@ -50,7 +50,7 @@ async function registryAndProviders() {
   };
   for (const [file, data] of Object.entries(cases)) {
     const html = fs.readFileSync(path.join(root, file), 'utf8');
-    const code = html.match(/window\.tangentCurrentResult = async function\(\) \{[\s\S]*?\n\};/)[0];
+    const code = html.match(/window\.tangentCurrentResult = async function\((?:trace)?\) \{[\s\S]*?\n\};/)[0];
     const context = { ...data, window: { ...data.window, TangentToolWorkspace:{csv:registry.csv} } };
     vm.runInNewContext(code, context);
     const result = await context.window.tangentCurrentResult();
@@ -76,6 +76,7 @@ async function browserTransfers() {
   try {
     browser = await chromium.launch({ channel:'msedge', headless:true });
     const page = await browser.newPage({viewport:{width:1280,height:900}});
+    await require('./insights-fixture-helper.cjs')(page);
     const errors=[]; page.on('pageerror', error=>errors.push(error.stack));
     page.on('dialog', dialog=>dialog.dismiss());
     await page.addInitScript(() => {
@@ -94,13 +95,20 @@ async function browserTransfers() {
           if (command==='read_file_to_string_native') return window.__snapshots[args.path] || 'name,value\r\nAda,0\r\n';
           if (command==='read_launchpad_file') return Array.from(new TextEncoder().encode(window.__snapshots[args.path] || 'name,value\r\nAda,0\r\n'));
           if (command==='pick_launchpad_files') return [];
-          if (command==='preview_tabular_import' || command==='import_tabular_file') {
+          if (command==='preview_tabular_import' || command==='import_tabular_file' || command==='import_editor_file') {
             const records=(window.__snapshots[args.path] || 'name,value\r\nAda,0\r\n').trim().split(/\r?\n/).map(row=>row.split(','));
             const dataset={columns:records[0],rows:records.slice(1).map(row=>row.map(value=>({kind:'text',value}))),source:args.path,sheet:null,warnings:[]};
             if(command==='preview_tabular_import')return {...dataset,sheets:[],selectedSheet:null};
-            const id='import-'+(++window.__snapshotCount),path='C:\\session\\'+id+'.csv';window.__tabular[id]=dataset;window.__snapshots[path]=window.TangentDatasets.csv(records);return {id,tabularId:id,path,source:args.path};
+            const id='import-'+(++window.__snapshotCount),path='C:\\session\\'+id+'.csv';window.__tabular[id]=dataset;window.__snapshots[path]=window.TangentDatasets.csv(records);return {id,tabularId:id,path,source:args.path,columns:dataset.columns,rowCount:dataset.rows.length,native:command==='import_editor_file'};
           }
+          if(command==='open_editor_dataset'){const id='editor-'+(++window.__snapshotCount),dataset=structuredClone(window.__tabular[args.id]);window.__tabular[id]=dataset;return {id,tabularId:id,native:true,columns:dataset.columns,rowCount:dataset.rows.length};}
+          if(command==='read_editor_page'){const d=window.__tabular[args.id];return {offset:args.offset,rows:structuredClone(d.rows.slice(args.offset,args.offset+args.limit)),rowCount:d.rows.length};}
+          if(command==='edit_editor_cell'){window.__tabular[args.id].rows[args.row][args.column]=args.value;return null;}
+          if(command==='release_editor_dataset'){delete window.__tabular[args.id];return null;}
+          if(command==='snapshot_editor_dataset'){if(window.__failSnapshot)throw new Error('Fixture snapshot write failed');const id='snapshot-'+(++window.__snapshotCount),path='C:\\session\\'+id+'.csv',dataset=structuredClone(window.__tabular[args.id]);window.__tabular[id]=dataset;window.__snapshots[path]=window.TangentDatasets.csv([dataset.columns,...dataset.rows.map(row=>row.map(cell=>cell.kind==='null'?null:cell.value))]);return {id,tabularId:id,path,native:true,columns:dataset.columns,rowCount:dataset.rows.length};}
           if(command==='read_tabular_dataset')return window.__tabular[args.id];
+          if(command==='profile_insights'){const d=window.__tabular[args.id];return {headers:d.columns,rowCount:d.rows.length,stats:Object.fromEntries(d.columns.map((name,c)=>[name,window.__fixtureProfile(d.rows.map(row=>row[c].kind==='null'?null:row[c].value),d.rows.length)]))};}
+          if(command==='aggregate_insights')return {order:[],groups:{},seriesNames:['Total'],skipped:0,totalGroups:0};
           return null;
         }},
         window:{getCurrentWindow:()=>({onCloseRequested:async()=>()=>{}})},
@@ -181,7 +189,8 @@ async function browserTransfers() {
     await realCsv.locator('#workspace').waitFor();
     await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].find(f=>f.dataset.workspaceId.startsWith('csv-insights.html::'))?.contentWindow.document.getElementById('statRows').textContent==='1');
     const csvResult=await realCsv.locator('body').evaluate(()=>window.tangentCurrentResult());
-    assert.match(csvResult.text, /"Real edit, ""quoted""",0/);
+    const csvText=await page.evaluate(id=>{const d=window.__tabular[id];return window.TangentDatasets.csv([d.columns,...d.rows.map(row=>row.map(c=>c.kind==='null'?null:c.value))]);},csvResult.nativeId);
+    assert.match(csvText, /"Real edit, ""quoted""",0/);
     // Verify actual module-scoped SQL import, local DuckDB initialization, and result export.
     await page.unroute('**/sql-studio.html');
     const sqlOpened = await page.evaluate(()=>window.TangentShell.open('sql-studio.html',['sql.csv'],{newWorkspace:true}));

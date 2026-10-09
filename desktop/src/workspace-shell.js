@@ -258,6 +258,8 @@
         return;
       }
     }
+    try { await panel.frame.contentWindow.releaseWorkspace?.(); }
+    catch(error) { reportToolError(id,error); return; }
     panel.cancelLoadTimer?.();
     panel.frame.remove();
     panels.delete(id);
@@ -308,17 +310,23 @@
     source.busy = true;
     renderWorkspaces();
     document.querySelectorAll("#open-in-choices button, #open-in-cancel, #open-in-mode").forEach(button => button.disabled = true);
+    const trace = window.TangentTransferDiagnostics.begin(source.tool.title, routing.tools.find(tool => tool.id === targetId).title, transferDialog);
     try {
       const child = source.frame.contentWindow;
       child.document.activeElement?.blur();
       if (typeof child.tangentCurrentResult !== "function") throw new Error("This tool has not initialized its current-result exporter.");
-      const snapshot = await window.TangentDatasets.capture(child.tangentCurrentResult, source.datasetId, source.snapshot?.id || null);
+      const snapshot = await window.TangentDatasets.capture(child.tangentCurrentResult, source.datasetId, source.snapshot?.id || null, trace);
       source.datasetId = snapshot.datasetId;
       // Close before opening the replacement confirmation: modal dialogs must not overlap.
+      trace.detach();
       transferDialog.close();
+      await trace.stage('Open destination and load snapshot');
       const accepted = await open(targetId, [snapshot.path], { newWorkspace: mode === "new" && panels.has(targetId), snapshot });
       if (!accepted) show(source.id);
+      trace.finish(accepted ? 'Complete' : 'Destination cancelled');
     } catch (error) {
+      trace.attach(transferDialog);
+      trace.finish('Failed', error);
       show(source.id);
       document.getElementById("open-in-error").textContent = error?.message || String(error);
       if (!transferDialog.open) transferDialog.showModal();

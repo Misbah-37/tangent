@@ -214,6 +214,7 @@
     let typedCells = [];
     let datasetWarnings = [];
     let editingCell = null; // { rowIndex, colIndex }
+    let nativeEditor = null;
 
     // CSV Parser (Robust to quotes)
     function parseCSV(text) {
@@ -253,8 +254,8 @@
 
     // Load Data
     function loadData(csvString, path, dataset = null) {
-        const parsed = dataset ? [dataset.columns, ...dataset.rows.map(row => row.map(cell => cell.kind === "null" ? "" : cell.value))] : parseCSV(csvString);
-        typedCells = dataset ? dataset.rows.map(row => row.map(cell => ({...cell}))) : [];
+        const parsed = dataset?.native ? [dataset.columns] : dataset ? [dataset.columns, ...dataset.rows.map(row => row.map(cell => cell.kind === "null" ? "" : cell.value))] : parseCSV(csvString);
+        typedCells = dataset && !dataset.native ? dataset.rows.map(row => row.map(cell => ({...cell}))) : [];
         datasetWarnings = dataset?.warnings || [];
         if (parsed.length === 0) return;
         
@@ -262,13 +263,19 @@
         headers = parsed[0];
         rows = parsed.slice(1);
         colWidths = headers.map(() => DEFAULT_COL_WIDTH);
+        nativeEditor = dataset?.native ? new window.NativeEditorGrid(dataset, {
+            container, viewport, spacer, rowHeight:ROW_HEIGHT, widths:colWidths, invoke,
+            changed:()=>window.TangentToolWorkspace?.setState({dirty:true}),
+            report:error=>window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,error)
+        }) : null;
+        const rowCount = nativeEditor ? nativeEditor.rowCount : rows.length;
         
         currentFilePath = path;
         loadedFiles = [path];
         if (window.parent && !window.TangentToolWorkspace) { window.parent.GlobalWorkspacePath = path; }
         
-        document.getElementById('status-indicator').innerText = `Rows: ${rows.length.toLocaleString()} | Cols: ${headers.length}`;
-        document.getElementById('editor-row-count').textContent = rows.length.toLocaleString();
+        document.getElementById('status-indicator').innerText = `Rows: ${rowCount.toLocaleString()} | Cols: ${headers.length}`;
+        document.getElementById('editor-row-count').textContent = rowCount.toLocaleString();
         document.getElementById('editor-column-count').textContent = headers.length.toLocaleString();
         document.getElementById('editor-dataset-state').textContent = 'Data loaded';
         document.getElementById('editor-file-name').textContent = String(path || 'Dataset').split(/[\\/]/).pop();
@@ -280,7 +287,8 @@
         if(document.getElementById('btn-save-xlsx')) document.getElementById('btn-save-xlsx').style.display = 'flex';
         // Open in is provided by the persistent workspace bar.
         
-        spacer.style.height = `${(rows.length + 1) * ROW_HEIGHT}px`;
+        container.scrollTop = 0;
+        spacer.style.height = `${(rowCount + 1) * ROW_HEIGHT}px`;
         spacer.style.width = `${colWidths.reduce((a,b)=>a+b, 0) + 50}px`; // +50 for gutter
         
         renderHeader();
@@ -309,6 +317,7 @@
 
     // Render Virtual Rows
     function renderViewport() {
+        if (nativeEditor) return nativeEditor.render();
         const scrollTop = container.scrollTop;
         const containerHeight = container.clientHeight;
         
@@ -392,7 +401,10 @@
 
 
     if(document.getElementById('btn-close-file')) {
-        document.getElementById('btn-close-file').addEventListener('click', () => {
+        document.getElementById('btn-close-file').addEventListener('click', async () => {
+            try { await nativeEditor?.release(); }
+            catch(error) { window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,error); return; }
+            nativeEditor = null;
             currentFilePath = null;
             if (window.parent) window.parent.GlobalWorkspacePath = null;
             headers = [];
@@ -421,18 +433,36 @@
     }
     
     async function loadEditorFile(path) {
+            let trace;
+            let allocatedId;
             try {
                 if (!path) path = await invoke('pick_csv_file');
             if (path) {
+                await nativeEditor?.flush();
+                if (!window._launchpadImporting || !window._tabularSnapshot?.tabularId) trace = window.parent.TangentTransferDiagnostics?.begin('File import', 'Tabular Editor', window.parent.document.body);
+                await trace?.stage('Import: prepare dataset');
                 const transferred = window._launchpadImporting ? window._tabularSnapshot : null;
-                const prepared = transferred?.tabularId ? transferred : await window.TangentTabular.prepare(path, {review:true});
-                const dataset = await window.TangentTabular.data(prepared);
-                const text = dataset ? '' : await invoke('read_file_to_string_native', {path:prepared.path});
-                loadData(text, prepared.source || path, dataset);
+                const prepared = transferred?.tabularId ? transferred : await window.TangentTabular.prepare(path, {review:true, trace, editor:true});
+                await trace?.stage('Import: open native editor handle');
+                const dataset = transferred?.tabularId || !prepared.native ? await invoke('open_editor_dataset',{id:prepared.tabularId,native:!!prepared.native}) : prepared;
+                allocatedId = dataset.tabularId;
+                // Read the first bounded page before replacing an existing workspace.
+                await trace?.stage('Import: fetch first grid page');
+                const first = await invoke('read_editor_page',{id:allocatedId,offset:0,limit:Math.max(1,Math.min(128,Math.floor(32768/dataset.columns.length)))});
+                const previous = nativeEditor;
+                loadData('', prepared.source || path, dataset);
+                nativeEditor.pages.set(0,first.rows);
+                await nativeEditor.render();
+                allocatedId = null;
+                await previous?.release();
                 window.TangentToolWorkspace?.setState({hasData:true,dirty:false});
                 if (!window._launchpadImporting) window.parent.TangentShell?.registerSource(window.frameElement?.dataset.workspaceId, [path]);
+                trace?.finish('Import complete');
             }
         } catch(e) { 
+            if (allocatedId) await invoke('release_editor_dataset',{id:allocatedId}).catch(()=>{});
+            trace?.detach();
+            trace?.finish(e?.name === 'AbortError' ? 'Import cancelled' : 'Import failed', e);
             if (e?.name === 'AbortError') { if(window._launchpadImporting) throw e; return; }
             if(window.TangentToast) window.TangentToast.show("Error loading file: " + e, true);
                 if (window._launchpadImporting) throw e;
@@ -606,15 +636,26 @@
 </script>
 
 
+<script src="native-editor-grid.js"></script>
 <script src="launchpad-routing.js"></script>
 <script src="launchpad-handoff.js"></script>
 <script>
 window.tangentEditorDataset = function() {
+  if (nativeEditor) throw new Error('The editor dataset lives in Rust. Use its native handle or bounded pages.');
   return {columns:headers.slice(), rows:rows.map((row,i) => headers.map((_,j) => typedCells[i]?.[j] ? {...typedCells[i][j]} : window.TangentTabular.cell(row[j]))), source:currentFilePath || '', sheet:null, warnings:datasetWarnings.slice()};
 };
-window.tangentCurrentResult = async function() {
+window.tangentCurrentResult = async function(trace) {
   if (!headers.length) throw new Error("Load a dataset first.");
-  return { dataset:window.tangentEditorDataset?.(), text: window.TangentToolWorkspace.csv([headers, ...rows]), ext: 'csv', label: 'Edited dataset' };
+  if (typeof nativeEditor !== 'undefined' && nativeEditor) {
+    await trace?.stage('Editor: flush cell edits');
+    await nativeEditor.flush();
+    return {nativeId:nativeEditor.id,ext:'csv',label:'Edited dataset'};
+  }
+  await trace?.stage('Editor: build typed cell copy');
+  const dataset = window.tangentEditorDataset?.();
+  if (dataset) return { dataset, ext: 'csv', label: 'Edited dataset' };
+  await trace?.stage('Editor: generate CSV fallback');
+  return { text:window.TangentToolWorkspace.csv([headers, ...rows]), ext:'csv', label:'Edited dataset' };
 };
 window.launchpadImport = async function(paths) {
     window._launchpadImporting = true;
@@ -622,6 +663,7 @@ window.launchpadImport = async function(paths) {
         await loadEditorFile(paths[0]);
     } finally { window._launchpadImporting = false; }
 };
+window.releaseWorkspace = async function() { await nativeEditor?.release(); nativeEditor = null; };
 </script>
 </body>
 </html>

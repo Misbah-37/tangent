@@ -4,12 +4,25 @@ use calamine::{open_workbook_auto, Data, Reader};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, fs, path::Path};
 use crate::snapshots::SnapshotStore;
+use std::time::Instant;
+use tauri::ipc::Channel;
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportStage { stage: String, milliseconds: Option<u64> }
+pub(crate) fn measured<T>(stage: &str, progress: Option<&Channel<ImportStage>>, work: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
+    if let Some(channel) = progress { let _ = channel.send(ImportStage { stage:stage.into(), milliseconds:None }); }
+    let started = Instant::now();
+    let result = work();
+    if let Some(channel) = progress { let _ = channel.send(ImportStage { stage:stage.into(), milliseconds:Some(started.elapsed().as_millis() as u64) }); }
+    result.map_err(|error| format!("{stage}: {error}"))
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "kind", content = "value", rename_all = "lowercase")]
 pub enum Cell { Text(String), Number(f64), Boolean(bool), Date(String), Null }
 impl Cell {
-    fn text(&self) -> String {
+    pub(crate) fn text(&self) -> String {
         match self { Self::Text(s) | Self::Date(s) => s.clone(), Self::Number(n) => n.to_string(), Self::Boolean(b) => b.to_string(), Self::Null => String::new() }
     }
 }
@@ -26,7 +39,7 @@ pub struct Dataset {
 pub struct Preview { sheets: Vec<String>, selected_sheet: Option<String>, columns: Vec<String>, rows: Vec<Vec<Cell>>, warnings: Vec<String> }
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct TabularSnapshot { pub id: String, pub tabular_id: String, pub path: String, pub bytes: u64, pub columns: Vec<String>, pub row_count: usize, pub source: String, pub sheet: Option<String>, pub warnings: Vec<String> }
+pub struct TabularSnapshot { pub id: String, pub tabular_id: String, pub path: String, pub bytes: u64, pub columns: Vec<String>, pub row_count: usize, pub source: String, pub sheet: Option<String>, pub warnings: Vec<String>, pub native: bool }
 
 fn extension(path: &str) -> String { Path::new(path).extension().unwrap_or_default().to_string_lossy().to_lowercase() }
 fn cell(value: &Data) -> Result<Cell, String> {
@@ -70,7 +83,7 @@ fn read_delimited(text: &[u8], delimiter: u8, header: bool, source: String, limi
     let records = reader.records().take(limit.unwrap_or(usize::MAX)).map(|r| r.map(|r| r.iter().map(|s| Cell::Text(s.to_string())).collect()).map_err(|e| e.to_string())).collect::<Result<Vec<_>, _>>()?;
     from_records(records, header, source, None)
 }
-fn read_file(path: &str, sheet: Option<String>, header: bool, limit: Option<usize>) -> Result<(Dataset, Vec<String>), String> {
+pub(crate) fn read_file(path: &str, sheet: Option<String>, header: bool, limit: Option<usize>) -> Result<(Dataset, Vec<String>), String> {
     match extension(path).as_str() {
         "csv" | "tsv" => {
             let file = fs::File::open(path).map_err(|e| e.to_string())?;
@@ -103,15 +116,20 @@ fn write_delimited(dataset: &Dataset, path: &Path, delimiter: u8) -> Result<(), 
     writer.flush().map_err(|e| e.to_string())
 }
 fn snapshot(directory: &Path, dataset: Dataset) -> Result<TabularSnapshot, String> {
+    snapshot_with_progress(directory, dataset, None)
+}
+fn snapshot_with_progress(directory: &Path, dataset: Dataset, progress: Option<&Channel<ImportStage>>) -> Result<TabularSnapshot, String> {
     validate(&dataset)?;
     fs::create_dir_all(directory).map_err(|e| e.to_string())?;
     let id = uuid::Uuid::new_v4().to_string();
     let path = directory.join(format!("{id}.csv"));
-    fs::write(directory.join(format!("{id}.tabular.json")), serde_json::to_vec(&dataset).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
-    write_delimited(&dataset, &path, b',')?;
-    Ok(TabularSnapshot { tabular_id: id.clone(), id, bytes: fs::metadata(&path).map_err(|e| e.to_string())?.len(), path: path.to_string_lossy().into_owned(), columns: dataset.columns, row_count: dataset.rows.len(), source: dataset.source, sheet: dataset.sheet, warnings: dataset.warnings })
+    let json = measured("JSON snapshot serialization", progress, || serde_json::to_vec(&dataset).map_err(|e| e.to_string()))?;
+    measured("JSON snapshot disk write", progress, || fs::write(directory.join(format!("{id}.tabular.json")), &json).map_err(|e| e.to_string()))?;
+    drop(json);
+    measured("CSV snapshot serialization and disk write", progress, || write_delimited(&dataset, &path, b','))?;
+    Ok(TabularSnapshot { tabular_id: id.clone(), id, bytes: fs::metadata(&path).map_err(|e| e.to_string())?.len(), path: path.to_string_lossy().into_owned(), columns: dataset.columns, row_count: dataset.rows.len(), source: dataset.source, sheet: dataset.sheet, warnings: dataset.warnings, native:false })
 }
-fn read_snapshot(directory: &Path, id: &str) -> Result<Dataset, String> {
+pub(crate) fn read_snapshot(directory: &Path, id: &str) -> Result<Dataset, String> {
     uuid::Uuid::parse_str(id).map_err(|_| "Invalid dataset reference")?;
     let bytes = fs::read(directory.join(format!("{id}.tabular.json"))).map_err(|e| e.to_string())?;
     serde_json::from_slice(&bytes).map_err(|e| e.to_string())
@@ -161,9 +179,12 @@ pub async fn preview_tabular_import(path: String, sheet: Option<String>, first_r
     }).await.map_err(|e| e.to_string())?
 }
 #[tauri::command]
-pub async fn import_tabular_file(store: tauri::State<'_, SnapshotStore>, path: String, sheet: Option<String>, first_row_header: bool) -> Result<TabularSnapshot, String> {
+pub async fn import_tabular_file(store: tauri::State<'_, SnapshotStore>, path: String, sheet: Option<String>, first_row_header: bool, progress: Channel<ImportStage>) -> Result<TabularSnapshot, String> {
     let directory = store.directory.clone();
-    tauri::async_runtime::spawn_blocking(move || snapshot(&directory, read_file(&path, sheet, first_row_header, None)?.0)).await.map_err(|e| e.to_string())?
+    tauri::async_runtime::spawn_blocking(move || {
+        let dataset = measured("File read, parsing and normalization", Some(&progress), || read_file(&path, sheet, first_row_header, None).map(|result| result.0))?;
+        snapshot_with_progress(&directory, dataset, Some(&progress))
+    }).await.map_err(|e| e.to_string())?
 }
 #[tauri::command]
 pub async fn read_tabular_dataset(store: tauri::State<'_, SnapshotStore>, id: String) -> Result<Dataset, String> {

@@ -5,6 +5,7 @@
     return;
   }
   const imports = new Map();
+  const nativeDatasets = new Map();
   const invoke = (command, args) => global.__TAURI__.core.invoke(command, args);
   const filename = path => String(path).split(/[\\/]/).pop();
   const ext = path => filename(path).split('.').pop().toLowerCase();
@@ -52,7 +53,7 @@
     t.append(body); box.append(t);
     modal.querySelector('#tabular-note').textContent = preview.warnings.join(' ');
   }
-  async function review(path, label) {
+  async function review(path, label, trace, editor = false) {
     const {d, promise} = start(); const accept = d.querySelector('#tabular-accept');
     d.querySelector('#tabular-title').textContent = 'Import dataset';
     d.querySelector('#tabular-description').textContent = label || filename(path);
@@ -62,6 +63,7 @@
     async function refresh() {
       const current = ++sequence; accept.disabled = true; loaded = null; d.querySelector('#tabular-error').textContent = '';
       try {
+        await trace?.stage('Import: native file preview');
         const preview = await invoke('preview_tabular_import', {path, sheet:sheet.value || null, firstRowHeader:header.checked});
         if (current !== sequence || !pending) return;
         if (!preview?.columns) throw new Error('The file preview could not be read.');
@@ -72,19 +74,31 @@
     }
     sheet.onchange = refresh; header.onchange = refresh;
     accept.textContent = 'Import dataset'; accept.onclick = () => { if (loaded) finish(loaded); };
-    d.showModal(); d.querySelector('#tabular-cancel').focus(); refresh();
+    d.showModal(); trace?.attach(d); d.querySelector('#tabular-cancel').focus(); refresh();
     const options = await promise; ++sequence;
+    trace?.detach();
     if (!options) throw cancelled();
-    const result = await invoke('import_tabular_file', {path, ...options});
+    await trace?.stage('Import: native parsing and snapshot creation');
+    let progress = null;
+    if (global.__TAURI__.core.Channel) {
+      progress = new global.__TAURI__.core.Channel();
+      progress.onmessage = message => {
+        if (message.milliseconds == null) trace?.stage('Native: ' + message.stage);
+        else trace?.note('Native measured: ' + message.stage + ' — ' + message.milliseconds + ' ms');
+      };
+    }
+    const result = await invoke(editor ? 'import_editor_file' : 'import_tabular_file', {path, ...options, progress});
     if (!result?.path || !result?.tabularId) throw new Error('The imported dataset could not be created.');
-    result.source = label || filename(path); imports.set(result.path, result);
+    result.source = label || filename(path);
+    if (result.native) nativeDatasets.set(result.tabularId,result);
+    else imports.set(result.path, result);
     return result;
   }
   async function prepare(path, options = {}) {
-    if (imports.has(path)) return imports.get(path);
+    if (imports.has(path) && !options.editor) return imports.get(path);
     if (ext(path) === 'csv' && !options.review) return {path, source:path};
     if (!['csv','tsv','xlsx'].includes(ext(path))) throw new Error('Use CSV, TSV, or XLSX.');
-    return review(path, options.label);
+    return review(path, options.label, options.trace, options.editor);
   }
   async function prepareFile(file) {
     if (!['tsv','xlsx'].includes(ext(file.name))) return file;
@@ -95,7 +109,40 @@
     normalized.tabularId = result.tabularId; normalized.sourceName = file.name;
     return normalized;
   }
-  async function data(result) { return result?.tabularId ? invoke('read_tabular_dataset',{id:result.tabularId}) : null; }
+  async function data(result) {
+    if (!result?.tabularId) return null;
+    const metadata = nativeDatasets.get(result.tabularId);
+    if (!metadata) return invoke('read_tabular_dataset',{id:result.tabularId});
+    // Compatibility for analysis tools: bounded IPC, rather than one massive response.
+    const rows = [];
+    const pageSize=Math.max(1,Math.min(2048,Math.floor(32768/metadata.columns.length)));
+    for (let offset=0;offset<metadata.rowCount;offset+=pageSize) {
+      const batch = await invoke('read_editor_page',{id:result.tabularId,offset,limit:pageSize});
+      if (!batch.rows.length) throw new Error('Native dataset page was empty before the end');
+      for (const row of batch.rows) rows.push(row);
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
+    return {...metadata,rows};
+  }
+  async function insertNativeArrow(conn, arrow, id, name, report) {
+    const metadata=nativeDatasets.get(id);
+    if (!metadata) throw new Error('Native dataset metadata is unavailable');
+    if (new Set(metadata.columns).size!==metadata.columns.length) throw new Error('The dataset contains duplicate column names. Rename them before querying.');
+    const kinds=await invoke('editor_column_kinds',{id});
+    const pageSize=Math.max(1,Math.min(2048,Math.floor(32768/metadata.columns.length)));
+    for (let offset=0;offset<Math.max(1,metadata.rowCount);offset+=pageSize) {
+      const batch=await invoke('read_editor_page',{id,offset,limit:pageSize});
+      const vectors=Object.create(null);
+      metadata.columns.forEach((column,index)=>{
+        const numeric=kinds[index]==='number', boolean=kinds[index]==='boolean';
+        const values=batch.rows.map(row=>row[index].kind==='null'?null:numeric||boolean?row[index].value:String(row[index].value));
+        vectors[column]=arrow.vectorFromArray(values,numeric?new arrow.Float64():boolean?new arrow.Bool():new arrow.Utf8());
+      });
+      await conn.insertArrowTable(new arrow.Table(vectors).select(metadata.columns),{name,create:offset===0});
+      report?.(Math.min(offset+batch.rows.length,metadata.rowCount),metadata.rowCount);
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
   async function exportResult(output, name = 'dataset.csv') {
     const {d, promise} = start();
     d.querySelector('#tabular-title').textContent = 'Export data';
@@ -106,7 +153,8 @@
     format.onchange = note; note(); const accept = d.querySelector('#tabular-accept'); accept.textContent = 'Choose save location'; accept.disabled = false; accept.onclick = () => finish(format.value);
     d.showModal(); format.focus(); const selected = await promise;
     if (!selected) return null;
+    if (output.nativeId) return invoke('export_editor_dataset',{id:output.nativeId,format:selected,defaultName:name});
     return invoke('export_tabular_result',{dataset:output.dataset || null, text:output.dataset ? null : output.text ?? null, sourcePath:output.dataset ? null : output.sourcePath ?? null, format:selected, defaultName:name});
   }
-  global.TangentTabular = {prepare, prepareFile, data, fromRows, cell, exportResult, metadata:path => imports.get(path)};
+  global.TangentTabular = {prepare, prepareFile, data, fromRows, cell, exportResult, insertNativeArrow, nativeMetadata:id=>nativeDatasets.get(id), registerNative:metadata=>nativeDatasets.set(metadata.tabularId,metadata), metadata:path => imports.get(path)};
 })(window);

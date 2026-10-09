@@ -48,11 +48,28 @@
     }
   }
   async function nativeFile(path) {
+    const trace=window.parent.TangentTransferDiagnostics?.active;
     const original = path;
-    if (/\.(tsv|xlsx)$/i.test(path)) path = (await window.TangentTabular.prepare(path)).path;
+    let tabularId = (window._launchpadImporting ? window._tabularSnapshot?.tabularId : null) || window.TangentTabular?.metadata(path)?.tabularId;
+    if (!tabularId && /\.(tsv|xlsx)$/i.test(path)) {
+      const prepared = await window.TangentTabular.prepare(path);
+      path = prepared.path;
+      tabularId = prepared.tabularId;
+    }
+    // Both consumers (Insights and SQL) read typed datasets when a handle is
+    // present. A metadata envelope avoids serializing the same CSV as a huge
+    // JSON byte array, Uint8Array, and Blob before that typed read.
+    if (tabularId) {
+      await trace?.stage('Destination: use existing typed dataset handle');
+      const file = new File([], routing.filename(original).replace(/\.(tsv|xlsx)$/i, '.csv'));
+      file.tabularId = tabularId;
+      file.sourceName = routing.filename(original);
+      return file;
+    }
+    await trace?.stage('Destination: read file bytes across IPC');
     const bytes = await window.__TAURI__.core.invoke("read_launchpad_file", { path });
+    await trace?.stage('Destination: construct browser file');
     const file = new File([new Uint8Array(bytes)], routing.filename(original).replace(/\.(tsv|xlsx)$/i, ".csv"));
-    file.tabularId = (window._launchpadImporting ? window._tabularSnapshot?.tabularId : null) || window.TangentTabular?.metadata(path)?.tabularId;
     return file;
   }
   window.TangentLaunchpad = { nativeFile, showError };

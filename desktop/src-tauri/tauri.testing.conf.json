@@ -1,0 +1,19 @@
+{
+  "productName": "Tangent Testing",
+  "version": "1.0.0-beta.1",
+  "identifier": "com.tangent.desktop.testing",
+  "app": {
+    "windows": [{
+      "title": "Tangent Testing — Internal Beta",
+      "width": 1200,
+      "height": 800,
+      "center": true,
+      "decorations": false,
+      "url": "launchpad.html"
+    }]
+  },
+  "bundle": {
+    "targets": ["nsis"],
+    "windows": { "nsis": { "installMode": "currentUser" } }
+  }
+}

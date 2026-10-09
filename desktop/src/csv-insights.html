@@ -1365,12 +1365,15 @@
   var _lastModalArgs = null;
 
   function openFullChartModal(header, stat, color) {
+    document.getElementById('fullChartModalPoPWrap').style.display='none';
+    modalWrap.style.display='block';
+    document.getElementById('fullChartModalStats').style.display='block';
     modalEl.style.display = 'flex'; 
     _lastModalArgs = [header, stat, color];
 
     var labels = stat.fullLabels || stat.labels;
     var dist = stat.fullDist || stat.dist;
-    var totalCount = labels.length;
+    var totalCount = stat.fullCount || labels.length;
     var truncated = totalCount > MAX_BARS;
     if (truncated) { labels = labels.slice(0, MAX_BARS); dist = dist.slice(0, MAX_BARS); }
 
@@ -1473,6 +1476,29 @@
   }
 
   var rawData = [], currentHeaders = [], currentStats = null, currentRowCount = 0, originalData = null;
+  var nativeInsights = null, gridSequence = 0, chartSequence = 0;
+  var nativeGridWork = Promise.resolve(), nativeFilterWork = Promise.resolve();
+  function reportInsights(error) {
+    if(error.name==='AbortError')return;
+    window.TangentLoader?.hide();
+    window.parent.TangentShell?.reportToolError(window.frameElement?.dataset.workspaceId,error);
+    console.error(error);
+  }
+  async function showNativeProfile(profile, reset) {
+    currentHeaders=profile.headers;currentStats=profile.stats;currentRowCount=profile.rowCount;
+    rawData=[];originalData=null;currentFilterFn=null;rawGridCurrentPage=0;
+    document.getElementById('statRows').textContent=currentRowCount.toLocaleString();
+    document.getElementById('statCols').textContent=currentHeaders.length.toLocaleString();
+    if (reset) populateDropdowns();
+    document.getElementById('emptyState').style.display='none';
+    document.getElementById('btn-close-file').style.display='flex';
+    document.getElementById('workspace').style.display='block';
+    window.TangentToolWorkspace?.setState({hasData:true});
+    renderAutoProfilerGrid();
+    await populateRawGrid(null,0);
+    if(document.getElementById('tab-manual').classList.contains('active'))await renderManualChart();
+    window.TangentLoader?.hide();
+  }
   var chartRegistry = []; 
   var manualChartMeta = null; 
 
@@ -1630,8 +1656,10 @@
       return { groups: groups, order: order, skipped: skipped, seriesNames: Array.from(seriesNames) };
     }
 
-  function renderManualChart() {
-    if (!rawData.length) {
+  async function renderManualChart() {
+    if(nativeInsights && !document.getElementById('tab-manual').classList.contains('active'))return;
+    const sequence=++chartSequence;
+    if (!(nativeInsights ? currentRowCount : rawData.length)) {
           var wrapper = document.getElementById('chartScrollWrapper');
           if (wrapper) {
               wrapper.innerHTML = '<canvas id="manualChartCanvas"></canvas>';
@@ -1657,13 +1685,20 @@
        document.getElementById('selChartType').value = 'bar';
     }
 
-    var result = aggregate(xCol, yCol, groupByCol);
+    var result;
+    if (nativeInsights) {
+      try {
+        result=await nativeInsights.aggregate({x:xCol,y:yCol,group:groupByCol,agg,dateBin:currentStats[xCol]?.type==='date' ? document.getElementById('selDateBin').value : 'none'});
+        if(sequence!==chartSequence)return;
+      } catch(error) {reportInsights(error);return;}
+    } else result = aggregate(xCol, yCol, groupByCol);
     var groups = result.groups;
     var labels = result.order.slice();
     var sNames = groupByCol ? result.seriesNames.sort() : ['Total'];
 
     labels.forEach(function (l) {
       sNames.forEach(function(s) {
+        if(nativeInsights) {groups[l][s]={__value:groups[l][s] ?? 0};return;}
         var g = groups[l][s] || { sum: 0, validCount: 0, rowCount: 0, min: null, max: null, distinct: new Set(), vals: [] };
         var v = 0;
         if (agg === 'sum') v = g.sum;
@@ -1684,7 +1719,7 @@
       });
     });
 
-    var truncatedGroups = false;
+    var truncatedGroups = Boolean(result.totalGroups > 50);
     if (labels.length > 50) {
       labels.sort(function (a, b) { 
           var sumA = 0, sumB = 0;
@@ -1705,7 +1740,7 @@
 
     var notes = [];
     if (result.skipped > 0 && agg !== 'count') notes.push(result.skipped.toLocaleString() + ' row(s) skipped: non-numeric value in "' + yCol + '"');
-    if (truncatedGroups) notes.push('Showing the top 50 groups by magnitude (out of ' + result.order.length.toLocaleString() + ')');
+    if (truncatedGroups) notes.push('Showing the top 50 groups by magnitude (out of ' + (result.totalGroups || result.order.length).toLocaleString() + ')');
     document.getElementById('chartNote').textContent = notes.join(' · ');
     
     var legendTxt = agg.toUpperCase() + ' of ' + yCol + ' by ' + xCol;
@@ -1827,7 +1862,11 @@
     var rawGridPageSize = 100;
     var currentFilterFn = null;
 
-    function populateRawGrid(filterFn, page) {
+    function populateRawGrid(filterFn, page, nativeFilter) {
+      if(nativeInsights) {
+        nativeGridWork=nativeGridWork.then(()=>populateNativeGrid(nativeFilter===undefined ? filterFn : nativeFilter,page)).catch(reportInsights);
+        return nativeGridWork;
+      }
       if (filterFn !== undefined && filterFn !== currentFilterFn) {
          currentFilterFn = filterFn;
          rawGridCurrentPage = 0; // reset on new filter
@@ -1859,6 +1898,24 @@
       if (btnPrev) btnPrev.disabled = (rawGridCurrentPage === 0);
       if (btnNext) btnNext.disabled = (rawGridCurrentPage >= totalPages - 1);
     }
+    async function populateNativeGrid(filter, page) {
+      const sequence=++gridSequence;
+      const dataset=nativeInsights;
+      if(filter!==undefined && filter!==currentFilterFn) {await dataset.drill(filter);currentFilterFn=filter;rawGridCurrentPage=0;}
+      if(page!==undefined)rawGridCurrentPage=page;
+      const limit=Math.max(1,Math.min(rawGridPageSize,Math.floor(32768/currentHeaders.length)));
+      const result=await dataset.page(rawGridCurrentPage*limit,limit);
+      if(sequence!==gridSequence||dataset!==nativeInsights)return;
+      const totalPages=Math.ceil(result.rowCount/limit);
+      const start=result.offset, end=start+result.rows.length;
+      document.getElementById('rawThead').replaceChildren();
+      for(const name of currentHeaders){const th=document.createElement('th');th.textContent=name;document.getElementById('rawThead').append(th);}
+      const body=document.getElementById('rawTbody');body.replaceChildren();
+      for(const row of result.rows){const tr=document.createElement('tr');for(const cell of row){const td=document.createElement('td');td.textContent=cell.kind==='null'?'':String(cell.value);tr.append(td);}body.append(tr);}
+      document.getElementById('rawRowInfo').textContent='Showing rows '+(result.rowCount?start+1:0)+' - '+end+' of '+result.rowCount.toLocaleString();
+      document.getElementById('btnPrevPage').disabled=rawGridCurrentPage===0;
+      document.getElementById('btnNextPage').disabled=rawGridCurrentPage>=totalPages-1;
+    }
     
     // Attach pagination listeners if not already attached
     if (!window.rawPaginationAttached) {
@@ -1885,7 +1942,7 @@
       var manualControls = document.getElementById('manualControls');
       if (manualControls) manualControls.style.display = (tabId === 'tab-manual') ? 'flex' : 'none';
 
-      if (tabId === 'tab-manual' && manualChartMeta) renderManualChart();
+      if (tabId === 'tab-manual' && (nativeInsights || manualChartMeta)) renderManualChart();
       if (tabId === 'tab-auto') chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
     });
   });
@@ -1898,7 +1955,18 @@
 
 
 
-  var nativeBtn = document.getElementById('btn-load'); if(nativeBtn) nativeBtn.addEventListener('click', function() { document.getElementById('fileInput').click(); });
+  var nativeBtn = document.getElementById('btn-load'); if(nativeBtn) nativeBtn.addEventListener('click', async function() {
+    let trace;
+    try {
+      const path=await window.__TAURI__.core.invoke('pick_csv_file');if(!path)return;
+      trace=window.parent.TangentTransferDiagnostics?.begin('File import','CSV Insights',window.parent.document.body);
+      const metadata=await window.TangentTabular.prepare(path,{review:true,editor:true,trace});
+      const file=new File([],metadata.source.replace(/\.(tsv|xlsx)$/i,'.csv'));file.tabularId=metadata.tabularId;file.sourceName=metadata.source;
+      try {await handleFile(file);}finally{await window.__TAURI__.core.invoke('release_editor_dataset',{id:metadata.tabularId});}
+      trace?.finish('Import complete');
+    }
+    catch(error){trace?.finish(error.name==='AbortError'?'Import cancelled':'Failed',error.name==='AbortError'?null:error);if(error.name!=='AbortError'&&String(error)!=='No file selected')reportInsights(error);}
+  });
   dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
   dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
   dropzone.addEventListener('drop', function (e) {
@@ -1908,6 +1976,8 @@
   fileInput.addEventListener('change', function (e) { if (e.target.files.length) importSelectedFile(e.target.files[0]); });
 
   document.getElementById('btn-close-file').addEventListener('click', function () {
+    ++gridSequence;++chartSequence;
+    const previous=nativeInsights;nativeInsights=null;previous?.release().catch(reportInsights);
     rawData = []; currentHeaders = []; currentStats = null; manualChartMeta = null;
             window.TangentToolWorkspace?.setState({hasData:false,dirty:false});
     fileInput.value = '';
@@ -1926,8 +1996,26 @@
   }
 
   async function handleFile(file) {
+    const trace=window.parent.TangentTransferDiagnostics?.active;
+    await trace?.stage('CSV Insights: prepare input');
     file = await window.TangentTabular.prepareFile(file);
+    if(file.tabularId) {
+      window.TangentLoader?.show('Profiling dataset locally...');
+      await trace?.stage('CSV Insights: native profiling');
+      const next=await window.InsightsDataset.open(file), previous=nativeInsights;
+      try {await next.page(0,Math.max(1,Math.min(100,Math.floor(32768/next.metadata.columns.length))));}
+      catch(error){await next.release();throw error;}
+      nativeInsights=next;
+      await trace?.stage('CSV Insights: fetch grid page and chart summaries');
+      try {await showNativeProfile(next.profile,true);await previous?.release();}
+      catch(error){nativeInsights=previous;await next.release();throw error;}
+      if(!window._launchpadImporting)window.parent.TangentShell?.registerSource(window.frameElement?.dataset.workspaceId,[file.sourceName||file.name]);
+      return;
+    }
+    if(nativeInsights){await nativeInsights.release();nativeInsights=null;}
+    await trace?.stage('CSV Insights: read complete typed input');
     const typedInput = await window.TangentTabular.data({tabularId:file.tabularId});
+    await trace?.stage('CSV Insights: read browser file text');
     return new Promise(function(resolve, reject) {
     if (file.name.split('.').pop().toLowerCase() !== 'csv') { reject(new Error('Only CSV files are supported.')); return; }
     if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Profiling Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Analyzing distributions via Web Worker</span>'; window.TangentLoader.show(''); }
@@ -1965,7 +2053,9 @@
         }
       };
       if (typedInput) {
+        trace?.stage('CSV Insights: build worker row objects');
         const records = typedInput.rows.map(row=>Object.fromEntries(typedInput.columns.map((col,i)=>[col,row[i].kind === 'null' ? null : row[i].value])));
+        trace?.stage('CSV Insights: clone rows to worker and profile');
         worker.postMessage({headers:typedInput.columns,data:records});
       } else worker.postMessage({ text: e.target.result });
     };
@@ -2028,7 +2118,7 @@
                      }
                   }
                   return strVal === clickedLabel;
-              });
+              }, undefined, {column:xCol,value:clickedLabel,dateBin:isDate ? binMode : 'none'});
               
               // Switch tab
               document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
@@ -2050,7 +2140,7 @@
               filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + xCol + ' = ' + clickedLabel + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
               document.getElementById('btnClearFilter').addEventListener('click', function() {
                   filterMsg.remove();
-                  populateRawGrid();
+                  populateRawGrid(null);
               });
           }
       });
@@ -2104,7 +2194,7 @@
                       // Wait! The user's screenshot was "Industry" which is Categorical! So exact match works.
                   }
                   return strVal === clickedLabel;
-              });
+              }, undefined, {column:header,value:clickedLabel,dateBin:isDate ? 'month' : 'none'});
               
               // Close modal
               document.getElementById('fullChartModal').style.display = 'none';
@@ -2129,7 +2219,7 @@
               filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + header + ' = ' + clickedLabel + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
               document.getElementById('btnClearFilter').addEventListener('click', function() {
                   filterMsg.remove();
-                  populateRawGrid();
+                  populateRawGrid(null);
               });
           }
       });
@@ -2179,10 +2269,15 @@
             var prevFile = await window.__TAURI__.core.invoke('pick_csv_file');
             if(!prevFile) return;
             if (window.TangentLoader) window.TangentLoader.show('Running Period-over-Period Diff...');
+            var numSums = {}, numCounts = {};
+            if(nativeInsights) {
+              const metadata=await window.TangentTabular.prepare(prevFile,{review:true,editor:true});
+              try {const comparison=await window.__TAURI__.core.invoke('compare_insights',{id:metadata.tabularId,columns:currentHeaders.filter(h=>currentStats[h].type==='numeric')});numSums=comparison.sums;numCounts=comparison.counts;}
+              finally{await window.__TAURI__.core.invoke('release_editor_dataset',{id:metadata.tabularId});}
+            } else {
             var fileData = await window.__TAURI__.core.invoke('read_file_to_string_native', { path: prevFile });
             var lines = fileData.split('\n');
             var headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-            var numSums = {}, numCounts = {};
             for(var i=1; i<lines.length; i++) {
                 var line = lines[i].trim(); if(!line) continue;
                 var parts = line.split(',');
@@ -2193,6 +2288,7 @@
                         if (!isNaN(val)) { if (!numSums[h]) { numSums[h] = 0; numCounts[h] = 0; } numSums[h] += val; numCounts[h]++; }
                     }
                 }
+            }
             }
             var diffHtml = "<div style='padding: 24px;'><h2>Period-over-Period Diff</h2><p style='color: var(--text-muted); margin-bottom: 20px;'>Comparing current dataset vs: <b>" + prevFile.split('\\').pop() + "</b></p><table style='width:100%; border-collapse: collapse; font-size: 0.9rem;'>";
             diffHtml += "<tr style='border-bottom: 1px solid var(--border-color); text-align: left;'><th>Metric (Column)</th><th>Previous Mean</th><th>Current Mean</th><th>Delta</th></tr>";
@@ -2212,7 +2308,10 @@
             if(!hasDiffs) { alert("No common numeric columns found to diff."); return; }
             var modal = document.getElementById('fullChartModal');
             document.getElementById('fullChartModalTitle').innerText = "Dataset Comparison";
-            document.getElementById('fullChartModalCanvasWrap').innerHTML = diffHtml;
+            _lastModalArgs=null;
+            document.getElementById('fullChartModalCanvasWrap').style.display='none';
+            document.getElementById('fullChartModalStats').style.display='none';
+            const comparisonWrap=document.getElementById('fullChartModalPoPWrap');comparisonWrap.innerHTML=diffHtml;comparisonWrap.style.display='block';
             document.getElementById('fullChartModalNote').textContent = "Note: Only common numeric columns are compared.";
             modal.style.display = 'flex';
         } catch(e) { if (window.TangentLoader) window.TangentLoader.hide(); if(e !== "Cancelled") alert("Error comparing data: " + e); }
@@ -2220,6 +2319,22 @@
 
     document.getElementById('btnApplyGlobalFilter').addEventListener('click', function() {
         window.lastAppliedFilterQuery = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
+      if(nativeInsights) {
+        const dataset=nativeInsights, query=window.lastAppliedFilterQuery;
+        window.TangentLoader?.show('Slicing dataset locally...');
+        nativeFilterWork=nativeFilterWork.then(async()=>{
+          if(dataset!==nativeInsights)return;
+          await nativeGridWork;
+          const profile=await dataset.slice(query);
+          if(dataset===nativeInsights){
+            document.getElementById('globalFilterBanner')?.remove();
+            if(query){const banner=document.createElement('div');banner.id='globalFilterBanner';banner.className='alert alert-info';banner.style.cssText='padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center';
+              const label=document.createElement('span');label.textContent='Showing data sliced by search: "'+query+'"';const clear=document.createElement('button');clear.className='btn';clear.textContent='Clear filter';clear.onclick=()=>{document.getElementById('txtGlobalFilter').value='';document.getElementById('btnApplyGlobalFilter').click();};banner.append(label,clear);document.getElementById('workspace').prepend(banner);}
+            document.getElementById('filterMsg')?.remove();await showNativeProfile(profile,false);
+          }
+        }).catch(reportInsights);
+        return;
+      }
       if (!originalData) return;
       var query = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
       
@@ -2276,11 +2391,13 @@
 
 
 window.tangentCurrentResult = async function() {
+  if(nativeInsights){await nativeFilterWork;await nativeGridWork;return nativeInsights.result();}
   if (!currentHeaders.length) throw new Error("Load and profile a CSV first.");
   const data = currentFilterFn ? rawData.filter(currentFilterFn) : rawData;
   return { dataset:window.TangentTabular?.fromRows(currentHeaders, data.map(row=>currentHeaders.map(col=>row[col]))), text: window.TangentToolWorkspace.csv([currentHeaders, ...data.map(row => currentHeaders.map(col => row[col]))]), ext: 'csv', label: 'Current filtered dataset' };
 };
 window.tangentImportProfile = handleFile;
+window.releaseWorkspace = async function(){++gridSequence;++chartSequence;await nativeFilterWork;await nativeGridWork;const dataset=nativeInsights;nativeInsights=null;await dataset?.release();};
 })();
 </script>
 </div>
@@ -2325,12 +2442,24 @@ window.tangentImportProfile = handleFile;
 </div></div>
 <script src="launchpad-routing.js"></script>
 <script src="launchpad-handoff.js"></script>
+<script src="native-insights.js"></script>
 <script>
 window.launchpadImport = async function(paths) {
     window._launchpadImporting = true;
+    const existingTrace=window.parent.TangentTransferDiagnostics?.active;
+    const trace=existingTrace || window.parent.TangentTransferDiagnostics?.begin('File import','CSV Insights',window.parent.document.body);
     try {
-    await window.tangentImportProfile(await window.TangentLaunchpad.nativeFile(paths[0]));
-    } finally { window._launchpadImporting = false; }
+    let file;
+    if(window._tabularSnapshot?.tabularId)file=await window.TangentLaunchpad.nativeFile(paths[0]);
+    else {
+      const metadata=await window.TangentTabular.prepare(paths[0],{review:true,editor:true,trace});
+      file=new File([],metadata.source.replace(/\.(tsv|xlsx)$/i,'.csv'));file.tabularId=metadata.tabularId;file.sourceName=metadata.source;
+    }
+    try {await window.tangentImportProfile(file);}
+    finally {if(!window._tabularSnapshot?.tabularId)await window.__TAURI__.core.invoke('release_editor_dataset',{id:file.tabularId});}
+    if(!existingTrace)trace?.finish('Import complete');
+    } catch(error){if(!existingTrace)trace?.finish(error.name==='AbortError'?'Import cancelled':'Failed',error.name==='AbortError'?null:error);throw error;}
+    finally { window._launchpadImporting = false; }
 };
 </script>
 </body></html>

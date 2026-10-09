@@ -10,6 +10,8 @@ mod finance;
 mod extractor;
 mod snapshots;
 mod tabular;
+mod editor;
+mod insights;
 use regex::Regex;
 use futures::TryStreamExt;
 
@@ -1329,6 +1331,7 @@ async fn execute_db_query(uri: String, query: String) -> Result<String, String> 
 tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(snapshots::SnapshotStore::default())
+        .manage(editor::EditorStore::default())
         .manage(SchedulerState { sched: Arc::new(Mutex::new(None)) })
         .invoke_handler(tauri::generate_handler![
             snapshots::create_dataset_snapshot,
@@ -1338,6 +1341,18 @@ tauri::Builder::default()
             tabular::read_tabular_dataset,
             tabular::create_tabular_snapshot,
             tabular::export_tabular_result,
+            editor::import_editor_file,
+            editor::open_editor_dataset,
+            editor::read_editor_page,
+            editor::edit_editor_cell,
+            editor::editor_column_kinds,
+            editor::release_editor_dataset,
+            editor::snapshot_editor_dataset,
+            editor::export_editor_dataset,
+            insights::profile_insights,
+            insights::filter_insights,
+            insights::aggregate_insights,
+            insights::compare_insights,
 
             pick_launchpad_files,
             read_launchpad_file,

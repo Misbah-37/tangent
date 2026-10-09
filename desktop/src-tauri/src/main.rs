@@ -14,6 +14,8 @@ mod tabular;
 mod editor;
 mod sql_results;
 mod sql_arrow;
+#[cfg(test)]
+mod hygiene_tests;
 mod insights;
 use regex::Regex;
 use futures::TryStreamExt;
@@ -201,6 +203,7 @@ async fn save_export_as(temp_path: String) -> Result<String, String> {
 // NATIVE DATA PROFILER & ENGINE
 #[tauri::command]
 async fn process_massive_csv(file_path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
     let file_path = std::path::PathBuf::from(file_path);
     
     let file_metadata = std::fs::metadata(&file_path).map_err(|e| e.to_string())?;
@@ -258,6 +261,7 @@ async fn process_massive_csv(file_path: String) -> Result<String, String> {
     });
 
     Ok(response.to_string())
+    }).await.map_err(|e|e.to_string())?
 }
 
 use std::collections::HashSet;
@@ -337,14 +341,23 @@ fn clean_numeric(val: &str) -> String {
         str_val = str_val.replace(w, *n);
     }
     
-    if str_val.ends_with('k') {
-        str_val = format!("{}000", &str_val[0..str_val.len()-1]);
-    } else if str_val.ends_with('m') {
-        str_val = format!("{}000000", &str_val[0..str_val.len()-1]);
-    }
+    let shift=if str_val.ends_with('k'){3}else if str_val.ends_with('m'){6}else{0};
+    if shift>0 {str_val.pop();}
     
     let clean: String = str_val.chars().filter(|c| c.is_ascii_digit() || *c == '.' || *c == '-').collect();
-    if clean.is_empty() || clean == "-" || clean == "." { val.to_string() } else { clean }
+    if clean.is_empty() || clean == "-" || clean == "." {return val.to_string();}
+    if shift==0{return clean;}
+    // Shift decimal digits directly, preserving integers beyond f64 precision.
+    let negative=clean.starts_with('-');let body=clean.trim_start_matches('-');
+    let pieces:Vec<_>=body.split('.').collect();
+    if pieces.len()>2||pieces.iter().any(|s|!s.chars().all(|c|c.is_ascii_digit())){return val.to_string();}
+    let fractional=pieces.get(1).copied().unwrap_or("");let mut digits=format!("{}{}",pieces[0],fractional);
+    if shift>=fractional.len(){digits.push_str(&"0".repeat(shift-fractional.len()));}
+    else{digits.insert(digits.len()-(fractional.len()-shift),'.');}
+    let mut normalized=digits.trim_start_matches('0').to_string();
+    if normalized.is_empty(){normalized="0".into();}else if normalized.starts_with('.') {normalized.insert(0,'0');}
+    if normalized.contains('.') {normalized=normalized.trim_end_matches('0').trim_end_matches('.').into();}
+    if negative&&normalized!="0"{normalized.insert(0,'-');}normalized
 }
 
 #[derive(Deserialize, Debug)]
@@ -434,7 +447,7 @@ let mut reader = csv::ReaderBuilder::new().has_headers(true).from_path(file_path
             if !col_arrays[*i].is_empty() {
                 col_arrays[*i].sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
                 let mid = col_arrays[*i].len() / 2;
-                final_imputes[*i] = col_arrays[*i][mid].to_string();
+                final_imputes[*i] = if col_arrays[*i].len()%2==0 { (col_arrays[*i][mid-1]/2.0+col_arrays[*i][mid]/2.0).to_string() }else{col_arrays[*i][mid].to_string()};
             }
         } else if rule.method == "mode" {
             if let Some((most_freq, _)) = col_freqs[*i].iter().max_by_key(|&(_, count)| count) {
@@ -684,7 +697,7 @@ async fn process_db_table(uri: &str, table_name: &str, out_path: &std::path::Pat
             if !col_arrays[*i].is_empty() {
                 col_arrays[*i].sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
                 let mid = col_arrays[*i].len() / 2;
-                final_imputes[*i] = col_arrays[*i][mid].to_string();
+                final_imputes[*i] = if col_arrays[*i].len()%2==0 { (col_arrays[*i][mid-1]/2.0+col_arrays[*i][mid]/2.0).to_string() }else{col_arrays[*i][mid].to_string()};
             }
         } else if rule.method == "mode" {
             if let Some((most_freq, _)) = col_freqs[*i].iter().max_by_key(|&(_, count)| count) {
@@ -876,7 +889,7 @@ async fn execute_recipe(file_path: String, recipe_str: String) -> Result<String,
     if file_path.starts_with("db://") {
         let parts: Vec<&str> = file_path.trim_start_matches("db://").split('|').collect();
         if parts.len() != 2 { return Err("Invalid DB URI format".into()); }
-        let out_path = std::env::temp_dir().join(format!("{}_cleaned_temp.csv", parts[1]));
+        let out_path = std::env::temp_dir().join(format!("{}_{}_cleaned_temp.csv", parts[1],uuid::Uuid::new_v4()));
         let (rows_written, rows_dropped, duplicates_dropped) = process_db_table(parts[0], parts[1], &out_path, &recipe).await?;
         let (mut final_headers, mut final_preview) = (Vec::new(), Vec::new());
         if let Ok((h, p)) = get_preview_from_csv(&out_path) { final_headers = h; final_preview = p; }
@@ -889,11 +902,12 @@ async fn execute_recipe(file_path: String, recipe_str: String) -> Result<String,
         return Ok(response.to_string());
     }
     
+    tauri::async_runtime::spawn_blocking(move || {
     let path = std::path::Path::new(&file_path);
     let stem = path.file_stem().unwrap_or(std::ffi::OsStr::new("data")).to_string_lossy();
     let ext = path.extension().unwrap_or(std::ffi::OsStr::new("csv")).to_string_lossy();
     
-    let out_path = std::env::temp_dir().join(format!("{}_cleaned_temp.{}", stem, ext));
+    let out_path = std::env::temp_dir().join(format!("{}_{}_cleaned_temp.{}", stem,uuid::Uuid::new_v4(),ext));
     
     let (rows_written, rows_dropped, duplicates_dropped) = process_csv_file(path, &out_path, &recipe)?;
     
@@ -907,6 +921,7 @@ async fn execute_recipe(file_path: String, recipe_str: String) -> Result<String,
     });
     
     Ok(response.to_string())
+    }).await.map_err(|e|e.to_string())?
 }
 
 

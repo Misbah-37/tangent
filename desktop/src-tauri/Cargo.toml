@@ -38,3 +38,4 @@ arrow-array = "58.1.0"
 arrow-schema = "58.1.0"
 arrow-ipc = "58.1.0"
 arrow-cast = "58.1.0"
+statrs = { version = "0.19", default-features = false }

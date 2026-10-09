@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="tabular-formats.js"></script>
+    <script src="loading-state.js"></script>
     <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,8 +122,8 @@
 
             <div id="advancedPanel" style="display: none; background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 16px 24px;">
                 <h3 style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 12px;">Advanced Format Builder</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Override the native engine with a custom proprietary log regex.</p>
-                <input type="text" id="txtCustomRegex" placeholder="e.g. ^(?P<ip>[\d\.]+).*?(?P<timestamp>\[.*?\]).*?(?P<url>/\S+).*?(?P<status>\d{3})" style="width: 100%; max-width: 600px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-base); color: var(--text-main); font-family: monospace; font-size: 0.85rem;">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Use five capture groups in order: IP, timestamp, method, path, status. Timestamps use Apache or ISO 8601 format.</p>
+                <input type="text" id="txtCustomRegex" placeholder="Five groups: (IP) (timestamp) (method) (path) (status)" style="width: 100%; max-width: 600px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-base); color: var(--text-main); font-family: monospace; font-size: 0.85rem;">
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
                     <strong>Required Capture Groups:</strong> 1 = IP Address | 2 = Timestamp | 4 = Request Path | 5 = Status Code
                 </div>
@@ -162,10 +163,10 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                         <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
                             <h3 style="margin-top: 0; color: #f97316; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Threat: Brute-Force Attacks</h3>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 12px;">IPs with > 10 failed auths per minute</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 12px;">IPs with at least 10 failed auths per minute</div>
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
                                 <thead style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
-                                    <tr><th style="padding-bottom:8px;">IP Address</th><th style="padding-bottom:8px;">Burst Count</th></tr>
+                                    <tr><th style="padding-bottom:8px;">IP Address</th><th style="padding-bottom:8px;">Failed requests</th></tr>
                                 </thead>
                                 <tbody id="tblBruteForce"></tbody>
                             </table>
@@ -214,6 +215,7 @@
         }
         
         const { invoke } = window.__TAURI__.core;
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         
         async function loadLogFiles(files) {
             try {
@@ -236,6 +238,9 @@
                 document.getElementById('statsArea').style.display = 'flex';
                 
                 document.getElementById('statLines').innerText = window.report.total_lines.toLocaleString();
+                let coverage = document.getElementById('parseCoverage');
+                if(!coverage){coverage=document.createElement('div');coverage.id='parseCoverage';coverage.style.fontSize='0.8rem';document.getElementById('statLines').parentElement.appendChild(coverage);}
+                coverage.textContent = `${(window.report.matched_lines ?? window.report.total_lines).toLocaleString()} parsed / ${(window.report.skipped_lines ?? 0).toLocaleString()} unrecognized`;
                 document.getElementById('statErrors').innerText = window.report.total_errors.toLocaleString();
                 
                 const renderTable = (tbodyId, data) => {
@@ -246,7 +251,7 @@
                         return;
                     }
                     data.forEach(row => {
-                        tbody.innerHTML += `<tr><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${row[0]}</td><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${row[1].toLocaleString()}</td></tr>`;
+                        tbody.innerHTML += `<tr><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${escapeHtml(row[0])}</td><td style="padding: 8px 0; border-bottom: 1px solid var(--border);">${row[1].toLocaleString()}</td></tr>`;
                     });
                 };
                 
@@ -270,10 +275,10 @@
                 
                 if (labels.length === 0) return;
                 
-                const maxVal = Math.max(...traffic, 10);
+                const maxVal = traffic.reduce((max, count) => Math.max(max, count), 10);
                 const w = rect.width;
                 const h = 250;
-                const padX = 40;
+                const padX = 75;
                 const padY = 30;
                 
                 ctx.clearRect(0, 0, w, h);
@@ -293,6 +298,18 @@
                 
                 // Draw Data
                 const drawLine = (data, color, fill = null) => {
+                    if (data.length === 1) {
+                        const x = w / 2;
+                        const y = h - padY - ((data[0] / maxVal) * (h - padY * 2));
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                        ctx.font = '12px -apple-system';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(data[0].toLocaleString(), x + 10, y + 4);
+                        return;
+                    }
                     ctx.beginPath();
                     data.forEach((val, i) => {
                         const x = padX + i * stepX;
@@ -330,9 +347,8 @@
                 ctx.textAlign = 'center';
                 const skip = Math.max(1, Math.ceil(labels.length / 8));
                 for (let i = 0; i < labels.length; i += skip) {
-                    let lbl = labels[i].split(':');
-                    let displayStr = lbl.length > 1 ? lbl[1] + ':00' : lbl[0];
-                    ctx.fillText(displayStr, padX + i * stepX, h - padY + 16);
+                    const displayStr = labels.length === 1 ? labels[i] : labels[i].slice(11);
+                    ctx.fillText(displayStr, labels.length === 1 ? w / 2 : padX + i * stepX, h - padY + 16);
                 }
                 
                 // Legend
@@ -369,15 +385,9 @@
         if (btnExport) {
             btnExport.addEventListener('click', async () => {
                 if (!window.report) return alert("No report generated yet.");
-                let csvStr = "Category,IP_Address,Count_or_Detail\n";
-                window.report.brute_force_ips.forEach(r => csvStr += `"Brute-Force Threat","${r[0]}","${r[1]} bursts"\n`);
-                window.report.scanner_ips.forEach(r => csvStr += `"Scanner Threat","${r[0]}","${r[1]} hits"\n`);
-                window.report.top_ips.forEach(r => csvStr += `"Top IP","${r[0]}","${r[1]} requests"\n`);
-                window.report.top_404s.forEach(r => csvStr += `"Missing Path (404)","${r[0]}","${r[1]} hits"\n`);
-                window.report.top_500s.forEach(r => csvStr += `"Server Error (500)","${r[0]}","${r[1]} errors"\n`);
-                
+                const result = await window.tangentCurrentResult();
                 try {
-                    const saved = await window.TangentTabular.exportResult({text:csvStr,label:'Log security report'}, 'Tangent_Log_Security_Report.csv');
+                    const saved = await window.TangentTabular.exportResult(result, 'Tangent_Log_Security_Report.csv');
             if (!saved) return;
                     alert("Security Report saved successfully!");
                 } catch (e) {
@@ -415,7 +425,7 @@
 window.tangentCurrentResult = async function() {
   if (!window.report) throw new Error("Analyze your logs first.");
   const rows = [['Category','IP_Address','Count_or_Detail']];
-  for (const [key, label, suffix] of [['brute_force_ips','Brute-Force Threat','bursts'],['scanner_ips','Scanner Threat','hits'],['top_ips','Top IP','requests'],['top_404s','Missing Path (404)','hits'],['top_500s','Server Error (500)','errors']]) {
+  for (const [key, label, suffix] of [['brute_force_ips','Brute-Force Threat','failed requests'],['scanner_ips','Scanner Threat','hits'],['top_ips','Top IP','requests'],['top_404s','Missing Path (404)','hits'],['top_500s','Server Error (500)','errors']]) {
     for (const r of window.report[key]) rows.push([label,r[0],r[1] + ' ' + suffix]);
   }
   return { dataset:window.TangentTabular?.fromRows(rows[0],rows.slice(1)), text: window.TangentToolWorkspace.csv(rows), ext: 'csv', label: 'Log analysis summary' };

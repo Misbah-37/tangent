@@ -2,7 +2,7 @@
 use scraper::{Html, Selector};
 use reqwest::Client;
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct ExtractedTable {
     pub index: usize,
     pub headers: Vec<String>,
@@ -27,14 +27,23 @@ pub async fn fetch_live_url(url: String) -> Result<String, String> {
     let response = client.get(&url)
         .send()
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| e.to_string())?
+        .error_for_status().map_err(|e| e.to_string())?;
         
     let text = response.text().await.map_err(|e| e.to_string())?;
     Ok(text)
 }
 
 #[tauri::command]
-pub fn extract_structured(html: String, parent_selector: String, fields: Vec<FieldDef>) -> Result<Vec<Vec<String>>, String> {
+pub async fn extract_structured(html: String, parent_selector: String, fields: Vec<FieldDef>) -> Result<Vec<Vec<String>>, String> {
+    tauri::async_runtime::spawn_blocking(move || extract_structured_sync(html, parent_selector, fields)).await.map_err(|e| e.to_string())?
+}
+fn extract_structured_sync(html: String, parent_selector: String, fields: Vec<FieldDef>) -> Result<Vec<Vec<String>>, String> {
+    if fields.is_empty() { return Err("Add at least one extraction field.".into()); }
+    for field in &fields {
+        if field.extract_type != "text" && field.extract_type != "attribute" { return Err("Unknown extraction type.".into()); }
+        if field.extract_type == "attribute" && field.attribute_name.as_deref().unwrap_or("").trim().is_empty() { return Err("Attribute fields need an attribute name.".into()); }
+    }
     let document = Html::parse_document(&html);
     let parent_sel = Selector::parse(&parent_selector).map_err(|_| format!("Invalid parent CSS selector: {}", parent_selector))?;
     
@@ -65,7 +74,7 @@ pub fn extract_structured(html: String, parent_selector: String, fields: Vec<Fie
                     }
                 } else {
                     let text: Vec<_> = child_node.text().collect();
-                    extracted_val = text.join(" ").split_whitespace().collect::<Vec<_>>().join(" ");
+                    extracted_val = text.join("").split_whitespace().collect::<Vec<_>>().join(" ");
                 }
             }
             row_data.push(extracted_val);
@@ -77,77 +86,47 @@ pub fn extract_structured(html: String, parent_selector: String, fields: Vec<Fie
 }
 
 #[tauri::command]
-pub fn extract_tables(html: String) -> Result<Vec<ExtractedTable>, String> {
+pub async fn extract_tables(html: String) -> Result<Vec<ExtractedTable>, String> {
+    tauri::async_runtime::spawn_blocking(move || extract_tables_sync(html)).await.map_err(|e| e.to_string())?
+}
+fn extract_tables_sync(html: String) -> Result<Vec<ExtractedTable>, String> {
     let document = Html::parse_document(&html);
     let table_sel = Selector::parse("table").unwrap();
     let row_sel = Selector::parse("tr").unwrap();
     let cell_sel = Selector::parse("th, td").unwrap();
-    
     let mut extracted = Vec::new();
-    
-    for (t_idx, table_node) in document.select(&table_sel).enumerate() {
-        let mut grid: Vec<Vec<String>> = Vec::new();
-        
-        for (r_idx, row_node) in table_node.select(&row_sel).enumerate() {
-            // Ensure grid has this row
-            if grid.len() <= r_idx {
-                grid.resize(r_idx + 1, Vec::new());
-            }
-            
-            let mut current_col = 0;
-            
-            for cell_node in row_node.select(&cell_sel) {
-                // Find the next available column in the current row
-                while current_col < grid[r_idx].len() && grid[r_idx][current_col] != "\x00" {
-                    current_col += 1;
-                }
-                
-                let text: Vec<_> = cell_node.text().collect();
-                let clean_text = text.join(" ").split_whitespace().collect::<Vec<_>>().join(" ");
-                
-                let colspan: usize = cell_node.value().attr("colspan").unwrap_or("1").parse().unwrap_or(1);
-                let rowspan: usize = cell_node.value().attr("rowspan").unwrap_or("1").parse().unwrap_or(1);
-                
-                for r in 0..rowspan {
-                    let target_r = r_idx + r;
-                    if grid.len() <= target_r {
-                        grid.resize(target_r + 1, Vec::new());
-                    }
-                    
-                    for c in 0..colspan {
-                        let target_c = current_col + c;
-                        
-                        // Fill with placeholder if needed
-                        if grid[target_r].len() <= target_c {
-                            grid[target_r].resize(target_c + 1, "\x00".to_string());
-                        }
-                        
-                        grid[target_r][target_c] = clean_text.clone();
+    for (index, table) in document.select(&table_sel).enumerate() {
+        let rows:Vec<_> = table.select(&row_sel).filter(|row| row.ancestors().filter_map(scraper::ElementRef::wrap).find(|e|e.value().name()=="table").map(|e|e.id())==Some(table.id())).collect();
+        if rows.is_empty(){continue;}
+        let mut grid = vec![Vec::<Option<String>>::new(); rows.len()];
+        let header = rows[0].select(&cell_sel).filter(|cell|cell.ancestors().filter_map(scraper::ElementRef::wrap).find(|e|e.value().name()=="tr").map(|e|e.id())==Some(rows[0].id())).all(|cell|cell.value().name()=="th");
+        for (r, row) in rows.iter().enumerate() {
+            let mut col=0;
+            for cell in row.select(&cell_sel).filter(|cell|cell.ancestors().filter_map(scraper::ElementRef::wrap).find(|e|e.value().name()=="tr").map(|e|e.id())==Some(row.id())) {
+                let width=cell.value().attr("colspan").and_then(|v|v.parse::<usize>().ok()).unwrap_or(1).max(1);
+                if width>1000{return Err("Table colspan exceeds 1,000 columns.".into());}
+                let span=cell.value().attr("rowspan").and_then(|v|v.parse::<usize>().ok()).unwrap_or(1);
+                let height=if span==0{rows.len()-r}else{span.min(rows.len()-r)};
+                while col<grid[r].len() && grid[r][col].is_some(){col+=1;}
+                if col+width>1000{return Err("Table exceeds 1,000 columns.".into());}
+                let text=cell.text().collect::<String>().split_whitespace().collect::<Vec<_>>().join(" ");
+                for rr in r..r+height {
+                    let length=grid[rr].len().max(col+width);grid[rr].resize(length,None);
+                    for cc in col..col+width {
+                        if grid[rr][cc].is_some(){return Err("Overlapping table spans cannot be flattened reliably.".into());}
+                        grid[rr][cc]=Some(text.clone());
                     }
                 }
-                current_col += colspan;
+                col+=width;
             }
         }
-        
-        // Clean up the \x00 placeholders just in case
-        for row in &mut grid {
-            for cell in row {
-                if cell == "\x00" {
-                    *cell = String::new();
-                }
-            }
-        }
-        
-        if grid.len() > 0 {
-            // Separate header and rows for preview purposes
-            let headers = if grid.len() > 0 { grid[0].clone() } else { Vec::new() };
-            extracted.push(ExtractedTable {
-                index: t_idx,
-                headers,
-                rows: grid,
-            });
-        }
+        let width=grid.iter().map(Vec::len).max().unwrap_or(0);if width==0{continue;}
+        let mut data:Vec<Vec<String>>=grid.into_iter().map(|mut row|{row.resize(width,None);row.into_iter().map(|v|v.unwrap_or_default()).collect()}).collect();
+        if !header{data.insert(0,(1..=width).map(|n|format!("Column {n}")).collect());}
+        extracted.push(ExtractedTable{index,headers:data[0].clone(),rows:data});
     }
-    
     Ok(extracted)
 }
+#[cfg(test)]
+#[path="extractor_tests.rs"]
+mod tests;

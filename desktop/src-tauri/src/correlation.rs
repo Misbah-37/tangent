@@ -1,5 +1,29 @@
 ﻿use serde::{Deserialize, Serialize};
 use std::path::Path;
+#[cfg(test)]
+mod tests {
+ use super::*;
+ fn near(a:f64,b:f64){assert!((a-b).abs()<1e-10,"actual {a}, expected {b}");}
+ #[test] fn ties_use_average_ranks(){assert_eq!(rank(&[1.,1.,3.,4.]),vec![1.5,1.5,3.,4.]);near(compute_spearman(&[1.,1.,3.,4.],&[1.,2.,3.,4.]),0.9486832980505138);}
+ #[test] fn pearson_handles_large_offsets(){near(compute_pearson(&[1e12+1.,1e12+2.,1e12+3.,1e12+4.],&[2.,4.,6.,8.]),1.);}
+ #[test] fn small_sample_significance_uses_student_t(){near(calculate_p_value(1.,1.),0.5);near(calculate_p_value(0.,10.),1.);}
+ #[test] fn constant_and_missing_pairs_are_undefined(){
+  let x=ColType::Numeric(vec![Some(1.),Some(1.),Some(1.)]);let y=ColType::Numeric(vec![Some(1.),Some(2.),Some(3.)]);
+  assert!(compute_pair(&x,&y,"pearson").0.is_nan());assert!(compute_pair(&x,&y,"spearman").0.is_nan());
+ }
+ #[test] fn filtered_million_rows_have_known_correlations(){
+  let dir=std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../testing/artifacts/correlation");std::fs::create_dir_all(&dir).unwrap();let path=dir.join("million.csv");
+  let mut w=csv::Writer::from_path(&path).unwrap();w.write_record(["x","positive","negative","group"]).unwrap();
+  for i in 0..1_000_000_u64{w.write_record([i.to_string(),(i*2).to_string(),(-(i as i64)).to_string(),(i%2).to_string()]).unwrap();}w.flush().unwrap();
+  let m=compute_matrix(CorrelateOptions{file_path:path.to_string_lossy().into(),method:"pearson".into(),cluster:false,filters:Some(vec![FilterRule{column:"group".into(),operator:"==".into(),value:"0".into()}])}).unwrap();
+  near(m.matrix[0][1].r,1.);near(m.matrix[0][2].r,-1.);assert_eq!(m.matrix[0][1].n,500_000);assert_eq!(m.raw_rows.len(),100);assert!(m.matrix[0][1].is_defined);
+ }
+ #[test] fn ragged_rows_preserve_pair_alignment(){
+  let dir=std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../testing/artifacts/correlation");std::fs::create_dir_all(&dir).unwrap();let path=dir.join("ragged.csv");
+  std::fs::write(&path,"x,y\n1,2\n2\n3,6\n4,8\n").unwrap();
+  let m=compute_matrix(CorrelateOptions{file_path:path.to_string_lossy().into(),method:"pearson".into(),cluster:false,filters:None}).unwrap();assert_eq!(m.matrix[0][1].n,3);near(m.matrix[0][1].r,1.);
+ }
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct CorrelationResult {
@@ -11,6 +35,7 @@ pub struct CorrelationResult {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct CellData {
+    pub is_defined: bool,
     pub r: f64,
     pub p_value: f64,
     pub n: usize,
@@ -54,16 +79,18 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
     for f in filter_rules {
         if let Some(idx) = headers.iter().position(|h| h == &f.column) {
             compiled_filters.push((idx, f.operator, f.value));
-        }
+        }else{return Err(format!("Unknown filter column: {}",f.column));}
     }
 
     let mut cols: Vec<Vec<String>> = vec![Vec::new(); headers.len()];
     let mut raw_rows: Vec<Vec<String>> = Vec::new();
     for result in reader.records() {
-        if let Ok(record) = result {
+        let record=result.map_err(|e|e.to_string())?;
+        {
             let mut pass = true;
             for (idx, op, val) in &compiled_filters {
-                if let Some(field) = record.get(*idx) {
+                {
+                    let field=record.get(*idx).unwrap_or("");
                     let field_trim = field.trim();
                     let val_trim = val.trim();
                     
@@ -108,10 +135,8 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
                     }
                     raw_rows.push(row);
                 }
-                for (i, field) in record.iter().enumerate() {
-                    if i < cols.len() {
-                        cols[i].push(field.to_string());
-                    }
+                for (i,col) in cols.iter_mut().enumerate() {
+                    col.push(record.get(i).unwrap_or("").to_string());
                 }
             }
         }
@@ -140,7 +165,7 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
             unique_vals.insert(s.to_string());
             
             // basic date exclusion
-            if (s.contains('-') || s.contains('/')) && s.len() >= 8 { 
+            if ["%Y-%m-%d","%Y/%m/%d","%m/%d/%Y","%d/%m/%Y"].iter().any(|format|chrono::NaiveDate::parse_from_str(s,format).is_ok()) {
                 parsed_num.push(None); 
                 total += 1; 
                 continue; 
@@ -148,11 +173,11 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
             
             let s_clean = s.replace("$", "").replace("%", "").replace(",", "");
             match s_clean.parse::<f64>() {
-                Ok(n) => {
+                Ok(n) if n.is_finite() => {
                     parsed_num.push(Some(n));
                     num_count += 1;
                 }
-                Err(_) => {
+                _ => {
                     parsed_num.push(None);
                 }
             }
@@ -168,14 +193,14 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
         }
     }
     
-    let mut matrix = vec![vec![CellData { r: 1.0, p_value: 0.0, n: 0, has_outlier_warning: false }; final_cols.len()]; final_cols.len()];
+    let mut matrix = vec![vec![CellData { is_defined:false, r: 0.0, p_value: 1.0, n: 0, has_outlier_warning: false }; final_cols.len()]; final_cols.len()];
     
     for i in 0..final_cols.len() {
         for j in 0..final_cols.len() {
-            if i == j { continue; }
                         let (r, n, p, out) = compute_pair(&parsed_data[i], &parsed_data[j], &options.method);
             matrix[i][j] = CellData {
-                r,
+                is_defined:r.is_finite(),
+                r:if r.is_finite(){r}else{0.0},
                 n,
                 p_value: p,
                 has_outlier_warning: out,
@@ -212,7 +237,7 @@ pub fn compute_matrix(options: CorrelateOptions) -> Result<CorrelationResult, St
           }
           
           let mut new_cols = Vec::with_capacity(final_cols.len());
-          let mut new_matrix = vec![vec![CellData { r: 1.0, p_value: 1.0, n: 0, has_outlier_warning: false }; final_cols.len()]; final_cols.len()];
+          let mut new_matrix = vec![vec![CellData { is_defined:false, r: 0.0, p_value: 1.0, n: 0, has_outlier_warning: false }; final_cols.len()]; final_cols.len()];
           
           for i in 0..final_cols.len() {
               new_cols.push(final_cols[order[i]].clone());
@@ -246,7 +271,7 @@ fn compute_pair(x_col: &ColType, y_col: &ColType, method: &str) -> (f64, usize, 
                 }
             }
             let n = valid_x.len();
-            if n < 3 { return (0.0, n, 1.0, false); }
+            if n < 3 { return (f64::NAN, n, 1.0, false); }
             
             let r = if method == "spearman" {
                 compute_spearman(&valid_x, &valid_y)
@@ -254,8 +279,11 @@ fn compute_pair(x_col: &ColType, y_col: &ColType, method: &str) -> (f64, usize, 
                 compute_pearson(&valid_x, &valid_y)
             };
             
-            let t = r * ((n as f64 - 2.0) / (1.0 - r * r).max(1e-10)).sqrt();
-            let p = calculate_p_value(t.abs(), n as f64 - 2.0);
+            if !r.is_finite(){return (f64::NAN,n,1.0,false);}
+            let p = if r.abs()>=1.0 {0.0}else{
+                let t = r * ((n as f64 - 2.0) / (1.0 - r * r)).sqrt();
+                calculate_p_value(t.abs(), n as f64 - 2.0)
+            };
             
             let mut has_outlier = false;
             if method == "pearson" && n >= 5 {
@@ -297,10 +325,10 @@ fn compute_cramers_v(cat_x: &[Option<String>], cat_y: &[Option<String>]) -> (f64
         }
     }
     
-    if n == 0 { return (0.0, 0); }
+    if n == 0 { return (f64::NAN, 0); }
     let r = map_x.len();
     let c = map_y.len();
-    if r < 2 || c < 2 { return (0.0, n); }
+    if r < 2 || c < 2 { return (f64::NAN, n); }
     
     let mut chi_square = 0.0;
     for (x_val, x_count) in &map_x {
@@ -331,12 +359,12 @@ fn compute_eta(cat: &[Option<String>], num: &[Option<f64>]) -> (f64, usize) {
         }
     }
     
-    if n < 3 || groups.len() < 2 { return (0.0, n); }
+    if n < 3 || groups.len() < 2 { return (f64::NAN, n); }
     let global_mean = total_vals.iter().sum::<f64>() / n as f64;
     
     let mut ss_total = 0.0;
     for &val in &total_vals { ss_total += (val - global_mean).powi(2); }
-    if ss_total == 0.0 { return (0.0, n); }
+    if ss_total == 0.0 { return (f64::NAN, n); }
     
     let mut ss_between = 0.0;
     for group_vals in groups.values() {
@@ -350,16 +378,14 @@ fn compute_eta(cat: &[Option<String>], num: &[Option<f64>]) -> (f64, usize) {
 
 
 fn compute_pearson(x: &[f64], y: &[f64]) -> f64 {
+    if x.is_empty()||x.len()!=y.len(){return f64::NAN;}
     let n = x.len() as f64;
-    let sum_x: f64 = x.iter().sum();
-    let sum_y: f64 = y.iter().sum();
-    let sum_xy: f64 = x.iter().zip(y.iter()).map(|(a, b)| a * b).sum();
-    let sum_x2: f64 = x.iter().map(|a| a * a).sum();
-    let sum_y2: f64 = y.iter().map(|b| b * b).sum();
-    
-    let num = n * sum_xy - sum_x * sum_y;
-    let den = ((n * sum_x2 - sum_x * sum_x) * (n * sum_y2 - sum_y * sum_y)).sqrt();
-    if den == 0.0 { 0.0 } else { num / den }
+    let mx=x.iter().map(|v|v-x[0]).sum::<f64>()/n;
+    let my=y.iter().map(|v|v-y[0]).sum::<f64>()/n;
+    let (mut cross,mut sx,mut sy)=(0.0,0.0,0.0);
+    for (a,b) in x.iter().zip(y){let dx=(a-x[0])-mx;let dy=(b-y[0])-my;cross+=dx*dy;sx+=dx*dx;sy+=dy*dy;}
+    let den=sx.sqrt()*sy.sqrt();
+    if den==0.0 {f64::NAN}else{(cross/den).clamp(-1.0,1.0)}
 }
 
 fn compute_spearman(x: &[f64], y: &[f64]) -> f64 {
@@ -372,17 +398,17 @@ fn rank(arr: &[f64]) -> Vec<f64> {
     let mut indexed: Vec<(usize, f64)> = arr.iter().copied().enumerate().collect();
     indexed.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
     let mut ranks = vec![0.0; arr.len()];
-    for (r, (i, _)) in indexed.into_iter().enumerate() {
-        ranks[i] = (r + 1) as f64;
+    let mut start=0;
+    while start<indexed.len(){
+        let mut end=start+1;while end<indexed.len()&&indexed[end].1==indexed[start].1{end+=1;}
+        let average=(start+1+end) as f64/2.0;
+        for &(i,_) in &indexed[start..end]{ranks[i]=average;}start=end;
     }
-    // simple rank, ignoring ties for speed
     ranks
 }
 
-fn calculate_p_value(t: f64, _df: f64) -> f64 {
-    // Very rough Normal approximation for P-value for large N
-    // For small N, this underestimates p-value, but it's a lightweight fallback
-    let z = t; 
-    let p = (-0.5 * z * z).exp(); 
-    p.min(1.0)
+fn calculate_p_value(t: f64, df: f64) -> f64 {
+    use statrs::distribution::{ContinuousCDF,StudentsT};
+    if t.is_nan()||df<=0.0{return 1.0;}
+    StudentsT::new(0.0,1.0,df).map(|d|(2.0*d.sf(t.abs())).clamp(0.0,1.0)).unwrap_or(1.0)
 }

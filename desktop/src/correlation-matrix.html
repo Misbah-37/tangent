@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="tabular-formats.js"></script>
+    <script src="loading-state.js"></script>
     <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -508,6 +509,7 @@
 
 <script>
   const { invoke } = window.__TAURI__.core;
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   
   let currentFilePath = null;
   let currentMethod = 'pearson';
@@ -621,7 +623,7 @@
       renderMatrix();
     } catch (err) {
       console.error(err);
-      document.getElementById('heatmapContainer').innerHTML = `<div style="color:#E81123; text-align:center; padding: 48px; display: flex; align-items: center; justify-content: center; height: 100%;">Error: ${err}</div>`;
+      document.getElementById('heatmapContainer').innerHTML = `<div style="color:#E81123; text-align:center; padding: 48px; display: flex; align-items: center; justify-content: center; height: 100%;">Error: ${escapeHtml(err)}</div>`;
     }
   }
 
@@ -680,11 +682,10 @@
 
   function getColorForCorrelation(r) {
       const v = Math.abs(r);
-      if (v === 1.0) return 'var(--glass-bg)';
       if (r > 0) {
-          return `rgba(16, 185, 129, ${v})`;
+          return `rgba(6, 95, 70, ${v})`;
       } else {
-          return `rgba(239, 68, 68, ${v})`;
+          return `rgba(153, 27, 27, ${v})`;
       }
   }
 
@@ -698,8 +699,8 @@
             container.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text-muted); opacity: 0.7;">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <h3 style="margin: 0; font-weight: 600; color: var(--text-main);">Zero rows matched your filters</h3>
-                    <p style="font-size: 0.85rem; margin-top: 8px;">The Math Engine requires at least 2 rows to compute correlations.<br>Try adjusting or removing your row filters.</p>
+                    <h3 style="margin: 0; font-weight: 600; color: var(--text-main);">No eligible columns</h3>
+                    <p style="font-size: 0.85rem; margin-top: 8px;">Numeric correlations need at least three paired observations and variation.<br>Check your columns and row filters.</p>
                 </div>
             `;
             return;
@@ -711,14 +712,18 @@
       // Header row
       html += `<tr><th style="padding: 8px; color: var(--text-muted); border-bottom: 1px solid var(--border);"></th>`;
       for (let i = 0; i < cols.length; i++) {
-          html += `<th style="padding: 8px; color: var(--text-muted); border: 1px solid var(--border); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;" title="${cols[i]}">${cols[i]}</th>`;
+          html += `<th style="padding: 8px; color: var(--text-muted); border: 1px solid var(--border); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;" title="${escapeHtml(cols[i])}">${escapeHtml(cols[i])}</th>`;
       }
       html += `</tr>`;
       
       // Rows
       for (let i = 0; i < cols.length; i++) {
-          html += `<tr><th style="padding: 8px; color: var(--text-muted); text-align: right; border: 1px solid var(--border); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;" title="${cols[i]}">${cols[i]}</th>`;
+          html += `<tr><th style="padding: 8px; color: var(--text-muted); text-align: right; border: 1px solid var(--border); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;" title="${escapeHtml(cols[i])}">${escapeHtml(cols[i])}</th>`;
           for (let j = 0; j < cols.length; j++) {
+              if(mat[i][j].is_defined===false){
+                  html += '<td style="color:var(--text-muted);border:1px solid var(--border)" title="Undefined: insufficient paired observations or no variation">N/A</td>';
+                  continue;
+              }
               if (i === j) {
                   html += `<td style="background: var(--glass-bg); color: var(--text-muted); border: 1px solid var(--border);">1.00</td>`;
               } else {
@@ -727,14 +732,16 @@
                   const color = getColorForCorrelation(cell.r);
                   
                   let stars = "";
-                  if (cell.p_value < 0.01) stars = "**";
-                  else if (cell.p_value < 0.05) stars = "*";
+                  if(currentMethod!=='spearman'||cell.n>500){
+                    if (cell.p_value < 0.01) stars = "**";
+                    else if (cell.p_value < 0.05) stars = "*";
+                  }
                   
                   let outFlag = cell.has_outlier_warning ? `<span style="margin-left: 4px; color: #E81123;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>` : "";
-                  const tooltip = `${cols[i]} vs ${cols[j]}\nr = ${val}\np-value = ${cell.p_value.toExponential(2)}\nN = ${cell.n} rows${cell.has_outlier_warning ? '\nWARNING: Large Pearson vs Spearman delta! Relationship driven by outliers.' : ''}`;
+                  const tooltip = `${cols[i]} vs ${cols[j]}\nr = ${val}\np-value${currentMethod==='spearman'?' (approximate; small samples need permutation testing)':''} = ${cell.p_value.toExponential(2)}\nN = ${cell.n} rows${cell.has_outlier_warning ? '\nWARNING: Large Pearson vs Spearman delta! Relationship driven by outliers.' : ''}`;
                   
                   const textColor = Math.abs(cell.r) > 0.5 ? '#ffffff' : 'var(--text-main)';
-                  html += `<td class="corr-cell" onclick="showScatter('${cols[i]}', '${cols[j]}')" style="background: ${color}; color: ${textColor}; font-weight: ${Math.abs(cell.r) > 0.5 ? 'bold' : 'normal'}; cursor: pointer; position: relative; padding: 12px 8px; transition: filter 0.2s;" title="${tooltip}" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter='none'">${val}${stars}${outFlag}</td>`;
+                  html += `<td class="corr-cell" onclick="showScatter(matrixData.columns[${i}], matrixData.columns[${j}])" style="background: ${color}; color: ${textColor}; font-weight: ${Math.abs(cell.r) > 0.5 ? 'bold' : 'normal'}; cursor: pointer; position: relative; padding: 12px 8px; transition: filter 0.2s;" title="${escapeHtml(tooltip)}" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter='none'">${val}${stars}${outFlag}</td>`;
               }
           }
           html += `</tr>`;
@@ -911,7 +918,7 @@
             
             let html = "";
             activeFilters.forEach((f, i) => {
-                let opts = headersToUse.map(h => `<option value="${h}" ${h===f.column?'selected':''}>${h}</option>`).join('');
+                let opts = headersToUse.map(h => `<option value="${escapeHtml(h)}" ${h===f.column?'selected':''}>${escapeHtml(h)}</option>`).join('');
                 
                 let opDisplay = '=';
                 if(f.operator === '!=') opDisplay = '!=';
@@ -929,7 +936,7 @@
                           <option value="<" ${f.operator==='<'?'selected':''}>&lt;</option>
                       </select>
                       
-                      <input type="text" oninput="updateFilter(${i}, 'value', this.value)" value="${f.value}" style="flex:1; min-width:0; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border); border-radius:4px; padding:6px; font-size:0.8rem;" placeholder="Value"/>
+                      <input type="text" oninput="updateFilter(${i}, 'value', this.value)" value="${escapeHtml(f.value)}" style="flex:1; min-width:0; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border); border-radius:4px; padding:6px; font-size:0.8rem;" placeholder="Value"/>
                       
                       <button class="btn btn-outline-danger" onclick="removeFilter(${i})" style="flex-shrink:0; border:1px solid var(--border); cursor:pointer; padding: 6px 10px; border-radius: 4px;">&times;</button>
                   </div>
@@ -951,14 +958,14 @@
             html += `<thead><tr>`;
             let modalHeaders = (matrixData && matrixData.all_headers && matrixData.all_headers.length > 0) ? matrixData.all_headers : allHeaders;
             modalHeaders.forEach(h => {
-                html += `<th style="padding: 12px 16px; background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); font-weight: 600; position: sticky; top: 0; z-index: 10;">${h}</th>`;
+                html += `<th style="padding: 12px 16px; background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); font-weight: 600; position: sticky; top: 0; z-index: 10;">${escapeHtml(h)}</th>`;
             });
             html += `</tr></thead><tbody>`;
             matrixData.raw_rows.forEach((row, rIdx) => {
                 let bg = rIdx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.03)';
                 html += `<tr style="background: ${bg}; border-bottom: 1px solid var(--border);">`;
                 row.forEach(cell => {
-                    html += `<td style="padding: 8px 16px; color: var(--text-main); border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;" title="${cell}">${cell}</td>`;
+                    html += `<td style="padding: 8px 16px; color: var(--text-main); border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;" title="${escapeHtml(cell)}">${escapeHtml(cell)}</td>`;
                 });
                 html += `</tr>`;
             });
@@ -1140,8 +1147,8 @@
 window.tangentCurrentResult = async function() {
   if (!matrixData) throw new Error("Compute a correlation matrix first.");
   const cols = matrixData.columns;
-  const rows = matrixData.matrix.map((row, i) => [cols[i], ...row.map((cell, j) => i === j ? '1.000' : cell.r.toFixed(4))]);
-  return { dataset:window.TangentTabular?.fromRows(['Variable', ...cols], matrixData.matrix.map((row,i) => [cols[i], ...row.map(cell=>cell.r)])), text: window.TangentToolWorkspace.csv([['', ...cols], ...rows]), ext: 'csv', label: 'Correlation coefficients' };
+  const rows = matrixData.matrix.map((row, i) => [cols[i], ...row.map(cell => cell.is_defined===false ? null : cell.r.toFixed(4))]);
+  return { dataset:window.TangentTabular?.fromRows(['Variable', ...cols], matrixData.matrix.map((row,i) => [cols[i], ...row.map(cell=>cell.is_defined===false?null:cell.r)])), text: window.TangentToolWorkspace.csv([['', ...cols], ...rows]), ext: 'csv', label: 'Correlation coefficients' };
 };
 window.launchpadImport = async function(paths) {
     window._launchpadImporting = true;

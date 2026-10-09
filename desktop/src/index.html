@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="tabular-formats.js"></script>
+    <script src="loading-state.js"></script>
     <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -698,6 +699,7 @@
         try { invoke = window.__TAURI__.core.invoke; } catch (err) { showToast("Init Error: " + err.message + "\nAre you running outside Tauri?", true); }
         
         let activeFilePath = null;
+        const hygieneEscape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         let rawColumns = [];
         let rawPreview = [];
         let nullCounts = [];
@@ -739,15 +741,15 @@
         function renderImputeRules() {
             let list = document.getElementById('imputeRulesList');
             if(!list) return;
-            let out = '';
+            list.replaceChildren();
             imputationRules.forEach(r => {
                 let desc = r.method === 'custom' ? `Fill with: "${r.custom_val}"` : `Fill with ${r.method.toUpperCase()}`;
-                out += `<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 4px; font-size: 11px;">
-                    <div><strong>${r.col}</strong> <span style="color: var(--text-muted); margin-left: 6px;">${desc}</span></div>
-                    <button class="btn btn-outline-danger" style="padding: 2px 6px; font-size: 10px; min-height: unset;" onclick="removeImputeRule('${r.col}')">Undo</button>
-                </div>`;
+                const row=document.createElement('div');
+                row.style.cssText='display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:6px 10px;border-radius:4px;font-size:11px';
+                row.innerHTML='<div><strong></strong> <span style="color:var(--text-muted);margin-left:6px"></span></div><button class="btn btn-outline-danger" style="padding:2px 6px;font-size:10px;min-height:unset">Undo</button>';
+                row.querySelector('strong').textContent=r.col;row.querySelector('span').textContent=desc;
+                row.querySelector('button').onclick=()=>removeImputeRule(r.col);list.append(row);
             });
-            list.innerHTML = out;
         }
 
         let multiSelectState = {
@@ -775,7 +777,12 @@
         function renderPills(id) {
             const container = document.getElementById(id + '_pills');
             if (container) {
-                container.innerHTML = multiSelectState[id].map(val => `<div class="pill-tag">${val}<span class="remove" onclick="removePill('${id}', '${val}')">✕</span></div>`).join('');
+                container.replaceChildren();
+                for(const val of multiSelectState[id]){
+                    const pill=document.createElement('div');pill.className='pill-tag';pill.textContent=val;
+                    const close=document.createElement('button');close.className='remove';close.type='button';close.textContent='×';close.style.cssText='background:transparent;border:0;color:inherit;padding:0;font:inherit';close.setAttribute('aria-label','Remove '+val);
+                    close.onclick=()=>removePill(id,val);pill.append(close);container.append(pill);
+                }
             }
         }
 
@@ -786,7 +793,7 @@
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.style.borderLeft = isError ? '4px solid #ef4444' : '4px solid #10b981';
-            toast.innerHTML = message.replace(/\n/g, '<br>');
+            toast.textContent = String(message);toast.style.whiteSpace='pre-line';
             container.appendChild(toast);
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 5000);
         }
@@ -850,10 +857,19 @@
             for (let w of words) {
                 strVal = strVal.replace(new RegExp('\\b' + w[0] + '\\b', 'g'), w[1]);
             }
-            if (strVal.endsWith('k')) strVal = strVal.slice(0, -1) + "000";
-            else if (strVal.endsWith('m')) strVal = strVal.slice(0, -1) + "000000";
+            const shift=strVal.endsWith('k')?3:strVal.endsWith('m')?6:0;
+            if(shift)strVal=strVal.slice(0,-1);
             
             let clean = strVal.replace(/[^0-9.-]/g, '');
+            if(shift&&/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(clean)){
+                const negative=clean.startsWith('-'),[whole,fraction='']=clean.replace(/^-/,'').split('.');
+                let digits=whole+fraction;
+                if(shift>=fraction.length)digits+='0'.repeat(shift-fraction.length);
+                else{const cut=digits.length-(fraction.length-shift);digits=digits.slice(0,cut)+'.'+digits.slice(cut);}
+                digits=digits.replace(/^0+/,'')||'0';if(digits.startsWith('.'))digits='0'+digits;
+                if(digits.includes('.'))digits=digits.replace(/0+$/,'').replace(/\.$/,'');
+                return negative&&digits!=='0'?'-'+digits:digits;
+            }
             return clean ? clean : String(val);
         }
 
@@ -935,7 +951,7 @@
                 let piiBadge = piiFlags[i] ? `<span style="background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-left: 6px; font-weight: bold;">PII DETECTED</span>` : '';
                 tableHtml += `<th style="position: relative; padding-bottom: 12px;">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
-                        <span>${col}</span>
+                        <span>${hygieneEscape(col)}</span>
                         ${emptyBadge}
                         ${piiBadge}
                     </div>
@@ -956,6 +972,7 @@
                     let orig_h = rawColumns[i];
                     let val = cell;
                     let isEmptyCell = false;
+                    let trustedMarkup = false;
                     
                     if (recipe.strip_ctrl) val = val.replace(/[\x00-\x1F\x7F]/g, '');
                     if (recipe.trim_all) val = val.trim();
@@ -968,7 +985,8 @@
                             if (rule.method === 'custom') {
                                 val = rule.custom_val;
                             } else {
-                                let methodLbl = rule.method.toUpperCase();
+                                let methodLbl = hygieneEscape(rule.method.toUpperCase());
+                                trustedMarkup = true;
                                 val = `<span style="background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px;"><svg width="10" height="10" style="margin-right:3px; vertical-align:middle; margin-top:-2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>AUTO-${methodLbl}</span>`;
                             }
                         } else {
@@ -1000,7 +1018,7 @@
                         if (recipe.date_cols.includes(orig_h)) val = formatDateJS(val, recipe.date_format);
                     }
                     
-                    return isEmptyCell ? val : `<span style="color: var(--text-main);">${val}</span>`;
+                    return isEmptyCell || trustedMarkup ? val : `<span style="color: var(--text-main);">${hygieneEscape(val)}</span>`;
                 });
                 
                 if (missingCritical) continue;
@@ -1068,7 +1086,7 @@
 
         document.querySelectorAll('.form-select').forEach(sel => {
             sel.addEventListener('change', (e) => {
-                if (e.target.classList.contains('col-select')) { addPill(e.target.id, e.target.value); return; }
+                if (Object.prototype.hasOwnProperty.call(multiSelectState,e.target.id)) { addPill(e.target.id, e.target.value); return; }
                 
                 currentPage = 0;
                 renderPreview();
@@ -1265,7 +1283,7 @@
                 else healthEl.style.color = '#10b981';
                 
                 Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
-                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${c}">${c}</option>`).join("");
+                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${hygieneEscape(c)}">${hygieneEscape(c)}</option>`).join("");
                 document.querySelectorAll('.col-select').forEach(el => el.innerHTML = options);
                 
                 // Clear active rule UI state
@@ -1407,7 +1425,7 @@
                 else healthEl.style.color = '#10b981';
                 
                 Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });
-                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${c}">${c}</option>`).join("");
+                let options = '<option value="">-- Select Column --</option>' + data.columns.map(c => `<option value="${hygieneEscape(c)}">${hygieneEscape(c)}</option>`).join("");
                 document.querySelectorAll('.col-select').forEach(el => el.innerHTML = options);
                 
                 document.getElementById('btn-run').disabled = false;
@@ -1472,14 +1490,14 @@
                 if (result.final_headers && result.final_preview) {
                     let tHtml = `<table><thead><tr>`;
                     result.final_headers.forEach(h => {
-                        tHtml += `<th style="padding-bottom: 12px; color: #10b981;">${h}</th>`;
+                        tHtml += `<th style="padding-bottom: 12px; color: #10b981;">${hygieneEscape(h)}</th>`;
                     });
                     tHtml += `</tr></thead><tbody>`;
                     
                     result.final_preview.forEach(row => {
                         tHtml += `<tr>`;
                         row.forEach(cell => {
-                            tHtml += `<td>${cell === null || cell === undefined || cell === '' ? '<span style="color: var(--text-muted); font-style: italic;">null</span>' : cell}</td>`;
+                            tHtml += `<td>${cell === null || cell === undefined || cell === '' ? '<span style="color: var(--text-muted); font-style: italic;">null</span>' : hygieneEscape(cell)}</td>`;
                         });
                         tHtml += `</tr>`;
                     });

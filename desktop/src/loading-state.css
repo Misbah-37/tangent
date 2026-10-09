@@ -1,0 +1,12 @@
+#global-loader { visibility:hidden!important; pointer-events:none!important; }
+.tangent-loading { position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:rgba(12,18,26,.28);color:var(--text-main,#f1f5f9); }
+.tangent-loading[hidden] { display:none; }
+.tangent-loading-pass-through { pointer-events:none; }
+[data-theme="light"] .tangent-loading { background:rgba(235,240,246,.55);color:var(--text-main,#18212f); }
+.tangent-loading-card { display:flex;align-items:center;gap:20px;width:min(420px,100%);box-sizing:border-box;padding:28px;border:1px solid var(--border,#384352);border-radius:14px;background:var(--bg-base,#18212f);box-shadow:0 16px 48px rgba(0,0,0,.18); }
+.tangent-loading-title { font-size:16px;font-weight:600; }
+.tangent-loading-card p { margin:8px 0 14px;font-size:13px;line-height:1.5;color:var(--text-muted,#a1adbc); }
+.tangent-loading-elapsed { font-size:12px;font-variant-numeric:tabular-nums;color:var(--text-muted,#a1adbc); }
+.tangent-loading-spinner { flex:none;width:26px;height:26px;border:3px solid var(--border,#384352);border-top-color:#0a84ff;border-radius:50%;animation:tangent-loading-spin .9s linear infinite; }
+@keyframes tangent-loading-spin { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .tangent-loading-spinner { animation:none; } }

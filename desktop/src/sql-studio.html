@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="tabular-formats.js"></script>
+    <script src="loading-state.js"></script>
     <script src="tool-workspace.js"></script>
     <script type="importmap">
     {
@@ -1211,6 +1212,7 @@ window.addEventListener('unhandledrejection', function(e) {
     async function executeSql(sql,label='Results') {
         if(!conn||sqlOperation)return;
         const operation={cancelled:false,remote:!!activeRemoteDb};sqlOperation=operation;
+        const loading = window.TangentLoading?.begin('Running SQL query', {blocking:false});
         const oldNative=nativeResult,oldRows=lastQueryRows;let replacement=null,trace;
         document.getElementById('btnRun').style.display='none';document.getElementById('btnCancel').style.display=operation.remote?'none':'block';
         const count=document.getElementById('resultsCount');count.textContent='Executing...';
@@ -1236,7 +1238,7 @@ window.addEventListener('unhandledrejection', function(e) {
             if(replacement)await sqlInvoke('release_editor_dataset',{id:replacement.tabularId}).catch(()=>{});
             count.textContent=operation.cancelled?'Query cancelled. Previous result retained.':'Query failed. Previous result retained.';
             await renderTablePage().catch(reportSqlError);trace?.finish('Query failed',error);if(!operation.cancelled)reportSqlError(error);
-        }finally{sqlOperation=null;document.getElementById('btnRun').style.display='flex';document.getElementById('btnCancel').style.display='none';}
+        }finally{window.TangentLoading?.end(loading);sqlOperation=null;document.getElementById('btnRun').style.display='flex';document.getElementById('btnCancel').style.display='none';}
     }
     document.getElementById('btnRun').addEventListener('click',async()=>{
         if(!window.sqlEditorInstance)return;const sql=window.sqlEditorInstance.getValue().trim();if(!sql||sqlOperation)return;logQuery(sql);await executeSql(sql);

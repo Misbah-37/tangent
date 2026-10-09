@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="tabular-formats.js"></script>
+    <script src="loading-state.js"></script>
     <script src="tool-workspace.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -562,6 +563,7 @@
         btnFetch.innerText = "Fetching...";
         try {
             currentHtml = await invoke('fetch_live_url', { url });
+            extractedTables=[];structuredData=[];tableCheckboxes.replaceChildren();resultsPanel.style.display='none';
             htmlStatus.style.display = 'block';
             htmlStatus.innerText = `Live HTML fetched successfully (${(currentHtml.length / 1024).toFixed(1)} KB)`;
         } catch (e) {
@@ -573,6 +575,7 @@
 
     htmlInput.addEventListener('input', () => {
         extractedTables = []; structuredData = [];
+        resultsPanel.style.display = 'none';
         tableCheckboxes.replaceChildren();
         currentHtml = htmlInput.value;
         if(currentHtml.trim().length > 0) {
@@ -606,7 +609,7 @@
                 <option value="attribute">Attribute</option>
             </select>
             <input type="text" id="fattr_${id}" placeholder="e.g. href" style="width: 100px; display:none; height: 28px; padding: 0 8px; font-size: 12px; background:var(--bg-base); border:1px solid var(--border); border-radius:4px; color:var(--text-main);">
-            <button class="btn btn-outline-danger" onclick="this.parentElement.remove()" style="border:none; cursor:pointer; padding:4px;">✖</button>
+            <button class="btn btn-outline-danger" onclick="this.parentElement.remove()" style="border:none; cursor:pointer; padding:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         `;
         fieldsContainer.appendChild(div);
     }
@@ -616,6 +619,8 @@
     btnExtract.onclick = async () => {
         if (!currentHtml.trim()) return alert("Please provide HTML either via URL or Raw Input.");
         
+        btnExtract.disabled = true;
+        extractedTables=[];structuredData=[];resultsPanel.style.display='none';
         btnExtract.innerText = "Extracting...";
         tablePicker.style.display = 'none';
         
@@ -648,6 +653,7 @@
         } catch (e) {
             alert("Extraction Error: " + e);
         }
+        btnExtract.disabled = false;
         btnExtract.innerText = "Extract Data";
     };
 
@@ -662,22 +668,23 @@
         });
     }
 
+    function selectedExtractedRows() {
+        if (extractMode.value !== 'tables') return structuredData;
+        const selected = [...document.querySelectorAll('.table-cb:checked')].map(cb=>extractedTables[Number(cb.value)]);
+        if (!selected.length) return [];
+        const header=selected[0].rows[0];
+        if(selected.some(table=>JSON.stringify(table.rows[0])!==JSON.stringify(header))) throw new Error('Select tables with identical headers to combine them. Export different tables separately.');
+        return [header,...selected.flatMap(table=>table.rows.slice(1))];
+    }
+
     window.renderPreview = function() {
         resultsPanel.style.display = 'block';
         previewThead.innerHTML = '';
         previewTbody.innerHTML = '';
         
-        let finalData = [];
-        
-        if (extractMode.value === 'tables') {
-            const checkboxes = document.querySelectorAll('.table-cb:checked');
-            checkboxes.forEach(cb => {
-                const tIdx = parseInt(cb.value);
-                finalData = finalData.concat(extractedTables[tIdx].rows);
-            });
-        } else {
-            finalData = structuredData;
-        }
+        let finalData;
+        try { finalData = selectedExtractedRows(); }
+        catch(error){rowBadge.textContent='Incompatible tables';alert(error.message);return;}
         
         if (finalData.length === 0) {
             rowBadge.textContent = "0 rows";
@@ -726,16 +733,8 @@
     };
 
     btnExportCsv.onclick = async () => {
-        let finalData = [];
-        if (extractMode.value === 'tables') {
-            const checkboxes = document.querySelectorAll('.table-cb:checked');
-            checkboxes.forEach(cb => {
-                const tIdx = parseInt(cb.value);
-                finalData = finalData.concat(extractedTables[tIdx].rows);
-            });
-        } else {
-            finalData = structuredData;
-        }
+        let finalData;
+        try { finalData = selectedExtractedRows(); } catch(error){return alert(error.message);}
         
         if (finalData.length === 0) return alert("No data to export.");
         
@@ -803,8 +802,7 @@
 <script src="launchpad-handoff.js"></script>
 <script>
 window.tangentCurrentResult = async function() {
-  let rows = structuredData;
-  if (extractMode.value === 'tables') rows = [...document.querySelectorAll('.table-cb:checked')].flatMap(cb => extractedTables[parseInt(cb.value)].rows);
+  const rows = selectedExtractedRows();
   if (!rows.length) throw new Error("Extract data and select at least one table first.");
   return { dataset:window.TangentTabular?.fromRows(rows[0],rows.slice(1)), text: window.TangentToolWorkspace.csv(rows), ext: 'csv', label: 'Selected extracted data' };
 };

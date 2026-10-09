@@ -31,7 +31,12 @@
   if (parentTauri) {
     const originalInvoke = parentTauri.core.invoke;
     window.__TAURI__ = { ...parentTauri, core: { ...parentTauri.core, invoke: async function(command, args, options) {
-      const result = await originalInvoke(command, args, options);
+      const labels = {parse_logs:'Parsing logs',parse_financial_statements:'Analyzing ledger',compute_correlation_matrix:'Calculating correlations',get_scatter_data:'Preparing scatter plot',extract_tables:'Extracting tables',extract_structured:'Extracting structured data',process_massive_csv:'Reading dataset',execute_recipe:'Cleaning dataset',execute_recipe_bulk:'Processing folder',execute_db_query:'Running database query',import_editor_file:'Importing dataset',import_tabular_file:'Importing dataset',open_editor_dataset:'Opening dataset',profile_insights:'Profiling dataset',compare_insights:'Comparing datasets',connect_db:'Connecting to database'};
+      const loading = labels[command] ? window.TangentLoading?.begin(labels[command]) : undefined;
+      let result;
+      try {
+        result = await originalInvoke(command, args, options);
+      } finally { if (loading) window.TangentLoading?.end(loading); }
       if (loadedCommands.has(command) && result !== null && result !== void 0 && result !== "" && (!Array.isArray(result) || result.length)) shell.updateState(id, { hasData: true });
       if (changedCommands.has(command)) shell.updateState(id, { hasData: true, dirty: true });
       if (!window._launchpadImporting && result && args) {

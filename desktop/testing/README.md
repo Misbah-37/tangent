@@ -1,4 +1,6 @@
-# Tangent Testing 1.0.0-beta.1
+# Tangent Testing
+
+Current private package: **1.0.0-beta.2**. Use [current setup instructions](private-beta/README.md) and [current smoke checklist](private-beta/SMOKE-TEST.md). See PRIVATE-BETA-PACKAGE.md for hashes, validation and pending installer checks. The earlier beta.1 checklist below is retained as historical context; current fixture expectations take precedence.
 
 Internal Windows x64 test build. This is not a public release or a certification of financial results. Start with the supplied sample files, not confidential or irreplaceable data. The installer is unsigned; verify its SHA-256 against the supplied manifest. Windows may show an unknown-publisher warning. Follow your organization's installation policy.
 

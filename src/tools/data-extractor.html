@@ -23,28 +23,28 @@
 <style>
   .extractor-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
   .grid-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
-  
+
   .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
-  
+
   textarea.code-input { width: 100%; background: var(--bg-base); color: #a5b4fc; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; resize: vertical; min-height: 150px; outline: none; margin-bottom: 16px; }
   textarea.code-input:focus { border-color: var(--accent); }
-  
+
   .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.2); font-size: 0.9rem; color: var(--text-muted); }
   .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); color: var(--text-main); }
-  
+
   .control-group { margin-bottom: 20px; }
   .control-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
   .control-group input[type="text"], .control-group select { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); font-size: 0.95rem; }
-  
+
   .btn-accent { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.05rem; transition: transform 0.1s ease; }
   .btn-accent:active { transform: scale(0.97); }
-  
+
   .table-responsive { width: 100%; overflow-x: auto; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; max-height: 400px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
   th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
   th { color: var(--text-muted); font-weight: 600; position: sticky; top: 0; background: rgba(19, 23, 36, 0.95); backdrop-filter: blur(8px); z-index: 10; }
   tr:hover td { background: rgba(255, 255, 255, 0.02); }
-  
+
   .stats-text { color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; }
   .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }</style>
 
@@ -60,7 +60,7 @@
 
 <div class="extractor-studio">
   <div class="grid-layout">
-    
+
     <!-- Step 1: Input -->
     <div class="panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -76,7 +76,7 @@
         <input type="file" id="fileInput" accept=".html,.htm,.txt" style="display:none;">
       </div>
     </div>
-    
+
     <!-- Step 2: Extraction Rules -->
     <div class="panel">
       <h3 style="margin-top:0; margin-bottom:16px;">2. Extraction Rules</h3>
@@ -91,7 +91,7 @@
         <div class="control-group" id="selectorGroup" style="opacity:0.5; pointer-events:none;">
           <label>CSS Selector</label>
           <input type="text" id="cssSelector" placeholder="e.g. .product-title, ul > li" value=".item">
-          
+
           <div style="margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.5;">
             <strong style="color: var(--text-main); display:block; margin-bottom:8px;">How to find your target selector:</strong>
             <ol style="margin: 0 0 12px 0; padding-left: 22px;">
@@ -113,14 +113,14 @@
         .btn-clear-ghost { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
         .btn-clear-ghost:hover { color: #f87171; background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); }</style>
     </div>
-    
+
     <!-- Step 3: Results -->
     <div class="panel" id="resultsPanel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <h3 style="margin:0;">3. Preview & Export <span class="badge" id="rowBadge">0 rows</span></h3>
         <button id="btnExportCsv" class="btn-accent" style="padding:10px 20px;">Export to CSV</button>
       </div>
-      
+
       <div class="table-responsive">
         <table id="previewTable">
           <thead id="previewThead"></thead>
@@ -129,7 +129,7 @@
       </div>
       <div class="stats-text" id="extractionStats">Showing preview of first 50 rows.</div>
     </div>
-    
+
   </div>
 </div>
 
@@ -159,9 +159,9 @@
         <p>Automatically cleans extracted text, strips out messy HTML tags, and correctly formats the data into a downloadable spreadsheet.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>Can this tool scrape live websites directly via URL?</summary>
@@ -190,18 +190,18 @@
   const fileInput = document.getElementById('fileInput');
   const htmlInput = document.getElementById('htmlInput');
   const btnClear = document.getElementById('btnClear');
-  
+
   const extractMode = document.getElementById('extractMode');
   const selectorGroup = document.getElementById('selectorGroup');
   const cssSelector = document.getElementById('cssSelector');
   const btnExtract = document.getElementById('btnExtract');
-  
+
   const resultsPanel = document.getElementById('resultsPanel');
   const previewThead = document.getElementById('previewThead');
   const previewTbody = document.getElementById('previewTbody');
   const btnExportCsv = document.getElementById('btnExportCsv');
   const rowBadge = document.getElementById('rowBadge');
-  
+
   let extractedData = [];
 
   // DOM Events for Input
@@ -217,26 +217,20 @@
     if(e.target.files.length) handleFile(e.target.files[0]);
   });
 
+  let fileOperation = 0;
+  function clearResults() {extractedData=[];resultsPanel.style.display='none';previewThead.innerHTML='';previewTbody.innerHTML='';}
   function handleFile(file) {
+    const operation = ++fileOperation;
     const reader = new FileReader();
-    reader.onload = (e) => {
-      htmlInput.value = e.target.result;
-      btnClear.style.display = 'block';
+    reader.onload = e => {
+      if(operation !== fileOperation) return;
+      clearResults();htmlInput.value=e.target.result;btnClear.style.display=htmlInput.value.trim()?'block':'none';
     };
-
-  htmlInput.addEventListener('input', () => {
-    btnClear.style.display = htmlInput.value.trim().length > 0 ? 'block' : 'none';
-  });
-  
-  btnClear.addEventListener('click', () => {
-    htmlInput.value = '';
-    extractedData = [];
-    resultsPanel.style.display = 'none';
-    btnClear.style.display = 'none';
-    fileInput.value = '';
-  });
+    reader.onerror = () => {if(operation === fileOperation) alert('Unable to read the HTML file.');};
     reader.readAsText(file);
   }
+  htmlInput.addEventListener('input',()=>{fileOperation++;clearResults();btnClear.style.display=htmlInput.value.trim()?'block':'none';});
+  btnClear.addEventListener('click',()=>{fileOperation++;htmlInput.value='';clearResults();btnClear.style.display='none';fileInput.value='';});
 
   // Toggle mode
   extractMode.addEventListener('change', () => {
@@ -259,42 +253,47 @@
   btnExtract.addEventListener('click', () => {
     const rawHtml = htmlInput.value.trim();
     if(!rawHtml) return alert("Please provide HTML source code.");
-    
-    extractedData = []; // reset
-    
+
+    clearResults(); // invalidate the previous extraction before validating the new one
+
     // Parse virtually
     const parser = new DOMParser();
     const doc = parser.parseFromString(rawHtml, 'text/html');
-    
+
     if(extractMode.value === 'tables') {
       const tables = doc.querySelectorAll('table');
       if(tables.length === 0) return alert("No HTML tables found in the source code.");
-      
-      // Combine all tables (or just the largest one? Let's grab all rows for now)
-      tables.forEach((table, tIdx) => {
-        const rows = table.querySelectorAll('tr');
-        rows.forEach(row => {
-          const cells = row.querySelectorAll('th, td');
-          const rowData = [];
-          cells.forEach(cell => {
-            rowData.push(cleanText(cell.textContent));
+
+      tables.forEach((table,tIdx)=>{
+        const rows = Array.from(table.rows).filter(row=>row.closest('table')===table);
+        const grid = rows.map(()=>[]);
+        rows.forEach((row,r)=>{
+          let column=0;
+          Array.from(row.cells).forEach(cell=>{
+            while(grid[r][column]!==undefined) column++;
+            const clone=cell.cloneNode(true);clone.querySelectorAll('table').forEach(nested=>nested.remove());
+            const value=cleanText(clone.textContent);
+            const groupRemaining=rows.slice(r).filter(next=>next.parentElement===row.parentElement).length;
+            const height=Math.min(cell.rowSpan===0?groupRemaining:cell.rowSpan,groupRemaining);
+            const width=cell.colSpan;
+            for(let y=r;y<r+height;y++) for(let x=column;x<column+width;x++) grid[y][x]=value;
+            column+=width;
           });
-          if(rowData.length > 0) {
-            // Add a meta column identifying the table index if there are multiple
-            if(tables.length > 1) rowData.unshift(`Table ${tIdx + 1}`);
-            extractedData.push(rowData);
-          }
         });
+        const width=Math.max(0,...grid.map(row=>row.length));
+        grid.forEach(row=>{const values=Array.from({length:width},(_,i)=>row[i]??'');if(values.length){if(tables.length>1)values.unshift('Table '+(tIdx+1));extractedData.push(values);}});
       });
-      
+      const width=Math.max(0,...extractedData.map(row=>row.length));
+      extractedData=extractedData.map(row=>Array.from({length:width},(_,i)=>row[i]??''));
+
     } else if(extractMode.value === 'selector') {
       const query = cssSelector.value.trim();
       if(!query) return alert("Please provide a valid CSS selector.");
-      
+
       try {
         const elements = doc.querySelectorAll(query);
         if(elements.length === 0) return alert("No elements found matching that selector.");
-        
+
         extractedData.push(["Extracted Value"]); // Header
         elements.forEach(el => {
           extractedData.push([cleanText(el.textContent)]);
@@ -303,7 +302,7 @@
         return alert("Invalid CSS Selector syntax.");
       }
     }
-    
+
     if(extractedData.length > 0) {
       renderPreview();
     }
@@ -312,17 +311,17 @@
   function renderPreview() {
     resultsPanel.style.display = 'block';
     rowBadge.textContent = `${extractedData.length} row${extractedData.length !== 1 ? 's' : ''}`;
-    
+
     previewThead.innerHTML = '';
     previewTbody.innerHTML = '';
-    
+
     // Render Header (assume first row is header, or at least structure the table columns)
-    // To make it look clean, we'll just treat the first row as the table header 
-    // if we are in 'tables' mode and the source actually had <th>. 
+    // To make it look clean, we'll just treat the first row as the table header
+    // if we are in 'tables' mode and the source actually had <th>.
     // For simplicity, we just use the first row of extractedData.
-    
+
     const maxPreviewRows = 50;
-    
+
     if(extractedData.length > 0) {
       const headerRow = document.createElement('tr');
       extractedData[0].forEach((colText, idx) => {
@@ -332,14 +331,14 @@
       });
       previewThead.appendChild(headerRow);
     }
-    
+
     // Render Body (up to 50 rows)
     const previewLimit = Math.min(extractedData.length, maxPreviewRows + 1);
     for(let i = 1; i < previewLimit; i++) {
       const tr = document.createElement('tr');
       // Ensure we fill the right number of columns based on the header
       const targetCols = extractedData[0].length;
-      
+
       for(let j = 0; j < targetCols; j++) {
         const td = document.createElement('td');
         td.textContent = extractedData[i][j] || "";
@@ -347,7 +346,7 @@
       }
       previewTbody.appendChild(tr);
     }
-    
+
     // Scroll to results
     resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -355,10 +354,10 @@
   btnExportCsv.addEventListener('click', () => {
     if(extractedData.length === 0) return;
     const csvContent = Papa.unparse(extractedData);
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", "extracted_data.csv");
@@ -366,5 +365,6 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
   });
 </script>

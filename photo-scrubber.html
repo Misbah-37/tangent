@@ -61,7 +61,7 @@
       "name": "Does scrubbing metadata degrade photo quality?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No noticeable loss occurs. The scrubber re-encodes pure image pixels at 95% quality (or your custom selected quality) while permanently omitting all hidden binary metadata blocks."
+        "text": "The scrubber creates a new image without copying source EXIF or GPS tags. JPEG and WebP re-encoding can change image quality; PNG preserves decoded pixels. Browser-generated color or format information may remain."
       }
     }
   ]
@@ -95,26 +95,26 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
     --danger-bg: rgba(239, 68, 68, 0.12);
     --danger-border: rgba(239, 68, 68, 0.35);
-    
+
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    
-    
-    
+
+
+
   }
 
 
@@ -858,7 +858,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -905,15 +905,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -961,8 +961,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -982,8 +982,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -1031,8 +1031,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -1059,8 +1059,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -1080,8 +1080,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -1108,8 +1108,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -1164,8 +1164,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -1224,7 +1224,7 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Photo EXIF & GPS Scrubber</h1>
-  <p>Inspect hidden GPS location tags, camera models, and timestamps embedded in your photos—and permanently strip them before sharing online.</p>
+  <p>Inspect hidden GPS location tags, camera models, and timestamps embedded in your photosâ€”and permanently strip them before sharing online.</p>
 </div>
 
 <!-- Tab Navigation -->
@@ -1250,7 +1250,7 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
         <span>Metadata Inspector & Cleaner</span>
       </h3>
-      <p class="tool-desc">Reveal all hidden EXIF and location tags embedded in your image, then strip them completely with one click.</p>
+      <p class="tool-desc">Inspect supported EXIF and location tags, then create a cleaned copy from the image pixels.</p>
 
       <!-- Drag & Drop Upload Zone -->
       <div class="upload-box" id="inspectDropZone" onclick="document.getElementById('inspectInput').click()">
@@ -1259,7 +1259,7 @@
           <circle cx="12" cy="13" r="4"></circle>
         </svg>
         <div class="upload-box-title">Drop your photo here or click to browse</div>
-        <div class="upload-box-sub">Supports JPG, JPEG, PNG, WebP • 100% private in-browser RAM execution</div>
+        <div class="upload-box-sub">Supports JPG, JPEG, PNG, WebP â€¢ 100% private in-browser RAM execution</div>
         <div class="upload-btn-pill">Select Photo</div>
         <input type="file" id="inspectInput" accept="image/jpeg, image/png, image/webp" style="display:none;">
       </div>
@@ -1383,7 +1383,7 @@
           <div class="options-col">
             <label for="outputFormat">Output Image Format</label>
             <select id="outputFormat">
-              <option value="keep">Preserve Original Format</option>
+              <option value="keep">Keep JPEG, PNG or WebP (others become PNG)</option>
               <option value="image/jpeg">JPEG (.jpg)</option>
               <option value="image/png">PNG (.png)</option>
               <option value="image/webp">WebP (.webp)</option>
@@ -1415,7 +1415,7 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <span>Batch Metadata Scrubber</span>
       </h3>
-      <p class="tool-desc">Drop multiple photos at once. Every file is sanitized simultaneously in browser memory and packaged into a single clean ZIP download.</p>
+      <p class="tool-desc">Drop multiple photos at once. Files are sanitized one at a time in browser memory and packaged into a single clean ZIP download.</p>
 
       <!-- Drag & Drop Upload Zone -->
       <div class="upload-box" id="batchDropZone" onclick="document.getElementById('batchInput').click()">
@@ -1424,7 +1424,7 @@
           <circle cx="12" cy="13" r="4"></circle>
         </svg>
         <div class="upload-box-title">Drop your photos here or click to browse</div>
-        <div class="upload-box-sub">Select multiple JPG, PNG, or WebP files • 100% offline batch processing</div>
+        <div class="upload-box-sub">Select multiple JPG, PNG, or WebP files â€¢ 100% offline batch processing</div>
         <div class="upload-btn-pill">Select Multiple Photos</div>
         <input type="file" id="batchInput" accept="image/jpeg, image/png, image/webp" multiple style="display:none;">
       </div>
@@ -1476,8 +1476,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
-      <h3>Zero-Recompression Stripping</h3>
-      <p>Purges metadata headers without degrading visual sharpness or introducing compression artifacts, keeping your pictures pristine.</p>
+      <h3>Pixel-Based Metadata Removal</h3>
+      <p>Creates a new image from decoded pixels without copying source EXIF or GPS tags. JPEG and WebP encoding can change quality; PNG preserves decoded pixels.</p>
     </div>
   </div>
 
@@ -1498,7 +1498,7 @@
   <div class="faq-box">
     <details>
       <summary>Does scrubbing metadata degrade photo quality?</summary>
-      <p>No noticeable loss occurs. The scrubber re-encodes pure image pixels at 95% quality (or your custom selected quality) while permanently omitting all hidden binary metadata blocks.</p>
+      <p>The scrubber creates a new image without copying source EXIF or GPS tags. JPEG and WebP re-encoding can change image quality; PNG preserves decoded pixels. Browser-generated color or format information may remain.</p>
     </details>
   </div>
 </div>
@@ -1537,7 +1537,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1560,16 +1560,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1577,6 +1577,7 @@
   };
 </script>
 
+<script src="assets/media-utils.js"></script>
 <script>
 // --- Tab Switching Logic ---
 function switchTab(tabId) {
@@ -1638,6 +1639,7 @@ function convertDMSToDD(degrees, minutes, seconds, direction) {
 let singleSelectedFile = null;
 let singleImageElement = null;
 let singleDetectedTagsCount = 0;
+let singleOperation=0,singleBusy=false;
 
 setupDragAndDrop('inspectDropZone', 'inspectInput', (files) => {
   const imgFile = files.find(f => f.type.startsWith('image/'));
@@ -1645,6 +1647,8 @@ setupDragAndDrop('inspectDropZone', 'inspectInput', (files) => {
 });
 
 function resetSingleFile() {
+  singleOperation++;singleBusy=false;document.getElementById('btnScrubSingle').disabled=false;
+  TangentMedia.clearLink(document.getElementById('downloadBtnSingle'));
   singleSelectedFile = null;
   singleImageElement = null;
   singleDetectedTagsCount = 0;
@@ -1658,30 +1662,22 @@ function resetSingleFile() {
   document.getElementById('downloadBtnSingle').style.display = 'none';
 }
 
-function handleSinglePhoto(file) {
-  singleSelectedFile = file;
-  document.getElementById('inspectDropZone').style.display = 'none';
-  const card = document.getElementById('inspectFileCard');
-  card.style.display = 'flex';
-  document.getElementById('inspectFileName').innerText = file.name;
-  document.getElementById('inspectFileMeta').innerText = `Reading EXIF data... (${(file.size / 1024).toFixed(1)} KB)`;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      singleImageElement = img;
-      document.getElementById('inspectThumb').src = e.target.result;
-      document.getElementById('inspectFileMeta').innerText = `${img.naturalWidth} x ${img.naturalHeight} px • ${(file.size / 1024).toFixed(1)} KB`;
-      inspectExifData(img, file);
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+async function handleSinglePhoto(file) {
+  resetSingleFile();const operation=singleOperation;singleSelectedFile=file;
+  document.getElementById('inspectDropZone').style.display='none';document.getElementById('inspectFileCard').style.display='flex';
+  document.getElementById('inspectFileName').textContent=file.name;
+  document.getElementById('inspectFileMeta').textContent='Reading image...';
+  try {
+    const image=await TangentMedia.loadImage(file);if(operation!==singleOperation)return;
+    singleImageElement=image;document.getElementById('inspectThumb').src=image.src;
+    document.getElementById('inspectFileMeta').textContent=`${image.naturalWidth} x ${image.naturalHeight} px • ${(file.size/1024).toFixed(1)} KB`;
+    inspectExifData(image,file,operation);
+  } catch(error){if(operation===singleOperation)document.getElementById('inspectFileMeta').textContent=error.message;}
 }
 
-function inspectExifData(img, file) {
+function inspectExifData(img, file, operation=singleOperation) {
   EXIF.getData(img, function() {
+    if(operation!==singleOperation)return;
     const allTags = EXIF.getAllTags(this);
     const tagKeys = Object.keys(allTags);
     singleDetectedTagsCount = tagKeys.length;
@@ -1724,7 +1720,7 @@ function renderGpsBanner(lat, lon) {
       </div>
       <div style="flex:1;">
         <h4>Sensitive GPS Location Detected</h4>
-        <p>This photo contains exact geographic coordinates: <strong>${lat.toFixed(6)}°, ${lon.toFixed(6)}°</strong>. Anyone who downloads this image can pinpoint the location where it was taken.</p>
+        <p>This photo contains exact geographic coordinates: <strong>${lat.toFixed(6)}Â°, ${lon.toFixed(6)}Â°</strong>. Anyone who downloads this image can pinpoint the location where it was taken.</p>
         <div class="gps-banner-actions">
           <a href="${osmUrl}" target="_blank" rel="noopener noreferrer" class="btn-osm-link">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -1740,15 +1736,15 @@ function renderGpsBanner(lat, lon) {
       </div>
       <div>
         <h4>No GPS Coordinates Found</h4>
-        <p>This photo does not contain embedded geolocation tags. Other hardware or timestamp metadata may still be present below.</p>
+        <p>No GPS coordinates were found by this EXIF inspector. Other metadata may still be present; this is not a complete metadata inventory.</p>
       </div>`;
   }
 }
 
 function renderMetadataFields(img, lat, lon, alt, gpsDate, gpsTime) {
   // GPS
-  document.getElementById('metaLat').innerText = lat !== null ? `${lat.toFixed(6)}°` : 'None';
-  document.getElementById('metaLon').innerText = lon !== null ? `${lon.toFixed(6)}°` : 'None';
+  document.getElementById('metaLat').innerText = lat !== null ? `${lat.toFixed(6)}Â°` : 'None';
+  document.getElementById('metaLon').innerText = lon !== null ? `${lon.toFixed(6)}Â°` : 'None';
   if (lat !== null) {
     document.getElementById('metaLat').classList.add('highlight');
     document.getElementById('metaLon').classList.add('highlight');
@@ -1787,75 +1783,44 @@ function renderMetadataFields(img, lat, lon, alt, gpsDate, gpsTime) {
   document.getElementById('metaFocal').innerText = focal ? `${focal}mm` : 'Unknown';
 }
 
-function cleanImageWithCanvas(img, mimeType, quality) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    canvas.toBlob((blob) => {
-      resolve(blob);
-    }, mimeType, quality);
-  });
+function cleanImageWithCanvas(img,mimeType,quality) {
+  const canvas=document.createElement('canvas');TangentMedia.checkSize(img.naturalWidth,img.naturalHeight);
+  canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;const ctx=canvas.getContext('2d');
+  if(TangentMedia.mime(mimeType)==='image/jpeg'){ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);}
+  ctx.drawImage(img,0,0);return TangentMedia.encode(canvas,mimeType,quality);
 }
 
 async function scrubSinglePhoto() {
-  if (!singleSelectedFile || !singleImageElement) return;
-
-  const btn = document.getElementById('btnScrubSingle');
-  const status = document.getElementById('statusSingle');
-  const dlBtn = document.getElementById('downloadBtnSingle');
-
-  btn.disabled = true;
-  status.innerText = "Sanitizing image in browser RAM...";
-  status.style.color = "#94a3b8";
-  dlBtn.style.display = "none";
-
+  if(!singleSelectedFile||!singleImageElement||singleBusy)return;
+  const operation=singleOperation,file=singleSelectedFile,image=singleImageElement;
+  const btn=document.getElementById('btnScrubSingle'),status=document.getElementById('statusSingle'),link=document.getElementById('downloadBtnSingle');
+  singleBusy=true;btn.disabled=true;status.textContent='Sanitizing image in browser memory...';TangentMedia.clearLink(link);
   try {
-    let targetMime = document.getElementById('outputFormat').value;
-    if (targetMime === 'keep') {
-      targetMime = singleSelectedFile.type || 'image/jpeg';
-    }
-    const quality = parseFloat(document.getElementById('outputQuality').value) / 100;
-
-    const cleanedBlob = await cleanImageWithCanvas(singleImageElement, targetMime, quality);
-
-    const origKb = (singleSelectedFile.size / 1024).toFixed(1);
-    const newKb = (cleanedBlob.size / 1024).toFixed(1);
-
-    let ext = '.jpg';
-    if (targetMime === 'image/png') ext = '.png';
-    else if (targetMime === 'image/webp') ext = '.webp';
-    const baseName = singleSelectedFile.name.replace(/\.[^/.]+$/, "");
-    const cleanFileName = `${baseName}_clean${ext}`;
-
-    dlBtn.href = URL.createObjectURL(cleanedBlob);
-    dlBtn.download = cleanFileName;
-    dlBtn.style.display = "inline-flex";
-
-    status.innerHTML = `<span style="color:#34d399; font-weight:600;">Sanitization complete!</span> All EXIF, GPS, and device markers removed. Size: ${origKb} KB &rarr; ${newKb} KB.`;
-  } catch (err) {
-    status.innerText = "Error scrubbing image: " + err.message;
-    status.style.color = "#f87171";
-  } finally {
-    btn.disabled = false;
-  }
+    let mime=document.getElementById('outputFormat').value;if(mime==='keep')mime=file.type;
+    const quality=Number(document.getElementById('outputQuality').value)/100;
+    const blob=await cleanImageWithCanvas(image,mime,quality);if(operation!==singleOperation)return;
+    TangentMedia.setLink(link,blob,TangentMedia.uniqueName(new Set(),file.name,'_clean',blob.type));
+    status.textContent=`Sanitization complete. Source EXIF and GPS tags are not copied. ${(file.size/1024).toFixed(1)} KB → ${(blob.size/1024).toFixed(1)} KB.`;
+  } catch(error){if(operation===singleOperation)status.textContent='Could not scrub image: '+error.message;}
+  finally{if(operation===singleOperation){singleBusy=false;btn.disabled=false;}}
 }
 
 // --- TAB 2: Batch Scrubber ---
 let batchFiles = [];
+let batchOperation=0,batchBusy=false;
+function invalidateBatch(){batchOperation++;batchBusy=false;document.getElementById("btnScrubBatch").disabled=false;TangentMedia.clearLink(document.getElementById("downloadBtnBatch"));document.getElementById("statusBatch").textContent="";}
 
 setupDragAndDrop('batchDropZone', 'batchInput', (files) => {
   const imgFiles = files.filter(f => f.type.startsWith('image/'));
   if (imgFiles.length > 0) {
-    batchFiles = batchFiles.concat(imgFiles);
+    invalidateBatch();batchFiles = batchFiles.concat(imgFiles);
     document.getElementById('batchInput').value = '';
     renderBatchList();
   }
 });
 
 function clearBatchQueue() {
+  invalidateBatch();
   batchFiles = [];
   document.getElementById('batchInput').value = '';
   renderBatchList();
@@ -1864,6 +1829,7 @@ function clearBatchQueue() {
 }
 
 function removeBatchFile(index) {
+  invalidateBatch();
   batchFiles.splice(index, 1);
   renderBatchList();
 }
@@ -1915,59 +1881,23 @@ function renderBatchList() {
 }
 
 async function scrubBatchPhotos() {
-  if (batchFiles.length === 0) return;
-
-  const btn = document.getElementById('btnScrubBatch');
-  const status = document.getElementById('statusBatch');
-  const dlBtn = document.getElementById('downloadBtnBatch');
-
-  btn.disabled = true;
-  status.style.color = "#94a3b8";
-  dlBtn.style.display = "none";
-
+  if(!batchFiles.length||batchBusy)return;
+  const operation=batchOperation,files=[...batchFiles],btn=document.getElementById('btnScrubBatch'),status=document.getElementById('statusBatch'),link=document.getElementById('downloadBtnBatch');
+  batchBusy=true;btn.disabled=true;TangentMedia.clearLink(link);
   try {
-    const zip = new JSZip();
-
-    for (let i = 0; i < batchFiles.length; i++) {
-      const file = batchFiles[i];
-      status.innerText = `Sanitizing photo ${i + 1} of ${batchFiles.length}: ${file.name}...`;
-
-      const img = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const image = new Image();
-          image.onload = () => resolve(image);
-          image.onerror = reject;
-          image.src = e.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      const mime = file.type || 'image/jpeg';
-      const cleanBlob = await cleanImageWithCanvas(img, mime, 0.95);
-
-      let ext = '.jpg';
-      if (mime === 'image/png') ext = '.png';
-      else if (mime === 'image/webp') ext = '.webp';
-      const base = file.name.replace(/\.[^/.]+$/, "");
-      zip.file(`${base}_clean${ext}`, cleanBlob);
+    const zip=new JSZip(),used=new Set();
+    for(let i=0;i<files.length;i++) {
+      if(operation!==batchOperation)return;
+      const file=files[i];status.textContent=`Sanitizing photo ${i+1} of ${files.length}: ${file.name}...`;
+      const image=await TangentMedia.loadImage(file);if(operation!==batchOperation)return;
+      const blob=await cleanImageWithCanvas(image,file.type,0.95);if(operation!==batchOperation)return;
+      zip.file(TangentMedia.uniqueName(used,file.name,'_clean',blob.type),blob);
     }
-
-    status.innerText = "Compressing sanitized photos into ZIP...";
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-
-    dlBtn.href = URL.createObjectURL(zipBlob);
-    dlBtn.download = "Tangent_Cleaned_Photos.zip";
-    dlBtn.style.display = "inline-flex";
-
-    status.innerHTML = `<span style="color:#34d399; font-weight:600;">Batch sanitization complete!</span> Cleaned ${batchFiles.length} photo(s). All GPS and EXIF data stripped.`;
-  } catch (err) {
-    status.innerText = "Error in batch processing: " + err.message;
-    status.style.color = "#f87171";
-  } finally {
-    btn.disabled = false;
-  }
+    status.textContent='Compressing sanitized photos into ZIP...';const blob=await zip.generateAsync({type:'blob'});
+    if(operation!==batchOperation)return;
+    TangentMedia.setLink(link,blob,'Tangent_Cleaned_Photos.zip');status.textContent=`Batch sanitization complete. Cleaned ${files.length} photos. Source EXIF and GPS tags are not copied.`;
+  } catch(error){if(operation===batchOperation)status.textContent='Could not process batch: '+error.message;}
+  finally{if(operation===batchOperation){batchBusy=false;btn.disabled=false;}}
 }
 </script>
 </body>

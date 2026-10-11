@@ -16,11 +16,11 @@
 <link rel="canonical" href="https://runtangent.com/file-vault.html" />
 <title>Private Photo & File Lockbox | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/file-vault">
-<meta name="description" content="PIN or password protect sensitive photos, tax records, and private documents. 100% in-browser military-grade AES-256-GCM encryption with zero cloud uploads.">
+<meta name="description" content="Encrypt one file locally with AES-256-GCM and a password. No file uploads; available browser memory limits file size.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Private Photo & File Lockbox | Tangent">
-<meta property="og:description" content="Encrypt and lock sensitive files locally with a password or PIN. Zero server uploads, zero size limits, 100% private.">
+<meta property="og:description" content="Encrypt one file into a .tangent container locally. Use a strong password; file size depends on available browser memory.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
 <!-- Schema.org FAQ Structured Data -->
@@ -34,7 +34,7 @@
       "name": "How secure is the encryption used in the Lockbox?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The lockbox uses AES-256-GCM authenticated encryption combined with PBKDF2 key derivation running 100,000 iterations. This is the same cryptographic standard utilized by federal intelligence agencies and zero-knowledge password managers."
+        "text": "The lockbox uses AES-256-GCM authenticated encryption combined with PBKDF2 key derivation running 100,000 iterations. Protection also depends on password strength and the security of your device."
       }
     },
     {
@@ -42,7 +42,7 @@
       "name": "Can anyone access my locked file if they don't have the password?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Without the correct password or PIN, breaking AES-256 encryption is mathematically infeasible even with modern supercomputers. Even the Tangent team cannot unlock your file because no keys or passwords are ever transmitted or saved."
+        "text": "Tangent has no password recovery service. Short PINs and weak passwords can be guessed; use a long, unique password and keep it safe."
       }
     },
     {
@@ -50,7 +50,7 @@
       "name": "Are there any file size limits?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Because encryption runs directly inside your device's browser memory (RAM) via the native Web Crypto API, you can lock photos, videos, ZIP archives, or large PDF documents without arbitrary server limits."
+        "text": "File size is limited by available browser memory. Encryption keeps several copies of the file in memory; try smaller files if your browser cannot complete an operation."
       }
     }
   ]
@@ -80,23 +80,23 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
-    
+
   }
 
   .clean-header {
@@ -485,7 +485,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -532,15 +532,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -588,8 +588,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -609,8 +609,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -658,8 +658,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -686,8 +686,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -707,8 +707,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item active">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -735,8 +735,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -791,8 +791,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -856,11 +856,11 @@
       <span>SECURED VIA AES-256-GCM WEB CRYPTO API</span>
     </div>
   <h1>Private Photo & File Lockbox.</h1>
-  <p>Protect confidential tax returns, sensitive photos, and personal documents with a PIN or password. Encrypted 100% in local memory with zero server uploads.</p>
+  <p>Encrypt one file locally with a password, then download its .tangent container. Your file is not uploaded. Use a long, unique password; short PINs are easier to guess.</p>
 </div>
 
 <div class="vault-container">
-  
+
   <!-- Mode Tabs -->
   <div class="mode-tabs">
     <button type="button" class="tab-button active" id="tabLockMode">
@@ -875,7 +875,7 @@
 
   <!-- Vault Card -->
   <div class="vault-card">
-    
+
     <!-- Dropzone Area -->
     <div class="vault-dropzone" id="vaultDropzone">
       <div class="drop-icon">
@@ -910,7 +910,7 @@
 
     <button type="button" class="btn-submit" id="submitBtn" disabled>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      <span id="submitBtnText">Lock & Download Safe Container</span>
+      <span id="submitBtnText">Lock & Download Encrypted File</span>
     </button>
 
     <!-- Feedback Alerts -->
@@ -929,21 +929,21 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
       <h3>Authenticated AES-256-GCM</h3>
-      <p>Encrypt sensitive photos, tax records, and documents using military-grade AES-GCM encryption with PBKDF2 key derivation.</p>
+      <p>Encrypt one file with AES-256-GCM and PBKDF2-SHA-256 key derivation using 100,000 iterations, a random salt and a fresh initialization vector.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
       </div>
       <h3>Self-Contained Local Vault</h3>
-      <p>Bundle multiple sensitive files into a single encrypted vault file (.vault) that you can store on USB or cloud drives safely.</p>
+      <p>Download one encrypted .tangent container per file. To encrypt several files together, create a ZIP first and select that ZIP. File size depends on available browser memory.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
       </div>
       <h3>Zero Cloud Key Storage</h3>
-      <p>We never see, store, or transmit your master passphrase. Even if our servers were seized, your locked files remain unbreakable.</p>
+      <p>This tool does not upload your file or save your password. Keep your password safe: Tangent cannot recover it or unlock a container for you.</p>
     </div>
   </div>
 
@@ -952,7 +952,7 @@
   <div class="faq-box">
     <details>
       <summary>Can anyone (including Tangent) decrypt my files without the password?</summary>
-      <p>No. The encryption key is derived directly from your password using PBKDF2 with 100,000 iterations and AES-GCM 256-bit cryptography. Without the password, mathematical decryption is virtually impossible.</p>
+      <p>Tangent cannot recover your password. A short PIN or weak password can be guessed, so use a long, unique password. A compromised device can also expose files and passwords.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -964,7 +964,7 @@
   <div class="faq-box">
     <details>
       <summary>Can I decrypt my vault offline on another computer?</summary>
-      <p>Yes. Because File Vault uses open web cryptography standards, you can open Tangent on any computer (even offline) and unlock your files instantly.</p>
+      <p>You can unlock a .tangent container on another computer using this tool and the same password. Offline use requires the page and its dependencies to be available on that computer. Keep a backup of your encrypted file and password.</p>
     </details>
   </div>
 </div>
@@ -1001,7 +1001,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1024,16 +1024,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1044,6 +1044,7 @@
 <script>
   let activeMode = 'lock'; // 'lock' or 'unlock'
   let selectedFile = null;
+  let vaultBusy = false;
 
   const tabLockMode = document.getElementById('tabLockMode');
   const tabUnlockMode = document.getElementById('tabUnlockMode');
@@ -1068,6 +1069,7 @@
   tabUnlockMode.addEventListener('click', () => setMode('unlock'));
 
   function setMode(mode) {
+    if (vaultBusy) return;
     activeMode = mode;
     clearAlerts();
     selectedFile = null;
@@ -1082,7 +1084,7 @@
       dropzoneTitle.textContent = 'Drop Any File Here to Lock';
       dropzoneDesc.textContent = 'Photos, PDFs, videos, tax scans, and archives supported';
       confirmGroup.style.display = 'block';
-      submitBtnText.textContent = 'Lock & Download Safe Container (.tangent)';
+      submitBtnText.textContent = 'Lock & Download Encrypted File (.tangent)';
     } else {
       tabUnlockMode.classList.add('active');
       tabLockMode.classList.remove('active');
@@ -1094,7 +1096,7 @@
   }
 
   // Dropzone Events
-  vaultDropzone.addEventListener('click', () => fileInput.click());
+  vaultDropzone.addEventListener('click', () => { if (!vaultBusy) fileInput.click(); });
   vaultDropzone.addEventListener('dragover', (e) => { e.preventDefault(); vaultDropzone.classList.add('dragover'); });
   vaultDropzone.addEventListener('dragleave', () => vaultDropzone.classList.remove('dragover'));
   vaultDropzone.addEventListener('drop', (e) => {
@@ -1107,6 +1109,7 @@
   });
 
   function handleFile(file) {
+    if (vaultBusy) return;
     clearAlerts();
     selectedFile = file;
     fileNameText.textContent = file.name;
@@ -1132,7 +1135,7 @@
   });
 
   function updateSubmitState() {
-    if (!selectedFile || !vaultPassword.value) {
+    if (vaultBusy || !selectedFile || !vaultPassword.value) {
       submitBtn.disabled = true;
       return;
     }
@@ -1175,34 +1178,42 @@
 
   // Submit Handler: Lock or Unlock
   submitBtn.addEventListener('click', async () => {
-    if (!selectedFile || !vaultPassword.value) return;
+    if (vaultBusy || !selectedFile || !vaultPassword.value || (activeMode === 'lock' && vaultPassword.value !== confirmPassword.value)) return;
+    const operation = { file: selectedFile, password: vaultPassword.value, mode: activeMode };
     clearAlerts();
+    vaultBusy = true;
     submitBtn.disabled = true;
-
-    if (activeMode === 'lock') {
-      await processLock();
-    } else {
-      await processUnlock();
+    const controls = [fileInput, vaultPassword, confirmPassword, tabLockMode, tabUnlockMode, togglePwdBtn];
+    controls.forEach(control => control.disabled = true);
+    vaultDropzone.setAttribute('aria-busy', 'true');
+    try {
+      if (operation.mode === 'lock') await processLock(operation);
+      else await processUnlock(operation);
+    } finally {
+      vaultBusy = false;
+      controls.forEach(control => control.disabled = false);
+      vaultDropzone.removeAttribute('aria-busy');
+      updateSubmitState();
     }
-    submitBtn.disabled = false;
   });
 
   // Lock File Pipeline
-  async function processLock() {
+  async function processLock({file, password}) {
     submitBtnText.textContent = 'Encrypting in RAM...';
     try {
-      const fileBuffer = await selectedFile.arrayBuffer();
+      const fileBuffer = await file.arrayBuffer();
       const salt = crypto.getRandomValues(new Uint8Array(16));
       const iv = crypto.getRandomValues(new Uint8Array(12));
-      const key = await deriveKey(vaultPassword.value, salt);
+      const key = await deriveKey(password, salt);
 
       const metadata = JSON.stringify({
-        name: selectedFile.name,
-        type: selectedFile.type || 'application/octet-stream',
+        name: file.name,
+        type: file.type || 'application/octet-stream',
         date: Date.now()
       });
       const metaBytes = new TextEncoder().encode(metadata);
       const metaLen = metaBytes.byteLength;
+      if (metaLen > 65535) throw new Error('File metadata exceeds the container limit.');
 
       // Plaintext format: [2 bytes metaLen] [metaBytes] [fileBytes]
       const combinedPlain = new Uint8Array(2 + metaLen + fileBuffer.byteLength);
@@ -1231,32 +1242,32 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${selectedFile.name}.tangent`;
+      a.download = `${file.name}.tangent`;
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
       if(window.TangentToast) window.TangentToast.show("Export successful!");
 
-      successAlert.textContent = `File successfully locked! Downloaded "${selectedFile.name}.tangent".`;
+      successAlert.textContent = `File successfully locked! Downloaded "${file.name}.tangent".`;
       successAlert.style.display = 'block';
     } catch (err) {
       console.error(err);
       dangerAlert.textContent = 'Encryption failed. Please try again.';
       dangerAlert.style.display = 'block';
     } finally {
-      submitBtnText.textContent = 'Lock & Download Safe Container (.tangent)';
+      submitBtnText.textContent = 'Lock & Download Encrypted File (.tangent)';
     }
   }
 
   // Unlock File Pipeline
-  async function processUnlock() {
+  async function processUnlock({file, password}) {
     submitBtnText.textContent = 'Decrypting in RAM...';
     try {
-      const containerBuffer = await selectedFile.arrayBuffer();
+      const containerBuffer = await file.arrayBuffer();
       const bytes = new Uint8Array(containerBuffer);
 
       // Check Magic Header
       const magic = new TextDecoder().decode(bytes.slice(0, 4));
-      if (magic !== 'TGT1') {
+      if (magic !== 'TGT1' || bytes.length < 50) {
         dangerAlert.textContent = 'Invalid container format. This is not a valid .tangent locked safe file.';
         dangerAlert.style.display = 'block';
         return;
@@ -1266,7 +1277,7 @@
       const iv = bytes.slice(20, 32);
       const ciphertext = bytes.slice(32);
 
-      const key = await deriveKey(vaultPassword.value, salt);
+      const key = await deriveKey(password, salt);
 
       // AES-GCM Decryption (will throw error if authentication tag mismatches = wrong password)
       const decryptedPlain = await crypto.subtle.decrypt(
@@ -1277,8 +1288,10 @@
 
       const plainBytes = new Uint8Array(decryptedPlain);
       const metaLen = (plainBytes[0] << 8) | plainBytes[1];
+      if (plainBytes.length < 2 || metaLen > plainBytes.length - 2) throw new Error('Invalid container metadata length.');
       const metaBytes = plainBytes.slice(2, 2 + metaLen);
       const metadata = JSON.parse(new TextDecoder().decode(metaBytes));
+      if (!metadata || typeof metadata.name !== 'string' || !metadata.name || typeof metadata.type !== 'string') throw new Error('Invalid container metadata.');
       const originalFileBytes = plainBytes.slice(2 + metaLen);
 
       // Trigger Download of original file
@@ -1288,7 +1301,7 @@
       a.href = url;
       a.download = metadata.name;
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
       if(window.TangentToast) window.TangentToast.show("Export successful!");
 
       successAlert.textContent = `File unlocked successfully! Extracted "${metadata.name}".`;

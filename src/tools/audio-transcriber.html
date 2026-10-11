@@ -1,11 +1,11 @@
 <!-- --- HEAD_META --- -->
 <title>Confidential Audio Transcriber | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/audio-transcriber">
-<meta name="description" content="Transcribe meetings, interviews, and voice memos securely in your browser. 100% offline AI, zero cloud uploads.">
+<meta name="description" content="Transcribe meetings, interviews, and voice memos securely in your browser. Local AI recognition, zero cloud uploads.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Confidential Audio Transcriber | Tangent">
-<meta property="og:description" content="Transcribe meetings, interviews, and voice memos securely in your browser. 100% offline AI, zero cloud uploads.">
+<meta property="og:description" content="Transcribe meetings, interviews, and voice memos securely in your browser. Local AI recognition, zero cloud uploads.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
 <!-- Schema.org FAQ Structured Data -->
@@ -26,7 +26,7 @@
       "name": "How long can the audio files be?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Because the processing is done locally, there are no hard API limits. However, longer files will take longer to process depending on your CPU."
+        "text": "Each file can be up to 30 minutes long and 100 MB. A decoded-audio memory limit may require shorter clips, especially for high sample rates or multiple channels. Split longer recordings into smaller files."
       }
     }
   ]
@@ -35,11 +35,11 @@
 
 <!-- --- TOOL_STYLES --- -->
 <style>
-  
+
   .clean-header { text-align: center; margin-bottom: 40px; }
   .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-  
+
   .split-layout {
     display: grid;
     grid-template-columns: 380px 1fr;
@@ -48,7 +48,7 @@
   }
   @media (max-width: 900px) {
     .split-layout { grid-template-columns: 1fr; }}
-  
+
   .editor-panel {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -58,7 +58,7 @@
     flex-direction: column;
     gap: 24px;
   }
-  
+
   .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
 
   /* Buttons */
@@ -177,7 +177,7 @@
     <span>100% LOCAL AI PROCESSING</span>
   </div>
   <h1>Confidential Audio Transcriber</h1>
-  <p>Convert English speech to text securely. Everything runs offline in your browser using a highly compressed AI, guaranteeing total privacy for sensitive meetings and memos.</p>
+  <p>Convert English speech to text securely. Recognition runs locally in your browser after loading the engine using a highly compressed AI, guaranteeing total privacy for sensitive meetings and memos.</p>
 </div>
 
 <div class="split-layout">
@@ -209,7 +209,7 @@
 
   <!-- Right Panel: Preview & Output -->
   <div class="preview-panel" style="border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; background: var(--bg-card); position: relative; overflow: hidden; min-height: 400px;">
-    
+
     <!-- Empty State -->
     <div id="emptyState" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px; opacity: 0.5;"><path d="M2 12h4l3-9 5 18 3-9h5"></path></svg>
@@ -220,7 +220,7 @@
     <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">Local AI Model Required</h3>
-      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To transcribe audio offline with total privacy, your browser needs to download a high-precision AI model (~70MB). It will be permanently cached for instant future use.</p>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To transcribe audio offline with total privacy, your browser needs to download a high-precision AI model (~70MB). Browser caching may reduce future downloads. Files are processed locally.</p>
       <button class="btn btn-primary" id="btnConsentDownload">Download & Transcribe</button>
       <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
     </div>
@@ -250,8 +250,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       </div>
-      <h3>Zero Throttling</h3>
-      <p>Because there is no remote server processing your file, you aren't subjected to arbitrary tier limits, bandwidth throttling, or expensive transcription subscriptions.</p>
+      <h3>Local Processing</h3>
+      <p>Transcription runs on your computer. Each file is limited to 30 minutes and 100 MB, with an additional decoded-audio memory limit.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -272,13 +272,13 @@
   <div class="faq-box">
     <details>
       <summary>Why does the first run take longer to start?</summary>
-      <p>The AI language model is approximately 70MB. On your very first use, your browser must securely download this file. It is then saved into your local cache, meaning all future transcriptions will begin instantaneously—even if you disconnect from the internet.</p>
+      <p>The AI language model is approximately 70MB. On your very first use, your browser must securely download this file. Your browser may cache model files, but can evict them. Model and library loading may still require an internet connection.</p>
     </details>
   </div>
   <div class="faq-box">
     <details>
       <summary>Are there limits on audio length?</summary>
-      <p>Since you are using your own computer's CPU to process the audio, there are no artificial time limits or paywalls. However, very long files will take a proportionally longer amount of time to process.</p>
+      <p>Each file can be up to <strong>30 minutes long</strong> and <strong>100 MB</strong>. A decoded-audio memory limit may require shorter clips, especially for high sample rates or multiple channels. Split longer recordings into smaller files.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -290,12 +290,13 @@
   <div class="faq-box">
     <details>
       <summary>How accurate is the offline transcription?</summary>
-      <p>Because this runs 100% offline in your browser, it uses a highly compressed "Tiny" AI model. It is incredibly fast and highly accurate for clear voice memos, podcasts, and structured meetings. However, it may occasionally struggle with thick accents, extreme background noise, or heavy overlapping speakers compared to massive, cloud-based commercial APIs.</p>
+      <p>Because recognition runs locally after model loading, it uses a highly compressed "Tiny" AI model. It is incredibly fast and useful for clear voice memos, podcasts, and structured meetings. However, it may occasionally struggle with thick accents, extreme background noise, or heavy overlapping speakers compared to massive, cloud-based commercial APIs.</p>
     </details>
   </div>
 </div>
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/processing-utils.js"></script>
 <script type="module">
 import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
 
@@ -305,154 +306,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('emptyState');
   const consentState = document.getElementById('consentState');
   const activeState = document.getElementById('activeState');
-  
+
   const statusSection = document.getElementById('statusSection');
   const statusText = document.getElementById('statusText');
   const statusPercent = document.getElementById('statusPercent');
   const progressBarContainer = document.getElementById('progressBarContainer');
   const progressBarFill = document.getElementById('progressBarFill');
-  
+
   const btnConsentDownload = document.getElementById('btnConsentDownload');
   const btnConsentCancel = document.getElementById('btnConsentCancel');
-  
+
   const transcriptOutput = document.getElementById('transcriptOutput');
   const btnCopy = document.getElementById('btnCopy');
   const btnDownloadTxt = document.getElementById('btnDownloadTxt');
-  
-  let pendingFile = null;
-  let transcriberPipeline = null;
 
-  // Drag & Drop Handling
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
-  });
-
-  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
-  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
-  
-  dropZone.addEventListener('drop', (e) => {
-    dropZone.style.borderColor = 'var(--border-color)';
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/') || f.name.match(/\.(mp3|wav|m4a|ogg)$/i));
-    if (files.length > 0) handleFileSelect(files[0]);
-  });
-  
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
-    fileInput.value = '';
-  });
-
-  function handleFileSelect(file) {
-    const isCached = localStorage.getItem('tangent_whisper_model_cached');
-    if (isCached === 'true') {
-      transcribeAudio(file);
-    } else {
-      pendingFile = file;
-      emptyState.style.display = 'none';
-      activeState.style.display = 'none';
-      consentState.style.display = 'flex';
-    }
+  const jobs=TangentProcessing.jobs();let pending=null,permission=false,modelPromise=null,inferenceQueue=Promise.resolve(),ready=false,currentName='transcript';
+  const resetBtn=document.createElement('button');resetBtn.type='button';resetBtn.className='btn btn-secondary';resetBtn.textContent='Clear / Cancel';dropZone.after(resetBtn);
+  function controls(){btnCopy.disabled=btnDownloadTxt.disabled=!ready;}
+  function reset(){jobs.cancel();pending=null;ready=false;transcriptOutput.value='';controls();consentState.style.display='none';activeState.style.display='none';emptyState.style.display='flex';statusSection.style.display='none';fileInput.value='';}
+  resetBtn.addEventListener('click',reset);btnConsentCancel.addEventListener('click',reset);
+  async function decode(file,job){if(!file||file.size>100000000)throw Error('Choose audio smaller than 100 MB.');
+    const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('Audio decoding is unavailable in this browser.');const context=new Audio();
+    try{const bytes=await file.arrayBuffer();job.check();const buffer=await context.decodeAudioData(bytes);job.check();if(!buffer.duration||buffer.duration>1800)throw Error('Choose audio up to 30 minutes long.');if(buffer.length*buffer.numberOfChannels>100000000)throw Error('Audio exceeds the decoded sample limit. Choose a shorter file.');
+      const offline=new OfflineAudioContext(1,Math.ceil(buffer.duration*16000),16000),source=offline.createBufferSource();source.buffer=buffer;source.connect(offline.destination);source.start();const rendered=await offline.startRendering();job.check();return rendered.getChannelData(0);
+    }finally{await context.close().catch(()=>{});}
   }
-
-  // Consent Actions
-  btnConsentDownload.addEventListener('click', () => {
-    localStorage.setItem('tangent_whisper_model_cached', 'true');
-    consentState.style.display = 'none';
-    if (pendingFile) transcribeAudio(pendingFile);
-  });
-
-  btnConsentCancel.addEventListener('click', () => {
-    consentState.style.display = 'none';
-    emptyState.style.display = 'flex';
-    pendingFile = null;
-  });
-
-  async function transcribeAudio(file) {
-    emptyState.style.display = 'none';
-    consentState.style.display = 'none';
-    activeState.style.display = 'flex';
-    transcriptOutput.value = '';
-    
-    statusSection.style.display = 'block';
-    progressBarContainer.style.display = 'block';
-    statusText.textContent = 'Preparing AI Engine...';
-    statusText.style.color = '#00d2ff';
-    statusPercent.textContent = '0%';
-    progressBarFill.style.width = '0%';
-
-    try {
-      
-      // Disable local models to fetch from HuggingFace hub securely
-      env.allowLocalModels = false;
-      
-      statusText.textContent = 'Loading Model (Downloading if not cached)...';
-
-      if (!transcriberPipeline) {
-        transcriberPipeline = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en', {
-          progress_callback: (data) => {
-            if (data.status === 'downloading') {
-               statusText.textContent = `Downloading ${data.file}...`;
-            } else if (data.status === 'progress') {
-               const percentage = Math.round(data.progress) || 0;
-               statusPercent.textContent = `${percentage}%`;
-               progressBarFill.style.width = `${percentage}%`;
-            } else if (data.status === 'done') {
-               progressBarFill.style.width = '100%';
-               statusPercent.textContent = '100%';
-            }
-          }
-        });
-      }
-
-      statusText.textContent = 'Transcribing Audio... (This may take a moment)';
-      progressBarContainer.style.display = 'none';
-      statusPercent.textContent = '';
-      
-      const audioUrl = URL.createObjectURL(file);
-      
-      const output = await transcriberPipeline(audioUrl, {
-        chunk_length_s: 30,
-        stride_length_s: 5,
-        callback_function: (beams) => {
-          // This callback fires progressively during generation
-          // We can optionally display partial text here if supported
-        }
-      });
-      
-      transcriptOutput.value = output.text;
-      
-      statusText.textContent = 'Transcription Complete!';
-      statusText.style.color = '#00ffcc';
-      
-      URL.revokeObjectURL(audioUrl);
-      
-    } catch (err) {
-      console.error(err);
-      statusText.textContent = 'Error: ' + (err.message || String(err));
-      statusText.style.color = '#ff4444';
-      progressBarContainer.style.display = 'none';
-    }
+  async function handleFileSelect(file){const job=jobs.begin();ready=false;controls();transcriptOutput.value='';pending=null;consentState.style.display='none';emptyState.style.display='none';activeState.style.display='flex';statusSection.style.display='block';statusText.textContent='Checking '+file.name+'...';
+    try{const audio=await decode(file,job);job.check();pending={file,audio,job};if(!permission){activeState.style.display='none';consentState.style.display='flex';return;}await transcribe(pending);}
+    catch(error){if(job.current())statusText.textContent='Could not process audio: '+(error.message||'Choose a supported, undamaged file.');}
   }
+  btnConsentDownload.addEventListener('click',()=>{permission=true;const request=pending;pending=null;if(request?.job.current())transcribe(request);});
+  function getModel(job){if(!modelPromise){env.allowLocalModels=false;modelPromise=pipeline('automatic-speech-recognition','Xenova/whisper-tiny.en',{progress_callback:data=>{if(job.current()){statusText.textContent='Loading speech model...';if(data.status==='progress')progressBarFill.style.width=Math.round(data.progress||0)+'%';}}}).catch(error=>{modelPromise=null;throw error;});}return modelPromise;}
+  async function transcribe(request){const {file,audio,job}=request;consentState.style.display='none';activeState.style.display='flex';statusSection.style.display='block';statusText.textContent='Waiting for speech engine...';progressBarContainer.style.display='block';
+    const run=async()=>{job.check();const engine=await getModel(job);job.check();statusText.textContent='Transcribing '+file.name+'...';progressBarContainer.style.display='none';const output=await engine(audio,{chunk_length_s:30,stride_length_s:5});job.check();transcriptOutput.value=output.text||'';currentName=file.name.replace(/\.[^/.]+$/,'');ready=!!transcriptOutput.value.trim();controls();statusText.textContent=ready?'Transcription complete. Review before exporting.':'No speech recognized. Try a clearer recording.';};
+    const task=inferenceQueue.then(run);inferenceQueue=task.catch(()=>{});
+    try{await task;}catch(error){if(job.current()){ready=false;controls();statusText.textContent='Could not transcribe: '+error.message;}}finally{if(job.current()){pending=null;progressBarContainer.style.display='none';statusPercent.textContent='';}}
+  }
+  dropZone.addEventListener('click',()=>fileInput.click());dropZone.addEventListener('dragover',e=>e.preventDefault());dropZone.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files[0])handleFileSelect(e.dataTransfer.files[0]);});fileInput.addEventListener('change',()=>{if(fileInput.files[0])handleFileSelect(fileInput.files[0]);fileInput.value='';});
+  btnCopy.addEventListener('click',async()=>{if(!ready)return;try{await navigator.clipboard.writeText(transcriptOutput.value);statusText.textContent='Transcript copied.';}catch(error){statusText.textContent='Could not copy. Select the transcript and copy manually.';}});
+  btnDownloadTxt.addEventListener('click',()=>{if(!ready)return;const url=URL.createObjectURL(new Blob([transcriptOutput.value],{type:'text/plain;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=currentName+'_transcript.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),2000);});controls();
 
-  // Action Buttons
-  btnCopy.addEventListener('click', () => {
-    if (transcriptOutput.value) {
-      navigator.clipboard.writeText(transcriptOutput.value);
-      const originalText = btnCopy.textContent;
-      btnCopy.textContent = 'Copied!';
-      setTimeout(() => btnCopy.textContent = originalText, 2000);
-    }
-  });
-
-  btnDownloadTxt.addEventListener('click', () => {
-    if (transcriptOutput.value) {
-      const blob = new Blob([transcriptOutput.value], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'transcript.txt';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-  });
 });
 </script>

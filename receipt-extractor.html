@@ -16,11 +16,11 @@
 <link rel="canonical" href="https://runtangent.com/receipt-extractor.html" />
 <title>Smart Receipt Extractor | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/receipt-extractor">
-<meta name="description" content="Extract totals, dates, and line items from receipts and invoices securely in your browser. Powered by local OCR.">
+<meta name="description" content="Suggest totals and dates from receipts and invoices securely in your browser. Powered by local OCR.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Smart Receipt Extractor | Tangent">
-<meta property="og:description" content="Extract totals, dates, and line items from receipts and invoices securely in your browser. Powered by local OCR.">
+<meta property="og:description" content="Suggest totals and dates from receipts and invoices securely in your browser. Powered by local OCR.">
 
 <!-- Schema.org FAQ Structured Data -->
 <script type="application/ld+json">
@@ -63,12 +63,12 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 .clean-header { text-align: center; margin-bottom: 40px; }
   .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-  
+
   .split-layout {
     display: grid;
     grid-template-columns: 380px 1fr;
@@ -77,7 +77,7 @@
   }
   @media (max-width: 900px) {
     .split-layout { grid-template-columns: 1fr; }}
-  
+
   .editor-panel {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -87,7 +87,7 @@
     flex-direction: column;
     gap: 24px;
   }
-  
+
   .panel-section h3 { margin-top: 0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
 
   /* Standard Buttons */
@@ -298,7 +298,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -345,15 +345,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -401,8 +401,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -422,8 +422,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -471,8 +471,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -499,8 +499,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -520,8 +520,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -548,8 +548,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -604,8 +604,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -663,7 +663,7 @@
     <span>100% LOCAL AI PROCESSING</span>
   </div>
   <h1>Smart Receipt Extractor</h1>
-  <p>Digitize receipts, extract totals, and parse dates instantly. Your financial documents are scanned locally via Apache 2.0 Optical Character Recognition (OCR).</p>
+  <p>Scan receipts locally and review suggested totals and dates before copying.</p>
 </div>
 
 <div class="split-layout">
@@ -676,7 +676,7 @@
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>
         </svg>
         <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop Receipt Here</div>
-        <div style="font-size: 12px; color: var(--text-secondary);">Supports PDF, JPG, PNG</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Supports single-page PDF, JPG, PNG</div>
         <input type="file" id="fileInput" accept="image/*, application/pdf" style="display: none;">
       </div>
     </div>
@@ -700,7 +700,7 @@
 
   <!-- Right Panel: Output -->
   <div class="preview-panel" style="border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; background: var(--bg-card); position: relative; overflow: hidden; min-height: 450px;">
-    
+
     <!-- Empty State -->
     <div id="emptyState" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px; opacity: 0.5;">
@@ -713,7 +713,7 @@
     <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">Local OCR Engine Required</h3>
-      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To scan receipts without uploading them to the cloud, your browser needs to download the Tesseract Optical Character Recognition engine (~25MB). It will be cached for future offline use.</p>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To scan receipts without uploading them to the cloud, your browser needs to download the Tesseract Optical Character Recognition engine (~25MB). Browser caching may reduce later downloads. An internet connection may still be needed.</p>
       <button class="btn btn-primary" id="btnConsentDownload">Download & Scan Receipt</button>
       <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
     </div>
@@ -723,18 +723,18 @@
       <div class="extracted-data">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <div class="data-field">
-            <label>Detected Total</label>
-            <div class="value" id="outTotal">--</div>
+            <label for="outTotal">Review Total</label>
+            <input class="value" id="outTotal" aria-label="Review total" placeholder="Enter total" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg-base);color:var(--text-main);">
           </div>
           <div class="data-field">
-            <label>Detected Date</label>
-            <div class="value" id="outDate">--</div>
+            <label for="outDate">Review Date</label>
+            <input class="value" id="outDate" aria-label="Review date" placeholder="Enter date" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg-base);color:var(--text-main);">
           </div>
         </div>
-        
+
         <div class="data-field" style="flex: 1; display: flex; flex-direction: column;">
           <label>Raw Extracted Text</label>
-          <textarea id="outRawText" readonly></textarea>
+          <textarea id="outRawText"></textarea>
         </div>
       </div>
       <div style="padding: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-base);">
@@ -767,7 +767,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
       </div>
       <h3>Apache 2.0 Tesseract Engine</h3>
-      <p>Powered by Tesseract.js, a WebAssembly port of the industry-standard OCR engine. It is legally clear for commercial use and highly optimized for printed receipts.</p>
+      <p>Powered by Tesseract.js, a WebAssembly port of the industry-standard OCR engine. Review recognition results, especially for small type and damaged receipts.</p>
     </div>
   </div>
 
@@ -775,7 +775,7 @@
   <div class="faq-box">
     <details>
       <summary>Are my receipts uploaded to a server?</summary>
-      <p>No. We utilize an Apache 2.0 licensed WebAssembly OCR engine that processes your financial documents entirely in your local RAM. No servers or APIs are involved.</p>
+      <p>No. We utilize an Apache 2.0 licensed WebAssembly OCR engine that processes your financial documents entirely in your local RAM. Engine and language files may need downloading; receipt content is processed locally.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -818,7 +818,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -841,16 +841,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -858,6 +858,9 @@
   };
 </script>
 
+<script src="assets/media-utils.js"></script>
+<script src="assets/processing-utils.js"></script>
+<script src="assets/receipt-parser.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
@@ -867,215 +870,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('emptyState');
   const consentState = document.getElementById('consentState');
   const activeState = document.getElementById('activeState');
-  
+
   const statusSection = document.getElementById('statusSection');
   const statusText = document.getElementById('statusText');
   const statusPercent = document.getElementById('statusPercent');
   const progressBarContainer = document.getElementById('progressBarContainer');
   const progressBarFill = document.getElementById('progressBarFill');
-  
+
   const receiptPreview = document.getElementById('receiptPreview');
   const previewSection = document.getElementById('previewSection');
-  
+
   const btnConsentDownload = document.getElementById('btnConsentDownload');
   const btnConsentCancel = document.getElementById('btnConsentCancel');
-  
+
   const outTotal = document.getElementById('outTotal');
   const outDate = document.getElementById('outDate');
   const outRawText = document.getElementById('outRawText');
-  
+
   const btnCopyJSON = document.getElementById('btnCopyJSON');
   const btnCopyText = document.getElementById('btnCopyText');
-  
-  let pendingFile = null;
-  let parsedData = {};
 
-  // Drag & Drop
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
-  });
-
-  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
-  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
-  
-  dropZone.addEventListener('drop', (e) => {
-    dropZone.style.borderColor = 'var(--border-color)';
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
-    if (files.length > 0) handleFileSelect(files[0]);
-  });
-  
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
-    fileInput.value = '';
-  });
-
-  async function handleFileSelect(file) {
-    const isCached = localStorage.getItem('tangent_ocr_model_cached');
-    
-    // We will handle preview inside processReceipt now to accommodate PDF rendering
-    if (isCached === 'true') {
-      processReceipt(file);
-    } else {
-      pendingFile = file;
-      emptyState.style.display = 'none';
-      activeState.style.display = 'none';
-      consentState.style.display = 'flex';
-    }
+  const jobs=TangentProcessing.jobs();let pendingFile=null,permission=false,ready=false,previewUrl=null;
+  const buttons=[btnCopyJSON,btnCopyText];const controls=()=>buttons.forEach(b=>b.disabled=!ready);
+  const resetBtn=document.createElement('button');resetBtn.textContent='Clear / Cancel';resetBtn.type='button';resetBtn.className='btn btn-secondary';dropZone.after(resetBtn);
+  const review=document.createElement('p');review.id='receiptReview';review.setAttribute('role','status');outRawText.before(review);
+  function clear(){ready=false;controls();outTotal.value='';outDate.value='';outRawText.value='';review.textContent='';if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;receiptPreview.removeAttribute('src');previewSection.style.display='none';}
+  function reset(){jobs.cancel();pendingFile=null;clear();consentState.style.display='none';activeState.style.display='none';emptyState.style.display='flex';fileInput.value='';statusSection.style.display='none';}
+  resetBtn.addEventListener('click',reset);btnConsentCancel.addEventListener('click',reset);
+  async function handleFileSelect(file){const job=jobs.begin();clear();pendingFile={file,job};emptyState.style.display='none';activeState.style.display='none';
+    try{TangentProcessing.checkFile(file);if(!file.type.startsWith('image/')&&file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))throw Error('Choose an image or PDF receipt.');
+      if(!permission){consentState.style.display='flex';return;}await processReceipt(file,job);
+    }catch(error){if(job.current()){consentState.style.display='none';activeState.style.display='flex';statusSection.style.display='block';statusText.textContent=error.message;}}
   }
-
-  btnConsentDownload.addEventListener('click', () => {
-    localStorage.setItem('tangent_ocr_model_cached', 'true');
-    consentState.style.display = 'none';
-    if (pendingFile) processReceipt(pendingFile);
-  });
-
-  btnConsentCancel.addEventListener('click', () => {
-    consentState.style.display = 'none';
-    emptyState.style.display = 'flex';
-    previewSection.style.display = 'none';
-    pendingFile = null;
-  });
-
-  async function processReceipt(file) {
-    emptyState.style.display = 'none';
-    consentState.style.display = 'none';
-    activeState.style.display = 'flex';
-    
-    outTotal.textContent = '--';
-    outDate.textContent = '--';
-    outRawText.value = '';
-    
-    statusSection.style.display = 'block';
-    progressBarContainer.style.display = 'block';
-    statusText.textContent = 'Preparing File...';
-    statusText.style.color = '#00d2ff';
-    statusPercent.textContent = '0%';
-    progressBarFill.style.width = '0%';
-
-    try {
-      let imageToProcess = file;
-      
-      // If PDF, rasterize the first page to a canvas using pdf.js
-      if (file.type === 'application/pdf') {
-        statusText.textContent = 'Rendering PDF...';
-        const pdfjsObj = window.pdfjsLib;
-        pdfjsObj.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsObj.getDocument({ data: arrayBuffer }).promise;
-        const page = await pdf.getPage(1); // Extract first page only
-        
-        // Scale 3.0 for >200 DPI (Tesseract requires high DPI for accurate numbers)
-        const viewport = page.getViewport({ scale: 3.0 });
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
-        
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        imageToProcess = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-      }
-      
-      // Show Preview
-      const previewUrl = URL.createObjectURL(imageToProcess);
-      receiptPreview.src = previewUrl;
-      previewSection.style.display = 'block';
-
-      const worker = await Tesseract.createWorker('eng', 1, {
-        logger: m => {
-          if (m.status === 'loading tesseract core' || m.status === 'initializing api' || m.status === 'recognizing text') {
-             statusText.textContent = m.status === 'recognizing text' ? 'Scanning Document...' : 'Loading OCR Engine...';
-             const percentage = Math.round(m.progress * 100);
-             statusPercent.textContent = `${percentage}%`;
-             progressBarFill.style.width = `${percentage}%`;
-          }
-        }
-      });
-      
-      const ret = await worker.recognize(imageToProcess);
-      await worker.terminate();
-      
-      const rawText = ret.data.text;
-      outRawText.value = rawText;
-      
-      // 1. Bulletproof Amount Detection (Finds the Maximum Currency Value on the Receipt)
-      // Uses unicode escapes to prevent Windows PowerShell encoding corruption (\u20B9 is Rupee, \u20AC is Euro, \u00A3 is Pound, \u00A5 is Yen)
-      const allAmounts = [...rawText.matchAll(/(?:[\$\u00A3\u20AC\u00A5\u20B9]|rs\.?|inr)?\s*(\d{1,7}[\.,]\s*\d{2})(?!\d)/gi)];
-      let maxAmt = 0;
-      let matchedCurrency = "";
-      
-      allAmounts.forEach(m => {
-          const val = parseFloat(m[1].replace(',', '.').replace(/\s+/g, ''));
-          if (val > maxAmt) {
-              maxAmt = val;
-              matchedCurrency = m[0].replace(/[\d\.,\s]/g, ''); 
-          }
-      });
-      
-      let finalAmount = "Not Found";
-      if (maxAmt > 0) {
-          if (!matchedCurrency && rawText.includes('\u20B9')) matchedCurrency = '\u20B9';
-          else if (!matchedCurrency && rawText.includes('$')) matchedCurrency = '$';
-          else if (!matchedCurrency && rawText.includes('\u20AC')) matchedCurrency = '\u20AC';
-          else if (!matchedCurrency && rawText.includes('\u00A3')) matchedCurrency = '\u00A3';
-          finalAmount = `${matchedCurrency}${maxAmt.toFixed(2)}`;
-      }
-
-      // 2. Bulletproof Date Detection (Removed word boundaries that get corrupted by OCR noise)
-      const numDateRegex = /\d{1,2}\s*[\/\-\.]\s*\d{1,2}\s*[\/\-\.]\s*\d{2,4}/;
-      const textDateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:st|nd|rd|th)?\,?\s+\d{4}/i;
-      
-      const numDateMatch = rawText.match(numDateRegex);
-      const textDateMatch = rawText.match(textDateRegex);
-      
-      let finalDate = "Not Found";
-      if (numDateMatch) {
-          finalDate = numDateMatch[0].replace(/\s+/g, ''); // Clean up any OCR spaces
-      } else if (textDateMatch) {
-          finalDate = textDateMatch[0];
-      }
-      
-      parsedData = {
-        total: finalAmount,
-        date: finalDate,
-        text: rawText
-      };
-      
-      outTotal.textContent = parsedData.total;
-      outDate.textContent = parsedData.date;
-      
-      statusText.textContent = 'Extraction Complete!';
-      statusText.style.color = '#00ffcc';
-      progressBarContainer.style.display = 'none';
-      statusPercent.textContent = '';
-      
-    } catch (err) {
-      console.error(err);
-      statusText.textContent = 'Error: ' + String(err);
-      statusText.style.color = '#ff4444';
-      progressBarContainer.style.display = 'none';
-    }
+  btnConsentDownload.addEventListener('click',()=>{permission=true;const request=pendingFile;pendingFile=null;if(request?.job.current())processReceipt(request.file,request.job);});
+  async function processReceipt(file,job){consentState.style.display='none';activeState.style.display='flex';statusSection.style.display='block';statusText.textContent='Preparing '+file.name+'...';progressBarContainer.style.display='block';statusPercent.textContent='';
+    try{let canvas;if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){const pages=await TangentProcessing.rasterPdf(file,job,{maxPages:1,scale:2});canvas=pages[0];}
+      else{const image=await TangentMedia.loadImage(file);job.check();canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;canvas.getContext('2d').drawImage(image,0,0);}
+      job.check();const blob=await TangentMedia.encode(canvas,'image/png');job.check();previewUrl=URL.createObjectURL(blob);receiptPreview.src=previewUrl;previewSection.style.display='block';
+      const data=await TangentProcessing.recognize([canvas],'eng',job,m=>{statusText.textContent=m.status==='recognizing text'?'Scanning receipt...':'Loading OCR engine...';progressBarFill.style.width=Math.round((m.progress||0)*100)+'%';});job.check();
+      const parsed=TangentReceipt.parse(data[0].text||'');outTotal.value=parsed.total;outDate.value=parsed.date;outRawText.value=parsed.text;review.textContent=parsed.warning;ready=!!parsed.text.trim();controls();statusText.textContent='Extraction complete. Review the fields.';
+    }catch(error){if(job.current()){clear();statusText.textContent=error.message||'Could not scan receipt.';}}
+    finally{if(job.current()){progressBarContainer.style.display='none';statusPercent.textContent='';}}
   }
+  dropZone.addEventListener('click',()=>fileInput.click());dropZone.addEventListener('dragover',e=>e.preventDefault());dropZone.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files[0])handleFileSelect(e.dataTransfer.files[0]);});fileInput.addEventListener('change',()=>{if(fileInput.files[0])handleFileSelect(fileInput.files[0]);fileInput.value='';});
+  async function copy(json){if(!ready)return;const text=outRawText.value;try{await navigator.clipboard.writeText(json?JSON.stringify({total:outTotal.value,date:outDate.value,text},null,2):text);review.textContent='Copied reviewed '+(json?'fields.':'text.');}catch(error){review.textContent='Could not copy. Select the text and copy manually.';}}
+  btnCopyJSON.addEventListener('click',()=>copy(true));btnCopyText.addEventListener('click',()=>copy(false));controls();
 
-  // Copy Actions
-  btnCopyJSON.addEventListener('click', () => {
-    if (parsedData.text) {
-      navigator.clipboard.writeText(JSON.stringify(parsedData, null, 2));
-      const originalText = btnCopyJSON.textContent;
-      btnCopyJSON.textContent = 'Copied!';
-      setTimeout(() => btnCopyJSON.textContent = originalText, 2000);
-    }
-  });
-
-  btnCopyText.addEventListener('click', () => {
-    if (parsedData.text) {
-      navigator.clipboard.writeText(parsedData.text);
-      const originalText = btnCopyText.textContent;
-      btnCopyText.textContent = 'Copied!';
-      setTimeout(() => btnCopyText.textContent = originalText, 2000);
-    }
-  });
 });
 </script>
 </body>

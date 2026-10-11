@@ -18,6 +18,10 @@
       document.body.classList.remove('sidebar-open');
       if (toolkitToggle) toolkitToggle.setAttribute('aria-expanded', 'false');
     }
+    if (tangentSidebar) {
+      if (!isOpen && tangentSidebar.contains(document.activeElement)) toolkitToggle?.focus();
+      tangentSidebar.inert = !isOpen;
+    }
     if (updateStorage) {
       try { localStorage.setItem('tangent_sidebar_open', isOpen ? 'true' : 'false'); } catch (e) {}
     }
@@ -32,11 +36,13 @@
       setSidebarState(true, false);
     }
   } catch (e) {}
+  setSidebarState(isSidebarOpen);
 
   if (toolkitToggle) {
     toolkitToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       setSidebarState(!isSidebarOpen, true);
+      if (isSidebarOpen) document.getElementById('toolkitSearch')?.focus();
     });
   }
 
@@ -65,7 +71,8 @@
       e.stopPropagation();
       const group = title.closest('.sidebar-group');
       if (group) {
-        group.classList.toggle('open');
+        const expanded = group.classList.toggle('open');
+        title.setAttribute('aria-expanded', String(expanded));
       }
     });
   });
@@ -117,6 +124,7 @@
           // Auto-expand the accordion if there's a search term
           if (terms.length > 0) {
             cat.classList.add('open');
+            cat.querySelector('.sidebar-group-title')?.setAttribute('aria-expanded', 'true');
           }
         } else {
           cat.style.display = 'none';

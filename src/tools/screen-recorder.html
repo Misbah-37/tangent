@@ -1,13 +1,13 @@
 <!-- --- HEAD_META --- -->
 <title>Screen & Audio Recorder | Tangent</title>
-<meta name="description" content="Free, unlimited in-browser screen and audio recorder. Capture your screen, window, or tab with microphone and system sound. Zero watermarks, zero accounts.">
+<meta name="description" content="Free in-browser screen and audio recorder. Capture your screen, window, or tab with microphone and system sound. Zero watermarks, zero accounts.">
 <link rel="canonical" href="https://runtangent.com/screen-recorder">
 
 <!-- Foundation & Social Meta Tags -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Screen & Audio Recorder | Tangent">
-<meta property="og:description" content="Capture your desktop screen, browser tab, or app window with microphone and system audio. No 5-minute cap, no watermarks, 100% private in browser memory.">
+<meta property="og:description" content="Capture your desktop screen, browser tab, or app window with microphone and system audio. Clips up to 30 minutes or approximately 256 MB, no watermarks, 100% private in browser memory.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
 <!-- Favicon & Touch Icons with Cache Buster -->
@@ -22,7 +22,7 @@
       "name": "Is there a recording time limit or video cap?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Unlike tools like Loom or Screencastify which cap free users at 5 minutes, Tangent has zero arbitrary time restrictions. You can record as long as your device has available memory."
+        "text": "Recording stops at 30 minutes or approximately 256 MB per clip to limit browser memory use. Save each clip before starting another or leaving the page."
       }
     },
     {
@@ -539,17 +539,17 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Screen & Audio Recorder</h1>
-  <p>Capture entire screens, application windows, or browser tabs with microphone and system audio. No 5-minute limit, zero watermarks, and zero cloud uploads.</p>
+  <p>Capture entire screens, application windows, or browser tabs with microphone and system audio. Clips up to 30 minutes or approximately 256 MB, zero watermarks, and zero cloud uploads.</p>
 </div>
 
 <!-- Main Studio Card -->
 <div class="recorder-card">
-  
+
   <!-- STAGE 1: Pre-Recording Setup -->
   <div id="stageSetup">
-    
+
     <div class="setup-grid">
-      
+
       <!-- Microphone Option -->
       <div class="option-box active" id="micBox">
         <div class="option-header">
@@ -562,7 +562,7 @@
             <span class="slider-toggle"></span>
           </label>
         </div>
-        
+
         <div class="vu-meter-wrap" id="micVuWrap">
           <div class="vu-bar-bg">
             <div class="vu-bar-fill" id="micVuFill"></div>
@@ -600,7 +600,7 @@
     <div class="trust-guarantees">
       <div class="trust-pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-        <span>No Time Limit</span>
+        <span>30 min / ~256 MB per clip</span>
       </div>
       <div class="trust-pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -615,14 +615,14 @@
     <!-- Browser Compatibility Note -->
     <div style="margin-top: 14px; font-size: 0.78rem; color: var(--text-subtle); text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-      <span>Supports Chrome, Edge, Firefox, and Safari (Safari exports to native MP4; Chrome/Edge recommended for 60fps VP9).</span>
+      <span>Requires a desktop browser with screen capture support. Video format and shared audio depend on the browser and source.</span>
     </div>
 
   </div>
 
   <!-- STAGE 2: Active Recording Stage -->
   <div class="active-stage" id="stageRecording">
-    
+
     <div class="rec-indicator-row">
       <div class="record-pulse-dot" style="background:#ef4444;"></div>
       <span id="recStatusText">RECORDING LIVE</span>
@@ -646,7 +646,7 @@
 
   <!-- STAGE 3: Review & Export Stage -->
   <div class="review-stage" id="stageReview">
-    
+
     <video class="video-preview-player" id="videoPreview" controls playsinline></video>
 
     <div class="review-meta-box">
@@ -691,8 +691,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
       </div>
-      <h3>No Arbitrary Time Caps</h3>
-      <p>Unlike commercial tools that cut you off after 5 minutes, Tangent lets you record long meetings, coding sessions, and tutorials without limits.</p>
+      <h3>Bounded Local Clips</h3>
+      <p>Record clips up to 30 minutes or approximately 256 MB, then save and start another. Keep clips shorter on devices with limited memory.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -706,7 +706,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
       </div>
       <h3>100% Local In-Memory Buffer</h3>
-      <p>Streams are encoded straight into your browser memory and written directly to your local drive. Not a single frame is ever uploaded to a server.</p>
+      <p>Streams are encoded into browser memory. Use Download to save the completed clip to your local drive. Not a single frame is ever uploaded to a server.</p>
     </div>
   </div>
 
@@ -715,13 +715,13 @@
   <div class="faq-box">
     <details>
       <summary>Is there any recording time limit or video cap?</summary>
-      <p>No. Commercial SaaS tools aggressively cut free recordings off after 5 minutes and demand a monthly subscription. Tangent has zero arbitrary caps—you can record full meetings, tutorials, coding walkthroughs, or software bug reports for as long as your computer has available memory.</p>
+      <p>Recording stops at 30 minutes or approximately 256 MB per clip to limit browser memory use. Save each clip before starting another or leaving the page.</p>
     </details>
   </div>
   <div class="faq-box">
     <details>
       <summary>Can I record system audio along with microphone sound?</summary>
-      <p>Yes. When selecting a browser tab or entire screen, check the 'Share audio' option to capture high-fidelity desktop sound and YouTube/video audio alongside your microphone narration.</p>
+      <p>System audio depends on the browser and selected screen or tab. Enable 'Share audio' in the browser picker when available. Microphone permission is requested only when you start a recording.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -735,320 +735,4 @@
 <!-- Global Footer -->
 
 <!-- --- SCRIPTS --- -->
-<script>
-// --- Navigation menu & dropdown handler ---
-(function initNavigation() {
-})();
-
-// --- Screen Recorder Core Engine ---
-let mediaRecorder = null;
-let recordedChunks = [];
-let screenStream = null;
-let micStream = null;
-let audioContext = null;
-let timerInterval = null;
-let elapsedSeconds = 0;
-let isPaused = false;
-let recordedBlob = null;
-let micMeterInterval = null;
-
-const chkMic = document.getElementById('chkMic');
-const chkSysAudio = document.getElementById('chkSysAudio');
-const micBox = document.getElementById('micBox');
-const sysAudioBox = document.getElementById('sysAudioBox');
-const micVuFill = document.getElementById('micVuFill');
-
-chkMic.addEventListener('change', () => {
-  micBox.classList.toggle('active', chkMic.checked);
-  if (chkMic.checked) startMicMonitor();
-  else stopMicMonitor();
-});
-
-chkSysAudio.addEventListener('change', () => {
-  sysAudioBox.classList.toggle('active', chkSysAudio.checked);
-});
-
-// Live Microphone VU Meter Monitor before recording starts
-let monitorMicStream = null;
-let monitorAudioCtx = null;
-let monitorAnalyser = null;
-
-async function startMicMonitor() {
-  try {
-    monitorAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    monitorMicStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    const source = monitorAudioCtx.createMediaStreamSource(monitorMicStream);
-    monitorAnalyser = monitorAudioCtx.createAnalyser();
-    monitorAnalyser.fftSize = 64;
-    source.connect(monitorAnalyser);
-
-    const buffer = new Uint8Array(monitorAnalyser.frequencyBinCount);
-    
-    clearInterval(micMeterInterval);
-    micMeterInterval = setInterval(() => {
-      if (!chkMic.checked || !monitorAnalyser) {
-        micVuFill.style.width = '0%';
-        return;
-      }
-      monitorAnalyser.getByteFrequencyData(buffer);
-      let sum = 0;
-      for (let i = 0; i < buffer.length; i++) sum += buffer[i];
-      let avg = sum / buffer.length;
-      let pct = Math.min(100, Math.round((avg / 128) * 100));
-      micVuFill.style.width = pct + '%';
-    }, 50);
-  } catch (err) {
-    console.warn("Microphone preview permission not granted yet:", err);
-  }
-}
-
-function stopMicMonitor() {
-  clearInterval(micMeterInterval);
-  if (monitorMicStream) {
-    monitorMicStream.getTracks().forEach(t => t.stop());
-    monitorMicStream = null;
-  }
-  if (monitorAudioCtx) {
-    monitorAudioCtx.close();
-    monitorAudioCtx = null;
-  }
-  micVuFill.style.width = '0%';
-}
-
-// Start live mic monitoring on page load if mic toggle checked
-if (chkMic.checked) {
-  startMicMonitor();
-}
-
-// Format seconds into HH:MM:SS
-function formatTime(totalSeconds) {
-  const hrs = Math.floor(totalSeconds / 3600);
-  const mins = Math.floor((totalSeconds % 3600) / 60);
-  const secs = totalSeconds % 60;
-  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
-
-// Start Recording Flow
-document.getElementById('btnStartRecord').addEventListener('click', async () => {
-  stopMicMonitor(); // Close preview monitor to yield mic to recorder
-  recordedChunks = [];
-  elapsedSeconds = 0;
-  isPaused = false;
-
-  try {
-    // 1. Capture Screen Display
-    const displayMediaOptions = {
-      video: {
-        frameRate: { ideal: 60, max: 60 },
-        cursor: "always"
-      },
-      audio: chkSysAudio.checked
-    };
-
-    screenStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-
-    // 2. Capture Microphone if enabled
-    const tracksToRecord = [...screenStream.getVideoTracks()];
-    const audioTracks = [];
-
-    // System Audio from Screen Stream
-    const screenAudioTracks = screenStream.getAudioTracks();
-    if (screenAudioTracks.length > 0) {
-      audioTracks.push(...screenAudioTracks);
-    }
-
-    // Microphone Audio
-    if (chkMic.checked) {
-      try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        audioTracks.push(...micStream.getAudioTracks());
-      } catch (micErr) {
-        console.warn("Microphone not captured:", micErr);
-      }
-    }
-
-    // 3. Audio Mixing via AudioContext if we have audio tracks
-    if (audioTracks.length > 0) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const dest = audioContext.createMediaStreamDestination();
-
-      if (screenAudioTracks.length > 0) {
-        const sysSource = audioContext.createMediaStreamSource(new MediaStream(screenAudioTracks));
-        sysSource.connect(dest);
-      }
-
-      if (micStream && micStream.getAudioTracks().length > 0) {
-        const micSource = audioContext.createMediaStreamSource(new MediaStream(micStream.getAudioTracks()));
-        micSource.connect(dest);
-      }
-
-      tracksToRecord.push(...dest.stream.getAudioTracks());
-    }
-
-    const combinedStream = new MediaStream(tracksToRecord);
-
-    // 4. Select Best Codec Supported (Chromium/Firefox WebM -> Safari MP4 fallback)
-    const candidateTypes = [
-      'video/webm;codecs=vp9,opus',
-      'video/webm;codecs=vp8,opus',
-      'video/webm',
-      'video/mp4;codecs=avc1,mp4a.40.2',
-      'video/mp4;codecs=avc1',
-      'video/mp4'
-    ];
-
-    let mimeType = candidateTypes.find(type => {
-      try {
-        return typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(type);
-      } catch (e) {
-        return false;
-      }
-    }) || '';
-
-    const recorderOptions = {
-      videoBitsPerSecond: 4500000 // 4.5 Mbps high fidelity
-    };
-    if (mimeType) {
-      recorderOptions.mimeType = mimeType;
-    }
-
-    mediaRecorder = new MediaRecorder(combinedStream, recorderOptions);
-
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data && event.data.size > 0) {
-        recordedChunks.push(event.data);
-      }
-    };
-
-    mediaRecorder.onstop = () => {
-      finalizeRecording();
-    };
-
-    // If user clicks browser's native "Stop Sharing" floating button
-    screenStream.getVideoTracks()[0].onended = () => {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
-    };
-
-    // 5. Start MediaRecorder
-    mediaRecorder.start(1000); // 1-second chunks for reliability
-
-    // 6. Transition UI to Recording Stage
-    document.getElementById('stageSetup').style.display = 'none';
-    document.getElementById('stageRecording').style.display = 'flex';
-    document.getElementById('stageReview').style.display = 'none';
-
-    document.getElementById('recTimerDisplay').textContent = "00:00:00";
-    document.getElementById('recStatusText').textContent = "RECORDING LIVE";
-
-    // 7. Start Timer
-    timerInterval = setInterval(() => {
-      if (!isPaused) {
-        elapsedSeconds++;
-        document.getElementById('recTimerDisplay').textContent = formatTime(elapsedSeconds);
-      }
-    }, 1000);
-
-  } catch (err) {
-    console.error("Recording error or user cancelled:", err);
-    if (chkMic.checked) startMicMonitor();
-  }
-});
-
-// Pause / Resume Button
-document.getElementById('btnPauseResume').addEventListener('click', () => {
-  if (!mediaRecorder) return;
-
-  const pauseLabel = document.getElementById('pauseLabel');
-  const recStatusText = document.getElementById('recStatusText');
-
-  if (mediaRecorder.state === 'recording') {
-    mediaRecorder.pause();
-    isPaused = true;
-    pauseLabel.textContent = "Resume";
-    recStatusText.textContent = "RECORDING PAUSED";
-  } else if (mediaRecorder.state === 'paused') {
-    mediaRecorder.resume();
-    isPaused = false;
-    pauseLabel.textContent = "Pause";
-    recStatusText.textContent = "RECORDING LIVE";
-  }
-});
-
-// Stop Recording Button
-document.getElementById('btnStopRecord').addEventListener('click', () => {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-  }
-});
-
-// Finalize Recording and transition to Review Stage
-function finalizeRecording() {
-  clearInterval(timerInterval);
-
-  // Stop all active tracks
-  if (screenStream) {
-    screenStream.getTracks().forEach(t => t.stop());
-    screenStream = null;
-  }
-  if (micStream) {
-    micStream.getTracks().forEach(t => t.stop());
-    micStream = null;
-  }
-  if (audioContext) {
-    audioContext.close();
-    audioContext = null;
-  }
-
-  // Create Video Blob
-  const actualMime = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : (mimeType || 'video/webm');
-  recordedBlob = new Blob(recordedChunks, { type: actualMime });
-  const videoUrl = URL.createObjectURL(recordedBlob);
-
-  // Setup video preview player
-  const videoPlayer = document.getElementById('videoPreview');
-  videoPlayer.src = videoUrl;
-
-  // Metadata Display
-  const sizeMb = (recordedBlob.size / (1024 * 1024)).toFixed(2);
-  document.getElementById('metaDuration').textContent = formatTime(elapsedSeconds);
-  document.getElementById('metaSize').textContent = `${sizeMb} MB`;
-
-  const isMp4 = actualMime.toLowerCase().includes('mp4');
-  const fileExt = isMp4 ? 'mp4' : 'webm';
-  let formatLabel = 'WebM Video';
-  if (actualMime.includes('vp9')) {
-    formatLabel = 'WebM (VP9 / 60fps)';
-  } else if (actualMime.includes('vp8')) {
-    formatLabel = 'WebM (VP8)';
-  } else if (isMp4) {
-    formatLabel = 'MP4 Video (H.264)';
-  }
-  document.getElementById('metaFormat').textContent = formatLabel;
-
-  // Setup Download Button
-  const dlBtn = document.getElementById('btnDownloadVideo');
-  dlBtn.href = videoUrl;
-  dlBtn.download = `Tangent_Recording_${new Date().toISOString().slice(0, 10)}.${fileExt}`;
-
-  // Transition UI to Review Stage
-  document.getElementById('stageSetup').style.display = 'none';
-  document.getElementById('stageRecording').style.display = 'none';
-  document.getElementById('stageReview').style.display = 'flex';
-}
-
-// Record New Video Button (Reset)
-document.getElementById('btnRecordAgain').addEventListener('click', () => {
-  document.getElementById('stageReview').style.display = 'none';
-  document.getElementById('stageRecording').style.display = 'none';
-  document.getElementById('stageSetup').style.display = 'block';
-
-  // Reset player
-  const videoPlayer = document.getElementById('videoPreview');
-  videoPlayer.pause();
-  videoPlayer.src = "";
-
-  if (chkMic.checked) startMicMonitor();
-});
-</script>
+<script src="assets/screen-recorder-engine.js"></script>

@@ -173,10 +173,10 @@
     align-items: center;
     justify-content: center;
     background: #050608;
-    background-image: 
-      linear-gradient(45deg, #090b10 25%, transparent 25%), 
-      linear-gradient(-45deg, #090b10 25%, transparent 25%), 
-      linear-gradient(45deg, transparent 75%, #090b10 75%), 
+    background-image:
+      linear-gradient(45deg, #090b10 25%, transparent 25%),
+      linear-gradient(-45deg, #090b10 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #090b10 75%),
       linear-gradient(-45deg, transparent 75%, #090b10 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
@@ -490,7 +490,7 @@
 
 <!-- Studio Workbench Layout -->
 <div class="studio-layout">
-  
+
   <!-- Left: Live Preview Stage -->
   <div class="preview-wrapper">
     <div class="preview-toolbar">
@@ -500,25 +500,26 @@
       </div>
       <div class="paste-hint">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        <span>Drop file or press Ctrl+V / ⌘V</span>
+        <span>Drop file or press Ctrl+V / âŒ˜V</span>
       </div>
     </div>
 
     <div class="canvas-stage" id="canvasStage" onclick="document.getElementById('fileInput').click()" title="Click to browse image or drag and drop">
       <canvas id="mockupCanvas" width="1200" height="750"></canvas>
-      
+
       <div class="dropzone-overlay" id="dropOverlay">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
         <span style="font-size:1.1rem; font-weight:600; color: var(--text-main);">Drop your screenshot here</span>
         <span style="font-size:0.85rem; color: var(--text-muted);">PNG, JPG, WebP supported</span>
       </div>
     </div>
+    <div id="mockupStatus" role="status" style="font-size:13px;margin:12px 0;">Choose an image or use the demo. Inputs up to 25 million pixels; exports are capped at 4096 pixels per side.</div>
     <input type="file" id="fileInput" accept="image/*" style="display:none;">
   </div>
 
   <!-- Right: Customization Controls -->
   <div class="controls-panel">
-    
+
     <!-- 1. Window Frame Style -->
     <div class="control-section">
       <div class="control-heading">
@@ -606,7 +607,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         <span>Download High-Res PNG (2x)</span>
       </button>
-      
+
       <button type="button" class="btn-secondary-action" id="btnCopyClipboard">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         <span id="copyLabel">Copy Image to Clipboard</span>
@@ -672,6 +673,7 @@
 <!-- Global Footer -->
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
 <script>
 // --- Navigation menu & dropdown handler ---
 (function initNavigation() {
@@ -706,6 +708,9 @@ let state = {
 
 const canvas = document.getElementById('mockupCanvas');
 const ctx = canvas.getContext('2d');
+let imageOperation=0,mockupExportBusy=false;
+const mockupStatus=document.getElementById('mockupStatus');
+function setExportDisabled(disabled){document.getElementById('btnDownload').disabled=disabled;document.getElementById('btnCopyClipboard').disabled=disabled;}
 
 // Build Gradient Palette
 function initPalette() {
@@ -783,6 +788,7 @@ sliderScale.oninput = (e) => {
 
 // Create a high-tech sleek default demo screenshot
 function createDefaultDemoImage() {
+  const operation=imageOperation;
   const demo = document.createElement('canvas');
   demo.width = 960;
   demo.height = 580;
@@ -859,11 +865,11 @@ function createDefaultDemoImage() {
   dctx.fill();
 
   const img = new Image();
-  img.src = demo.toDataURL();
   img.onload = () => {
-    state.currentImage = img;
-    render();
+    if(operation!==imageOperation)return;
+    state.currentImage = img;setExportDisabled(false);render();
   };
+  img.src = demo.toDataURL();
 }
 
 // Render Engine (High-DPI Retina 2x)
@@ -1033,18 +1039,13 @@ function render() {
 }
 
 // Image Loader Helper
-function loadImageFromFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      state.currentImage = img;
-      render();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+async function loadImageFromFile(file) {
+  const operation=++imageOperation;mockupExportBusy=false;state.currentImage=null;ctx.clearRect(0,0,canvas.width,canvas.height);setExportDisabled(true);mockupStatus.textContent='Loading image...';
+  try{
+    if(!file||!file.type.startsWith('image/'))throw new Error('Choose a supported image.');
+    const image=await TangentMedia.loadImage(file);if(operation!==imageOperation)return;
+    state.currentImage=image;render();setExportDisabled(false);mockupStatus.textContent='Loaded '+(file.name||'pasted image')+'.';
+  }catch(error){if(operation===imageOperation)mockupStatus.textContent='Could not load image: '+error.message;}
 }
 
 // File Input
@@ -1079,7 +1080,7 @@ window.addEventListener('drop', (e) => {
   }
 });
 
-// Clipboard Paste Listener (Ctrl+V / ⌘V anywhere on document)
+// Clipboard Paste Listener (Ctrl+V / âŒ˜V anywhere on document)
 window.addEventListener('paste', (e) => {
   const items = e.clipboardData ? e.clipboardData.items : [];
   for (let i = 0; i < items.length; i++) {
@@ -1091,35 +1092,19 @@ window.addEventListener('paste', (e) => {
   }
 });
 
-// Download High-Res PNG Button
-document.getElementById('btnDownload').addEventListener('click', () => {
-  const link = document.createElement('a');
-  link.download = 'Tangent_Mockup.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-});
-
-// Copy Image to Clipboard Button
-document.getElementById('btnCopyClipboard').addEventListener('click', async () => {
-  const copyBtn = document.getElementById('btnCopyClipboard');
-  const copyLabel = document.getElementById('copyLabel');
-  try {
-    canvas.toBlob(async (blob) => {
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob })
-      ]);
-      copyBtn.classList.add('copied');
-      copyLabel.textContent = 'Copied to Clipboard!';
-      setTimeout(() => {
-        copyBtn.classList.remove('copied');
-        copyLabel.textContent = 'Copy Image to Clipboard';
-      }, 2500);
-    });
-  } catch (err) {
-    console.error('Clipboard error:', err);
-    alert('Could not copy directly to clipboard. Please use the Download button.');
-  }
-});
+async function exportMockup(copy){
+  if(!state.currentImage||mockupExportBusy)return;
+  const operation=imageOperation,snapshot=document.createElement('canvas');snapshot.width=canvas.width;snapshot.height=canvas.height;snapshot.getContext('2d').drawImage(canvas,0,0);
+  mockupExportBusy=true;setExportDisabled(true);mockupStatus.textContent='Preparing image...';
+  try{
+    const blob=await TangentMedia.encode(snapshot,'image/png');if(operation!==imageOperation)return;
+    if(copy){if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw new Error('Clipboard copying is unavailable. Use Download.');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);if(operation===imageOperation)mockupStatus.textContent='Image copied to clipboard.';}
+    else{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='Tangent_Mockup.png';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);mockupStatus.textContent='PNG downloaded.';}
+  }catch(error){if(operation===imageOperation)mockupStatus.textContent='Could not export image: '+error.message;}
+  finally{if(operation===imageOperation){mockupExportBusy=false;setExportDisabled(false);}}
+}
+document.getElementById('btnDownload').addEventListener('click',()=>exportMockup(false));
+document.getElementById('btnCopyClipboard').addEventListener('click',()=>exportMockup(true));
 
 // Initialize on page load
 initPalette();

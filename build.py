@@ -50,7 +50,7 @@ def generate_sidebar_html(tools, current_page):
         if cat not in categories:
             categories[cat] = []
         categories[cat].append(t)
-    
+
     ordered_cats = [c for c in CATEGORY_ORDER if c in categories]
     for c in categories:
         if c not in ordered_cats:
@@ -71,7 +71,7 @@ def generate_sidebar_html(tools, current_page):
     lines.append('  <div class="sidebar-search" style="padding: 0 16px 12px 16px;">')
     lines.append('    <div style="position: relative; display: flex; align-items: center;">')
     lines.append('      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>')
-    lines.append('      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">')
+    lines.append('      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">')
     lines.append('    </div>')
     lines.append('  </div>')
     lines.append('')
@@ -80,9 +80,9 @@ def generate_sidebar_html(tools, current_page):
     for cat_idx, cat in enumerate(ordered_cats, start=1):
         lines.append(f'    <!-- Category {cat_idx}: {cat} -->')
         lines.append('    <div class="sidebar-group">')
-        lines.append(f'      <div class="sidebar-group-title">{cat}</div>')
-        lines.append('      <div class="sidebar-group-content">')
-        
+        lines.append(f'      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-{cat_idx}">{cat}</button>')
+        lines.append(f'      <div class="sidebar-group-content" id="sidebar-category-{cat_idx}">')
+
         for item in categories[cat]:
             is_active = (item["filename"] == current_page)
             active_class = " active" if is_active else ""
@@ -100,7 +100,7 @@ def generate_sidebar_html(tools, current_page):
             lines.append('')
 
     lines.append('  </div>')
-    
+
     # --- Sidebar Support Widget ---
     lines.append('  <div class="sidebar-support-widget">')
     lines.append('    <div class="support-title">Support Tangent</div>')
@@ -110,7 +110,7 @@ def generate_sidebar_html(tools, current_page):
     lines.append('      Support')
     lines.append('    </a>')
     lines.append('  </div>')
-    
+
     lines.append('</aside>')
     lines.append('<!-- TANGENT_SIDEBAR_END -->')
 
@@ -130,12 +130,12 @@ def generate_tools_layout_html(tools):
         cat = t.get("category", "Utilities")
         if cat not in categories_raw:
             categories_raw.append(cat)
-            
+
     categories = [c for c in CATEGORY_ORDER if c in categories_raw]
     for c in categories_raw:
         if c not in categories:
             categories.append(c)
-            
+
     # Find top picks (1 from each category, lowest gridOrder)
     top_picks = []
     for cat in categories:
@@ -143,9 +143,9 @@ def generate_tools_layout_html(tools):
         if cat_tools:
             cat_tools.sort(key=lambda x: x.get("gridOrder", 999))
             top_picks.append(cat_tools[0])
-            
+
     lines = ['<!-- TANGENT_TOOL_LAYOUT_START -->']
-    
+
     def build_track(title, track_tools, track_id):
         html = [f'  <div class="category-section">']
         html.append(f'    <div class="category-header">')
@@ -162,7 +162,7 @@ def generate_tools_layout_html(tools):
         html.append(f'      </div>')
         html.append(f'      <div class="track-mask-wrapper">')
         html.append(f'        <div class="carousel-track" id="{track_id}">')
-        
+
         sorted_track = sorted(track_tools, key=lambda x: x.get("gridOrder", 999))
         for t in sorted_track:
             html.append(f'        <a href="{t["filename"]}" class="tool-card">')
@@ -174,7 +174,7 @@ def generate_tools_layout_html(tools):
             html.append(f'            <p>{t["cardDesc"]}</p>')
             html.append(f'          </div>')
             html.append(f'        </a>')
-            
+
         html.append(f'        </div>')
         html.append(f'      </div>')
         html.append(f'    </div>')
@@ -183,13 +183,13 @@ def generate_tools_layout_html(tools):
 
     # Top Picks Row
     lines.append(build_track("Top Picks", top_picks, "track-top-picks"))
-    
+
     # Category Rows
     for i, cat in enumerate(categories):
         cat_tools = [t for t in tools if t.get("category", "Utilities") == cat]
         track_id = f"track-cat-{i}"
         lines.append(build_track(cat, cat_tools, track_id))
-        
+
     lines.append('<!-- TANGENT_TOOL_LAYOUT_END -->')
     return "\n".join(lines)
 
@@ -237,23 +237,23 @@ def parse_fragment_file(content):
     styles_m = re.search(r'<!-- --- TOOL_STYLES --- -->\s*<style>([\s\S]*?)</style>\s*<!-- --- CONTENT --- -->', content)
     content_m = re.search(r'<!-- --- CONTENT --- -->([\s\S]*?)<!-- --- SCRIPTS --- -->', content)
     scripts_m = re.search(r'<!-- --- SCRIPTS --- -->([\s\S]*)$', content)
-    
+
     head_meta = meta_m.group(1).strip() if meta_m else ""
     tool_styles = styles_m.group(1).strip() if styles_m else ""
     body_content = content_m.group(1).strip() if content_m else ""
     scripts = scripts_m.group(1).strip() if scripts_m else ""
-    
+
     return head_meta, tool_styles, body_content, scripts
 
 def build_all():
     print("=== BUILDING TANGENT STATIC SUITE FROM TEMPLATES ===")
     tools = load_tools()
     print(f"Loaded {len(tools)} tools from tools.json")
-    
+
     if not os.path.exists(TEMPLATE_PATH):
         print(f"[ERROR] Template {TEMPLATE_PATH} does not exist.")
         sys.exit(1)
-        
+
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         shell_template = f.read()
 
@@ -262,9 +262,9 @@ def build_all():
     if os.path.exists(index_src):
         with open(index_src, "r", encoding="utf-8") as f:
             idx_frag = f.read()
-        
+
         hm, ts, ct, sc = parse_fragment_file(idx_frag)
-        
+
         # Auto-update grid in index content
         grid_replacement = (
             '<section id="tools" class="tools-directory">\n'
@@ -274,7 +274,7 @@ def build_all():
         grid_pattern = re.compile(r'<section id="tools" class="(?:grid-container|tools-directory)">[\s\S]*?</section>')
         if grid_pattern.search(ct):
             ct = grid_pattern.sub(grid_replacement, ct, count=1)
-        
+
         idx_compiled = shell_template
         canonical_tag = '<link rel="canonical" href="https://runtangent.com/" />\n'
         idx_compiled = idx_compiled.replace("<!-- INJECT_HEAD_META -->", canonical_tag + hm)
@@ -283,9 +283,9 @@ def build_all():
         idx_compiled = idx_compiled.replace("<!-- INJECT_SIDEBAR -->", generate_sidebar_html(tools, "index.html"))
         idx_compiled = idx_compiled.replace("<!-- INJECT_CONTENT -->", ct)
         idx_compiled = idx_compiled.replace("<!-- INJECT_SCRIPTS -->", sc)
-        
+
         idx_dest = os.path.join(SITE_DIR, "index.html")
-        with open(idx_dest, "w", encoding="utf-8") as f:
+        with open(idx_dest, "w", encoding="utf-8", newline="\n") as f:
             f.write(idx_compiled)
         print(f"  [COMPILED] index.html ({len(idx_compiled):,} bytes)")
     else:
@@ -298,12 +298,12 @@ def build_all():
         if not os.path.exists(t_src):
             print(f"  [WARN] Source fragment missing for {fname}")
             continue
-            
+
         with open(t_src, "r", encoding="utf-8") as f:
             t_frag = f.read()
-            
+
         hm, ts, ct, sc = parse_fragment_file(t_frag)
-        
+
         # Inject JSON-LD Structured Data for this tool
         title = tool.get("title", "").replace('"', '\"')
         desc = tool.get("cardDesc", "").replace('"', '\"')
@@ -328,7 +328,7 @@ def build_all():
 </script>
 '''
         hm = hm + ld_json
-        
+
         canonical_tag = f'<link rel="canonical" href="https://runtangent.com/{fname}" />\n'
         t_compiled = shell_template
         t_compiled = t_compiled.replace("<!-- INJECT_HEAD_META -->", canonical_tag + hm)
@@ -337,14 +337,14 @@ def build_all():
         t_compiled = t_compiled.replace("<!-- INJECT_SIDEBAR -->", generate_sidebar_html(tools, fname))
         t_compiled = t_compiled.replace("<!-- INJECT_CONTENT -->", ct)
         t_compiled = t_compiled.replace("<!-- INJECT_SCRIPTS -->", sc)
-        
+
         t_dest = os.path.join(SITE_DIR, fname)
-        with open(t_dest, "w", encoding="utf-8") as f:
+        with open(t_dest, "w", encoding="utf-8", newline="\n") as f:
             f.write(t_compiled)
         print(f"  [COMPILED] {fname:22} ({len(t_compiled):,} bytes)")
 
     # 3. Regenerate sitemap.xml
-    with open(SITEMAP_PATH, "w", encoding="utf-8") as f:
+    with open(SITEMAP_PATH, "w", encoding="utf-8", newline="\n") as f:
         f.write(generate_sitemap_xml(tools))
     print("  [UPDATED] sitemap.xml regenerated.")
 
@@ -356,7 +356,7 @@ def build_all():
                 src = os.path.join(SITE_DIR, f)
                 dst = os.path.join(BRAIN_DIR, f)
                 shutil.copy2(src, dst)
-        
+
         # Also sync templates and src directories
         for sub in ["templates", "src"]:
             s_sub = os.path.join(SITE_DIR, sub)

@@ -15,11 +15,11 @@
 
 <link rel="canonical" href="https://runtangent.com/" />
 <title>Tangent Privacy Tools Suite | 100% Client-Side Web Utilities</title>
-<meta name="description" content="A comprehensive suite of 24 client-side web utilities for developers and professionals. 100% private, offline-first processing with zero data leaving your browser.">
+<meta name="description" content="Private browser tools for files and data, with local processing and no file uploads. Discover Tangent Pro for larger data workflows on Windows.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Tangent Privacy Tools Suite | 100% Client-Side Web Utilities">
-<meta property="og:description" content="A comprehensive suite of 24 client-side web utilities for developers and professionals. 100% private, offline-first processing with zero data leaving your browser.">
+<meta property="og:description" content="Private browser tools for files and data, with local processing and no file uploads. Discover Tangent Pro for larger data workflows on Windows.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://runtangent.com/social-banner.png">
@@ -51,7 +51,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 body, html {
     margin: 0;
@@ -109,6 +109,16 @@ body, html {
   }
 
   /* --- Tool Grid Section --- */
+  .pro-link { display: inline-block; margin: 12px 18px; color: var(--accent); font-weight: 600; text-underline-offset: 5px; }
+  .pro-section { max-width: 1100px; margin: 0 auto 64px; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border: 1px solid var(--border-color); border-radius: 20px; background: var(--bg-surface); scroll-margin-top: 90px; }
+  .pro-section h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -0.03em; line-height: 1.15; margin: 18px 0; }
+  .pro-section h3 { font-size: 1.1rem; margin: 8px 0; }
+  .pro-section p { color: var(--text-muted); line-height: 1.7; }
+  .pro-status { font-size: 0.8rem; color: var(--accent); border: 1px solid var(--border-highlight); border-radius: 999px; padding: 6px 12px; display: inline-block; }
+  .pro-section .pro-availability { font-size: 0.9rem; }
+  .pro-details .pro-link { margin-left: 0; }
+  .pro-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+  @media (max-width: 700px) { .pro-section { grid-template-columns: 1fr; margin: 0 16px 48px; padding: 24px; gap: 16px; } }
       .tools-directory {
     width: 100%;
     min-width: 0;
@@ -128,25 +138,25 @@ body, html {
     display: flex;
     flex-direction: column;
   }
-  
+
   .category-header {
     padding: 0 40px;
     margin-bottom: 8px;
   }
-  
+
   .category-header h2 {
     font-size: 22px;
     font-weight: 700;
     color: var(--text-main);
     margin: 0;
   }
-  
+
   .carousel-container {
     width: 100%;
     min-width: 0;
     position: relative;
   }
-  
+
   .carousel-nav {
     position: absolute;
     top: 0;
@@ -158,7 +168,7 @@ body, html {
     justify-content: space-between;
     z-index: 10;
   }
-  
+
   .scroll-btn {
     pointer-events: auto;
     width: 60px;
@@ -174,19 +184,19 @@ body, html {
     cursor: pointer;
     transition: opacity 0.3s ease, background 0.3s ease;
   }
-  
+
   .scroll-btn.left {
     background: linear-gradient(to right, var(--bg-base) 10%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
-  
+
   .scroll-btn.right {
     background: linear-gradient(to left, var(--bg-base) 10%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
-  
+
   .carousel-container:hover .scroll-btn {
     opacity: 1;
   }
-  
+
   .scroll-btn:hover {
     color: var(--accent);
   }
@@ -196,13 +206,13 @@ body, html {
   .scroll-btn.right:hover {
     background: linear-gradient(to left, var(--bg-base) 40%, color-mix(in srgb, var(--bg-base) 0%, transparent) 100%);
   }
-  
+
   .track-mask-wrapper {
     width: 100%;
     -webkit-mask-image: linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%);
     mask-image: linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%);
   }
-  
+
   .carousel-track {
     display: flex;
     gap: 16px;
@@ -214,11 +224,11 @@ body, html {
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   .carousel-track::-webkit-scrollbar {
     display: none;
   }
-  
+
   .carousel-track {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -242,7 +252,7 @@ body, html {
     scroll-snap-align: start;
     box-sizing: border-box;
   }
-  
+
   .tool-card:hover {
     transform: scale(1.05);
     z-index: 2;
@@ -250,7 +260,7 @@ body, html {
     border-color: var(--accent);
     background-color: var(--bg-card-hover);
   }
-  
+
   @media (max-width: 768px) {
     .track-mask-wrapper {
       -webkit-mask-image: none;
@@ -513,7 +523,7 @@ body, html {
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -560,15 +570,15 @@ body, html {
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -616,8 +626,8 @@ body, html {
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -637,8 +647,8 @@ body, html {
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -686,8 +696,8 @@ body, html {
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -714,8 +724,8 @@ body, html {
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -735,8 +745,8 @@ body, html {
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -763,8 +773,8 @@ body, html {
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -819,8 +829,8 @@ body, html {
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -877,6 +887,7 @@ body, html {
   <h1>Local execution.<br>Absolute privacy.</h1>
   <p>A professional suite of 100% private browser utilities. Edit PDFs, sanitize photos, and generate security assets locally without ads, watermarks, or accounts.</p>
   <a href="#tools" class="btn-accent">Explore the Toolkit</a>
+  <a href="#tangent-pro" class="pro-link">Discover Tangent Pro <span aria-hidden="true">→</span></a>
 
   <!-- Trust Micro-Badges (100% Vector SVGs, Zero Emojis) -->
   <div class="hero-trust-bar">
@@ -896,6 +907,22 @@ body, html {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0-4 7h1.26a5 5 0 0 0 9.04 3.03"></path></svg>
       Zero Server Uploads
     </span>
+  </div>
+</section>
+
+<section id="tangent-pro" class="pro-section" aria-labelledby="pro-heading">
+  <div class="pro-intro">
+    <span class="pro-status">Windows app · Private beta</span>
+    <h2 id="pro-heading">More room for your data.</h2>
+    <p>Start with a browser tool for a quick task. Tangent Pro brings data preparation and analysis into a Windows workspace when browser memory and processing limits get in the way.</p>
+    <p class="pro-availability">Pro is currently in private testing. A public download is not available yet.</p>
+  </div>
+  <div class="pro-details">
+    <h3>One workspace, connected tools</h3>
+    <p>Clean and edit datasets, run SQL, explore correlations, review finances, analyze logs, and extract data. Transfer results between tools while keeping processing on your device.</p>
+    <h3>Built for larger workflows</h3>
+    <p>Native processing and paged data views reduce the amount of data held in the browser interface. Capacity still depends on your computer and the task.</p>
+    <a href="#tools" class="pro-link">Try the browser toolkit <span aria-hidden="true">→</span></a>
   </div>
 </section>
 
@@ -1455,14 +1482,14 @@ body, html {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         </div>
         <h3>No Accounts, Ads, or Watermarks</h3>
-        <p>Every tool is 100% free forever. No credit cards, no paywalls, no email sign-ups, and zero branded watermarks stamped on your exports.</p>
+        <p>The browser toolkit is free to use, with no account required and no branded watermarks on your exports.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         </div>
-        <h3>Offline & Hardware Accelerated</h3>
-        <p>Once loaded, the entire toolkit operates completely offline. Heavy computations leverage your device's native CPU and GPU with zero network lag.</p>
+        <h3>Processing on Your Device</h3>
+        <p>Your device does the processing. Some tools download libraries or AI models when first used, so loading a page alone does not guarantee offline readiness.</p>
       </div>
     </div>
 
@@ -1478,14 +1505,14 @@ body, html {
     <div class="faq-box">
       <details>
         <summary>Are there any hidden costs, usage limits, or subscriptions?</summary>
-        <p>No. Tangent is 100% free and open. There are no 5-minute video recording limits, no page count caps on PDFs, no watermarks, and no sign-up forms.</p>
+        <p>The browser tools are free to use without an account or watermarks. Practical file sizes and processing times depend on your device and browser. Tangent Pro is a separate Windows app currently in private testing.</p>
       </details>
     </div>
 
     <div class="faq-box">
       <details>
         <summary>Can I use Tangent tools when I am disconnected from the internet?</summary>
-        <p>Yes. Once you load a tool page, all required WebAssembly modules and scripts are cached by your browser. You can turn off your Wi-Fi or go into airplane mode and continue using the tools with zero interruptions.</p>
+        <p>Offline availability varies by tool. Keep the page open and let all required libraries and model downloads finish before disconnecting. AI tools may start those downloads only when you first process a file. Browser caches can be cleared or evicted, and reopening a page offline is not guaranteed. Password Shield strength analysis stays local. Its optional breach check requires an internet connection and sends a 5-character SHA-1 prefix to Have I Been Pwned after you press Check breach database; the service can also see your IP address.</p>
       </details>
     </div>
   </div>
@@ -1525,7 +1552,7 @@ body, html {
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1548,16 +1575,16 @@ body, html {
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);

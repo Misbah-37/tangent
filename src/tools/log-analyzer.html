@@ -73,7 +73,7 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
   }
   .btn-primary:hover { opacity: 0.9; }
-  
+
   .btn-demo {
     background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
@@ -119,7 +119,7 @@
     color: var(--text-muted); white-space: pre-wrap; word-break: break-all;
   }
   .log-search { width: 100%; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-family: inherit; }
-  
+
   /* Explainers */
   .explainer-section { max-width: 1000px; margin: 80px auto 0 auto; padding: 60px 32px 0 32px; border-top: 1px solid var(--border-color); }
   .explainer-title { font-size: 2rem; font-weight: 800; margin-bottom: 40px; text-align: center; }
@@ -153,7 +153,7 @@
       <span>Log Ingestion</span>
       <button class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetTool()">Clear</button>
     </div>
-    
+
     <div class="panel-body" id="setupArea">
       <div class="dropzone" id="dropzone">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -177,7 +177,7 @@
           <div class="stat-lbl">Error Rate</div>
         </div>
       </div>
-      
+
       <div style="margin-bottom: 16px;">
         <canvas id="statusChart" width="250" height="250"></canvas>
       </div>
@@ -194,14 +194,14 @@
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
         <p>Awaiting log data...</p>
       </div>
-      
+
       <div id="dashboardContent" style="display: none; flex-grow: 1; flex-direction: column;">
         <div class="tabs">
           <div class="tab active" onclick="switchTab('sec')" id="tab-sec">Security & IPs</div>
           <div class="tab" onclick="switchTab('err')" id="tab-err">404s & Errors</div>
           <div class="tab" onclick="switchTab('raw')" id="tab-raw">Raw Explorer</div>
         </div>
-        
+
         <!-- Tab: Security & IPs -->
         <div id="view-sec" style="display: block;">
           <h3 id="sec-title" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Top Traffic Sources (IP Addresses)</h3>
@@ -210,7 +210,7 @@
             <tbody id="tblIps"></tbody>
           </table>
         </div>
-        
+
         <!-- Tab: 404s & Errors -->
         <div id="view-err" style="display: none;">
           <h3 id="err-title1" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Most Frequently Missing Paths (404s)</h3>
@@ -224,7 +224,7 @@
             <tbody id="tbl500"></tbody>
           </table>
         </div>
-        
+
         <!-- Tab: 404s & Errors -->
         <div id="view-err" style="display: none;">
           <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Most Frequently Missing Paths (404s)</h3>
@@ -238,7 +238,7 @@
             <tbody id="tbl500"></tbody>
           </table>
         </div>
-        
+
         <!-- Tab: Raw Explorer -->
         <div id="view-raw" style="display: none; flex-grow: 1; flex-direction: column; height: 100%;">
           <input type="text" class="log-search" id="txtSearch" placeholder="Search paths, IPs, or status codes (e.g. '500')...">
@@ -274,7 +274,7 @@
       <p>Tangent's Regex engine is pre-configured to automatically parse the global Common Log Format (CLF) and Combined Log Format used by default in Apache and Nginx web servers.</p>
     </div>
   </div>
-  
+
   <div class="faq-container">
     <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
     <div class="faq-item">
@@ -290,6 +290,7 @@
 
 <!-- --- SCRIPTS --- -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/data-utils.js?v=1"></script>
 <script>
   // FAQ Logic
   document.querySelectorAll('.faq-question').forEach(btn => {
@@ -324,16 +325,25 @@
     if (e.target.files.length) handleFile(e.target.files[0]);
   });
 
+  let fileOperation = 0;
   function handleFile(file) {
+    const operation = ++fileOperation;
     dropzone.innerHTML = `<p style="color: var(--accent);">Parsing file...</p>`;
     const reader = new FileReader();
     reader.onload = function(e) {
+      if(operation !== fileOperation) return;
       processLogs(e.target.result);
+    };
+    reader.onerror = function() {
+      if(operation !== fileOperation) return;
+      resetTool();
+      alert('Unable to read this log file. Please try again.');
     };
     reader.readAsText(file);
   }
 
   function loadSample() {
+    fileOperation++;
     dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
     const sample = `
 Sep 17 00:03:26 (none) kern.warn kernel:   Beacon lost - AP disabled!!!
@@ -345,13 +355,16 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
     processLogs(sample);
   }
 
-  function processLogs(text) {
+  const escapeHtml = TangentData.escapeHtml;
+  let unrecognized = 0;
+  async function processLogs(text) {
+    const operation = fileOperation;
     const lines = text.split('\n');
-    parsedLogs = [];
-    
+    const pendingLogs = [];
+
     const webRegex = /^([\d\.:a-fA-F]+)\s+\S+\s+\S+\s+\[(.*?)\]\s+"(\S+)\s+(\S+).*?"\s+(\d{3})/;
     const syslogRegex = /^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:]+):\s+(.*)/;
-    
+
     logMode = 'unknown';
     for(let i=0; i<Math.min(lines.length, 50); i++) {
       if(webRegex.test(lines[i])) { logMode = 'web'; break; }
@@ -363,29 +376,40 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       resetTool();
       return;
     }
-    
-    lines.forEach(line => {
-      if(!line.trim()) return;
+
+    let nonempty = 0;
+    for(let index=0;index<lines.length;index++) {
+      if(index>0 && index%1000===0) {
+        await new Promise(resolve=>setTimeout(resolve,0));
+        if(operation !== fileOperation) return;
+        dropzone.textContent = 'Parsing '+index.toLocaleString()+' of '+lines.length.toLocaleString()+' lines…';
+      }
+      const line = lines[index];
+      if(!line.trim()) continue;
+      nonempty++;
       if (logMode === 'web') {
         const match = line.match(webRegex);
-        if (match) parsedLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5] });
+        if (match) pendingLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5] });
       } else if (logMode === 'syslog') {
         const match = line.match(syslogRegex);
         if (match) {
           // Strip ANSI Escape codes
           let msg = match[4].replace(/\x1b\[[0-9;]*m/gi, '').replace(/\^\[\[[0-9;]*m/gi, '').replace(/\^\[\[m/gi, '');
-          
+
           let procStr = match[3];
           let severity = 'info';
           if (procStr.includes('.warn')) severity = 'warn';
           if (procStr.match(/\.(err|crit|emerg|alert)/)) severity = 'error';
           if (procStr.includes('.notice')) severity = 'notice';
 
-          parsedLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity });
+          pendingLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity });
         }
       }
-    });
+    }
 
+    if(operation !== fileOperation) return;
+    parsedLogs = pendingLogs;
+    unrecognized=nonempty-parsedLogs.length;
     updateDashboard();
   }
 
@@ -393,7 +417,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
     document.getElementById('setupArea').style.display = 'none';
     document.getElementById('statsArea').style.display = 'block';
     document.getElementById('emptyState').style.display = 'none';
-    
+
     const dashboardContent = document.getElementById('dashboardContent');
     dashboardContent.style.display = 'flex';
     document.getElementById('view-raw').style.display = 'none';
@@ -403,6 +427,9 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
 
     const total = parsedLogs.length;
     document.getElementById('statTotal').innerText = total.toLocaleString();
+    let notice=document.getElementById('logParseNotice');
+    if(!notice) {notice=document.createElement('p');notice.id='logParseNotice';notice.setAttribute('role','status');document.getElementById('statTotal').after(notice);}
+    notice.textContent=total.toLocaleString()+' recognized / '+unrecognized.toLocaleString()+' unrecognized nonempty lines';
 
     let errCount = 0;
 
@@ -416,10 +443,10 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       document.getElementById('err-title2').innerText = 'Server Errors (500s)';
       document.getElementById('tbl500Head').innerHTML = '<tr><th>Path / URL</th><th>Count</th></tr>';
 
-      const statusCounts = {};
-      const ipCounts = {};
-      const missingPaths = {};
-      const serverErrors = {};
+      const statusCounts = Object.create(null);
+      const ipCounts = Object.create(null);
+      const missingPaths = Object.create(null);
+      const serverErrors = Object.create(null);
 
       parsedLogs.forEach(log => {
         statusCounts[log.status] = (statusCounts[log.status] || 0) + 1;
@@ -431,10 +458,10 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
 
       document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
       renderChart(statusCounts);
-      renderTable('tblIps', getTop(ipCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
-      renderTable('tbl404', getTop(missingPaths, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
-      renderTable('tbl500', getTop(serverErrors, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
-    
+      renderTable('tblIps', getTop(ipCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(missingPaths, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+      renderTable('tbl500', getTop(serverErrors, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+
     } else {
       document.getElementById('tab-sec').innerText = 'Process Activity';
       document.getElementById('tab-err').innerText = 'Top Messages';
@@ -445,8 +472,8 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       document.getElementById('err-title2').innerText = 'Recent Warnings & Errors';
       document.getElementById('tbl500Head').innerHTML = '<tr><th>Timestamp</th><th>Process</th><th>Message</th></tr>';
 
-      const processCounts = {};
-      const msgCounts = {};
+      const processCounts = Object.create(null);
+      const msgCounts = Object.create(null);
       const recentErrors = [];
       const sevCounts = { 'info': 0, 'notice': 0, 'warn': 0, 'error': 0 };
 
@@ -455,7 +482,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
         processCounts[log.process] = (processCounts[log.process] || 0) + 1;
         msgCounts[log.msg] = (msgCounts[log.msg] || 0) + 1;
         sevCounts[log.severity] = (sevCounts[log.severity] || 0) + 1;
-        
+
         if ((log.severity === 'warn' || log.severity === 'error') && recentErrors.length < 10) {
           recentErrors.push(log);
         }
@@ -463,25 +490,25 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
 
       document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
       renderChart(sevCounts);
-      renderTable('tblIps', getTop(processCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
-      renderTable('tbl404', getTop(msgCounts, 10), (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`);
-      
+      renderTable('tblIps', getTop(processCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(msgCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+
       const errTbody = document.getElementById('tbl500');
       if (recentErrors.length === 0) errTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);">No warnings/errors found.</td></tr>';
-      else errTbody.innerHTML = recentErrors.map(l => `<tr><td>${l.date}</td><td>${l.process}</td><td style="color:${l.severity==='error'?'var(--accent-danger)':'var(--accent-amber)'}">${l.msg}</td></tr>`).join('');
+      else errTbody.innerHTML = recentErrors.map(l => `<tr><td>${escapeHtml(l.date)}</td><td>${escapeHtml(l.process)}</td><td style="color:${l.severity==='error'?'var(--accent-danger)':'var(--accent-amber)'}">${escapeHtml(l.msg)}</td></tr>`).join('');
     }
 
     renderRaw(parsedLogs);
-    
+
     // Add search listener just once by cloning node
     const oldSearch = document.getElementById('txtSearch');
     const newSearch = oldSearch.cloneNode(true);
     oldSearch.parentNode.replaceChild(newSearch, oldSearch);
-    
+
     newSearch.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
       const filtered = parsedLogs.filter(l => l.raw.toLowerCase().includes(q));
-      renderRaw(filtered.slice(0, 1000));
+      renderRaw(filtered);
     });
   }
 
@@ -498,20 +525,32 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
     tbody.innerHTML = data.map(([k,v]) => rowRenderer(k, v)).join('');
   }
 
-  function renderRaw(logs) {
-    const html = logs.map(l => {
+  let rawRows = [], rawPage = 0;
+  const rawPager = document.createElement('div');
+  rawPager.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px;';
+  rawPager.innerHTML = '<span id="rawPageStatus" role="status"></span><button type="button" class="btn-primary" id="rawPrev">Previous</button><button type="button" class="btn-primary" id="rawNext">Next</button>';
+  rawLogsDiv.before(rawPager);
+  document.getElementById('rawPrev').addEventListener('click',()=>{if(rawPage>0) {rawPage--;renderRawPage();}});
+  document.getElementById('rawNext').addEventListener('click',()=>{if((rawPage+1)*200<rawRows.length) {rawPage++;renderRawPage();}});
+  function renderRaw(logs) {rawRows = logs;rawPage = 0;renderRawPage();}
+  function renderRawPage() {
+    const start = rawPage*200;
+    document.getElementById('rawPageStatus').textContent = rawRows.length ? 'Showing '+(start+1).toLocaleString()+'–'+Math.min(start+200,rawRows.length).toLocaleString()+' of '+rawRows.length.toLocaleString()+' matching lines' : 'No matching lines';
+    document.getElementById('rawPrev').disabled = rawPage===0;
+    document.getElementById('rawNext').disabled = start+200>=rawRows.length;
+    const html = rawRows.slice(start,start+200).map(l => {
       if (logMode === 'web') {
         let colorClass = 'status-200';
         if (l.status.startsWith('3')) colorClass = 'status-300';
         if (l.status.startsWith('4')) colorClass = 'status-400';
         if (l.status.startsWith('5')) colorClass = 'status-500';
-        const raw = l.raw.replace(new RegExp(`\\s${l.status}\\s`), ` <span class="${colorClass}">${l.status}</span> `);
+        const raw = escapeHtml(l.raw).replace(new RegExp(`\\s${l.status}\\s`), ` <span class="${colorClass}">${l.status}</span> `);
         return `<div>${raw}</div>`;
       } else {
         let colorClass = 'status-200';
         if (l.severity === 'warn') colorClass = 'status-300';
         if (l.severity === 'error') colorClass = 'status-400';
-        const raw = l.raw.replace(l.process, `<span class="${colorClass}">${l.process}</span>`);
+        const raw = escapeHtml(l.raw).replace(escapeHtml(l.process), `<span class="${colorClass}">${escapeHtml(l.process)}</span>`);
         return `<div>${raw}</div>`;
       }
     }).join('');
@@ -552,16 +591,18 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   function switchTab(tabId) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(`tab-${tabId}`).classList.add('active');
-    
+
     document.getElementById('view-sec').style.display = 'none';
     document.getElementById('view-err').style.display = 'none';
     document.getElementById('view-raw').style.display = 'none';
-    
+
     if(tabId === 'raw') document.getElementById(`view-${tabId}`).style.display = 'flex';
     else document.getElementById(`view-${tabId}`).style.display = 'block';
   }
 
   function resetTool() {
+    fileOperation++;
+    rawRows = [];rawPage = 0;rawLogsDiv.innerHTML = '';
     parsedLogs = [];
     document.getElementById('setupArea').style.display = 'block';
     document.getElementById('statsArea').style.display = 'none';
@@ -569,7 +610,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('emptyState').style.display = 'block';
     document.getElementById('fileInput').value = '';
-    
+
     document.getElementById('dropzone').innerHTML = `
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
@@ -581,4 +622,3 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   }
 
 </script>
-

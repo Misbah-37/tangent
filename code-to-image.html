@@ -80,7 +80,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {}
 
@@ -320,12 +320,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 18px;
-    background: var(--bg-surface);
+    background: #252526;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     user-select: none;
   }
 
   .window-controls {
+    color: #94a3b8;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -342,7 +343,7 @@
 
   .window-title {
     font-size: 13px;
-    color: var(--text-muted);
+    color: #94a3b8;
     font-family: ui-monospace, monospace;
     font-weight: 500;
     outline: none;
@@ -390,7 +391,7 @@
     min-width: 420px;
     background: transparent;
     border: none;
-    color: var(--text-main);
+    color: #e2e8f0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 14px;
     line-height: 1.65;
@@ -398,7 +399,7 @@
     white-space: pre;
     word-break: normal;
     overflow-wrap: normal;
-    overflow: hidden; /* No scrollbars inside the code card! Auto-expands height! */
+    overflow-x: auto; overflow-y: hidden; /* Long lines remain accessible. */
     resize: none;
     tab-size: 4;
     box-sizing: border-box;
@@ -554,7 +555,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -601,15 +602,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -657,8 +658,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -678,8 +679,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -727,8 +728,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -755,8 +756,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -776,8 +777,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -804,8 +805,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -860,8 +861,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -921,20 +922,20 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Code-to-Image Studio.</h1>
-  <p>Turn source code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, macOS window chrome, and syntax themes.</p>
+  <p>Turn source code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, window chrome and plain-text code styling.</p>
 </div>
 
 <div class="studio-layout">
-  
+
   <!-- Left Controls Column -->
   <div class="control-panel">
-    
+
     <div class="panel-section">
       <div class="section-label">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
         Canvas Aesthetics
       </div>
-      
+
       <div class="form-group">
         <div class="field-label">Background Backdrop</div>
         <div class="palette-grid">
@@ -1022,7 +1023,7 @@
   <div class="canvas-stage-wrapper">
     <div class="snippet-card" id="snippetCard">
       <div class="window-container" id="windowContainer">
-        
+
         <div class="window-header" id="windowHeader">
           <div class="window-controls" id="windowControls">
             <span class="dot dot-red"></span>
@@ -1036,8 +1037,8 @@
         <div class="code-body-wrapper">
           <div class="line-numbers" id="lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
           <textarea id="codeEditor" class="code-input-area" spellcheck="false">// Async streaming telemetry parser
-pub async fn process_metrics<S>(mut stream: S) -> Result<Summary, Error> 
-where 
+pub async fn process_metrics<S>(mut stream: S) -> Result<Summary, Error>
+where
     S: Stream<Item = Bytes> + Unpin,
 {
     let mut total_packets = 0;
@@ -1056,6 +1057,8 @@ where
 </div>
 
 <!-- Hidden Canvas used for high-DPI rasterization -->
+<p style="font-size:12px;color:var(--text-muted);">Scroll long code lines horizontally. Exports include each complete line; the selected window width is a minimum. PNGs use 2x resolution, up to 25 million pixels.</p>
+<div id="codeExportStatus" role="status" style="font-size:13px;margin:12px 0;"></div>
 <canvas id="renderCanvas"></canvas>
 
 <!-- Educational & Security Architecture Section -->
@@ -1138,7 +1141,7 @@ where
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1161,16 +1164,16 @@ where
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1178,6 +1181,7 @@ where
   };
 </script>
 
+<script src="assets/media-utils.js"></script>
 <script>
   const snippetCard = document.getElementById('snippetCard');
   const windowContainer = document.getElementById('windowContainer');
@@ -1303,104 +1307,57 @@ where
     }
   });
 
-  // High-Resolution 2x Rasterizer using Canvas
+  // Render native Canvas primitives, without SVG foreignObject or markup interpolation.
   function generateCanvasBlob() {
-    return new Promise((resolve) => {
-      const scale = 2; // 2x Retina
-      const cardRect = snippetCard.getBoundingClientRect();
-      const width = Math.round(cardRect.width * scale);
-      const height = Math.round(cardRect.height * scale);
-
-      renderCanvas.width = width;
-      renderCanvas.height = height;
-      const ctx = renderCanvas.getContext('2d');
-      ctx.scale(scale, scale);
-
-      const svgXml = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${cardRect.width}" height="${cardRect.height}">
-          <foreignObject width="100%" height="100%">
-            <div xmlns="http://www.w3.org/1999/xhtml">
-              <style>
-                .snippet-card { border-radius: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: inline-flex; justify-content: center; }
-                .window-container { background: #1e1e1e; border-radius: 10px; box-shadow: 0 20px 68px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; width: ${windowContainer.offsetWidth}px; }
-                .window-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--bg-surface); border-bottom: 1px solid rgba(255,255,255,0.06); }
-                .window-controls { display: flex; align-items: center; gap: 8px; }
-                .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-                .dot-red { background: #ff5f56; }
-                .dot-yellow { background: #ffbd2e; }
-                .dot-green { background: #27c93f; }
-                .window-title { font-size: 13px; color: var(--text-muted); font-family: ui-monospace, monospace; }
-                .code-body-wrapper { display: flex; padding: 22px 24px; background: #1e1e1e; }
-                .line-numbers { padding-right: 18px; margin-right: 14px; border-right: 1px solid rgba(255,255,255,0.08); color: #52525b; font-size: ${fontSizeSlider.value}px; line-height: 1.65; text-align: right; }
-                pre { margin: 0; color: var(--text-main); font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }</style>
-              <div class="snippet-card" style="padding: ${paddingSlider.value}px; background: ${activeGradient === 'transparent' ? 'transparent' : activeGradient};">
-                <div class="window-container">
-                  ${windowHeader.style.display !== 'none' ? `
-                  <div class="window-header">
-                    <div class="window-controls">
-                      <span class="dot dot-red"></span>
-                      <span class="dot dot-yellow"></span>
-                      <span class="dot dot-green"></span>
-                    </div>
-                    <div class="window-title">${windowTitleDisplay.textContent}</div>
-                    <div style="width: 52px;"></div>
-                  </div>` : ''}
-                  <div class="code-body-wrapper">
-                    ${lineNumbersToggle.checked ? `<div class="line-numbers">${lineNumbers.innerHTML}</div>` : ''}
-                    <pre><code>${codeEditor.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </foreignObject>
-        </svg>
-      `;
-
-      const img = new Image();
-      const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
-
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        renderCanvas.toBlob(blob => {
-          resolve(blob);
-        }, 'image/png');
-      };
-      img.src = url;
-    });
-  }
-
-  // Download PNG Action
-  downloadPngBtn.addEventListener('click', async () => {
-    downloadPngBtn.disabled = true;
-    const blob = await generateCanvasBlob();
-    const link = document.createElement('a');
-    link.download = `${fileNameInput.value || 'code-snippet'}.png`;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    downloadPngBtn.disabled = false;
-  });
-
-  // Copy PNG to Clipboard Action
-  copyPngBtn.addEventListener('click', async () => {
-    try {
-      copyBtnText.textContent = "Rendering...";
-      const blob = await generateCanvasBlob();
-      const item = new ClipboardItem({ 'image/png': blob });
-      await navigator.clipboard.write([item]);
-      copyBtnText.textContent = "Copied to Clipboard!";
-      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2000);
-    } catch (err) {
-      console.warn("Clipboard write failed:", err);
-      copyBtnText.textContent = "Right-click download instead";
-      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2500);
+    const text=codeEditor.value,title=windowTitleDisplay.textContent,mode=chromeSelect.value;
+    const fontSize=Number(fontSizeSlider.value),lineHeight=fontSize*1.65,padding=Number(paddingSlider.value),numbers=lineNumbersToggle.checked;
+    const editorStyle=getComputedStyle(codeEditor),headerStyle=getComputedStyle(windowHeader),titleStyle=getComputedStyle(windowTitleDisplay);
+    const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    ctx.font=`${fontSize}px ${editorStyle.fontFamily}`;
+    const lines=text.replace(/\r\n?/g,'\n').split('\n').map(line=>{let column=0;return [...line].map(character=>{if(character==='\t'){const count=4-column%4;column+=count;return ' '.repeat(count);}column++;return character;}).join('');});
+    const gutter=numbers?ctx.measureText(String(lines.length)).width+33:0;
+    let windowWidth=Math.max(windowContainer.getBoundingClientRect().width,48+gutter+Math.max(0,...lines.map(line=>ctx.measureText(line).width)));
+    ctx.font=`13px ${titleStyle.fontFamily}`;
+    if(mode!=='none')windowWidth=Math.max(windowWidth,ctx.measureText(title).width+200);
+    const headerHeight=mode==='none'?0:Math.max(42,windowHeader.getBoundingClientRect().height);
+    const windowHeight=headerHeight+44+lines.length*lineHeight,width=Math.ceil(windowWidth+padding*2),height=Math.ceil(windowHeight+padding*2);
+    TangentMedia.checkSize(width*2,height*2);canvas.width=width*2;canvas.height=height*2;ctx.scale(2,2);ctx.beginPath();ctx.roundRect(0,0,width,height,16);ctx.clip();
+    if(activeGradient!=='transparent'){
+      if(activeGradient.startsWith('linear-gradient')){const delta=(width+height)/4,gradient=ctx.createLinearGradient(width/2-delta,height/2-delta,width/2+delta,height/2+delta);const colors=activeGradient.match(/#[0-9a-f]{6}/gi);colors.forEach((color,index)=>gradient.addColorStop(index/(colors.length-1),color));ctx.fillStyle=gradient;}
+      else ctx.fillStyle=activeGradient;
+      ctx.fillRect(0,0,width,height);
     }
-  });
-
-  // Initialize
-  syncEditorDimensions();
-  window.addEventListener('load', syncEditorDimensions);
+    ctx.save();ctx.shadowColor='rgba(0,0,0,0.55)';ctx.shadowBlur=34;ctx.shadowOffsetY=10;ctx.fillStyle='#1e1e1e';ctx.beginPath();ctx.roundRect(padding,padding,windowWidth,windowHeight,10);ctx.fill();ctx.restore();
+    ctx.save();ctx.beginPath();ctx.roundRect(padding,padding,windowWidth,windowHeight,10);ctx.clip();
+    if(headerHeight){
+      ctx.fillStyle=headerStyle.backgroundColor;ctx.fillRect(padding,padding,windowWidth,headerHeight);
+      if(mode==='mac'){['#ff5f56','#ffbd2e','#27c93f'].forEach((color,index)=>{ctx.fillStyle=color;ctx.beginPath();ctx.arc(padding+24+index*20,padding+headerHeight/2,6,0,Math.PI*2);ctx.fill();});}
+      else if(mode==='windows'){ctx.fillStyle=getComputedStyle(windowControls).color;ctx.font='13px monospace';ctx.textBaseline='middle';ctx.fillText('\u2014 \u25a1 \u00d7',padding+18,padding+headerHeight/2);}
+      ctx.fillStyle=titleStyle.color;ctx.font=`500 13px ${titleStyle.fontFamily}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(title,padding+windowWidth/2,padding+headerHeight/2);
+      ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.beginPath();ctx.moveTo(padding,padding+headerHeight);ctx.lineTo(padding+windowWidth,padding+headerHeight);ctx.stroke();
+    }
+    ctx.font=`${fontSize}px ${editorStyle.fontFamily}`;ctx.textBaseline='top';
+    lines.forEach((line,index)=>{const y=padding+headerHeight+22+index*lineHeight;
+      if(numbers){ctx.fillStyle='#52525b';ctx.textAlign='right';ctx.fillText(String(index+1),padding+24+gutter-33,y);}
+      ctx.fillStyle=editorStyle.color;ctx.textAlign='left';ctx.fillText(line,padding+24+gutter,y);
+    });
+    if(numbers){ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.beginPath();ctx.moveTo(padding+24+gutter-14,padding+headerHeight+22);ctx.lineTo(padding+24+gutter-14,padding+windowHeight-22);ctx.stroke();}
+    ctx.restore();return TangentMedia.encode(canvas,'image/png');
+  }
+  let exportBusy=false;
+  async function exportCode(copy){
+    if(exportBusy)return;
+    const status=document.getElementById('codeExportStatus'),name=fileNameInput.value||'code-snippet';
+    exportBusy=true;downloadPngBtn.disabled=true;copyPngBtn.disabled=true;status.textContent='Rendering PNG...';
+    try{
+      const blob=await generateCanvasBlob();
+      if(copy){if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw new Error('Clipboard image copying is unavailable. Use Download PNG.');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);status.textContent='Image copied to clipboard.';}
+      else{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name.replace(/\.png$/i,'')+'.png';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);status.textContent='PNG downloaded.';}
+    }catch(error){status.textContent='Could not export image: '+error.message;}
+    finally{exportBusy=false;downloadPngBtn.disabled=false;copyPngBtn.disabled=false;}
+  }
+  downloadPngBtn.addEventListener('click',()=>exportCode(false));copyPngBtn.addEventListener('click',()=>exportCode(true));
+  syncEditorDimensions();window.addEventListener('load',syncEditorDimensions);
 </script>
 </body>
 </html>

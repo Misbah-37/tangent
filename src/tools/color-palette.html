@@ -24,35 +24,35 @@
   .palette-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
   .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
   @media(max-width: 900px) { .grid-layout { grid-template-columns: 1fr; }}
-  
+
   .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; }
-  
+
   .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
   .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); }
-  
+
   .preview-container { text-align: center; display: none; }
   .preview-container img { max-width: 100%; max-height: 450px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 24px; object-fit: contain; }
-  
+
   .swatches-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 16px; margin-bottom: 30px; }
   .swatch { height: 110px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s ease; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
   .swatch:active { transform: scale(0.95); }
   .swatch-hex { font-family: monospace; font-weight: 700; font-size: 1.2rem; pointer-events: none; z-index: 2; }
   .swatch-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; pointer-events: none; margin-bottom: 4px; font-weight: 600; z-index: 2; }
-  
+
   /* Flash animation on copy */
   .swatch.copied::after {
     content: "COPIED!";
     position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 5; font-size: 0.9rem;
   }
-  
+
   textarea { width: 100%; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: monospace; font-size: 0.95rem; resize: none; margin-bottom: 16px; outline: none; line-height: 1.5; }
   textarea:focus { border-color: var(--accent); }
-  
+
   .btn-accent { background: var(--accent); color: #000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1.05rem; transition: transform 0.1s ease; }
   .btn-accent:active { transform: scale(0.97); }
   .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s ease; }
   .btn-secondary:hover { background: rgba(255,255,255,0.05); }
-  
+
   .empty-state-text { color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 40px 0; border: 1px dashed var(--border-color); border-radius: 8px; }</style>
 
 <!-- --- CONTENT --- -->
@@ -67,7 +67,7 @@
 
 <div class="palette-studio">
   <div class="grid-layout">
-    
+
     <!-- Left: Upload & Preview -->
     <div class="panel">
       <div class="drop-zone" id="dropZone">
@@ -80,32 +80,32 @@
         <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">or click to browse files</p>
         <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" style="display:none;">
       </div>
-      
+
       <div class="preview-container" id="previewContainer">
         <img id="previewImg" src="" alt="Uploaded image preview" crossorigin="anonymous">
         <button class="btn-secondary" id="btnReset">Upload New Image</button>
       </div>
     </div>
-    
+
     <!-- Right: Extracted Palette -->
     <div class="panel">
       <h3 style="margin-top:0; margin-bottom:24px;">Extracted Palette</h3>
-      
+
       <div id="emptyState" class="empty-state-text">
         Upload an image to extract its color profile.
       </div>
-      
+
       <div id="resultsArea" style="display:none;">
         <div id="swatchesGrid" class="swatches-grid">
           <!-- Swatches injected via JS -->
         </div>
-        
+
         <h3 style="margin-top: 32px; margin-bottom: 16px;">CSS Variables</h3>
         <textarea id="cssOutput" rows="7" readonly></textarea>
         <button id="btnCopyCss" class="btn-accent">Copy to Clipboard</button>
       </div>
     </div>
-    
+
   </div>
 </div>
 
@@ -125,7 +125,7 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         </div>
         <h3>Smart Contrast Calculation</h3>
-        <p>The UI automatically determines the YIQ contrast ratio of extracted colors to ensure HEX code labels are always perfectly readable.</p>
+        <p>The UI automatically determines the YIQ contrast ratio of extracted colors to choose black or white HEX labels.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -135,9 +135,9 @@
         <p>Extract a cohesive brand kit and instantly export it as native CSS variables, ready to be pasted directly into your stylesheets.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>How does the tool find the dominant colors?</summary>
@@ -147,7 +147,7 @@
     <div class="faq-box">
       <details>
         <summary>Does it work with any image format?</summary>
-        <p>Yes, the tool fully supports standard web image formats including JPEG, PNG, and WebP files. High-resolution files are dynamically scaled down in-memory to ensure extraction is instantaneous.</p>
+        <p>Yes, the tool fully supports standard web image formats including JPEG, PNG, and WebP files. High-resolution files are dynamically scaled down in-memory to bound extraction work.</p>
       </details>
     </div>
     <div class="faq-box">
@@ -159,6 +159,7 @@
   </div>
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
 <!-- ColorThief for client-side dominant color extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
 
@@ -168,14 +169,18 @@
   const previewContainer = document.getElementById('previewContainer');
   const previewImg = document.getElementById('previewImg');
   const btnReset = document.getElementById('btnReset');
-  
+
   const emptyState = document.getElementById('emptyState');
   const resultsArea = document.getElementById('resultsArea');
   const swatchesGrid = document.getElementById('swatchesGrid');
   const cssOutput = document.getElementById('cssOutput');
   const btnCopyCss = document.getElementById('btnCopyCss');
-  
-  const colorThief = new ColorThief();
+
+  const colorThief = new ColorThief(); let paletteOperation=0;
+  const paletteStatus=document.createElement('p');paletteStatus.setAttribute('role','status');paletteStatus.id='paletteStatus';resultsArea.before(paletteStatus);
+  function clearPalette(){cssOutput.value='';swatchesGrid.replaceChildren();btnCopyCss.disabled=true;}
+  clearPalette();
+
 
   // DOM Events
   dropZone.addEventListener('click', () => fileInput.click());
@@ -186,12 +191,13 @@
     dropZone.classList.remove('dragover');
     if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   });
-  
+
   fileInput.addEventListener('change', (e) => {
     if(e.target.files.length) handleFile(e.target.files[0]);
   });
-  
+
   btnReset.addEventListener('click', () => {
+    ++paletteOperation;clearPalette();paletteStatus.textContent='';
     dropZone.style.display = 'flex';
     previewContainer.style.display = 'none';
     emptyState.style.display = 'block';
@@ -200,24 +206,16 @@
     previewImg.src = '';
   });
 
-  function handleFile(file) {
-    if(!file.type.startsWith('image/')) {
-      alert("Please upload a valid image file.");
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImg.onload = () => {
-        dropZone.style.display = 'none';
-        previewContainer.style.display = 'block';
-        emptyState.style.display = 'none';
-        resultsArea.style.display = 'block';
-        extractColors();
-      };
-      previewImg.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+  async function handleFile(file) {
+    const op=++paletteOperation;clearPalette();previewImg.removeAttribute('src');resultsArea.style.display='none';paletteStatus.textContent='Reading image...';
+    try {
+      if(!file.type.startsWith('image/') || file.size>50000000) throw Error('Choose a supported image smaller than 50 MB.');
+      const image=await TangentMedia.loadImage(file);if(op!==paletteOperation)return;
+      const scale=Math.min(1,256/Math.max(image.naturalWidth,image.naturalHeight));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
+      previewImg.onload=()=>{if(op!==paletteOperation)return;dropZone.style.display='none';previewContainer.style.display='block';emptyState.style.display='none';resultsArea.style.display='block';extractColors();};
+      previewImg.src=canvas.toDataURL();
+    } catch(error){if(op===paletteOperation){clearPalette();paletteStatus.textContent=error.message;dropZone.style.display='flex';previewContainer.style.display='none';}}
   }
 
   // Utility: Convert RGB array [r,g,b] to Hex string
@@ -237,7 +235,7 @@
 
   function extractColors() {
     swatchesGrid.innerHTML = '';
-    
+
     // Make sure image is fully rendered before extraction
     if (previewImg.complete) {
       processImage();
@@ -251,18 +249,19 @@
       // Get dominant + 5 palette colors
       const dominantRgb = colorThief.getColor(previewImg);
       const paletteRgb = colorThief.getPalette(previewImg, 5);
-      
-      const colors = [dominantRgb, ...paletteRgb];
+
+      if(!dominantRgb || !paletteRgb) throw Error('No visible colors found. Choose an image with nontransparent pixels.');
+      const colors = [dominantRgb, ...paletteRgb].filter((rgb,i,all)=>rgb && all.findIndex(other=>other && rgbToHex(...other)===rgbToHex(...rgb))===i);
       const names = ['Dominant', 'Primary', 'Secondary', 'Accent 1', 'Accent 2', 'Accent 3'];
-      
+
       let cssString = ":root {\n";
-      
+
       colors.forEach((rgb, index) => {
         if(!rgb) return;
         const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
         const textColor = getContrastYIQ(hex);
         const label = names[index] || `Color ${index}`;
-        
+
         // Build Swatch
         const swatch = document.createElement('div');
         swatch.className = 'swatch';
@@ -272,35 +271,29 @@
           <div class="swatch-label">${label}</div>
           <div class="swatch-hex">${hex}</div>
         `;
-        
-        swatch.addEventListener('click', () => {
-          if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
-      navigator.clipboard.writeText(hex);
-          swatch.classList.add('copied');
-          setTimeout(() => swatch.classList.remove('copied'), 800);
+
+        swatch.addEventListener('click', async () => {
+          try {await navigator.clipboard.writeText(hex);paletteStatus.textContent='Color copied.';}catch(error){paletteStatus.textContent='Could not copy. Select and copy the CSS manually.';}
         });
-        
+
         swatchesGrid.appendChild(swatch);
-        
+
         // Append CSS
         const cssVarName = label.toLowerCase().replace(' ', '-');
         cssString += `  --color-${cssVarName}: ${hex};\n`;
       });
-      
+
       cssString += "}";
-      cssOutput.value = cssString;
-      
+      cssOutput.value = cssString;btnCopyCss.disabled=false;paletteStatus.textContent=`Found ${colors.length} distinct colors.`;
+
     } catch(err) {
-      console.error("Color extraction failed:", err);
+      clearPalette();paletteStatus.textContent=err.message;
       swatchesGrid.innerHTML = '<p style="color:var(--accent-danger);">Could not extract colors. Ensure the image is valid.</p>';
     }
   }
 
-  btnCopyCss.addEventListener('click', () => {
-    if(window.TangentToast) window.TangentToast.show("Copied to clipboard!");
-      navigator.clipboard.writeText(cssOutput.value);
-    const originalText = btnCopyCss.textContent;
-    btnCopyCss.textContent = "Copied to Clipboard!";
-    setTimeout(() => { btnCopyCss.textContent = originalText; }, 2000);
+  btnCopyCss.addEventListener('click', async () => {
+    try{await navigator.clipboard.writeText(cssOutput.value);paletteStatus.textContent='CSS copied.';}catch(error){paletteStatus.textContent='Could not copy. Select and copy the CSS manually.';}
   });
+
 </script>

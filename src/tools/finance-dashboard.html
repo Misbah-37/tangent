@@ -65,7 +65,7 @@
   }
   .value-positive { color: var(--accent-emerald); }
   .value-negative { color: var(--accent-danger); }
-  
+
   .charts-layout {
     display: none;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -170,7 +170,7 @@
     <p style="color:var(--text-muted); margin-top:8px;">or click to browse files</p>
     <input type="file" id="fileInput" accept=".csv" style="display:none;">
   </div>
-  
+
   <div id="columnMapping" style="display:none; background:var(--bg-card); padding:30px; border-radius:12px; margin-bottom:30px; border:1px solid var(--border-color);">
     <h3 style="margin-bottom:20px;">Map Your Columns</h3>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-bottom:24px;">
@@ -232,6 +232,11 @@
   </div>
 
   <div class="transactions-table-wrapper" id="tableWrapper">
+    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:12px;">
+      <span id="ledgerPageStatus" role="status"></span>
+      <button type="button" id="ledgerPrev" class="btn-accent">Previous</button>
+      <button type="button" id="ledgerNext" class="btn-accent">Next</button>
+    </div>
     <table id="txTable">
       <thead>
         <tr>
@@ -272,9 +277,9 @@
         <p>No telemetry, no database storage, and no tracking scripts. You process your finances entirely in an offline sandbox.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>Is my bank statement uploaded to a server?</summary>
@@ -298,24 +303,27 @@
 <!-- --- SCRIPTS --- -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/data-utils.js?v=1"></script>
 
 <script>
+  let fileOperation = 0;
   let rawData = [];
   let parsedHeaders = [];
-  
+
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   const columnMapping = document.getElementById('columnMapping');
   const btnAnalyze = document.getElementById('btnAnalyze');
-  
+
   const mapDate = document.getElementById('mapDate');
   const mapDesc = document.getElementById('mapDesc');
   const mapAmt = document.getElementById('mapAmt');
   const mapCategory = document.getElementById('mapCategory');
-  
+
   let timeChartInstance = null;
   let pieChartInstance = null;
   let categoryChartInstance = null;
+  const escapeHtml = TangentData.escapeHtml;
 
   dropZone.addEventListener('click', () => fileInput.click());
   dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -334,22 +342,19 @@
       alert("Please upload a CSV file.");
       return;
     }
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        rawData = results.data;
-        if(rawData.length === 0) return alert("CSV is empty");
-        parsedHeaders = results.meta.fields;
-        setupMapping();
-      }
-    });
+    const operation = ++fileOperation;
+    file.text().then(text => {
+      if (operation !== fileOperation) return;
+      const parsed = TangentData.parseCsv(text);
+      if (!parsed.data.length) throw new Error('CSV contains no data rows.');
+      rawData = parsed.data; parsedHeaders = parsed.headers; setupMapping();
+    }).catch(error => {if(operation === fileOperation) alert(error.message);});
   }
 
   function setupMapping() {
     dropZone.style.display = 'none';
     columnMapping.style.display = 'block';
-    
+
     [mapDate, mapDesc, mapAmt].forEach(sel => sel.innerHTML = '');
     mapCategory.innerHTML = '<option value="">-- Skip / None --</option>';
 
@@ -359,7 +364,7 @@
       mapAmt.add(new Option(h, h));
       mapCategory.add(new Option(h, h));
     });
-    
+
     // Auto-guess based on common bank CSV headers
     parsedHeaders.forEach(h => {
       const hl = h.toLowerCase();
@@ -375,22 +380,20 @@
     const descCol = mapDesc.value;
     const amtCol = mapAmt.value;
     const catCol = mapCategory.value;
-    
+
     let inflow = 0;
     let outflow = 0;
     let validTx = [];
-    
+
+    let rejected = 0;
     rawData.forEach(row => {
-      let amtStr = row[amtCol] || "0";
-      // Clean currency symbols and commas, preserve minus signs
-      amtStr = amtStr.replace(/[^0-9.-]/g, '');
-      let amt = parseFloat(amtStr);
-      if(isNaN(amt)) amt = 0;
-      
+      const amt = TangentData.parseNumber(row[amtCol]);
+      if (amt === null) {rejected++; return;}
+
       if(amt > 0) inflow += amt;
       else outflow += Math.abs(amt);
-      
-      if(amt !== 0) {
+
+      {
         validTx.push({
           date: row[dCol] || "Unknown",
           desc: row[descCol] || "Unknown",
@@ -399,53 +402,67 @@
         });
       }
     });
-    
+
     document.getElementById('valInflow').textContent = "$" + inflow.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     document.getElementById('valOutflow').textContent = "$" + outflow.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-    
+
     const net = inflow - outflow;
     const netEl = document.getElementById('valNet');
     netEl.textContent = (net < 0 ? "-$" : "$") + Math.abs(net).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     netEl.className = "stat-value " + (net >= 0 ? "value-positive" : "value-negative");
-    
+
     document.getElementById('dashboardControls').style.display = 'flex';
     document.getElementById('dashboardGrid').style.display = 'grid';
     document.getElementById('chartsLayout').style.display = 'flex';
     document.getElementById('tableWrapper').style.display = 'block';
     columnMapping.style.display = 'none';
-    
+
     renderTable(validTx, !!catCol);
     renderCharts(validTx, inflow, outflow, !!catCol);
+    let notice = document.getElementById('amountNotice');
+    if (!notice) {notice=document.createElement('p');notice.id='amountNotice';notice.setAttribute('role','status');document.getElementById('tableWrapper').prepend(notice);}
+    notice.textContent = validTx.length.toLocaleString() + ' transactions included; ' + rejected.toLocaleString() + ' rows excluded because the amount is missing or invalid.';
   });
-  
+
+  let ledgerRows = [], ledgerCategory = false, ledgerPage = 0;
+  document.getElementById('ledgerPrev').addEventListener('click', () => {if(ledgerPage > 0) {ledgerPage--; renderLedgerPage();}});
+  document.getElementById('ledgerNext').addEventListener('click', () => {if((ledgerPage+1)*100 < ledgerRows.length) {ledgerPage++; renderLedgerPage();}});
   function renderTable(txs, showCategory) {
+    ledgerRows = txs; ledgerCategory = showCategory; ledgerPage = 0;
+    renderLedgerPage();
+  }
+  function renderLedgerPage() {
+    const showCategory = ledgerCategory, start = ledgerPage*100;
+    document.getElementById('ledgerPageStatus').textContent = ledgerRows.length ? 'Showing '+(start+1).toLocaleString()+'–'+Math.min(start+100,ledgerRows.length).toLocaleString()+' of '+ledgerRows.length.toLocaleString()+' transactions' : 'No transactions';
+    document.getElementById('ledgerPrev').disabled = ledgerPage === 0;
+    document.getElementById('ledgerNext').disabled = start+100 >= ledgerRows.length;
     const tbody = document.querySelector('#txTable tbody');
     const thCategory = document.getElementById('thCategory');
-    
+
     thCategory.style.display = showCategory ? 'table-cell' : 'none';
     tbody.innerHTML = '';
-    
-    txs.forEach(tx => {
+
+    ledgerRows.slice(start,start+100).forEach(tx => {
       const tr = document.createElement('tr');
       const amtColor = tx.amt > 0 ? 'var(--accent-emerald)' : 'var(--text-main)';
-      
+
       let catHtml = '';
       if (showCategory) {
-        catHtml = `<td><span class="category-pill">${tx.category}</span></td>`;
+        catHtml = `<td><span class="category-pill">${escapeHtml(tx.category)}</span></td>`;
       }
 
       tr.innerHTML = `
-        <td>${tx.date}</td>
-        <td>${tx.desc}</td>
+        <td>${escapeHtml(tx.date)}</td>
+        <td>${escapeHtml(tx.desc)}</td>
         ${catHtml}
         <td style="text-align:right; color:${amtColor}; font-weight:600;">
-          ${tx.amt > 0 ? '+' : ''}$${Math.abs(tx.amt).toFixed(2)}
+          ${tx.amt > 0 ? '+' : tx.amt < 0 ? '-' : ''}$${Math.abs(tx.amt).toFixed(2)}
         </td>
       `;
       tbody.appendChild(tr);
     });
   }
-  
+
   function renderCharts(txs, inTotal, outTotal, showCategory) {
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
@@ -453,7 +470,7 @@
     if(pieChartInstance) pieChartInstance.destroy();
     if(timeChartInstance) timeChartInstance.destroy();
     if(categoryChartInstance) categoryChartInstance.destroy();
-    
+
     // 1. Inflow vs Outflow Pie Chart
     const pieCtx = document.getElementById('pieChart').getContext('2d');
     pieChartInstance = new Chart(pieCtx, {
@@ -473,16 +490,16 @@
         plugins: { legend: { position: 'bottom' } }
       }
     });
-    
+
     // 2. Aggregate by date for Bar Chart
-    let dateMap = {};
+    let dateMap = Object.create(null);
     txs.forEach(tx => {
       if(!dateMap[tx.date]) dateMap[tx.date] = 0;
       dateMap[tx.date] += tx.amt;
     });
     let sortedDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
     let balances = sortedDates.map(d => dateMap[d]);
-    
+
     const timeCtx = document.getElementById('timeChart').getContext('2d');
     timeChartInstance = new Chart(timeCtx, {
       type: 'bar',
@@ -510,20 +527,20 @@
     const catCard = document.getElementById('categoryCard');
     if (showCategory) {
       catCard.style.display = 'flex';
-      let catMap = {};
+      let catMap = Object.create(null);
       txs.forEach(tx => {
         if (tx.amt < 0) { // Only track expenses for the category breakdown
           if(!catMap[tx.category]) catMap[tx.category] = 0;
           catMap[tx.category] += Math.abs(tx.amt);
         }
       });
-      
+
       let sortedCats = Object.keys(catMap).sort((a,b) => catMap[b] - catMap[a]);
       let catData = sortedCats.map(c => catMap[c]);
 
       // Generate some pretty colors for categories
       const catColors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#10b981', '#f43f5e', '#eab308', '#6366f1', '#14b8a6'];
-      
+
       const catCtx = document.getElementById('categoryChart').getContext('2d');
       categoryChartInstance = new Chart(catCtx, {
         type: 'doughnut',
@@ -553,10 +570,12 @@
     document.getElementById('dashboardGrid').style.display = 'none';
     document.getElementById('chartsLayout').style.display = 'none';
     document.getElementById('tableWrapper').style.display = 'none';
-    
+
     dropZone.style.display = 'block';
-    
+
+    fileOperation++;
     rawData = [];
+    ledgerRows = []; ledgerPage = 0;
     parsedHeaders = [];
     fileInput.value = '';
     if(pieChartInstance) pieChartInstance.destroy();

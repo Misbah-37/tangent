@@ -38,7 +38,7 @@
   .clean-header { text-align: center; margin-bottom: 40px; }
   .clean-header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
   .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-  
+
   .split-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -111,7 +111,7 @@
     color: var(--accent);
     font-size: 1.2rem;
   }
-  .faq-box details[open] summary::after { content: "−"; }
+  .faq-box details[open] summary::after { content: "âˆ’"; }
   .faq-box p {
     padding: 0 24px 20px 24px;
     margin: 0;
@@ -142,8 +142,8 @@
           <line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
         <div style="font-weight: 500; margin-bottom: 8px;">Drag & Drop iPhone Photos Here</div>
-        <div style="font-size: 12px; color: var(--text-secondary);">or click to browse (.heic only)</div>
-        <input type="file" id="fileInput" multiple accept=".heic,.HEIC" style="display: none;">
+        <div style="font-size: 12px; color: var(--text-secondary);">or click to browse (.heic or .heif)</div>
+        <input type="file" id="fileInput" multiple accept=".heic,.heif,.HEIC,.HEIF" style="display: none;">
       </div>
     </div>
 
@@ -157,7 +157,9 @@
         <input type="range" id="qualitySlider" min="0.1" max="1.0" step="0.1" value="0.8" style="width: 100%;">
       </div>
     </div>
-    
+
+    <button class="btn btn-demo" id="btnClearHEIC" type="button">Clear photos</button>
+    <p style="font-size:12px;color:var(--text-muted);">A new selection replaces this batch. Exports contain the primary still image; metadata is not copied. Up to 50 MB per file, 100 MB per batch and 25 million output pixels. Browser memory can limit conversion further.</p>
     <div class="panel-section" id="batchControls" style="display: none; padding-top: 20px; border-top: 1px solid var(--border-color);">
       <button class="btn btn-primary" id="btnDownloadZip" style="width: 100%;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -172,7 +174,7 @@
       Converted Photos
       <span id="statusBadge" style="font-size: 11px; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 20px; font-weight: normal;">0 files</span>
     </h3>
-    
+
     <div id="outputGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; align-content: flex-start; overflow-y: auto; flex: 1;">
       <div id="emptyState" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -189,7 +191,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       </div>
       <h3>Instant Batch Processing</h3>
-      <p>Convert dozens of massive HEIC files instantly. Processing happens directly in your RAM, utilizing your machine's CPU for unparalleled speed compared to uploading over a network.</p>
+      <p>Convert HEIC and HEIF files one at a time in browser memory. Conversion speed and supported images depend on the decoder and your device.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -202,8 +204,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
       </div>
-      <h3>EXIF Metadata Preserved</h3>
-      <p>Our conversion engine retains the critical metadata attached to your original HEIC file. Your timestamps, orientation, and camera models remain perfectly intact in the resulting JPG.</p>
+      <h3>Primary Still Image Export</h3>
+      <p>Exports a JPEG of the primary still image. Camera, timestamp and GPS metadata are not copied; bursts and animations are not preserved. Keep your original HEIC files.</p>
     </div>
   </div>
 
@@ -223,7 +225,7 @@
   <div class="faq-box">
     <details>
       <summary>Is there a limit to how many photos I can convert?</summary>
-      <p>No. Because Tangent processes everything on your local machine, we don't have to pay for server costs or bandwidth. Therefore, we don't impose artificial limits or paywalls on your batch conversions. Process as many photos as your device's memory can handle.</p>
+      <p>Use batches up to 100 MB, with files up to 50 MB and decoded images up to 25 million pixels. Browser memory may impose lower limits. Split large collections into smaller batches.</p>
     </details>
   </div>
 </div>
@@ -233,135 +235,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
+<script src="assets/media-utils.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const outputGrid = document.getElementById('outputGrid');
-  const emptyState = document.getElementById('emptyState');
-  const statusBadge = document.getElementById('statusBadge');
-  const qualitySlider = document.getElementById('qualitySlider');
-  const qualityVal = document.getElementById('qualityVal');
-  const batchControls = document.getElementById('batchControls');
-  const btnDownloadZip = document.getElementById('btnDownloadZip');
-  
-  let convertedFiles = [];
-  
-  qualitySlider.addEventListener('input', (e) => {
-    qualityVal.textContent = parseFloat(e.target.value).toFixed(1);
-  });
-
-  // Drag and drop events
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
-  });
-
-  dropZone.addEventListener('dragover', () => dropZone.style.borderColor = '#00d2ff');
-  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = 'var(--border-color)');
-  
-  dropZone.addEventListener('drop', (e) => {
-    dropZone.style.borderColor = 'var(--border-color)';
-    const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endswith('.heic'));
-    if (files.length > 0) processFiles(files);
-  });
-  
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) processFiles(Array.from(e.target.files));
-    fileInput.value = ''; // reset
-  });
-
-  async function processFiles(files) {
-    emptyState.style.display = 'none';
-    const quality = parseFloat(qualitySlider.value);
-    
-    // Add loading cards
-    const tasks = files.map(file => {
-      const card = document.createElement('div');
-      card.style.cssText = 'background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;';
-      card.innerHTML = `<div class="spinner" style="width:24px;height:24px;border:3px solid rgba(0,210,255,0.2);border-top-color: var(--accent);border-radius:50%;animation:spin 1s linear infinite;"></div><div style="font-size:11px; margin-top:12px; color:var(--text-secondary); text-align:center; padding:0 8px;">Processing<br>${file.name}</div>`;
-      outputGrid.appendChild(card);
-      return { file, card, quality };
-    });
-
-    statusBadge.textContent = `Processing ${tasks.length} file(s)...`;
-    statusBadge.style.color = '#00d2ff';
-    
-    // Inject keyframes if not exists
-    if (!document.getElementById('spinStyle')) {
-      const style = document.createElement('style');
-      style.id = 'spinStyle';
-      style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
-      document.head.appendChild(style);
+document.addEventListener('DOMContentLoaded',()=>{
+  const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),grid=document.getElementById('outputGrid'),empty=document.getElementById('emptyState'),badge=document.getElementById('statusBadge'),quality=document.getElementById('qualitySlider'),zipButton=document.getElementById('btnDownloadZip'),controls=document.getElementById('batchControls');
+  let operation=0,converted=[],urls=[],zipBusy=false,processing=false;
+  function clear(){operation++;urls.forEach(url=>URL.revokeObjectURL(url));urls=[];converted=[];zipBusy=false;processing=false;grid.replaceChildren(empty);empty.style.display='flex';controls.style.display='none';badge.textContent='0 files';zipButton.textContent='Download All as ZIP';zipButton.disabled=false;fileInput.value='';}
+  document.getElementById('btnClearHEIC').addEventListener('click',clear);
+  quality.addEventListener('input',()=>document.getElementById('qualityVal').textContent=Number(quality.value).toFixed(1));
+  ['dragenter','dragover','dragleave','drop'].forEach(name=>dropZone.addEventListener(name,event=>{event.preventDefault();event.stopPropagation();}));
+  dropZone.addEventListener('click',()=>fileInput.click());
+  dropZone.addEventListener('drop',event=>processFiles(Array.from(event.dataTransfer.files)));
+  fileInput.addEventListener('change',event=>{const files=Array.from(event.target.files);if(files.length)processFiles(files);fileInput.value='';});
+  async function processFiles(files){
+    clear();const current=operation,setting=Number(quality.value),used=new Set();let failed=0;
+    if(files.reduce((total,file)=>total+file.size,0)>100*1024*1024){badge.textContent='Choose a batch below 100 MB.';return;}
+    processing=true;empty.style.display='none';zipButton.disabled=true;
+    for(let index=0;index<files.length;index++){
+      if(current!==operation)return;
+      const file=files[index],card=document.createElement('div');card.style.cssText='border:1px solid var(--border-color);border-radius:8px;padding:12px;min-width:0;overflow-wrap:anywhere;';
+      const label=document.createElement('div');label.textContent='Processing: '+file.name;card.append(label);grid.append(card);badge.textContent=`Processing ${index+1} / ${files.length}...`;
+      try{
+        if(!/\.hei[cf]$/i.test(file.name))throw new Error('Choose a .heic or .heif file.');
+        if(file.size>50*1024*1024)throw new Error('This file exceeds the 50 MB input limit.');
+        const result=await heic2any({blob:file,toType:'image/jpeg',quality:setting});if(current!==operation)return;
+        const blob=Array.isArray(result)?result[0]:result;
+        if(!(blob instanceof Blob)||!blob.size||blob.type!=='image/jpeg')throw new Error('The decoder did not return a JPEG.');
+        await TangentMedia.loadImage(new File([blob],'converted.jpg',{type:blob.type}));if(current!==operation)return;
+        const name=TangentMedia.uniqueName(used,file.name,'',blob.type),url=URL.createObjectURL(blob);urls.push(url);converted.push({name,blob});
+        const image=document.createElement('img');image.src=url;image.alt='Converted photo';image.style.cssText='width:100%;aspect-ratio:1;object-fit:contain;';
+        const link=document.createElement('a');link.href=url;link.download=name;link.textContent='Download '+name;link.style.display='block';link.title=name;
+        card.replaceChildren(image,link);
+      }catch(error){if(current!==operation)return;failed++;label.textContent=`${file.name}: ${error.message||String(error)}`;label.style.color='var(--danger, #ef4444)';}
     }
-
-    for (let task of tasks) {
-      try {
-        const blob = await heic2any({
-          blob: task.file,
-          toType: "image/jpeg",
-          quality: task.quality
-        });
-        
-        // Handle potential array return (if animated HEIC)
-        const finalBlob = Array.isArray(blob) ? blob[0] : blob;
-        const url = URL.createObjectURL(finalBlob);
-        const outName = task.file.name.replace(/\.heic$/i, '.jpg');
-        
-        convertedFiles.push({ name: outName, blob: finalBlob });
-        
-        task.card.innerHTML = `
-          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
-          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 8px; backdrop-filter: blur(4px); display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 10px; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;" title="${outName}">${outName}</div>
-            <a href="${url}" download="${outName}" style="color: var(--accent); cursor: pointer; padding: 4px;" title="Download">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            </a>
-          </div>
-        `;
-      } catch (err) {
-        task.card.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <div style="font-size:11px; margin-top:8px; color:#ff4444; text-align:center;">Failed</div>
-        `;
-        console.error(err);
-      }
-    }
-    
-    updateBadge();
+    if(current!==operation)return;processing=false;badge.textContent=`${converted.length} ready · ${failed} failed`;controls.style.display=converted.length?'block':'none';zipButton.disabled=!converted.length;
   }
-  
-  function updateBadge() {
-    if (convertedFiles.length > 0) {
-      statusBadge.textContent = `${convertedFiles.length} ready`;
-      statusBadge.style.color = '#00ffcc';
-      batchControls.style.display = 'block';
-    } else {
-      statusBadge.textContent = '0 files';
-      statusBadge.style.color = 'inherit';
-      batchControls.style.display = 'none';
-      emptyState.style.display = 'flex';
-    }
-  }
-  
-  btnDownloadZip.addEventListener('click', async () => {
-    if (convertedFiles.length === 0) return;
-    btnDownloadZip.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color: var(--text-main);border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Zipping...';
-    btnDownloadZip.style.opacity = '0.7';
-    
-    try {
-      const zip = new JSZip();
-      convertedFiles.forEach(f => zip.file(f.name, f.blob));
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'tangent_converted_photos.zip');
-    } catch(err) {
-      console.error(err);
-      alert('Error creating ZIP file.');
-    } finally {
-      btnDownloadZip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download All as ZIP';
-      btnDownloadZip.style.opacity = '1';
-    }
+  zipButton.addEventListener('click',async()=>{
+    if(zipBusy||processing||!converted.length)return;
+    const current=operation,files=[...converted];zipBusy=true;zipButton.disabled=true;zipButton.textContent='Zipping...';
+    try{const zip=new JSZip();files.forEach(file=>zip.file(file.name,file.blob));const blob=await zip.generateAsync({type:'blob'});if(current===operation)saveAs(blob,'tangent_converted_photos.zip');}
+    catch(error){if(current===operation)badge.textContent='Could not create ZIP: '+error.message;}
+    finally{if(current===operation){zipBusy=false;zipButton.disabled=false;zipButton.textContent='Download All as ZIP';}}
   });
-
 });
 </script>

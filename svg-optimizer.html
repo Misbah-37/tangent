@@ -42,7 +42,7 @@
       "name": "What hidden metadata does the optimizer remove?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "It safely strips Adobe Illustrator, Inkscape, Sketch, and Figma editor namespaces, XML comments, unused definitions, and empty container groups that inflate file sizes."
+        "text": "It safely strips Adobe Illustrator, Inkscape, Sketch, and Figma editor namespaces, XML comments and empty container groups that inflate file sizes."
       }
     },
     {
@@ -80,21 +80,21 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
   }
 
@@ -613,7 +613,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -660,15 +660,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -716,8 +716,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -737,8 +737,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -786,8 +786,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -814,8 +814,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -835,8 +835,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -863,8 +863,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -919,8 +919,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -996,7 +996,7 @@
   </div>
 
   <div class="workbench-grid">
-    
+
     <!-- Config Controls -->
     <div class="config-panel">
       <div class="panel-title">
@@ -1028,7 +1028,7 @@
       </div>
 
       <div class="select-group">
-        <label class="select-label" for="precisionSelect">Float Coordinate Precision</label>
+        <label class="select-label" for="precisionSelect">Numeric Attribute Precision</label>
         <select id="precisionSelect" class="custom-select">
           <option value="2">2 Decimal Places (Recommended)</option>
           <option value="1">1 Decimal Place (Aggressive)</option>
@@ -1077,7 +1077,7 @@
 
     <!-- Preview Stage & Code -->
     <div class="preview-panel">
-      
+
       <div class="stage-box">
         <div class="stage-header">
           <span class="stage-title">Vector Preview</span>
@@ -1129,7 +1129,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
       </div>
       <h3>Precision Decimal Rounding</h3>
-      <p>Round excessive coordinate decimals from 6+ digits down to 1-2 places, drastically slashing file byte sizes without visible geometry distortion.</p>
+      <p>Round numeric attributes and viewBox values to the selected precision. Path coordinates are preserved; inspect the result before downloading.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -1194,7 +1194,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1217,16 +1217,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1234,16 +1234,17 @@
   };
 </script>
 
+<script src="assets/media-utils.js"></script>
 <script>
   // Sample SVG Graphic (Vibrant Tangent Geometric Mark with Illustrator & Inkscape Junk)
   const SAMPLE_SVG = `<?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 28.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
      viewBox="0 0 120 120" width="120" height="120" xml:space="preserve">
   <metadata>
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-      <cc:Work rdf:about="">
+      <cc:Work xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:title>Tangent Logo Asset</dc:title>
       </cc:Work>
@@ -1259,16 +1260,34 @@
   <g id="tangent-brand-mark">
     <circle cx="60.00000" cy="60.00000" r="54.00000" fill="#0d111a" stroke="#253047" stroke-width="2.50000"/>
     <circle cx="60.00000" cy="60.00000" r="42.00000" fill="none" stroke="#1e293b" stroke-width="1.50000" stroke-dasharray="4 4"/>
-    <path d="M 60.00000 95.00000 C 40.67000 95.00000 25.00000 79.33000 25.00000 60.00000 C 25.00000 40.67000 40.67000 25.00000 60.00000 25.00000 L 98.00000 25.00000" 
+    <path d="M 60.00000 95.00000 C 40.67000 95.00000 25.00000 79.33000 25.00000 60.00000 C 25.00000 40.67000 40.67000 25.00000 60.00000 25.00000 L 98.00000 25.00000"
           fill="none" stroke="url(#cyanGrad)" stroke-width="7.00000" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="98.00000" cy="25.00000" r="5.00000" fill="var(--accent)"/>
+    <circle cx="98.00000" cy="25.00000" r="5.00000" fill="#00d2ff"/>
   </g>
   <g display="none"><rect width="120" height="120" fill="#ff0000"/></g>
 </svg>`;
 
   let originalRawSvg = SAMPLE_SVG;
   let optimizedSvg = '';
-  let currentZoom = 1;
+  let currentZoom = 1, svgOperation = 0, previewUrl = null, svgReady = false, exportBusy = false;
+  function svgStatus(message) { document.getElementById('svgStatus').textContent = message; }
+  function svgButtons() { [downloadSvgBtn,copySvgBtn,exportPngBtn].forEach(b => b.disabled = !svgReady || exportBusy); }
+  function validateSvg(text) {
+    if (new Blob([text]).size > 5000000) throw Error('Choose an SVG smaller than 5 MB.');
+    if(/<!DOCTYPE/i.test(text)) throw Error('SVG document types and entities are unsupported.');
+    const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+    if (doc.querySelector('parsererror') || doc.documentElement.localName !== 'svg' || doc.documentElement.namespaceURI !== 'http://www.w3.org/2000/svg') throw Error('Choose a valid SVG with the SVG namespace.');
+    for (const el of doc.querySelectorAll('*')) {
+      if (['script','foreignObject','animate','animateMotion','animateTransform','set'].includes(el.localName)) throw Error('Active SVG content is unsupported. Remove scripts, HTML and animation first.');
+      for (const a of el.attributes) {
+        if ((a.localName === 'base' && a.namespaceURI === 'http://www.w3.org/XML/1998/namespace') || /^on/i.test(a.localName) || (/href$/i.test(a.localName) && a.value && !a.value.startsWith('#'))) throw Error('Event handlers and external resources are unsupported. Use a self-contained SVG.');
+      }
+    }
+    if (/@import/i.test(text) || [...text.matchAll(/url\(([^)]*)\)/gi)].some(m=>!m[1].trim().replace(/^['"]|['"]$/g,'').startsWith('#')) || /<\?xml-stylesheet/i.test(text)) throw Error('External CSS resources are unsupported. Use a self-contained SVG.');
+    for(const el of doc.querySelectorAll('style,[style]')) {const css=el.localName==='style'?el.textContent:el.getAttribute('style');if(css.includes('\\')) throw Error('Escaped CSS is unsupported. Use plain, self-contained SVG styles.');}
+    return doc;
+  }
+
 
   const dropZone = document.getElementById('dropZone');
   const dropTitle = document.getElementById('dropTitle');
@@ -1311,7 +1330,7 @@
   function setZoom(z) {
     currentZoom = Math.round(z * 100) / 100;
     zoomResetBtn.textContent = `${Math.round(currentZoom * 100)}%`;
-    const svgEl = stageDisplay.querySelector('svg');
+    const svgEl = stageDisplay.querySelector('img');
     if (svgEl) {
       svgEl.style.transform = `scale(${currentZoom})`;
     }
@@ -1342,36 +1361,23 @@
       alert('Please select a valid .svg file.');
       return;
     }
+    const op = ++svgOperation;
+    svgReady = false; optimizedSvg = ''; stageDisplay.replaceChildren(); svgButtons(); svgStatus('Reading SVG...');
     const reader = new FileReader();
-    reader.onload = (e) => {
-      originalRawSvg = e.target.result;
-      dropTitle.textContent = file.name;
-      dropSubtitle.textContent = `${formatBytes(file.size)} loaded. Optimizing...`;
-      processOptimization();
+    reader.onerror = () => { if(op === svgOperation) svgStatus('Could not read this file.'); };
+    reader.onload = () => {
+      if(op !== svgOperation) return;
+      originalRawSvg = reader.result; dropTitle.textContent = file.name; processOptimization();
     };
     reader.readAsText(file);
   }
 
   // Robust DOM-based SVG Optimizer
   function processOptimization() {
+    ++svgOperation;
     try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(originalRawSvg, 'image/svg+xml');
-
-      const parseErr = doc.querySelector('parsererror');
-      if (parseErr) {
-        console.warn('SVG parse error, falling back to raw:', parseErr.textContent);
-        optimizedSvg = originalRawSvg;
-        renderOutput();
-        return;
-      }
-
+      const doc = validateSvg(originalRawSvg);
       const svgRoot = doc.documentElement;
-      if (!svgRoot || svgRoot.nodeName.toLowerCase() !== 'svg') {
-        optimizedSvg = originalRawSvg;
-        renderOutput();
-        return;
-      }
 
       // 1. Remove Comments
       if (optComments.checked) {
@@ -1387,7 +1393,7 @@
       // 2. Strip Editor Namespaces & Metadata Tags
       if (optEditor.checked) {
         doc.querySelectorAll('metadata').forEach(m => m.remove());
-        
+
         const allElements = doc.querySelectorAll('*');
         allElements.forEach(el => {
           const toRemove = [];
@@ -1404,7 +1410,7 @@
               attrName.startsWith('i:') ||
               attrName.startsWith('sketch:') ||
               attrName === 'enable-background' ||
-              attrName === 'xml:space'
+              false
             ) {
               toRemove.push(el.attributes[i].name);
             }
@@ -1415,7 +1421,7 @@
 
       // 3. Remove Hidden / Invisible Nodes
       if (optHidden.checked) {
-        doc.querySelectorAll('[display="none"], [visibility="hidden"]').forEach(el => el.remove());
+        doc.querySelectorAll('[display="none"]').forEach(el => { if (!el.id && !el.querySelector('[id]')) el.remove(); });
       }
 
       // 4. Remove Empty Containers (<g></g>, <defs></defs>)
@@ -1444,9 +1450,7 @@
         // Optimize Path Data (d attribute ONLY)
         if (el.hasAttribute('d')) {
           let d = el.getAttribute('d');
-          if (hasPrec) {
-            d = d.replace(/-?\d+\.\d+/g, roundNum);
-          }
+          // Preserve path coordinates: rounding can alter arc flags and exponent notation.
           if (optPaths.checked) {
             d = d.replace(/,/g, ' ')
                  .replace(/\s*([a-df-z])\s*/gi, '$1 ')
@@ -1468,7 +1472,7 @@
           });
 
           if (el.hasAttribute('viewBox')) {
-            const vbParts = el.getAttribute('viewBox').trim().split(/\s+/).map(roundNum);
+            const vbParts = el.getAttribute('viewBox').trim().split(/[\s,]+/).map(roundNum);
             el.setAttribute('viewBox', vbParts.join(' '));
           }
         }
@@ -1486,7 +1490,7 @@
       optimizedSvg = res.trim();
     } catch (e) {
       console.error('Optimization error:', e);
-      optimizedSvg = originalRawSvg;
+      optimizedSvg = ''; svgReady = false; stageDisplay.replaceChildren(); svgOutputArea.value = ''; svgStatus(e.message); svgButtons(); return;
     }
 
     renderOutput();
@@ -1494,14 +1498,11 @@
 
   function renderOutput() {
     svgOutputArea.value = optimizedSvg;
-    stageDisplay.innerHTML = optimizedSvg;
-    
-    // Apply current zoom
-    const svgEl = stageDisplay.querySelector('svg');
-    if (svgEl) {
-      svgEl.style.transform = `scale(${currentZoom})`;
-    }
-
+    if(previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(new Blob([optimizedSvg],{type:'image/svg+xml'}));
+    const img = new Image(); img.alt = 'SVG preview'; img.style.maxWidth = '100%'; img.style.maxHeight = '100%'; img.style.transform = `scale(${currentZoom})`;
+    img.src = previewUrl; stageDisplay.replaceChildren(img);
+    svgReady = true; svgButtons(); svgStatus('Ready. Active content and external resources are unsupported; path coordinates are preserved.');
     updateMetrics(originalRawSvg, optimizedSvg);
   }
 
@@ -1513,7 +1514,7 @@
 
     origSizeText.textContent = formatBytes(origBytes);
     optSizeText.textContent = formatBytes(optBytes);
-    savedBytesText.textContent = `${formatBytes(Math.abs(saved))} (${saved >= 0 ? '-' : '+'}${pct}%)`;
+    savedBytesText.textContent = `${formatBytes(Math.abs(saved))} (${saved >= 0 ? '-' : '+'}${Math.abs(pct)}%)`;
 
     savingsBadge.textContent = `${saved >= 0 ? '-' : '+'}${Math.abs(pct)}%`;
     savingsBadge.style.color = saved >= 0 ? 'var(--accent-emerald)' : 'var(--accent)';
@@ -1530,15 +1531,11 @@
     el.addEventListener('change', processOptimization);
   });
   precisionSelect.addEventListener('change', processOptimization);
-  
+
   svgOutputArea.addEventListener('input', () => {
-    optimizedSvg = svgOutputArea.value;
-    stageDisplay.innerHTML = optimizedSvg;
-    const svgEl = stageDisplay.querySelector('svg');
-    if (svgEl) {
-      svgEl.style.transform = `scale(${currentZoom})`;
-    }
-    updateMetrics(originalRawSvg, optimizedSvg);
+    ++svgOperation;
+    try { validateSvg(svgOutputArea.value); optimizedSvg = svgOutputArea.value; renderOutput(); }
+    catch(error) { svgReady=false; stageDisplay.replaceChildren(); svgButtons(); svgStatus(error.message); }
   });
 
   // Download Optimized SVG
@@ -1549,7 +1546,7 @@
     a.href = url;
     a.download = 'optimized.svg';
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   });
 
   // Copy SVG Code
@@ -1563,36 +1560,21 @@
     }
   });
 
-  // Export as Raster PNG (2x)
-  exportPngBtn.addEventListener('click', () => {
-    const blob = new Blob([optimizedSvg], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-
-    img.onload = () => {
-      const scale = 2; // 2x Retina
-      const canvas = document.createElement('canvas');
-      const w = (img.naturalWidth || 800);
-      const h = (img.naturalHeight || 800);
-      canvas.width = w * scale;
-      canvas.height = h * scale;
-      const ctx = canvas.getContext('2d');
-      ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
-
-      URL.revokeObjectURL(url);
-      canvas.toBlob((pngBlob) => {
-        const pngUrl = URL.createObjectURL(pngBlob);
-        const link = document.createElement('a');
-        link.href = pngUrl;
-        link.download = 'vector-export.png';
-        link.click();
-        URL.revokeObjectURL(pngUrl);
-      }, 'image/png');
-    };
-    img.src = url;
+  exportPngBtn.addEventListener('click', async () => {
+    if(!svgReady || exportBusy) return;
+    const op = svgOperation, text = optimizedSvg; exportBusy=true; svgButtons();
+    const url=URL.createObjectURL(new Blob([text],{type:'image/svg+xml'}));
+    try {
+      const img = await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(Error('Could not render this SVG. Check dimensions and supported elements.'));i.src=url;});
+      const w=img.naturalWidth*2,h=img.naturalHeight*2; TangentMedia.checkSize(w,h);
+      const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const blob=await TangentMedia.encode(canvas,'image/png');
+      if(op!==svgOperation) return;
+      const link=document.createElement('a'),downloadUrl=URL.createObjectURL(blob);link.href=downloadUrl;link.download='vector-export.png';link.click();setTimeout(()=>URL.revokeObjectURL(downloadUrl),2000);
+    } catch(error) {if(op===svgOperation) svgStatus(error.message);} finally {URL.revokeObjectURL(url);exportBusy=false;svgButtons();}
   });
 
+  const status = document.createElement('p'); status.id='svgStatus'; status.setAttribute('role','status'); svgOutputArea.before(status);
   // Initial Run with Sample SVG
   processOptimization();
 </script>

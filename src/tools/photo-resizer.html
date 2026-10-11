@@ -20,7 +20,7 @@
       "name": "Why does the image process in my browser instead of a server?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Processing images locally (client-side) is significantly faster and 100% secure. You do not have to wait for large files to upload or download, and you never have to worry about your personal photos being stored on a third-party server."
+        "text": "Images are processed locally without uploading them to a server. You do not have to wait for large files to upload or download, and you never have to worry about your personal photos being stored on a third-party server."
       }
     },
     {
@@ -36,7 +36,7 @@
       "name": "How does the file size (KB) compressor work?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Tangent uses an iterative binary search algorithm directly on your browser's HTML5 Canvas to calculate the exact compression quality that fits inside your desired Min/Max KB window without sacrificing visual clarity."
+        "text": "Tangent uses an iterative binary search algorithm directly on your browser's HTML5 Canvas to search for a quality setting within your Min/Max KB window. Some targets cannot be met at fixed dimensions, and lossy compression can change quality."
       }
     }
   ]
@@ -53,21 +53,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    
-    
-    
+
+
+
   }
 
   body {
@@ -561,7 +561,7 @@
 </div>
 
 <div class="app-container">
-  
+
   <div class="tool-panel">
     <!-- Modern Drag & Drop Zone -->
     <div class="upload-box" id="dropZone">
@@ -571,7 +571,7 @@
         <polyline points="21 15 16 10 5 21"></polyline>
       </svg>
       <div class="upload-box-title">Click or drop a photo here to resize</div>
-      <div class="upload-box-sub">Supports JPEG, PNG, WEBP • Processed strictly in browser RAM</div>
+      <div class="upload-box-sub">Supports JPEG, PNG, WEBP Ã¢â‚¬Â¢ Processed strictly in browser RAM</div>
       <div class="upload-btn-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -589,7 +589,7 @@
         <img id="activeThumb" class="thumb-preview" alt="Thumbnail Preview">
         <div style="min-width: 0;">
           <div class="active-file-name" id="activeFileName">photo.jpg</div>
-          <div class="active-file-meta" id="activeFileMeta">1920 × 1080 px • 840 KB</div>
+          <div class="active-file-meta" id="activeFileMeta">1920 Ãƒâ€” 1080 px Ã¢â‚¬Â¢ 840 KB</div>
         </div>
       </div>
       <button type="button" class="btn-remove-file" onclick="resetPhotoResizer()">
@@ -600,17 +600,17 @@
         Change Photo
       </button>
     </div>
-    
+
     <!-- Cropper Container -->
     <div class="img-container" id="cropContainer">
       <img id="imageToCrop" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Image to crop">
     </div>
-    
+
     <!-- Presets -->
     <div class="input-group">
       <label>Quick Presets</label>
       <div class="preset-buttons">
-        <button type="button" class="preset-btn active" onclick="applyPreset(132, 170, this)">Passport (132×170)</button>
+        <button type="button" class="preset-btn active" onclick="applyPreset(132, 170, this)">Passport (132Ãƒâ€”170)</button>
         <button type="button" class="preset-btn" onclick="applyPreset(1080, 1080, this)">Square Avatar (1:1)</button>
         <button type="button" class="preset-btn" onclick="applyPreset(1200, 630, this)">Social Banner (16:9)</button>
         <button type="button" class="preset-btn" onclick="applyPreset(1240, 1754, this)">Document A4</button>
@@ -639,7 +639,7 @@
         <option value="image/webp">WEBP (Modern high-efficiency compression)</option>
       </select>
     </div>
-    
+
     <!-- Target KB Compressor -->
     <div class="dimension-row" id="kbRowContainer">
       <div class="input-group">
@@ -651,7 +651,7 @@
         <input type="number" id="maxKbInput" value="50" min="2">
       </div>
     </div>
-    
+
     <!-- Action Buttons -->
     <button class="btn-accent" onclick="processAndCompress()" id="processBtn" style="display:none;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -663,9 +663,9 @@
       </svg>
       Crop & Resize Photo
     </button>
-    
+
     <div class="status-wrapper" id="status"></div>
-    
+
     <a id="downloadBtn" class="btn-accent download-btn" download="Tangent_Resized.jpg">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -707,7 +707,7 @@
   <div class="faq-box">
     <details>
       <summary>Why does the image process in my browser instead of a server?</summary>
-      <p>Processing images locally (client-side) is significantly faster and 100% secure. You don't have to wait for large files to upload or download, and you never have to worry about your personal photos being stored on a third-party server.</p>
+      <p>Images are processed locally without uploading them to a server. You don't have to wait for large files to upload or download, and you never have to worry about your personal photos being stored on a third-party server.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -726,8 +726,10 @@
 
 <!-- --- SCRIPTS --- -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="assets/media-utils.js"></script>
 <script>
   let cropper = null;
+  let resizerOperation=0,resizerBusy=false;
   const imageToCrop = document.getElementById('imageToCrop');
   const cropContainer = document.getElementById('cropContainer');
   const processBtn = document.getElementById('processBtn');
@@ -744,7 +746,7 @@
 
   // Drag & Drop Listeners
   dropZone.addEventListener('click', () => imageInput.click());
-  
+
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('dragover');
@@ -768,47 +770,23 @@
     }
   });
 
-  function loadFile(file) {
-    if (!file || !file.type.startsWith('image/')) {
-      alert('Please select a valid image file (JPEG, PNG, or WEBP).');
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = function() {
-      // Update active card details
-      activeFileName.textContent = file.name;
-      activeFileMeta.textContent = `${img.naturalWidth} × ${img.naturalHeight} px • ${(file.size / 1024).toFixed(1)} KB`;
-      activeThumb.src = url;
-
-      // Swap view: hide dropZone, show activeFileCard
-      dropZone.style.display = 'none';
-      activeFileCard.style.display = 'flex';
-
-      // Setup Cropper
-      imageToCrop.src = url;
-      cropContainer.style.display = 'block';
-      processBtn.style.display = 'inline-flex';
-
-      if (cropper) cropper.destroy();
-
-      const targetRatio = (parseInt(widthInput.value) || 1) / (parseInt(heightInput.value) || 1);
-      cropper = new Cropper(imageToCrop, {
-        aspectRatio: targetRatio,
-        viewMode: 1,
-        autoCropArea: 0.9,
-        responsive: true,
-        background: false
-      });
-      
-      statusEl.innerHTML = '';
-      downloadBtn.style.display = 'none';
-    };
-    img.src = url;
+  async function loadFile(file) {
+    resetPhotoResizer();const operation=resizerOperation;
+    if(!file||!file.type.startsWith('image/')){statusEl.textContent='Choose a supported image.';return;}
+    statusEl.textContent='Loading image...';
+    try {
+      const img=await TangentMedia.loadImage(file);if(operation!==resizerOperation)return;
+      activeFileName.textContent=file.name;activeFileMeta.textContent=`${img.naturalWidth} Ã— ${img.naturalHeight} px â€¢ ${(file.size/1024).toFixed(1)} KB`;
+      activeThumb.src=img.src;dropZone.style.display='none';activeFileCard.style.display='flex';
+      imageToCrop.src=img.src;cropContainer.style.display='block';processBtn.style.display='inline-flex';processBtn.disabled=true;
+      const w=Number(widthInput.value),h=Number(heightInput.value);
+      cropper=new Cropper(imageToCrop,{aspectRatio:w>0&&h>0?w/h:1,viewMode:1,autoCropArea:0.9,responsive:true,background:false,
+        ready(){if(operation===resizerOperation){processBtn.disabled=false;statusEl.textContent='';}}});
+    } catch(error){if(operation===resizerOperation)statusEl.textContent=error.message;}
   }
 
   function resetPhotoResizer() {
+    resizerOperation++;resizerBusy=false;processBtn.disabled=false;TangentMedia.clearLink(downloadBtn);
     if (cropper) {
       cropper.destroy();
       cropper = null;
@@ -849,15 +827,11 @@
     if (cropper) {
       const w = parseInt(widthInput.value) || 1;
       const h = parseInt(heightInput.value) || 1;
-      cropper.setAspectRatio(w / h);
+      if(w>0&&h>0)cropper.setAspectRatio(w / h);
     }
   }
 
-  const getBlob = (canvas, format, quality) => {
-    return new Promise(resolve => canvas.toBlob(resolve, format, quality));
-  };
-
-  function showSuccess(blob, ext, w, h, note) {
+  function showResizerSuccess(blob, ext, w, h, note) {
     const sizeKb = (blob.size / 1024).toFixed(1);
     let noteHtml = note ? `<div style="font-size:0.84rem; color:#fbbf24; margin-top:4px;">${note}</div>` : '';
     statusEl.innerHTML = `
@@ -866,11 +840,12 @@
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
         <div>
-          <div><strong>Ready for Download:</strong> ${w} × ${h} px • <strong>${sizeKb} KB</strong> (${ext.toUpperCase()})</div>
+          <div><strong>Ready for Download:</strong> ${w} Ãƒâ€” ${h} px Ã¢â‚¬Â¢ <strong>${sizeKb} KB</strong> (${ext.toUpperCase()})</div>
           ${noteHtml}
         </div>
       </div>
     `;
+    TangentMedia.clearLink(downloadBtn);
     const url = URL.createObjectURL(blob);
     downloadBtn.href = url;
     downloadBtn.download = `Tangent_Resized_${w}x${h}.${ext}`;
@@ -878,9 +853,15 @@
   }
 
   async function processAndCompress() {
-    if (!cropper) return;
-    const targetWidth = parseInt(widthInput.value) || 800;
-    const targetHeight = parseInt(heightInput.value) || 600;
+    if(!cropper||resizerBusy)return;
+    TangentMedia.clearLink(downloadBtn);
+    const targetWidth=Number(widthInput.value),targetHeight=Number(heightInput.value);
+    try{TangentMedia.checkSize(targetWidth,targetHeight);}catch(error){statusEl.textContent=error.message;return;}
+    const operation=resizerOperation;
+    resizerBusy=true;processBtn.disabled=true;
+    const getBlob=async(canvas,type,quality)=>{const blob=await TangentMedia.encode(canvas,type,quality);if(operation!==resizerOperation)throw new Error('Cancelled');return blob;};
+    const showSuccess=(blob,ext,w,h,note)=>{if(operation===resizerOperation)showResizerSuccess(blob,TangentMedia.extension(blob.type),w,h,note);};
+    try {
     const format = document.getElementById('formatSelect').value;
     const isPng = format === 'image/png';
     const isWebp = format === 'image/webp';
@@ -914,8 +895,8 @@
     `;
     downloadBtn.style.display = 'none';
 
-    const croppedCanvas = cropper.getCroppedCanvas();
-    if (!croppedCanvas) {
+    const croppedCanvas = cropper.getCroppedCanvas({width:targetWidth,height:targetHeight});
+    if (!croppedCanvas || !croppedCanvas.width || !croppedCanvas.height) {
       statusEl.innerHTML = `
         <div class="error-banner">
           Failed to process image canvas. Please try selecting a photo again.
@@ -928,9 +909,9 @@
     finalCanvas.width = targetWidth;
     finalCanvas.height = targetHeight;
     const ctx = finalCanvas.getContext('2d');
-    
-    // Fill white background for non-PNG formats
-    if (!isPng) {
+
+    // JPEG has no alpha channel. Preserve transparency for PNG and WebP.
+    if (format === 'image/jpeg') {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, targetWidth, targetHeight);
     }
@@ -965,11 +946,11 @@
     for (let i = 0; i < 15; i++) {
       let q = (min_q + max_q) / 2;
       blob = await getBlob(finalCanvas, mimeType, q);
-      
+
       if (blob.size >= minBytes && blob.size <= maxBytes) {
         return showSuccess(blob, ext, targetWidth, targetHeight);
       }
-      
+
       if (blob.size > maxBytes) {
         max_q = q;
       } else {
@@ -977,10 +958,12 @@
         best_blob = blob;
       }
     }
-    
+
     if (best_blob) {
       return showSuccess(best_blob, ext, targetWidth, targetHeight, `Settled on closest safe size: ${(best_blob.size / 1024).toFixed(1)} KB`);
     }
+    } catch(error){if(operation===resizerOperation)statusEl.textContent='Could not resize image: '+error.message;}
+    finally{if(operation===resizerOperation){resizerBusy=false;processBtn.disabled=false;}}
   }
 
   // Mobile Navigation Hamburger Toggle

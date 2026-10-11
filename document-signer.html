@@ -89,7 +89,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {}
 
@@ -265,9 +265,9 @@
   .placed-stamp {
     position: absolute;
     cursor: move;
-    border: 2px dashed rgba(0, 210, 255, 0.7);
+    outline: 2px dashed rgba(0, 210, 255, 0.7);
     background: rgba(0, 210, 255, 0.05);
-    padding: 4px;
+    padding: 0;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -276,6 +276,9 @@
   }
 
   .placed-stamp img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
     max-width: 100%;
     max-height: 100%;
     pointer-events: none;
@@ -602,7 +605,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -649,15 +652,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -705,8 +708,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -726,8 +729,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -775,8 +778,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -803,8 +806,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -824,8 +827,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -852,8 +855,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -908,8 +911,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -979,7 +982,7 @@
 </div>
 
 <div class="signer-container">
-  
+
   <!-- Upload State -->
   <div class="upload-dropzone" id="dropZone">
     <div class="dropzone-icon">
@@ -992,7 +995,7 @@
 
   <!-- Interactive Signer Workspace -->
   <div class="signer-workspace" id="signerWorkspace">
-    
+
     <!-- Workspace Toolbar -->
     <div class="signer-toolbar">
       <div class="toolbar-group">
@@ -1032,6 +1035,11 @@
       </div>
     </div>
 
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border-color);font-size:13px;line-height:1.6;">
+      <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="flattenFormFields"> Flatten form fields in the exported copy</label>
+      <small style="color:var(--text-muted);">Keeps visible filled values, but removes editable fields. Leave unchecked to preserve forms; stamps must not overlap their fields. Keep the original PDF.</small>
+      <div id="signerExportNotice" role="status" hidden></div>
+    </div>
     <!-- Document Viewport -->
     <div class="stage-viewport">
       <div class="page-wrapper" id="pageWrapper">
@@ -1053,7 +1061,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
-    
+
     <div class="modal-tabs">
       <button type="button" class="tab-btn active" id="tabDraw">Draw</button>
       <button type="button" class="tab-btn" id="tabType">Type Name</button>
@@ -1168,7 +1176,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
       </div>
       <h3>Dual-Engine PDF Re-Synthesis</h3>
-      <p>High-resolution 2x Retina re-synthesis and permission bypass ensure even permission-restricted government IDs, Aadhaar cards, and bank forms export properly.</p>
+      <p>Vector export preserves document text and editable forms where supported. If it fails, you can choose a rendered copy: visible values remain, but text, form fields and annotations are no longer editable.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -1233,7 +1241,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1256,16 +1264,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1325,42 +1333,40 @@
     if (e.target.files.length) loadPdfFile(e.target.files[0]);
   });
 
-  function loadPdfFile(file) {
-    if (file.type !== 'application/pdf') {
-      alert('Please select a valid PDF file.');
-      return;
+  let fileOperation = 0, renderOperation = 0, activeRender = null, currentViewport = null;
+  async function loadPdfFile(file) {
+    if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {alert('Please select a valid PDF file.');return;}
+    const operation=++fileOperation;
+    try {
+      const bytes=new Uint8Array(await file.arrayBuffer());
+      const candidate=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+      if(operation!==fileOperation) {await candidate.destroy();return;}
+      rawPdfBytes=bytes;pdfDoc=candidate;totalPages=candidate.numPages;currentPageNum=1;placedStamps=[];
+      document.getElementById('signerExportNotice').hidden=true;
+      dropZone.style.display='none';signerWorkspace.style.display='flex';
+      await renderCurrentPage();
+    } catch(error) {
+      if(operation!==fileOperation) return;
+      pdfFileInput.value='';
+      alert('Unable to open PDF: '+error.message);
+      if(!pdfDoc) {dropZone.style.display='block';signerWorkspace.style.display='none';}
     }
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      rawPdfBytes = new Uint8Array(e.target.result);
-      dropZone.style.display = 'none';
-      signerWorkspace.style.display = 'flex';
-      
-      // Clone buffer for pdfjsLib worker so rawPdfBytes is never detached
-      const pdfJsData = new Uint8Array(rawPdfBytes.slice(0));
-      const loadingTask = pdfjsLib.getDocument({ data: pdfJsData });
-      pdfDoc = await loadingTask.promise;
-      totalPages = pdfDoc.numPages;
-      currentPageNum = 1;
-      renderCurrentPage();
-    };
-    reader.readAsArrayBuffer(file);
   }
-
   async function renderCurrentPage() {
-    pageIndicator.textContent = `Page ${currentPageNum} of ${totalPages}`;
-    const page = await pdfDoc.getPage(currentPageNum);
-    const viewport = page.getViewport({ scale: 1.5 });
-    
-    pdfCanvas.width = viewport.width;
-    pdfCanvas.height = viewport.height;
-    
-    const renderContext = {
-      canvasContext: pdfCanvas.getContext('2d'),
-      viewport: viewport
-    };
-    await page.render(renderContext).promise;
-    renderStampsForPage();
+    if(!pdfDoc) return;
+    const operation=++renderOperation, document=pdfDoc, number=currentPageNum;
+    if(activeRender) {const previous=activeRender;previous.cancel();try {await previous.promise;} catch(_) {}}
+    try {
+      const page=await document.getPage(number);
+      if(operation!==renderOperation || document!==pdfDoc) return;
+      const viewport=page.getViewport({scale:1.5});currentViewport=viewport;
+      pageIndicator.textContent='Page '+number+' of '+totalPages;
+      prevPageBtn.disabled=number===1;nextPageBtn.disabled=number===totalPages;
+      pdfCanvas.width=viewport.width;pdfCanvas.height=viewport.height;
+      const task=page.render({canvasContext:pdfCanvas.getContext('2d'),viewport});activeRender=task;
+      try {await task.promise;} finally {if(activeRender===task)activeRender=null;}
+      if(operation===renderOperation && document===pdfDoc) renderStampsForPage();
+    } catch(error) {if(error.name!=='RenderingCancelledException' && operation===renderOperation) alert('Unable to display page: '+error.message);}
   }
 
   prevPageBtn.addEventListener('click', () => {
@@ -1381,6 +1387,9 @@
   const undoBtn = document.getElementById('undoBtn');
 
   function renderStampsForPage() {
+    const displayScale = pdfCanvas.width ? pdfCanvas.getBoundingClientRect().width/pdfCanvas.width : 1;
+    stampsLayer.style.width=pdfCanvas.width+'px';stampsLayer.style.height=pdfCanvas.height+'px';
+    stampsLayer.style.transformOrigin='top left';stampsLayer.style.transform='scale('+displayScale+')';
     undoBtn.style.display = placedStamps.length > 0 ? 'inline-flex' : 'none';
     stampsLayer.innerHTML = '';
     const pageStamps = placedStamps.filter(s => s.page === currentPageNum);
@@ -1428,7 +1437,7 @@
         function onResizeMove(moveEvent) {
           if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
           let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
-          const deltaX = currentX - startX;
+          const deltaX = (currentX - startX)/displayScale;
           let newW = Math.max(35, Math.min(650, initialW + deltaX));
           let newH = Math.round(newW / aspect);
           stamp.width = newW;
@@ -1460,15 +1469,15 @@
       rotateBtn.className = 'stamp-rotate-btn';
       rotateBtn.title = 'Drag to Rotate';
       rotateBtn.style.cursor = 'grab';
-      
+
       function startRotate(e) {
         e.stopPropagation();
         if (e.type !== 'touchstart') e.preventDefault();
-        
+
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        
+
         let startX = e.touches ? e.touches[0].clientX : e.clientX;
         let startY = e.touches ? e.touches[0].clientY : e.clientY;
         let startAngle = Math.atan2(startY - cy, startX - cx);
@@ -1478,7 +1487,7 @@
           if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
           let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
           let currentY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
-          
+
           let currentAngle = Math.atan2(currentY - cy, currentX - cx);
           stamp.rotation = initialRot + (currentAngle - startAngle);
           el.style.transform = 'rotate(' + stamp.rotation + 'rad)';
@@ -1498,7 +1507,7 @@
         document.addEventListener('touchend', onRotateUp);
         document.addEventListener('touchcancel', onRotateUp);
       }
-      
+
       rotateBtn.addEventListener('mousedown', startRotate);
       rotateBtn.addEventListener('touchstart', startRotate, { passive: false });
       el.appendChild(rotateBtn);
@@ -1522,13 +1531,13 @@
 
       // Dragging logic
       function startDrag(e) {
-        if (e.target === delBtn || e.target.closest('.stamp-delete') || 
+        if (e.target === delBtn || e.target.closest('.stamp-delete') ||
             e.target === resizeBtn || e.target.closest('.stamp-resize') ||
             e.target === rotateBtn || e.target.closest('.stamp-rotate-btn') ||
             e.target === opacBtn || e.target.closest('.stamp-opac-btn')) return;
-        
+
         if (e.type !== 'touchstart') e.preventDefault();
-        
+
         let startX = e.touches ? e.touches[0].clientX : e.clientX;
         let startY = e.touches ? e.touches[0].clientY : e.clientY;
         let initialX = stamp.x;
@@ -1538,9 +1547,9 @@
           if (moveEvent.type === 'touchmove') moveEvent.preventDefault();
           let currentX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
           let currentY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
-          
-          stamp.x = initialX + (currentX - startX);
-          stamp.y = initialY + (currentY - startY);
+
+          stamp.x = initialX + (currentX - startX)/displayScale;
+          stamp.y = initialY + (currentY - startY)/displayScale;
           el.style.left = stamp.x + 'px';
           el.style.top = stamp.y + 'px';
         }
@@ -1583,10 +1592,17 @@
       y: y,
       width: width,
       height: height,
-      dataUrl: dataUrl
+      dataUrl: dataUrl,
+      viewportTransform: currentViewport.transform.slice(),
+      viewportWidth: currentViewport.width,
+      viewportHeight: currentViewport.height
     });
     renderStampsForPage();
   }
+  window.addEventListener('resize',()=>{if(pdfDoc&&currentViewport)renderStampsForPage();});
+  new ResizeObserver(()=>{
+    if(pdfCanvas.width) stampsLayer.style.transform='scale('+(pdfCanvas.getBoundingClientRect().width/pdfCanvas.width)+')';
+  }).observe(pdfCanvas);
 
   // Date Stamp Creator
   addDateBtn.addEventListener('click', () => {
@@ -1966,66 +1982,90 @@
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
+  function stampIntersectsWidget(stamp, rect) {
+    const [a,b,c,d,e,f]=stamp.viewportTransform, determinant=a*d-b*c;
+    const theta=stamp.rotation||0, cos=Math.cos(theta), sin=Math.sin(theta);
+    const cx=stamp.x+stamp.width/2, cy=stamp.y+stamp.height/2;
+    const polygon=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sy])=>{
+      const dx=sx*stamp.width/2,dy=sy*stamp.height/2;
+      const x=cx+dx*cos-dy*sin-e,y=cy+dx*sin+dy*cos-f;
+      return [(d*x-c*y)/determinant,(-b*x+a*y)/determinant];
+    });
+    const box=[[rect[0],rect[1]],[rect[2],rect[1]],[rect[2],rect[3]],[rect[0],rect[3]]];
+    const axes=[[1,0],[0,1],...polygon.map((p,i)=>{const q=polygon[(i+1)%4];return [p[1]-q[1],q[0]-p[0]];})];
+    return axes.every(([x,y])=>{
+      const left=polygon.map(p=>p[0]*x+p[1]*y),right=box.map(p=>p[0]*x+p[1]*y);
+      return Math.max(...left)>Math.min(...right)&&Math.max(...right)>Math.min(...left);
+    });
+  }
+
   // Export Signed PDF (Dual-Engine: Vector Injection + High-Res Synthesis Fallback)
   downloadSignedPdfBtn.addEventListener('click', async () => {
     if (!rawPdfBytes) return;
+    const operation=fileOperation, exportBytes=rawPdfBytes.slice(), exportDoc=pdfDoc, exportPages=totalPages, exportStamps=placedStamps.map(stamp=>({...stamp}));
+    const flattenFields=document.getElementById('flattenFormFields').checked;
+    const notice=document.getElementById('signerExportNotice');notice.hidden=true;notice.textContent='';
     downloadSignedPdfBtn.disabled = true;
     downloadSignedPdfBtn.textContent = 'Generating PDF...';
 
     try {
       // Primary Engine: Direct vector PDF injection via PDF-Lib
-      // { ignoreEncryption: true } prevents errors on government IDs, Aadhaar cards, and password-free protected PDFs
-      const pdfDocLib = await PDFLib.PDFDocument.load(rawPdfBytes.slice(0), { ignoreEncryption: true });
+      const pdfDocLib = await PDFLib.PDFDocument.load(exportBytes, { ignoreEncryption: true });
       const pages = pdfDocLib.getPages();
 
-      for (const stamp of placedStamps) {
+      if(flattenFields) {
+        // Reuse existing filled appearances, then stamp above them.
+        pdfDocLib.getForm().flatten({updateFieldAppearances:false});
+        for(const page of pages) {
+          const annotations=page.node.Annots()?.asArray()||[];
+          if(annotations.some(ref=>pdfDocLib.context.lookup(ref)?.get?.(PDFLib.PDFName.of('Subtype'))?.toString()==='/Widget')) throw new Error('A form widget could not be flattened.');
+        }
+        pdfDocLib.catalog.delete(PDFLib.PDFName.of('AcroForm'));
+      } else {
+        for(const pageNumber of new Set(exportStamps.map(stamp=>stamp.page))) {
+          const sourcePage=await exportDoc.getPage(pageNumber);
+          const widgets=(await sourcePage.getAnnotations()).filter(annotation=>annotation.subtype==='Widget'&&annotation.rect);
+          if(exportStamps.some(stamp=>stamp.page===pageNumber&&widgets.some(widget=>stampIntersectsWidget(stamp,widget.rect)))) {
+            if(operation!==fileOperation)return;
+            notice.textContent='A stamp overlaps an editable form field. Move it outside the field, or select Flatten form fields to export a non-editable form copy.';notice.hidden=false;
+            return;
+          }
+        }
+      }
+
+      for (const stamp of exportStamps) {
         const pageIdx = stamp.page - 1;
         if (pageIdx < 0 || pageIdx >= pages.length) continue;
         const page = pages[pageIdx];
-        const { width: pWidth, height: pHeight } = page.getSize();
-
-        // Ratio between PDF-lib coordinates and browser canvas
-        const scaleX = pWidth / pdfCanvas.width;
-        const scaleY = pHeight / pdfCanvas.height;
-
         const pngImage = await pdfDocLib.embedPng(stamp.dataUrl);
-
-        // PDF coordinate origin is bottom-left
-        const pdfX = stamp.x * scaleX;
-        const pdfY = pHeight - ((stamp.y + stamp.height) * scaleY);
-        const pdfW = stamp.width * scaleX;
-        const pdfH = stamp.height * scaleY;
-
-        const cx = pdfX + pdfW / 2;
-        const cy = pdfY + pdfH / 2;
-        const theta = -(stamp.rotation || 0); // Convert HTML clockwise to PDF counter-clockwise
-        
-        const dx = -pdfW / 2;
-        const dy = -pdfH / 2;
-        const dxRot = dx * Math.cos(theta) - dy * Math.sin(theta);
-        const dyRot = dx * Math.sin(theta) + dy * Math.cos(theta);
-
-        page.drawImage(pngImage, {
-          x: cx + dxRot,
-          y: cy + dyRot,
-          width: pdfW,
-          height: pdfH,
-          opacity: stamp.opacity !== undefined ? stamp.opacity : 1.0,
-          rotate: PDFLib.radians(theta)
-        });
+        const [a,b,c,d,e,f]=stamp.viewportTransform;
+        const determinant=a*d-b*c;
+        const toPdf=(x,y)=>[(d*(x-e)-c*(y-f))/determinant,(-b*(x-e)+a*(y-f))/determinant];
+        const theta=stamp.rotation||0, cos=Math.cos(theta), sin=Math.sin(theta);
+        const centerX=stamp.x+stamp.width/2, centerY=stamp.y+stamp.height/2;
+        const corner=toPdf(centerX-stamp.width/2*cos-stamp.height/2*sin,centerY-stamp.width/2*sin+stamp.height/2*cos);
+        const origin=toPdf(centerX,centerY), right=toPdf(centerX+cos,centerY+sin);
+        const scale=Math.hypot(right[0]-origin[0],right[1]-origin[1]);
+        page.drawImage(pngImage,{x:corner[0],y:corner[1],width:stamp.width*scale,height:stamp.height*scale,opacity:stamp.opacity??1,rotate:PDFLib.radians(Math.atan2(right[1]-origin[1],right[0]-origin[0]))});
       }
 
       const signedBytes = await pdfDocLib.save();
+      if(operation!==fileOperation) return;
       downloadPdfBlob(new Blob([signedBytes], { type: 'application/pdf' }));
+      if(flattenFields){notice.textContent='Exported copy has flattened form fields. Filled appearances are retained; fields are no longer editable.';notice.hidden=false;}
     } catch (primaryErr) {
+      if(operation!==fileOperation)return;
       console.warn('Vector PDF injection failed, activating high-resolution synthesis fallback:', primaryErr);
+      if(!confirm('Vector export could not complete. Download a flattened image copy instead? Visible values and stamps are kept, but selectable text, editable form fields and annotations are removed. Keep your original PDF.')) {
+        notice.textContent='Export cancelled. No flattened copy was downloaded.';notice.hidden=false;
+        return;
+      }
       try {
         // Fallback Engine: High-resolution (2x Retina) PDF re-synthesis via PDF.js + Canvas
-        // Works on 100% of PDFs even if heavily protected or with complex internal stream dictionaries
         const fallbackDoc = await PDFLib.PDFDocument.create();
 
-        for (let p = 1; p <= totalPages; p++) {
-          const page = await pdfDoc.getPage(p);
+        for (let p = 1; p <= exportPages; p++) {
+          const page = await exportDoc.getPage(p);
           const viewport = page.getViewport({ scale: 2.0 });
 
           const offCanvas = document.createElement('canvas');
@@ -2036,11 +2076,11 @@
           await page.render({ canvasContext: offCtx, viewport: viewport }).promise;
 
           // Render stamps for this page onto the high-res canvas
-          const pageStamps = placedStamps.filter(s => s.page === p);
-          const ratioX = viewport.width / pdfCanvas.width;
-          const ratioY = viewport.height / pdfCanvas.height;
+          const pageStamps = exportStamps.filter(s => s.page === p);
+
 
           for (const s of pageStamps) {
+            const ratioX=viewport.width/s.viewportWidth, ratioY=viewport.height/s.viewportHeight;
             await new Promise((resolve) => {
               const stampImg = new Image();
               stampImg.onload = () => {
@@ -2062,17 +2102,20 @@
 
           const pagePngUrl = offCanvas.toDataURL('image/png');
           const embeddedPage = await fallbackDoc.embedPng(pagePngUrl);
-          const pdfPage = fallbackDoc.addPage([page.view[2], page.view[3]]);
+          const originalViewport=page.getViewport({scale:1});
+          const pdfPage = fallbackDoc.addPage([originalViewport.width, originalViewport.height]);
           pdfPage.drawImage(embeddedPage, {
             x: 0,
             y: 0,
-            width: page.view[2],
-            height: page.view[3]
+            width: originalViewport.width,
+            height: originalViewport.height
           });
         }
 
         const signedBytes = await fallbackDoc.save();
+        if(operation!==fileOperation) return;
         downloadPdfBlob(new Blob([signedBytes], { type: 'application/pdf' }));
+        notice.textContent='Downloaded a flattened image copy. Visible values are retained; text, fields and annotations are no longer editable.';notice.hidden=false;
       } catch (fallbackErr) {
         console.error('All PDF export strategies failed:', fallbackErr);
         alert('Could not export PDF: ' + (fallbackErr.message || 'Please check console.'));

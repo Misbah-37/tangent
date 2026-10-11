@@ -1,13 +1,13 @@
 <!-- --- HEAD_META --- -->
 <title>Client-Side Document OCR & Text Extractor | Tangent</title>
-<meta name="description" content="Extract editable text from images, scanned multi-page PDFs, receipts, and screenshots 100% offline in browser RAM. Powered by WebAssembly OCR with zero server uploads.">
+<meta name="description" content="Extract editable text from images, scanned multi-page PDFs, receipts, and screenshots locally in browser memory after loading OCR data. Powered by WebAssembly OCR with zero server uploads.">
 <link rel="canonical" href="https://runtangent.com/document-ocr">
 
 <!-- Open Graph / Meta -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://runtangent.com/document-ocr.html">
 <meta property="og:title" content="Client-Side Document OCR | Tangent">
-<meta property="og:description" content="Extract editable text from scanned PDFs, images, and photos 100% offline in your browser memory.">
+<meta property="og:description" content="Extract editable text from scanned PDFs, images, and photos locally in your browser memory.">
 
 <!-- Structured Schema -->
 <script type="application/ld+json">
@@ -66,16 +66,16 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    
-    
+
+
     --bg-card-hover: #171b28;
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
   }
 
   body {
@@ -85,15 +85,15 @@
     line-height: 1.5;
   }
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
+
 
   .item-text {
     display: flex;
@@ -641,12 +641,12 @@
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
           <div class="upload-title">Drop your document or image here</div>
-          <div class="upload-sub">Supports PDF, PNG, JPG, WebP, BMP, TIFF • Or press Ctrl + V to paste screenshot</div>
+          <div class="upload-sub">Supports PDF, PNG, JPG, WebP, BMP • Or press Ctrl + V to paste screenshot</div>
           <div class="upload-btn-pill">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span>Select Document</span>
           </div>
-          <input type="file" id="fileInput" accept="application/pdf,image/png,image/jpeg,image/webp,image/bmp,image/tiff" style="display:none;">
+          <input type="file" id="fileInput" accept="application/pdf,image/png,image/jpeg,image/webp,image/bmp" style="display:none;">
         </div>
 
         <!-- Controls Bar -->
@@ -687,7 +687,7 @@
 
       <!-- Stage 3: Dual-Pane Output Workspace -->
       <div class="workspace-grid" id="workspaceGrid" style="display:none;">
-        
+
         <!-- Left Pane: Document Page Preview -->
         <div class="preview-pane">
           <div class="pane-header">
@@ -702,7 +702,7 @@
               </button>
             </div>
           </div>
-          
+
           <div class="preview-viewport" id="previewViewport">
             <canvas id="previewCanvas"></canvas>
           </div>
@@ -783,7 +783,7 @@
   <div class="faq-box">
     <details>
       <summary>How accurate is the client-side OCR engine?</summary>
-      <p>Our engine uses Tesseract WebAssembly trained neural models. It achieves 98%+ accuracy on clean scans, screenshots, printed documents, and receipts with clear typography.</p>
+      <p>Our engine uses Tesseract WebAssembly trained neural models. Accuracy depends on typography, language, resolution and scan quality. Review extracted text before use.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -803,6 +803,8 @@
 <!-- Standardized Global Footer -->
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
+<script src="assets/processing-utils.js"></script>
 <script>
 // Configure PDF.js worker
 if (typeof pdfjsLib !== 'undefined') {
@@ -813,7 +815,8 @@ if (typeof pdfjsLib !== 'undefined') {
 let documentPages = []; // Array of canvas elements
 let currentPageIndex = 0;
 let extractedPageTexts = [];
-let averageConfidence = 0;
+let averageConfidence = null;
+const ocrJobs=TangentProcessing.jobs();
 let isProcessing = false;
 let currentFileName = "document";
 
@@ -915,106 +918,21 @@ function applyPreprocess(srcCanvas) {
 // Process Ingested File
 async function processFile(file, overrideName = null) {
   if (!file) return;
-  isProcessing = true;
-  currentFileName = overrideName || file.name || "document";
-  previewFileName.textContent = currentFileName;
-
-  // UI state transition
-  dropZoneContainer.style.display = 'none';
-  workspaceGrid.style.display = 'none';
-  progressCard.style.display = 'block';
-  updateProgress(5, "Reading input file into browser memory...");
-
-  documentPages = [];
-  extractedPageTexts = [];
-  currentPageIndex = 0;
-
-  try {
-    if (file.type === "application/pdf" || currentFileName.toLowerCase().endsWith(".pdf")) {
-      // 1. Render PDF pages to canvases
-      updateProgress(10, "Rendering PDF pages with PDF.js...");
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const totalPages = pdf.numPages;
-
-      for (let p = 1; p <= totalPages; p++) {
-        updateProgress(10 + Math.round((p / totalPages) * 20), `Rasterizing page ${p} of ${totalPages}...`);
-        const page = await pdf.getPage(p);
-        const viewport = page.getViewport({ scale: 2.0 }); // 2x high resolution for sharp OCR
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        documentPages.push(canvas);
-      }
-    } else {
-      // 2. Load Single Image
-      updateProgress(15, "Loading image bitmap...");
-      const img = new Image();
-      const objUrl = URL.createObjectURL(file);
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = objUrl;
-      });
-      URL.revokeObjectURL(objUrl);
-
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      documentPages.push(canvas);
-    }
-
-    // 3. Run OCR via Tesseract.js Worker
-    const totalPages = documentPages.length;
-    const lang = ocrLangSelect.value;
-    updateProgress(35, `Initializing Tesseract WebAssembly engine (${lang})...`);
-
-    const worker = await Tesseract.createWorker(lang, 1, {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          const pagePct = Math.round(m.progress * 100);
-          updateProgress(35 + Math.round((currentPageIndex / totalPages) * 60) + Math.round((pagePct / 100) * (60 / totalPages)), `Recognizing Page ${currentPageIndex + 1} of ${totalPages}... (${pagePct}%)`);
-        }
-      }
-    });
-
-    let confidences = [];
-    const shouldEnhance = chkEnhanceContrast.checked;
-
-    for (let i = 0; i < totalPages; i++) {
-      currentPageIndex = i;
-      let targetCanvas = documentPages[i];
-      if (shouldEnhance) {
-        targetCanvas = applyPreprocess(targetCanvas);
-      }
-
-      const res = await worker.recognize(targetCanvas);
-      extractedPageTexts.push(res.data.text);
-      if (res.data.confidence) confidences.push(res.data.confidence);
-    }
-
-    await worker.terminate();
-
-    // Compute average confidence
-    averageConfidence = confidences.length > 0 ? Math.round(confidences.reduce((a, b) => a + b, 0) / confidences.length) : 90;
-
-    // 4. Finalize & Transition to Review Workspace
-    updateProgress(100, "Formatting extracted text...");
-    setTimeout(() => {
-      displayResults();
-    }, 400);
-
-  } catch (err) {
-    console.error("OCR Error:", err);
-    alert("Error reading document: " + (err.message || err));
-    resetTool();
-  } finally {
-    isProcessing = false;
-  }
+  const job=ocrJobs.begin(),name=overrideName||file.name||'document',language=ocrLangSelect.value,enhance=chkEnhanceContrast.checked;
+  isProcessing=true;ocrOutputText.value='';documentPages=[];extractedPageTexts=[];averageConfidence=null;
+  dropZoneContainer.style.display='none';workspaceGrid.style.display='none';progressCard.style.display='block';ocrMessage.textContent='';updateProgress(5,'Reading '+name+'...');
+  try{
+    TangentProcessing.checkFile(file);
+    let pages;
+    if(file.type==='application/pdf'||name.toLowerCase().endsWith('.pdf')) pages=await TangentProcessing.rasterPdf(file,job);
+    else {if(!/^image\/(png|jpeg|webp|bmp)$/.test(file.type))throw Error('Choose PNG, JPEG, WebP, BMP or PDF.');const image=await TangentMedia.loadImage(file);job.check();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;canvas.getContext('2d').drawImage(image,0,0);pages=[canvas];}
+    job.check();updateProgress(35,'Loading OCR engine. Language data may need downloading...');
+    const targets=enhance?pages.map(applyPreprocess):pages;
+    const data=await TangentProcessing.recognize(targets,language,job,m=>{if(m.status==='recognizing text')updateProgress(50,'Recognizing document...');});job.check();
+    documentPages=pages;extractedPageTexts=data.map(d=>d.text||'');const confidence=data.map(d=>d.confidence).filter(Number.isFinite);averageConfidence=confidence.length?Math.round(confidence.reduce((a,b)=>a+b,0)/confidence.length):null;
+    currentFileName=name;previewFileName.textContent=name;displayResults();ocrMessage.textContent='Review the extracted text before exporting.';
+  }catch(error){if(job.current()){resetTool();ocrMessage.textContent=error.message||'Could not process this document.';}}
+  finally{if(job.current())isProcessing=false;}
 }
 
 function updateProgress(percent, statusText) {
@@ -1087,7 +1005,7 @@ function updateStats(text) {
   const chars = text.length;
   statWords.textContent = words.toLocaleString();
   statChars.textContent = chars.toLocaleString();
-  statConfidence.textContent = `${averageConfidence}%`;
+  statConfidence.textContent = averageConfidence===null ? "Unavailable" : `${averageConfidence}%`;
 }
 
 ocrOutputText.addEventListener('input', () => {
@@ -1095,13 +1013,7 @@ ocrOutputText.addEventListener('input', () => {
 });
 
 // Copy to Clipboard
-btnCopyText.addEventListener('click', () => {
-  if (!ocrOutputText.value) return;
-  navigator.clipboard.writeText(ocrOutputText.value).then(() => {
-    copyToast.classList.add('show');
-    setTimeout(() => { copyToast.classList.remove('show'); }, 2200);
-  });
-});
+btnCopyText.addEventListener('click',async()=>{if(!ocrOutputText.value)return;try{await navigator.clipboard.writeText(ocrOutputText.value);ocrMessage.textContent='Text copied.';}catch(error){ocrMessage.textContent='Could not copy. Select the text and copy manually.';}});
 
 // Download .txt file
 btnDownloadTxt.addEventListener('click', () => {
@@ -1115,11 +1027,12 @@ btnDownloadTxt.addEventListener('click', () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
 });
 
 // Reset
 function resetTool() {
+  ocrJobs.cancel();isProcessing=false;averageConfidence=null;ocrMessage.textContent='';
   documentPages = [];
   extractedPageTexts = [];
   currentPageIndex = 0;
@@ -1131,5 +1044,7 @@ function resetTool() {
   progressBarFill.style.width = '0%';
 }
 
+const ocrMessage=document.createElement('p');ocrMessage.id='ocrMessage';ocrMessage.setAttribute('role','status');dropZoneContainer.before(ocrMessage);
+const cancelOCR=document.createElement('button');cancelOCR.type='button';cancelOCR.textContent='Cancel processing';cancelOCR.className='btn';cancelOCR.addEventListener('click',resetTool);progressCard.append(cancelOCR);
 btnReset.addEventListener('click', resetTool);
 </script>

@@ -423,17 +423,17 @@
 
   /* Print Stylesheet for Academic Papers */
   @media print {
-    @page { 
+    @page {
       margin: 0; /* Kills browser URL, Date, and Page Number watermarks */
       size: auto;
     }
     body { background: #fff !important; }
-    
+
     /* Hide the entire app UI during print */
     body > *:not(#pdfPrintTable) {
       display: none !important;
     }
-    
+
     .preview-content {
       position: relative !important;
       width: 100% !important;
@@ -494,7 +494,7 @@
 </div>
 
 <div class="studio-container">
-  
+
   <!-- Studio Control Bar -->
   <div class="control-bar">
     <div class="toolbar-group">
@@ -584,7 +584,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       </div>
       <h3>Publication-Grade CSS Presets</h3>
-      <p>Switch instantly between Academic Paper, Modern Technical, Minimalist, and Dark Reader themes optimized for reading.</p>
+      <p>Choose Academic Serif, Clean Sans or Technical Mono typography. HTML exports retain your selected font family.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -618,13 +618,16 @@
 </div>
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/dompurify.min.js"></script>
+<script src="assets/studio-utils.js"></script>
+<script src="assets/katex-export-css.js"></script>
 <script>
   // Academic Templates
   const TEMPLATES = {
     imrad: `# Neural Resonance Dynamics in High-Dimensional Embedding Spaces
 
-**Jane Doe**, Ph.D.  
-*Department of Computer Science & Applied Mathematics, Tangent Institute*  
+**Jane Doe**, Ph.D.
+*Department of Computer Science & Applied Mathematics, Tangent Institute*
 \`j.doe@tangent.local\`
 
 ---
@@ -764,42 +767,28 @@ Start writing your academic paper or technical note here...
   const readTimeEl = document.getElementById('readTime');
   const mathCountEl = document.getElementById('mathCount');
 
+  let draftHandle=null;
+  const markdownStatus=TangentStudio.status(editor,'markdownStatus');
+  const safeConfig={USE_PROFILES:{html:true,mathMl:true},FORBID_TAGS:['script','style','iframe','object','embed','img','video','audio','source','form','input','button','textarea','link','meta','base','svg'],FORBID_ATTR:['src','srcset','background','id','name']};
+  const rawConfig={...safeConfig,FORBID_ATTR:[...safeConfig.FORBID_ATTR,'style','class']};
+  function mathToken(src,name){for(const [left,right,display] of [['$$','$$',true],['\\[','\\]',true],['\\(','\\)',false],['$','$',false]]){if(!src.startsWith(left))continue;let end=src.indexOf(right,left.length);while(end>=0&&src[end-1]==='\\')end=src.indexOf(right,end+right.length);if(end<0)return;const text=src.slice(left.length,end);if(!text.trim()||(!display&&text.includes('\n')))return;return {type:name,raw:src.slice(0,end+right.length),text,display};}}
+  const mathRenderer=token=>katex.renderToString(token.text,{displayMode:token.display,throwOnError:false,trust:false,maxExpand:1000});
   // Configure Marked
-  marked.use({
-    gfm: true,
-    breaks: true
-  });
-
-  // Render Pipeline: Markdown + KaTeX
-  function renderDocument() {
-    const rawText = editor.value;
-
-    // 1. Compile Markdown to HTML
-    let html = marked.parse(rawText);
-    preview.innerHTML = html;
-
-    // 2. Render LaTeX via KaTeX Auto-Render extension
-    if (window.renderMathInElement) {
-      renderMathInElement(preview, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '\\[', right: '\\]', display: true }
-        ],
-        throwOnError: false
-      });
-    }
-
-    // 3. Update Statistics
-    updateStats(rawText);
+  marked.use({gfm:true,breaks:true,renderer:{html(value){return DOMPurify.sanitize(typeof value==='string'?value:value.raw,rawConfig);},image(href,title,text){return '<span>'+TangentStudio.escape('[Image omitted: '+(text||'image')+']')+'</span>';}},extensions:[
+    {name:'tangentMathBlock',level:'block',start:src=>src.search(/\$\$|\\\[/),tokenizer(src){const token=mathToken(src,'tangentMathBlock');return token?.display?token:undefined;},renderer:mathRenderer},
+    {name:'tangentMathInline',level:'inline',start:src=>src.search(/\$|\\[([]/),tokenizer(src){return mathToken(src,'tangentMathInline');},renderer:mathRenderer}
+  ]});
+  function renderDocument(){
+    if(editor.value.length>500000){markdownStatus.textContent='Use at most 500,000 characters. Reduce the document before exporting.';printPdfBtn.disabled=downloadHtmlBtn.disabled=true;return;}
+    try{preview.innerHTML=DOMPurify.sanitize(marked.parse(editor.value),safeConfig);preview.querySelectorAll('a').forEach(a=>{const href=a.getAttribute('href')||'';if(!/^(https?:|mailto:|#)/i.test(href))a.removeAttribute('href');a.rel='noopener noreferrer';});markdownStatus.textContent='Active HTML and automatic remote images are omitted. Review formatting before exporting.';printPdfBtn.disabled=downloadHtmlBtn.disabled=false;updateStats(editor.value);draftHandle?.changed();}
+    catch(error){markdownStatus.textContent='Could not render this document: '+error.message;printPdfBtn.disabled=downloadHtmlBtn.disabled=true;}
   }
 
   function updateStats(text) {
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
     const readingTime = Math.ceil(words / 200);
-    const mathMatches = (text.match(/\$[^$]+\$/g) || []).length;
+    const mathMatches = preview.querySelectorAll('.katex').length;
 
     wordCountEl.textContent = words.toLocaleString();
     charCountEl.textContent = chars.toLocaleString();
@@ -810,6 +799,7 @@ Start writing your academic paper or technical note here...
   // Load Template
   loadTemplateBtn.addEventListener('click', () => {
     const tName = templateSelect.value;
+    if(editor.value.trim()&&!window.confirm('Replace the current document with this template?'))return;
     if (TEMPLATES[tName]) {
       editor.value = TEMPLATES[tName];
       renderDocument();
@@ -818,7 +808,7 @@ Start writing your academic paper or technical note here...
 
   // Theme Switcher
   themeSelect.addEventListener('change', (e) => {
-    preview.className = 'preview-content ' + e.target.value;
+    preview.className = 'preview-content ' + e.target.value;draftHandle?.changed();
   });
 
   // Tab Indentation Support
@@ -841,11 +831,11 @@ Start writing your academic paper or technical note here...
 
   window.addEventListener('beforeprint', () => {
     const content = document.getElementById('previewOutput');
-    if (!content) return;
-    
+    if (!content || document.getElementById('pdfPrintTable')) return;
+
     printOriginalParent = content.parentNode;
     printNextSibling = content.nextSibling;
-    
+
     pdfPrintTable = document.createElement('table');
     pdfPrintTable.id = 'pdfPrintTable';
     pdfPrintTable.style.width = '100%';
@@ -853,26 +843,26 @@ Start writing your academic paper or technical note here...
     pdfPrintTable.style.borderCollapse = 'collapse';
     pdfPrintTable.style.margin = '0';
     pdfPrintTable.style.padding = '0';
-    
+
     // Academic 1-inch top margin
     const thead = document.createElement('thead');
     thead.innerHTML = '<tr><td><div style="height: 2.54cm;"></div></td></tr>';
-    
+
     // Academic 1-inch bottom margin
     const tfoot = document.createElement('tfoot');
     tfoot.innerHTML = '<tr><td><div style="height: 2.54cm;"></div></td></tr>';
-    
+
     const tbody = document.createElement('tbody');
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.style.padding = '0';
-    
+
     tr.appendChild(td);
     tbody.appendChild(tr);
     pdfPrintTable.appendChild(thead);
     pdfPrintTable.appendChild(tbody);
     pdfPrintTable.appendChild(tfoot);
-    
+
     // Move the actual document content into the print table structure
     td.appendChild(content);
     document.body.appendChild(pdfPrintTable);
@@ -881,14 +871,14 @@ Start writing your academic paper or technical note here...
   window.addEventListener('afterprint', () => {
     const content = document.getElementById('previewOutput');
     if (!content || !pdfPrintTable) return;
-    
+
     // Restore DOM to original app state
     if (printNextSibling) {
       printOriginalParent.insertBefore(content, printNextSibling);
     } else {
       printOriginalParent.appendChild(content);
     }
-    document.body.removeChild(pdfPrintTable);
+    document.body.removeChild(pdfPrintTable);pdfPrintTable=null;
   });
 
   printPdfBtn.addEventListener('click', () => {
@@ -897,18 +887,20 @@ Start writing your academic paper or technical note here...
 
   // Download HTML
   downloadHtmlBtn.addEventListener('click', () => {
+    if(downloadHtmlBtn.disabled)return;
+    const font=getComputedStyle(preview).fontFamily;
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Academic Document - Tangent</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<style>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; base-uri 'none'; form-action 'none'">
+<style>${TangentKatexExportCSS}
   body {
     max-width: 860px;
     margin: 40px auto;
     padding: 0 24px;
-    font-family: "Georgia", "Cambria", serif;
+    font-family: ${font};
     line-height: 1.75;
     color: #1a202c;
     background: #ffffff;
@@ -919,10 +911,10 @@ Start writing your academic paper or technical note here...
   th, td { border: 1px solid #cbd5e1; padding: 10px 12px; text-align: left; }
   th { background: #f1f5f9; }
   blockquote { border-left: 4px solid #3b82f6; background: #f8fafc; padding: 12px 20px; margin: 16px 0; }
-  pre { background: var(--bg-base); color: var(--text-main); padding: 16px; border-radius: 8px; overflow-x: auto; }</style>
+  pre { background: #f3f4f6; color: #111827; padding: 16px; border-radius: 8px; overflow-x: auto; }</style>
 </head>
 <body>
-${preview.innerHTML}
+${DOMPurify.sanitize(preview.innerHTML,safeConfig)}
 </body>
 </html>`;
 
@@ -932,7 +924,7 @@ ${preview.innerHTML}
     a.href = url;
     a.download = 'academic-document.html';
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
       if(window.TangentToast) window.TangentToast.show("Export successful!");
   });
 
@@ -944,7 +936,7 @@ ${preview.innerHTML}
     a.href = url;
     a.download = 'academic-document.md';
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
       if(window.TangentToast) window.TangentToast.show("Export successful!");
   });
 
@@ -961,5 +953,6 @@ ${preview.innerHTML}
 
   // Initial Load with IMRAD research paper template
   editor.value = TEMPLATES.imrad;
+  draftHandle=TangentStudio.draft('tangent_markdown_draft_v1',loadTemplateBtn,()=>({text:editor.value,theme:themeSelect.value}),data=>{if(!data||typeof data.text!=='string'||data.text.length>500000||!['theme-academic','theme-modern','theme-mono'].includes(data.theme))throw Error('Invalid Markdown draft');editor.value=data.text;themeSelect.value=data.theme;preview.className='preview-content '+data.theme;});
   renderDocument();
 </script>

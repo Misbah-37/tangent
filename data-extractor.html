@@ -57,32 +57,32 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 .extractor-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
   .grid-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
-  
+
   .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
-  
+
   textarea.code-input { width: 100%; background: var(--bg-base); color: #a5b4fc; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; resize: vertical; min-height: 150px; outline: none; margin-bottom: 16px; }
   textarea.code-input:focus { border-color: var(--accent); }
-  
+
   .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.2); font-size: 0.9rem; color: var(--text-muted); }
   .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); color: var(--text-main); }
-  
+
   .control-group { margin-bottom: 20px; }
   .control-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
   .control-group input[type="text"], .control-group select { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); font-size: 0.95rem; }
-  
+
   .btn-accent { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.05rem; transition: transform 0.1s ease; }
   .btn-accent:active { transform: scale(0.97); }
-  
+
   .table-responsive { width: 100%; overflow-x: auto; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; max-height: 400px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
   th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
   th { color: var(--text-muted); font-weight: 600; position: sticky; top: 0; background: rgba(19, 23, 36, 0.95); backdrop-filter: blur(8px); z-index: 10; }
   tr:hover td { background: rgba(255, 255, 255, 0.02); }
-  
+
   .stats-text { color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; }
   .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
 
@@ -183,7 +183,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -230,15 +230,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -286,8 +286,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -307,8 +307,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -356,8 +356,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -384,8 +384,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -405,8 +405,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -433,8 +433,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -489,8 +489,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -553,7 +553,7 @@
 
 <div class="extractor-studio">
   <div class="grid-layout">
-    
+
     <!-- Step 1: Input -->
     <div class="panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -569,7 +569,7 @@
         <input type="file" id="fileInput" accept=".html,.htm,.txt" style="display:none;">
       </div>
     </div>
-    
+
     <!-- Step 2: Extraction Rules -->
     <div class="panel">
       <h3 style="margin-top:0; margin-bottom:16px;">2. Extraction Rules</h3>
@@ -584,7 +584,7 @@
         <div class="control-group" id="selectorGroup" style="opacity:0.5; pointer-events:none;">
           <label>CSS Selector</label>
           <input type="text" id="cssSelector" placeholder="e.g. .product-title, ul > li" value=".item">
-          
+
           <div style="margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.5;">
             <strong style="color: var(--text-main); display:block; margin-bottom:8px;">How to find your target selector:</strong>
             <ol style="margin: 0 0 12px 0; padding-left: 22px;">
@@ -606,14 +606,14 @@
         .btn-clear-ghost { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
         .btn-clear-ghost:hover { color: #f87171; background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); }</style>
     </div>
-    
+
     <!-- Step 3: Results -->
     <div class="panel" id="resultsPanel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <h3 style="margin:0;">3. Preview & Export <span class="badge" id="rowBadge">0 rows</span></h3>
         <button id="btnExportCsv" class="btn-accent" style="padding:10px 20px;">Export to CSV</button>
       </div>
-      
+
       <div class="table-responsive">
         <table id="previewTable">
           <thead id="previewThead"></thead>
@@ -622,7 +622,7 @@
       </div>
       <div class="stats-text" id="extractionStats">Showing preview of first 50 rows.</div>
     </div>
-    
+
   </div>
 </div>
 
@@ -652,9 +652,9 @@
         <p>Automatically cleans extracted text, strips out messy HTML tags, and correctly formats the data into a downloadable spreadsheet.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>Can this tool scrape live websites directly via URL?</summary>
@@ -707,7 +707,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -730,16 +730,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -754,18 +754,18 @@
   const fileInput = document.getElementById('fileInput');
   const htmlInput = document.getElementById('htmlInput');
   const btnClear = document.getElementById('btnClear');
-  
+
   const extractMode = document.getElementById('extractMode');
   const selectorGroup = document.getElementById('selectorGroup');
   const cssSelector = document.getElementById('cssSelector');
   const btnExtract = document.getElementById('btnExtract');
-  
+
   const resultsPanel = document.getElementById('resultsPanel');
   const previewThead = document.getElementById('previewThead');
   const previewTbody = document.getElementById('previewTbody');
   const btnExportCsv = document.getElementById('btnExportCsv');
   const rowBadge = document.getElementById('rowBadge');
-  
+
   let extractedData = [];
 
   // DOM Events for Input
@@ -781,26 +781,20 @@
     if(e.target.files.length) handleFile(e.target.files[0]);
   });
 
+  let fileOperation = 0;
+  function clearResults() {extractedData=[];resultsPanel.style.display='none';previewThead.innerHTML='';previewTbody.innerHTML='';}
   function handleFile(file) {
+    const operation = ++fileOperation;
     const reader = new FileReader();
-    reader.onload = (e) => {
-      htmlInput.value = e.target.result;
-      btnClear.style.display = 'block';
+    reader.onload = e => {
+      if(operation !== fileOperation) return;
+      clearResults();htmlInput.value=e.target.result;btnClear.style.display=htmlInput.value.trim()?'block':'none';
     };
-
-  htmlInput.addEventListener('input', () => {
-    btnClear.style.display = htmlInput.value.trim().length > 0 ? 'block' : 'none';
-  });
-  
-  btnClear.addEventListener('click', () => {
-    htmlInput.value = '';
-    extractedData = [];
-    resultsPanel.style.display = 'none';
-    btnClear.style.display = 'none';
-    fileInput.value = '';
-  });
+    reader.onerror = () => {if(operation === fileOperation) alert('Unable to read the HTML file.');};
     reader.readAsText(file);
   }
+  htmlInput.addEventListener('input',()=>{fileOperation++;clearResults();btnClear.style.display=htmlInput.value.trim()?'block':'none';});
+  btnClear.addEventListener('click',()=>{fileOperation++;htmlInput.value='';clearResults();btnClear.style.display='none';fileInput.value='';});
 
   // Toggle mode
   extractMode.addEventListener('change', () => {
@@ -823,42 +817,47 @@
   btnExtract.addEventListener('click', () => {
     const rawHtml = htmlInput.value.trim();
     if(!rawHtml) return alert("Please provide HTML source code.");
-    
-    extractedData = []; // reset
-    
+
+    clearResults(); // invalidate the previous extraction before validating the new one
+
     // Parse virtually
     const parser = new DOMParser();
     const doc = parser.parseFromString(rawHtml, 'text/html');
-    
+
     if(extractMode.value === 'tables') {
       const tables = doc.querySelectorAll('table');
       if(tables.length === 0) return alert("No HTML tables found in the source code.");
-      
-      // Combine all tables (or just the largest one? Let's grab all rows for now)
-      tables.forEach((table, tIdx) => {
-        const rows = table.querySelectorAll('tr');
-        rows.forEach(row => {
-          const cells = row.querySelectorAll('th, td');
-          const rowData = [];
-          cells.forEach(cell => {
-            rowData.push(cleanText(cell.textContent));
+
+      tables.forEach((table,tIdx)=>{
+        const rows = Array.from(table.rows).filter(row=>row.closest('table')===table);
+        const grid = rows.map(()=>[]);
+        rows.forEach((row,r)=>{
+          let column=0;
+          Array.from(row.cells).forEach(cell=>{
+            while(grid[r][column]!==undefined) column++;
+            const clone=cell.cloneNode(true);clone.querySelectorAll('table').forEach(nested=>nested.remove());
+            const value=cleanText(clone.textContent);
+            const groupRemaining=rows.slice(r).filter(next=>next.parentElement===row.parentElement).length;
+            const height=Math.min(cell.rowSpan===0?groupRemaining:cell.rowSpan,groupRemaining);
+            const width=cell.colSpan;
+            for(let y=r;y<r+height;y++) for(let x=column;x<column+width;x++) grid[y][x]=value;
+            column+=width;
           });
-          if(rowData.length > 0) {
-            // Add a meta column identifying the table index if there are multiple
-            if(tables.length > 1) rowData.unshift(`Table ${tIdx + 1}`);
-            extractedData.push(rowData);
-          }
         });
+        const width=Math.max(0,...grid.map(row=>row.length));
+        grid.forEach(row=>{const values=Array.from({length:width},(_,i)=>row[i]??'');if(values.length){if(tables.length>1)values.unshift('Table '+(tIdx+1));extractedData.push(values);}});
       });
-      
+      const width=Math.max(0,...extractedData.map(row=>row.length));
+      extractedData=extractedData.map(row=>Array.from({length:width},(_,i)=>row[i]??''));
+
     } else if(extractMode.value === 'selector') {
       const query = cssSelector.value.trim();
       if(!query) return alert("Please provide a valid CSS selector.");
-      
+
       try {
         const elements = doc.querySelectorAll(query);
         if(elements.length === 0) return alert("No elements found matching that selector.");
-        
+
         extractedData.push(["Extracted Value"]); // Header
         elements.forEach(el => {
           extractedData.push([cleanText(el.textContent)]);
@@ -867,7 +866,7 @@
         return alert("Invalid CSS Selector syntax.");
       }
     }
-    
+
     if(extractedData.length > 0) {
       renderPreview();
     }
@@ -876,17 +875,17 @@
   function renderPreview() {
     resultsPanel.style.display = 'block';
     rowBadge.textContent = `${extractedData.length} row${extractedData.length !== 1 ? 's' : ''}`;
-    
+
     previewThead.innerHTML = '';
     previewTbody.innerHTML = '';
-    
+
     // Render Header (assume first row is header, or at least structure the table columns)
-    // To make it look clean, we'll just treat the first row as the table header 
-    // if we are in 'tables' mode and the source actually had <th>. 
+    // To make it look clean, we'll just treat the first row as the table header
+    // if we are in 'tables' mode and the source actually had <th>.
     // For simplicity, we just use the first row of extractedData.
-    
+
     const maxPreviewRows = 50;
-    
+
     if(extractedData.length > 0) {
       const headerRow = document.createElement('tr');
       extractedData[0].forEach((colText, idx) => {
@@ -896,14 +895,14 @@
       });
       previewThead.appendChild(headerRow);
     }
-    
+
     // Render Body (up to 50 rows)
     const previewLimit = Math.min(extractedData.length, maxPreviewRows + 1);
     for(let i = 1; i < previewLimit; i++) {
       const tr = document.createElement('tr');
       // Ensure we fill the right number of columns based on the header
       const targetCols = extractedData[0].length;
-      
+
       for(let j = 0; j < targetCols; j++) {
         const td = document.createElement('td');
         td.textContent = extractedData[i][j] || "";
@@ -911,7 +910,7 @@
       }
       previewTbody.appendChild(tr);
     }
-    
+
     // Scroll to results
     resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -919,10 +918,10 @@
   btnExportCsv.addEventListener('click', () => {
     if(extractedData.length === 0) return;
     const csvContent = Papa.unparse(extractedData);
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", "extracted_data.csv");
@@ -930,6 +929,7 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
   });
 </script>
 </body>

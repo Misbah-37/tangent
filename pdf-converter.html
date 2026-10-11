@@ -88,7 +88,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 body, html {
     margin: 0;
@@ -211,17 +211,17 @@ body, html {
     padding-bottom: 60px;
   }
 
-  .tab-content { 
-    display: none; 
-    width: 100%; 
-    max-width: 780px; 
-    margin: 0 auto; 
+  .tab-content {
+    display: none;
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto;
     padding: 0 20px;
     box-sizing: border-box;
   }
-  
-  .tab-content.active { 
-    display: block; 
+
+  .tab-content.active {
+    display: block;
   }
 
   .tool-container {
@@ -251,12 +251,12 @@ body, html {
     line-height: 1.5;
   }
 
-  label { 
-    display: block; 
-    font-size: 0.88rem; 
-    font-weight: 600; 
-    margin-bottom: 8px; 
-    color: var(--text-muted); 
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-muted);
   }
 
   /* --- Modern Drag & Drop Upload Zone --- */
@@ -408,65 +408,65 @@ body, html {
     color: #f87171;
   }
 
-  ul.sortable-list { 
-    padding: 0; 
-    margin: 0 0 24px 0; 
-    list-style: none; 
+  ul.sortable-list {
+    padding: 0;
+    margin: 0 0 24px 0;
+    list-style: none;
   }
-  
+
   .sortable-item {
-    background: var(--bg-base); 
-    border: 1px solid var(--border-color); 
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
     padding: 12px 16px;
-    margin-top: 8px; 
-    border-radius: 8px; 
+    margin-top: 8px;
+    border-radius: 8px;
     color: var(--text-main);
-    font-size: 0.92rem; 
-    display: flex; 
-    align-items: center; 
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
     gap: 12px;
     box-sizing: border-box;
     transition: border-color 0.2s;
   }
-  
+
   .sortable-item:hover {
     border-color: rgba(0, 210, 255, 0.3);
   }
 
   .item-name {
-    flex: 1 1 auto; 
-    min-width: 0; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 500;
   }
-  
-  .item-actions { 
-    flex: 0 0 auto; 
-    display: flex; 
-    gap: 6px; 
-  }
-  
-  .icon-btn {
-    width: 32px; 
-    height: 32px; 
+
+  .item-actions {
     flex: 0 0 auto;
-    background: var(--bg-surface); 
-    color: var(--text-muted); 
+    display: flex;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    background: var(--bg-surface);
+    color: var(--text-muted);
     border: 1px solid var(--border-color);
-    border-radius: 6px; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     justify-content: center;
     transition: all 0.2s;
   }
-  
-  .icon-btn:hover:not(:disabled) { 
-    background: var(--bg-surface); 
+
+  .icon-btn:hover:not(:disabled) {
+    background: var(--bg-surface);
     border-color: var(--accent);
-    color: var(--accent); 
+    color: var(--accent);
   }
 
   .icon-btn-delete:hover:not(:disabled) {
@@ -474,37 +474,37 @@ body, html {
     border-color: rgba(239, 68, 68, 0.5);
     color: #f87171;
   }
-  
-  .icon-btn:disabled { 
-    opacity: 0.3; 
-    cursor: not-allowed; 
+
+  .icon-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 
   /* Options Form Controls */
-  input[type="text"], select { 
-    width: 100%; 
-    padding: 12px 16px; 
-    background-color: var(--bg-base); 
-    color: var(--text-main); 
-    border: 1px solid var(--border-color); 
-    border-radius: 8px; 
-    box-sizing: border-box; 
-    margin-bottom: 20px; 
+  input[type="text"], select {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
     font-family: inherit;
-    font-size: 0.95rem; 
+    font-size: 0.95rem;
     transition: border-color 0.2s;
   }
-  
-  input[type="text"]:focus, select:focus { 
-    outline: none; 
-    border-color: var(--accent); 
+
+  input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
     box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.3);
   }
 
-  .options-row { 
-    display: flex; 
-    gap: 16px; 
-    margin-bottom: 8px; 
+  .options-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
   }
   .options-col { flex: 1; min-width: 0; }
 
@@ -533,33 +533,33 @@ body, html {
     transform: translateY(-1px);
   }
 
-  .download-btn { 
-    display: none; 
-    background-color: var(--text-main); 
+  .download-btn {
+    display: none;
+    background-color: var(--text-main);
     color: #08090d;
-    text-align: center; 
-    text-decoration: none; 
-    padding: 14px 28px; 
-    border-radius: 10px; 
-    font-weight: 700; 
-    margin-top: 16px; 
+    text-align: center;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-top: 16px;
     transition: all 0.2s;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
-  
-  .download-btn:hover { 
-    background-color: var(--text-main); 
+
+  .download-btn:hover {
+    background-color: var(--text-main);
     box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
   }
-  
-  .status-text { 
-    text-align: center; 
-    margin-top: 14px; 
-    font-size: 0.92rem; 
-    font-weight: 600; 
-    color: var(--text-muted); 
+
+  .status-text {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-muted);
   }
 
   /* --- SEO & Educational Section --- */
@@ -573,18 +573,18 @@ body, html {
     border-top: 1px solid var(--border-color);
     padding-top: 40px;
   }
-  
+
   .seo-article h2, .seo-article h3 {
     color: var(--text-main);
     margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .seo-article h2 { font-size: 1.4rem; font-weight: 800; }
   .seo-article h3 { font-size: 1.1rem; font-weight: 700; }
   .seo-article ul { padding-left: 20px; }
   .seo-article li { margin-bottom: 10px; }
-  
+
   .faq-box { margin-bottom: 16px; }
   .faq-box details {
     background-color: var(--bg-card);
@@ -593,7 +593,7 @@ body, html {
     padding: 18px 24px;
     cursor: pointer;
   }
-  
+
   .faq-box summary {
     font-weight: 600;
     color: var(--text-main);
@@ -604,7 +604,7 @@ body, html {
     align-items: center;
   }
   .faq-box summary::-webkit-details-marker { display: none; }
-  
+
   .faq-box p {
     margin: 14px 0 0 0;
     font-size: 0.95rem;
@@ -723,7 +723,7 @@ body, html {
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -770,15 +770,15 @@ body, html {
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -826,8 +826,8 @@ body, html {
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -847,8 +847,8 @@ body, html {
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -896,8 +896,8 @@ body, html {
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -924,8 +924,8 @@ body, html {
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -945,8 +945,8 @@ body, html {
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -973,8 +973,8 @@ body, html {
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -1029,8 +1029,8 @@ body, html {
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -1126,7 +1126,7 @@ body, html {
           <span>Images to Standardized PDF</span>
         </h3>
         <p class="tool-desc">Convert JPG, PNG, and WebP images into a standardized document. Reorder pages prior to compilation.</p>
-        
+
         <!-- Drag & Drop Upload Zone -->
         <div class="upload-box" id="img-drop-zone" onclick="document.getElementById('imgInput').click()">
           <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -1149,7 +1149,7 @@ body, html {
           </button>
         </div>
         <ul id="sortable-image-list" class="sortable-list"></ul>
-        
+
         <div class="options-row">
             <div class="options-col">
                 <label>Page Size</label>
@@ -1176,7 +1176,7 @@ body, html {
                 </select>
             </div>
         </div>
-        
+
         <button type="button" class="btn-accent" onclick="convertImages()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
           <span>Compile PDF</span>
@@ -1197,7 +1197,7 @@ body, html {
           <span>Merge Multiple PDFs</span>
         </h3>
         <p class="tool-desc">Combine 2 or more PDF documents into a single consolidated file in the exact order you choose.</p>
-        
+
         <!-- Drag & Drop Upload Zone -->
         <div class="upload-box" id="merge-drop-zone" onclick="document.getElementById('mergeInput').click()">
           <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -1220,17 +1220,7 @@ body, html {
           </button>
         </div>
         <ul id="sortable-file-list" class="sortable-list"></ul>
-        
-        <div class="options-row" style="margin-bottom:16px;">
-            <div class="options-col" style="flex:1;">
-                <label>Optional Password</label>
-                <input type="text" id="mergePassword" class="code-input" placeholder="Leave blank for standard lossless merge" style="padding:10px;">
-                <div style="font-size:0.8rem; color:#fbbf24; margin-top:8px; display:flex; gap:6px; align-items:start;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                  <span><strong>Warning:</strong> Adding a password requires flattening the PDF. All text will become un-selectable images.</span>
-                </div>
-            </div>
-          </div>
+
           <button type="button" class="btn-accent" onclick="mergePdfs()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
           <span>Merge Documents</span>
@@ -1251,7 +1241,7 @@ body, html {
           <span>Extract Pages</span>
         </h3>
         <p class="tool-desc">Extract specific sheets or custom page ranges into a brand new standalone document.</p>
-        
+
         <!-- Drag & Drop Upload Zone -->
         <div class="upload-box" id="split-drop-zone" onclick="document.getElementById('splitInput').click()">
           <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -1282,7 +1272,7 @@ body, html {
 
         <label for="rangeInput">Pages to extract (e.g., 1, 3-5, 8):</label>
         <input type="text" id="rangeInput" placeholder="e.g. 1-3">
-        
+
         <button type="button" class="btn-accent" onclick="splitPdf()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg>
           <span>Extract Pages</span>
@@ -1303,7 +1293,7 @@ body, html {
           <span>Compress & Optimize PDF</span>
         </h3>
         <p class="tool-desc">Strips out invisible bloat, deleted objects, and excess metadata while preserving visual clarity.</p>
-        
+
         <!-- Drag & Drop Upload Zone -->
         <div class="upload-box" id="compress-drop-zone" onclick="document.getElementById('compressInput').click()">
           <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -1331,7 +1321,7 @@ body, html {
             <span>Change File</span>
           </button>
         </div>
-        
+
         <button type="button" class="btn-accent" onclick="compressPdf()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
           <span>Compress File</span>
@@ -1352,7 +1342,7 @@ body, html {
           <span>Extract Raw Text</span>
         </h3>
         <p class="tool-desc">Extract all textual contents from your PDF document without formatting artifacts.</p>
-        
+
         <!-- Drag & Drop Upload Zone -->
         <div class="upload-box" id="extract-drop-zone" onclick="document.getElementById('textInput').click()">
           <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -1380,7 +1370,7 @@ body, html {
             <span>Change File</span>
           </button>
         </div>
-        
+
         <button type="button" class="btn-accent" onclick="extractText()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
           <span>Read Text</span>
@@ -1396,67 +1386,9 @@ body, html {
 
   <!-- SEO & Educational Content -->
   <!-- TAB 6: ENCRYPT PDF -->
-  <div id="tab-encrypt" class="tab-content">
-      <div class="tool-container">
-          <h3>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            Flatten & Encrypt PDF
-          </h3>
-          
-          <div class="warning-box" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; padding: 14px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 0.9rem; line-height: 1.5; display: flex; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <div>
-              <strong style="display:block; margin-bottom:4px; color:#fcd34d;">Security Trade-off Notice:</strong>
-              Encrypting an existing PDF requires a highly secure flattening process. It converts all text and images into a single uneditable visual layer before applying AES encryption. This destroys hidden metadata and prevents tampering, but <strong>removes the ability to highlight or copy text</strong>.
-            </div>
-          </div>
-
-          <div class="upload-box" id="encrypt-drop-zone" onclick="document.getElementById('encryptInput').click()">
-            <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
-            </svg>
-            <div class="upload-box-title">Drop your PDF here or click to browse</div>
-            <div class="upload-box-sub">Supports PDF • 100% private in-browser execution</div>
-            <div class="upload-btn-pill">Select PDF</div>
-            <input type="file" id="encryptInput" accept=".pdf" style="display:none;">
-          </div>
-
-          <div id="encrypt-file-card" class="file-card" style="display:none; justify-content:space-between; align-items:center; background: var(--bg-base); border: 1px solid var(--border-color); padding:12px 16px; border-radius:8px; margin-bottom:24px;">
-              <div>
-                  <span id="encrypt-file-name" style="font-weight:600; display:block;"></span>
-                  <span id="encrypt-file-meta" style="font-size:0.8rem; color: var(--text-subtle);"></span>
-              </div>
-              <button type="button" class="icon-btn icon-btn-delete" onclick="resetEncryptFile()" title="Remove">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
-          </div>
-
-          <div class="options-row" id="encryptOptions" style="display:none; margin-bottom:16px;">
-              <div class="options-col">
-                  <label>Set Password (Required)</label>
-                  <input type="text" id="encryptPassword" class="code-input" placeholder="Strong password..." style="padding:10px;">
-              </div>
-              <div class="options-col">
-                  <label>Rasterization Quality</label>
-                  <select id="encryptQuality" class="code-input" style="padding:10px;">
-                      <option value="1.5">Standard (Smaller file)</option>
-                      <option value="2.5" selected>High (Recommended)</option>
-                      <option value="4.0">Ultra (Maximum detail)</option>
-                  </select>
-              </div>
-          </div>
-          
-          <button type="button" class="btn-accent" id="btnRunEncrypt" onclick="runEncryptPdf()" style="display:none; width:100%;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            Flatten & Encrypt PDF
-          </button>
-          
-          <div id="status6" class="status-text"></div>
-          <a id="downloadBtn6" class="download-btn" style="display:none;">Download Encrypted PDF</a>
-      </div>
-  </div>
+  <div id="tab-encrypt" class="tab-content"><div class="tool-container">
+    <h3>PDF Encryption</h3><p role="status">Password encryption is temporarily unavailable while we replace the outdated encryption method. Merge, page extraction, and conversion remain available.</p>
+  </div></div>
   <!-- Educational & Security Architecture Section -->
 <div class="info-section">
   <div class="features-grid">
@@ -1499,8 +1431,8 @@ body, html {
   </div>
   <div class="faq-box">
       <details>
-        <summary>How does the PDF Encryptor secure my documents?</summary>
-        <p>Tangent uses AES cryptography to lock your document entirely in your browser. Because it runs locally, your password and your confidential document are never uploaded to a server. If you use it on an existing PDF, the tool uses a secure "flattening" process that converts all pages to un-editable visual layers, completely destroying hidden metadata and preventing unauthorized text scraping.</p>
+        <summary>Can I password-encrypt a PDF here?</summary>
+        <p>Password encryption is temporarily unavailable. The previous option used an outdated encryption method and has been disabled pending a verified replacement.</p>
       </details>
     </div>
     <div class="faq-box">
@@ -1543,7 +1475,7 @@ body, html {
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1566,16 +1498,16 @@ body, html {
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1718,28 +1650,28 @@ async function convertImages() {
     const pageSize = document.getElementById('pageSize').value;
     const orientPref = document.getElementById('orientation').value;
     const margin = parseInt(document.getElementById('margins').value);
-    
+
     if (files.length === 0) { alert('Please select at least one image.'); return; }
-    
+
     status.innerText = "Processing images...";
     btn.style.display = "none";
-    
+
     try {
         const { jsPDF } = window.jspdf;
         let pdf = null;
         const sizes = { 'a4': [595.28, 841.89], 'letter': [612, 792] };
-        
+
         for (let i = 0; i < files.length; i++) {
             status.innerText = `Processing image ${i + 1} of ${files.length}...`;
             const { img, dataUrl, type } = await loadImage(files[i]);
-            
+
             let isLand = false;
             if (orientPref === 'auto') isLand = img.width > img.height;
             else if (orientPref === 'l') isLand = true;
-            
+
             let format = sizes[pageSize];
             let finalW, finalH;
-            
+
             if (pageSize === 'fit') {
                 format = [img.width, img.height];
                 isLand = img.width > img.height;
@@ -1749,12 +1681,12 @@ async function convertImages() {
                 const baseW = isLand ? format[1] : format[0];
                 const baseH = isLand ? format[0] : format[1];
                 format = [baseW, baseH];
-                
+
                 const availW = baseW - (margin * 2);
                 const availH = baseH - (margin * 2);
                 const imgAspect = img.width / img.height;
                 const targetAspect = availW / availH;
-                
+
                 if (imgAspect > targetAspect) {
                     finalW = availW;
                     finalH = availW / imgAspect;
@@ -1763,21 +1695,21 @@ async function convertImages() {
                     finalW = availH * imgAspect;
                 }
             }
-            
+
             const orientation = isLand ? 'l' : 'p';
             if (i === 0) {
                 pdf = new jsPDF({ orientation: orientation, unit: 'pt', format: format });
             } else {
                 pdf.addPage(format, orientation);
             }
-            
+
             let x = pageSize === 'fit' ? 0 : margin + ((format[0] - (margin * 2) - finalW) / 2);
             let y = pageSize === 'fit' ? 0 : margin + ((format[1] - (margin * 2) - finalH) / 2);
-            
+
             const imgType = type === 'image/png' ? 'PNG' : (type === 'image/webp' ? 'WEBP' : 'JPEG');
             pdf.addImage(dataUrl, imgType, x, y, finalW, finalH);
         }
-        
+
         // Zero metadata injection
         pdf.setProperties({ title: '', subject: '', author: '', keywords: '', creator: '' });
 
@@ -1815,6 +1747,8 @@ function clearMergeQueue() {
 }
 
 function renderMergeList() {
+    mergeOperation++;
+    document.getElementById('downloadBtn2').style.display = 'none';
     mergeListContainer.innerHTML = '';
     if (mergeSelectedFiles.length > 0) {
         mergeQueueHeader.style.display = 'flex';
@@ -1855,25 +1789,29 @@ mergeListContainer.addEventListener('click', (e) => {
     renderMergeList();
 });
 
+let mergeOperation = 0;
 async function mergePdfs() {
+    const operation = ++mergeOperation;
+    const files = mergeSelectedFiles.slice();
     const status = document.getElementById('status2');
     const btn = document.getElementById('downloadBtn2');
-    
-    if (mergeSelectedFiles.length < 2) { alert('Please select at least 2 PDF files to merge.'); return; }
-    
+
+    if (files.length < 2) { alert('Please select at least 2 PDF files to merge.'); return; }
+
     status.innerText = "Merging documents in browser RAM...";
     btn.style.display = "none";
-    
+
     try {
         const mergedPdf = await PDFLib.PDFDocument.create();
-        for (let i = 0; i < mergeSelectedFiles.length; i++) {
-            status.innerText = `Merging document ${i + 1} of ${mergeSelectedFiles.length}...`;
-            const arrayBuffer = await mergeSelectedFiles[i].arrayBuffer();
+        for (let i = 0; i < files.length; i++) {
+            status.innerText = `Merging document ${i + 1} of ${files.length}...`;
+            const arrayBuffer = await files[i].arrayBuffer();
+            if(operation!==mergeOperation) return;
             const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
             const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
             copiedPages.forEach((page) => mergedPdf.addPage(page));
         }
-        
+
         // Zero metadata leak: delete Info, Metadata, and PieceInfo
         delete mergedPdf.context.trailerInfo.Info;
         try { mergedPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
@@ -1881,16 +1819,14 @@ async function mergePdfs() {
 
         const pdfBytes = await mergedPdf.save({ updateMetadata: false, useObjectStreams: false });
           let blob = new Blob([pdfBytes], { type: 'application/pdf' });
-          const pass = document.getElementById('mergePassword').value.trim();
-          if (pass) {
-              blob = await encryptPdfBlob(blob, pass, 2.5, (msg) => { status.innerText = msg; });
-          }
-          btn.href = URL.createObjectURL(blob);
+        if(operation !== mergeOperation) return;
+        btn.href = URL.createObjectURL(blob);
         btn.download = "Tangent_Merged.pdf";
         btn.style.display = "inline-flex";
-        status.innerText = `Successfully merged ${mergeSelectedFiles.length} documents.`;
+        status.innerText = `Successfully merged ${files.length} documents.`;
         status.style.color = "#34d399";
     } catch (e) {
+        if(operation !== mergeOperation) return;
         status.innerText = "Error: " + e.message;
         status.style.color = "#f87171";
     }
@@ -1898,26 +1834,31 @@ async function mergePdfs() {
 
 // --- TAB 3: Split PDF Logic ---
 let splitSelectedFile = null;
+let splitOperation = 0;
 
 setupDragAndDrop('split-drop-zone', 'splitInput', async (files) => {
     const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
     if (!f) return;
+    const operation=++splitOperation;
     splitSelectedFile = f;
-    
+    document.getElementById('downloadBtn3').style.display = 'none';
+
     document.getElementById('split-drop-zone').style.display = 'none';
     const card = document.getElementById('split-file-card');
     card.style.display = 'flex';
     document.getElementById('split-file-name').innerText = f.name;
     document.getElementById('split-file-meta').innerText = `${(f.size / 1024).toFixed(1)} KB`;
-    
+
     try {
         const buf = await f.arrayBuffer();
         const doc = await PDFLib.PDFDocument.load(buf);
+        if(operation!==splitOperation) return;
         document.getElementById('split-file-meta').innerText = `${doc.getPageCount()} pages • ${(f.size / 1024).toFixed(1)} KB`;
     } catch (_) {}
 });
 
 function resetSplitFile() {
+    splitOperation++;
     splitSelectedFile = null;
     document.getElementById('splitInput').value = '';
     document.getElementById('split-file-card').style.display = 'none';
@@ -1927,45 +1868,36 @@ function resetSplitFile() {
 }
 
 async function splitPdf() {
+    const operation = ++splitOperation;
     const file = splitSelectedFile;
     const rangeStr = document.getElementById('rangeInput').value;
     const status = document.getElementById('status3');
     const btn = document.getElementById('downloadBtn3');
-    
+
     if (!file) { alert('Please select a PDF file first.'); return; }
     if (!rangeStr) { alert('Please enter a page range to extract (e.g. 1-3 or 1,4,7).'); return; }
-    
+
     status.innerText = "Extracting pages in browser RAM...";
     btn.style.display = "none";
-    
+
     try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
         const totalPages = pdf.getPageCount();
-        
-        let pagesToExtract = new Set();
-        const parts = rangeStr.split(',');
-        for (let part of parts) {
-            part = part.trim();
-            if (part.includes('-')) {
-                let [start, end] = part.split('-');
-                start = parseInt(start); end = parseInt(end);
-                for (let p = start; p <= end; p++) {
-                    if (p >= 1 && p <= totalPages) pagesToExtract.add(p - 1);
-                }
-            } else {
-                let p = parseInt(part);
-                if (p >= 1 && p <= totalPages) pagesToExtract.add(p - 1);
-            }
+
+        const pagesToExtract = new Set();
+        for (const token of rangeStr.split(',')) {
+            const match = /^(\d+)(?:\s*-\s*(\d+))?$/.exec(token.trim());
+            if(!match) throw new Error('Invalid page range: '+token.trim());
+            const start = Number(match[1]), end = match[2] ? Number(match[2]) : start;
+            if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<1||end<start||end>totalPages) throw new Error('Page range must be between 1 and '+totalPages+'.');
+            for(let p=start;p<=end;p++) pagesToExtract.add(p-1);
         }
-        
-        if (pagesToExtract.size === 0) throw new Error(`No valid pages found in range. (Document has ${totalPages} pages)`);
-        
         const newPdf = await PDFLib.PDFDocument.create();
         const indices = Array.from(pagesToExtract).sort((a,b) => a-b);
         const copiedPages = await newPdf.copyPages(pdf, indices);
         copiedPages.forEach((page) => newPdf.addPage(page));
-        
+
         // Zero metadata leak
         delete newPdf.context.trailerInfo.Info;
         try { newPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
@@ -1973,16 +1905,14 @@ async function splitPdf() {
 
         const pdfBytes = await newPdf.save({ updateMetadata: false, useObjectStreams: false });
           let blob = new Blob([pdfBytes], { type: 'application/pdf' });
-          const pass = document.getElementById('splitPassword').value.trim();
-          if (pass) {
-              blob = await encryptPdfBlob(blob, pass, 2.5, (msg) => { status.innerText = msg; });
-          }
-          btn.href = URL.createObjectURL(blob);
+        if(operation !== splitOperation) return;
+        btn.href = URL.createObjectURL(blob);
         btn.download = "Extracted_" + file.name;
         btn.style.display = "inline-flex";
         status.innerText = `Extracted ${indices.length} page(s) successfully.`;
         status.style.color = "#34d399";
     } catch (e) {
+        if(operation !== splitOperation) return;
         status.innerText = "Error: " + e.message;
         status.style.color = "#f87171";
     }
@@ -1995,7 +1925,7 @@ setupDragAndDrop('compress-drop-zone', 'compressInput', (files) => {
     const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
     if (!f) return;
     compressSelectedFile = f;
-    
+
     document.getElementById('compress-drop-zone').style.display = 'none';
     const card = document.getElementById('compress-file-card');
     card.style.display = 'flex';
@@ -2016,19 +1946,19 @@ async function compressPdf() {
     const file = compressSelectedFile;
     const status = document.getElementById('status5');
     const btn = document.getElementById('downloadBtn5');
-    
+
     if (!file) { alert('Please select a PDF file to compress.'); return; }
-    
+
     status.innerText = "Optimizing document structure...";
     btn.style.display = "none";
-    
+
     try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
         const newPdf = await PDFLib.PDFDocument.create();
         const copiedPages = await newPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => newPdf.addPage(page));
-        
+
         // Zero metadata leak
         delete newPdf.context.trailerInfo.Info;
         try { newPdf.catalog.delete(PDFLib.PDFName.of('Metadata')); } catch (_) {}
@@ -2039,16 +1969,16 @@ async function compressPdf() {
         btn.href = URL.createObjectURL(blob);
         btn.download = "Compressed_" + file.name;
         btn.style.display = "inline-flex";
-        
+
         const originalKB = (file.size / 1024).toFixed(1);
         const newKB = (blob.size / 1024).toFixed(1);
-        
+
         if (blob.size < file.size) {
             status.innerText = `Compression successful: Reduced from ${originalKB} KB to ${newKB} KB.`;
         } else {
             status.innerText = `File processed. (Document was already structurally optimal: ${newKB} KB).`;
         }
-        
+
         status.style.color = "#34d399";
     } catch (e) {
         status.innerText = "Error: " + e.message;
@@ -2064,7 +1994,7 @@ setupDragAndDrop('extract-drop-zone', 'textInput', (files) => {
     const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
     if (!f) return;
     extractSelectedFile = f;
-    
+
     document.getElementById('extract-drop-zone').style.display = 'none';
     const card = document.getElementById('extract-file-card');
     card.style.display = 'flex';
@@ -2087,19 +2017,19 @@ async function extractText() {
     const status = document.getElementById('status4');
     const textArea = document.getElementById('outputArea');
     const btn = document.getElementById('downloadBtn4');
-    
+
     if (!file) { alert('Please select a PDF file first.'); return; }
-    
+
     status.innerText = "Reading document in browser memory...";
     textArea.style.display = "none";
     btn.style.display = "none";
-    
+
     try {
         const arrayBuffer = await file.arrayBuffer();
         const loadingTask = pdfjsLib.getDocument({data: new Uint8Array(arrayBuffer)});
         const pdf = await loadingTask.promise;
         let fullText = "";
-        
+
         for (let i = 1; i <= pdf.numPages; i++) {
             status.innerText = `Extracting page ${i} of ${pdf.numPages}...`;
             const page = await pdf.getPage(i);
@@ -2107,15 +2037,15 @@ async function extractText() {
             const pageText = textContent.items.map(item => item.str).join(" ");
             fullText += `=== PAGE ${i} ===\n${pageText}\n\n`;
         }
-        
+
         textArea.value = fullText;
         textArea.style.display = "block";
-        
+
         const blob = new Blob([fullText], { type: 'text/plain' });
         btn.href = URL.createObjectURL(blob);
         btn.download = file.name.replace(/\.pdf$/i, '') + '_extracted.txt';
         btn.style.display = "inline-flex";
-        
+
         status.innerText = `Successfully extracted text from ${pdf.numPages} page(s).`;
         status.style.color = "#34d399";
     } catch (e) {
@@ -2124,96 +2054,8 @@ async function extractText() {
     }
 }
 
-// --- Encrypt Helper ---
-async function encryptPdfBlob(blob, password, scale = 2.5, statusCallback) {
-    const arrayBuffer = await blob.arrayBuffer();
-    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const numPages = pdfDoc.numPages;
-    const { jsPDF } = window.jspdf;
-    let finalPdf = null;
-    for (let i = 1; i <= numPages; i++) {
-        if (statusCallback) statusCallback(`Rasterizing page ${i} of ${numPages} for encryption...`);
-        const page = await pdfDoc.getPage(i);
-        const viewport = page.getViewport({ scale: scale });
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        const imgData = canvas.toDataURL('image/jpeg', 0.92);
-        const orientation = viewport.width > viewport.height ? 'l' : 'p';
-        const format = [viewport.width, viewport.height];
-        if (i === 1) {
-            finalPdf = new jsPDF({ 
-                orientation, 
-                unit: 'pt', 
-                format,
-                encryption: {
-                    userPassword: password,
-                    ownerPassword: password + "_owner",
-                    userPermissions: ["print"]
-                }
-            });
-        } else {
-            finalPdf.addPage(format, orientation);
-        }
-        finalPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height);
-    }
-    if (statusCallback) statusCallback('Finalizing Encryption...');
-    return finalPdf.output('blob');
-}
-
-// --- TAB 6: Encrypt PDF Logic ---
-let encryptSelectedFile = null;
-setupDragAndDrop('encrypt-drop-zone', 'encryptInput', async (files) => {
-    const f = files.find(file => file.name.toLowerCase().endsWith('.pdf'));
-    if (!f) return;
-    encryptSelectedFile = f;
-    document.getElementById('encrypt-drop-zone').style.display = 'none';
-    const card = document.getElementById('encrypt-file-card');
-    card.style.display = 'flex';
-    document.getElementById('encrypt-file-name').innerText = f.name;
-    document.getElementById('encrypt-file-meta').innerText = `${(f.size / 1024).toFixed(1)} KB`;
-    document.getElementById('encryptOptions').style.display = 'flex';
-    document.getElementById('btnRunEncrypt').style.display = 'inline-flex';
-});
-
-function resetEncryptFile() {
-    encryptSelectedFile = null;
-    document.getElementById('encryptInput').value = '';
-    document.getElementById('encrypt-file-card').style.display = 'none';
-    document.getElementById('encryptOptions').style.display = 'none';
-    document.getElementById('btnRunEncrypt').style.display = 'none';
-    document.getElementById('encrypt-drop-zone').style.display = 'block';
-    document.getElementById('status6').innerText = '';
-    document.getElementById('downloadBtn6').style.display = 'none';
-}
-
-async function runEncryptPdf() {
-    const pass = document.getElementById('encryptPassword').value.trim();
-    if (!pass) { alert('Please enter a password.'); return; }
-    const status = document.getElementById('status6');
-    const btn = document.getElementById('downloadBtn6');
-    const runBtn = document.getElementById('btnRunEncrypt');
-    
-    runBtn.disabled = true;
-    btn.style.display = 'none';
-    
-    try {
-        const scale = parseFloat(document.getElementById('encryptQuality').value);
-        const blob = await encryptPdfBlob(encryptSelectedFile, pass, scale, (msg) => { status.innerText = msg; });
-        btn.href = URL.createObjectURL(blob);
-        btn.download = encryptSelectedFile.name.replace('.pdf', '_encrypted.pdf');
-        btn.style.display = "inline-flex";
-        status.innerText = 'Successfully encrypted document.';
-        status.style.color = "#34d399";
-    } catch (e) {
-        status.innerText = "Error: " + e.message;
-        status.style.color = "#f87171";
-    } finally {
-        runBtn.disabled = false;
-    }
-}
+// Kept as a defensive guard for callers using an older page interface.
+async function encryptPdfBlob() {throw new Error('PDF password encryption is currently unavailable.');}
 </script>
 </body>
 </html>

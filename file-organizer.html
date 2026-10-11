@@ -43,7 +43,7 @@
       "name": "Is the Windows desktop application safe to run?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The Tangent File Organizer operates 100% locally with zero internet communication, no registry modifications, and verified clean scans on VirusTotal (Microsoft Defender, Bitdefender, Kaspersky). It simply reads file extensions in the directory you select and moves them into organized category folders."
+        "text": "The portable Windows download is separate from the browser tool. Its displayed SHA-256 identifies the included executable, but does not certify its safety. Antivirus and network behavior were not verified for this download in this website review."
       }
     },
     {
@@ -88,25 +88,25 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    
-    
-    
+
+
+
   }
 
   body {
@@ -785,7 +785,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -832,15 +832,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -888,8 +888,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -909,8 +909,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -958,8 +958,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -986,8 +986,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -1007,8 +1007,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -1035,8 +1035,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -1091,8 +1091,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -1190,15 +1190,15 @@
   <!-- TAB 1: IN-BROWSER ORGANIZER -->
   <div class="tab-content active" id="tab-browser">
     <div class="tool-panel">
-      
+
       <!-- Upload / Select Drop Zone -->
       <div class="upload-box" id="dropZone">
         <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
         <div class="upload-box-title">Choose a messy folder or drop files to organize</div>
-        <div class="upload-box-sub">Structures files into 12 clean categories • 100% private in-browser RAM</div>
-        
+        <div class="upload-box-sub">Sorts top-level files into 12 categories (subfolders are not scanned) • 100% private in-browser RAM</div>
+
         <div class="upload-btn-group">
           <button type="button" class="upload-btn-pill primary" id="btnPickFolder" onclick="pickLocalDirectory()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1206,14 +1206,14 @@
             </svg>
             Select Local Folder
           </button>
-          
+
           <button type="button" class="upload-btn-pill" onclick="document.getElementById('batchFileInput').click()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Select Multiple Files / ZIP
+            Select Files for ZIP
           </button>
         </div>
         <input type="file" id="batchFileInput" multiple style="display:none;">
@@ -1275,20 +1275,20 @@
   <!-- TAB 2: STANDALONE WINDOWS APP -->
   <div class="tab-content" id="tab-desktop">
     <div class="tool-panel">
-      
+
       <div class="trust-badge-container">
-        <a href="https://www.virustotal.com/gui/file/d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18" target="_blank" rel="noopener noreferrer" class="trust-badge highlight" title="View independent scan report on VirusTotal">
+        <a href="https://www.virustotal.com/gui/file/2e668ef85c7be7d09d63937618af6bf16fe5e71b0565ab3145e710af4e478c33" target="_blank" rel="noopener noreferrer" class="trust-badge highlight" title="Look up this executable hash on VirusTotal">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          0 Detections on Major Engines (View Report)
+          Look Up Executable Hash
         </a>
         <span class="trust-badge">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
           </svg>
-          100% Offline
+          Portable Windows Download
         </span>
         <span class="trust-badge">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1310,7 +1310,7 @@
       </div>
 
       <!-- App Certificate -->
-      <h3 style="margin: 0 0 16px 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main);">Verified Application Certificate</h3>
+      <h3 style="margin: 0 0 16px 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main);">Download Details</h3>
       <div class="cert-grid">
         <div class="cert-item">
           <strong>Application</strong>
@@ -1318,19 +1318,19 @@
         </div>
         <div class="cert-item">
           <strong>Publisher</strong>
-          Tangent Open Source
+          Tangent
         </div>
         <div class="cert-item">
           <strong>Network Access</strong>
-          None (0 Bytes Outbound)
+          Not audited for this download
         </div>
         <div class="cert-item">
           <strong>Antivirus Status</strong>
-          Clean (Defender, Bitdefender, Kaspersky)
+          Not verified for this download
         </div>
         <div class="cert-item" style="grid-column: 1 / -1;">
           <strong>SHA-256 Checksum</strong>
-          <code style="color: var(--accent); font-family: monospace; font-size: 0.82rem; word-break: break-all;">d9ed3365e1308b9b827baa434c2b5875ad871b84deb29ebc60bddf5e3f989f18</code>
+          <code style="color: var(--accent); font-family: monospace; font-size: 0.82rem; word-break: break-all;">2e668ef85c7be7d09d63937618af6bf16fe5e71b0565ab3145e710af4e478c33</code>
         </div>
       </div>
 
@@ -1345,8 +1345,7 @@
 
       <div class="warning-box">
         <strong>Why does Windows SmartScreen show a popup?</strong><br>
-        As an independent open-source project, Tangent does not purchase $400/year corporate code-signing certificates. Because the binary is newly released, Windows SmartScreen flags unsigned binaries as "unrecognized". All major antivirus engines verify this file as 100% clean.<br>
-        Click <strong>More info</strong> &rarr; Click <strong>Run anyway</strong>.
+        Windows may show an unrecognized-app warning for unsigned downloads. The SHA-256 below identifies the executable packaged in this ZIP; it is not a safety certification. Review the file and its source before choosing to run it.
       </div>
 
     </div>
@@ -1387,7 +1386,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
       </div>
       <h3>Native File System Access</h3>
-      <p>Direct disk handle access via modern Chromium File System API. Files are moved locally with zero uploads or duplicates.</p>
+      <p>Direct disk handle access via modern Chromium File System API. Copies are checked against the source before optional moves. Existing destination names are preserved with numbered incoming filenames.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -1403,13 +1402,13 @@
   <div class="faq-box">
     <details>
       <summary>Can the organizer accidentally delete or overwrite my files?</summary>
-      <p>No. The sorting engine uses non-destructive moves. If a file with an identical name exists in the target folder, the system safely renames the incoming file rather than overwriting.</p>
+      <p>Matching names receive numbered filenames. Direct-disk mode copies files and keeps originals by default. Enable Move originals only if you want verified source files removed after copying. Use at most 2,000 files totaling 500 MB per batch; subfolders are not scanned.</p>
     </details>
   </div>
   <div class="faq-box">
     <details>
       <summary>Does the browser have permanent access to my disk?</summary>
-      <p>No. The browser's File System Access API requires your explicit permission each time you select a directory. Permissions are automatically revoked when the tab closes.</p>
+      <p>No. The browser's File System Access API requires your explicit permission each time you select a directory. Permission persistence depends on browser settings. Review and revoke folder access in your browser if needed.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -1452,7 +1451,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -1475,16 +1474,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1536,7 +1535,7 @@
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
+
     if (tabId === 'tab-browser') {
       document.getElementById('btnTabBrowser').classList.add('active');
       document.getElementById('tab-browser').classList.add('active');
@@ -1547,38 +1546,8 @@
   }
 
   // In-Browser Directory Picker (File System Access API)
-  async function pickLocalDirectory() {
-    if (!window.showDirectoryPicker) {
-      // Fallback for browsers without showDirectoryPicker
-      document.getElementById('batchFileInput').click();
-      return;
-    }
-
-    try {
-      currentDirHandle = await window.showDirectoryPicker();
-      isDirectoryPickerMode = true;
-      scannedFiles = [];
-
-      for await (const entry of currentDirHandle.values()) {
-        if (entry.kind === 'file') {
-          const file = await entry.getFile();
-          scannedFiles.push({
-            name: entry.name,
-            size: file.size,
-            category: getCategoryForFilename(entry.name),
-            fileRef: file,
-            handle: entry
-          });
-        }
-      }
-
-      displayScannedPreview(currentDirHandle.name, isDirectoryPickerMode);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error("Directory picker error:", err);
-      }
-    }
-  }
+  // Guarded folder scanning is implemented in file-organizer-engine.js.
+  function pickLocalDirectory() {}
 
   // Fallback File Input Listener
   const batchFileInput = document.getElementById('batchFileInput');
@@ -1687,7 +1656,7 @@
           <polyline points="9 11 12 14 22 4"></polyline>
           <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
         </svg>
-        Organize Folder In-Place on Disk
+        Copy into category folders
       `;
     } else {
       btnExecute.innerHTML = `
@@ -1713,103 +1682,8 @@
     document.getElementById('organizeStatus').innerHTML = '';
   }
 
-  async function executeOrganization() {
-    const statusWrapper = document.getElementById('organizeStatus');
-    const btnExecute = document.getElementById('btnExecuteOrganize');
-    btnExecute.disabled = true;
-
-    if (isDirectoryPickerMode && currentDirHandle) {
-      // In-Place Directory Organization using File System Access API
-      statusWrapper.innerHTML = `
-        <div style="text-align:center; padding:12px; color:var(--accent); font-weight:600;">
-          Moving files into category folders on your disk...
-        </div>
-      `;
-
-      try {
-        let movedCount = 0;
-        for (const item of scannedFiles) {
-          const categoryDir = await currentDirHandle.getDirectoryHandle(item.category, { create: true });
-          // Copy content to new category folder
-          const newFileHandle = await categoryDir.getFileHandle(item.name, { create: true });
-          const writable = await newFileHandle.createWritable();
-          await writable.write(item.fileRef);
-          await writable.close();
-          // Remove old file from root
-          await currentDirHandle.removeEntry(item.name);
-          movedCount++;
-        }
-
-        statusWrapper.innerHTML = `
-          <div class="success-banner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <div>
-              <strong>Success!</strong> Organized ${movedCount} files into clean category folders on your computer.
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        console.error("Organization error:", err);
-        statusWrapper.innerHTML = `
-          <div class="error-banner">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            Permission or disk error: ${escapeHtml(err.message)}. Ensure you grant permission to modify the directory.
-          </div>
-        `;
-      } finally {
-        btnExecute.disabled = false;
-      }
-    } else {
-      // JSZip Package & Download
-      statusWrapper.innerHTML = `
-        <div style="text-align:center; padding:12px; color:var(--accent); font-weight:600;">
-          Packaging files into categorized ZIP archive...
-        </div>
-      `;
-
-      try {
-        const zip = new JSZip();
-        for (const item of scannedFiles) {
-          zip.file(`${item.category}/${item.name}`, item.fileRef);
-        }
-
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        const downloadUrl = URL.createObjectURL(zipBlob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = "Tangent_Organized_Files.zip";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        statusWrapper.innerHTML = `
-          <div class="success-banner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <div>
-              <strong>Success!</strong> Downloaded <strong>Tangent_Organized_Files.zip</strong> with ${scannedFiles.length} files sorted into categorized folders.
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        console.error("ZIP creation error:", err);
-        statusWrapper.innerHTML = `
-          <div class="error-banner">
-            Failed to build ZIP archive: ${escapeHtml(err.message)}
-          </div>
-        `;
-      } finally {
-        btnExecute.disabled = false;
-      }
-    }
-  }
+  // Execution and collision checks are implemented in file-organizer-engine.js.
+  function executeOrganization() {}
 
   // Non-Windows Detection & Warning
   (function warnNonWindowsVisitors() {
@@ -1850,5 +1724,6 @@
     }
   })();
 </script>
+<script src="assets/file-organizer-engine.js"></script>
 </body>
 </html>

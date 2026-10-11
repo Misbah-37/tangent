@@ -204,7 +204,7 @@
 
 <div class="explainer-section">
   <h2 class="explainer-title">How SQL Analytics Studio Works</h2>
-  
+
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">
@@ -231,7 +231,7 @@
 
   <div class="faq-container">
     <h3 style="text-align: left; margin-bottom: 24px; color: var(--text-main); font-size: 1.5rem;">Frequently Asked Questions</h3>
-    
+
     <div class="faq-item">
       <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
         Why do I get an error when I type "CREATE DATABASE"?
@@ -241,7 +241,7 @@
         <p>Because this studio runs as an <strong>in-memory analytical engine</strong> (rather than a traditional persistent server), everything exists within a single unified workspace. You don't need to partition data into separate databases. Instead of creating a database, simply drop a file into the sidebar to automatically mount it as a <strong>Table</strong>, or use <code>CREATE TABLE my_table (id INT);</code> to start fresh.</p>
       </div>
     </div>
-    
+
     <div class="faq-item">
       <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
         Can I join multiple different CSV or Parquet files?
@@ -274,12 +274,15 @@
   </div>
 </div>
 <!-- --- SCRIPTS --- -->
+<script src="assets/data-utils.js?v=1"></script>
 <script type="module">
   import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.1-dev106.0/+esm';
 
   let db = null;
   let conn = null;
   let lastQueryRows = null;
+  let queryOperation = 0;
+  const escapeHtml = TangentData.escapeHtml;
 
   // Restore saved query
   const sqlInput = document.getElementById('sqlInput');
@@ -294,18 +297,18 @@
     try {
       const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
       const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
-      
+
       const worker_url = URL.createObjectURL(
         new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' })
       );
-      
+
       const worker = new Worker(worker_url);
       const logger = new duckdb.ConsoleLogger();
       db = new duckdb.AsyncDuckDB(logger, worker);
-      
+
       await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
       URL.revokeObjectURL(worker_url);
-      
+
       conn = await db.connect();
       console.log("DuckDB initialized!");
       setupDropzone();
@@ -335,7 +338,7 @@
   async function handleFile(file) {
     if (!conn) return alert("DuckDB is still loading...");
     let tableName = file.name.split('.')[0].replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-    
+
     // SQL tables cannot start with a number. If it does, prefix it.
     if (/^[0-9]/.test(tableName)) {
       tableName = 'tbl_' + tableName;
@@ -344,35 +347,35 @@
     if (!tableName) {
       tableName = 'data_table';
     }
-    
+
     try {
       const buffer = new Uint8Array(await file.arrayBuffer());
       await db.registerFileBuffer(file.name, buffer);
-      
+
       const ext = file.name.split('.').pop().toLowerCase();
       let query = "";
       if (ext === 'csv') {
-        query = `CREATE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${file.name}')`;
+        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${file.name.replace(/'/g, "''")}')`;
       } else if (ext === 'parquet') {
-        query = `CREATE TABLE ${tableName} AS SELECT * FROM read_parquet('${file.name}')`;
+        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_parquet('${file.name.replace(/'/g, "''")}')`;
       } else if (ext === 'json') {
-        query = `CREATE TABLE ${tableName} AS SELECT * FROM read_json_auto('${file.name}')`;
+        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_json_auto('${file.name.replace(/'/g, "''")}')`;
       } else {
         return alert("Unsupported file type. Please use CSV, Parquet, or JSON.");
       }
 
       await conn.query(query);
-      
-      const schema = await conn.query(`DESCRIBE ${tableName}`);
+
+      const schema = await conn.query(`DESCRIBE "${tableName}"`);
       renderSchema(tableName, schema.toArray());
       const sqlInput = document.getElementById('sqlInput');
-      
+
       // Unlock Workspace
       document.getElementById('editorLock').style.display = 'none';
       sqlInput.disabled = false;
-      
+
       if (sqlInput.value.trim() === "") {
-        sqlInput.value = `SELECT * FROM ${tableName} LIMIT 10;`;
+        sqlInput.value = `SELECT * FROM "${tableName}" LIMIT 10;`;
       }
     } catch (e) {
       console.error(e);
@@ -382,21 +385,21 @@
 
   function renderSchema(tableName, columns) {
     const list = document.getElementById('tableList');
-    
+
     let html = `<div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; overflow: hidden;">
       <div style="background: rgba(0,0,0,0.2); padding: 8px 12px; font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-        ${tableName}
+        ${escapeHtml(tableName)}
       </div>
       <div style="padding: 8px 12px; font-size: 0.85rem;">`;
-      
+
     columns.forEach(col => {
       html += `<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-        <span style="color: var(--text-main);">${col.column_name}</span>
-        <span style="color: var(--accent); font-size: 0.75rem;">${col.column_type}</span>
+        <span style="color: var(--text-main);">${escapeHtml(col.column_name)}</span>
+        <span style="color: var(--accent); font-size: 0.75rem;">${escapeHtml(col.column_type)}</span>
       </div>`;
     });
-    
+
     html += `</div></div>`;
     list.innerHTML += html;
   }
@@ -405,86 +408,76 @@
     if (!conn) return alert("DuckDB is not initialized.");
     const sql = document.getElementById('sqlInput').value.trim();
     if (!sql) return;
-    
+
     const resultsHeader = document.getElementById('resultsHeader');
     const table = document.getElementById('resultsTable');
-    
+    const operation = ++queryOperation;
+    lastQueryRows = null;
+    document.getElementById('btnExport').style.display = 'none';
+
     try {
       resultsHeader.textContent = "Executing...";
       table.innerHTML = `<tbody><tr><td style="color: var(--text-muted);">Running query...</td></tr></tbody>`;
-      
+
       const start = performance.now();
       const res = await conn.query(sql);
+      if (operation !== queryOperation) return;
       const rows = res.toArray();
       const ms = (performance.now() - start).toFixed(1);
-      
+
       lastQueryRows = rows;
-      
+
       const totalRows = rows.length;
       if (totalRows > 500) {
         resultsHeader.textContent = `Results (Showing top 500 of ${totalRows.toLocaleString()} rows) • ${ms}ms`;
       } else {
         resultsHeader.textContent = `Results (${totalRows.toLocaleString()} rows) • ${ms}ms`;
       }
-      
+
       // Show Export button if we have results
       if (totalRows > 0) {
         document.getElementById('btnExport').style.display = 'flex';
       } else {
         document.getElementById('btnExport').style.display = 'none';
       }
-      
+
       if (rows.length === 0) {
         table.innerHTML = `<tbody><tr><td style="color: var(--text-muted);">0 rows returned.</td></tr></tbody>`;
         return;
       }
-      
+
       const cols = Object.keys(rows[0]);
       let thead = '<thead><tr>';
-      cols.forEach(c => thead += `<th>${c}</th>`);
+      cols.forEach(c => thead += `<th>${escapeHtml(c)}</th>`);
       thead += '</tr></thead>';
-      
+
       let tbody = '<tbody>';
       // Limit to 500 rows for browser performance
-      const displayRows = rows.slice(0, 500); 
+      const displayRows = rows.slice(0, 500);
       displayRows.forEach(r => {
         tbody += '<tr>';
         cols.forEach(c => {
           let val = r[c];
           if (typeof val === 'bigint') val = val.toString();
-          tbody += `<td>${val !== null && val !== undefined ? val : '<em>null</em>'}</td>`;
+          tbody += `<td>${val !== null && val !== undefined ? escapeHtml(val) : '<em>null</em>'}</td>`;
         });
         tbody += '</tr>';
       });
       tbody += '</tbody>';
-      
+
       table.innerHTML = thead + tbody;
-      
+
     } catch (e) {
+      if (operation !== queryOperation) return;
       resultsHeader.textContent = "Error";
-      table.innerHTML = `<tbody><tr><td style="color: #ff4757;">${e.message}</td></tr></tbody>`;
+      table.innerHTML = `<tbody><tr><td style="color: #ff4757;">${escapeHtml(e.message)}</td></tr></tbody>`;
     }
   });
 
   document.getElementById('btnExport').addEventListener('click', () => {
     if (!lastQueryRows || lastQueryRows.length === 0) return;
     const cols = Object.keys(lastQueryRows[0]);
-    let csv = cols.join(',') + '\n';
-    
-    lastQueryRows.forEach(row => {
-      csv += cols.map(c => {
-        let val = row[c];
-        if (val === null || val === undefined) return '';
-        // Escape quotes
-        let str = String(val).replace(/"/g, '""');
-        // Wrap in quotes if it contains comma, newline, or quotes
-        if (str.includes(',') || str.includes('\\n') || str.includes('"')) {
-          return `"${str}"`;
-        }
-        return str;
-      }).join(',') + '\n';
-    });
-    
+    const csv = [cols.map(TangentData.csvCell).join(','), ...lastQueryRows.map(row => cols.map(c => TangentData.csvCell(row[c])).join(','))].join('\r\n') + '\r\n';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

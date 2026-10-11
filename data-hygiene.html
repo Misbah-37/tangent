@@ -66,7 +66,7 @@
       }
     ]
   }
-  
+
   </script>
 <!-- Structured Data for Data Hygiene Profiler -->
 <script type="application/ld+json">
@@ -92,7 +92,7 @@
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
-<link rel="stylesheet" href="assets/tangent.css?v=11">
+<link rel="stylesheet" href="assets/tangent.css?v=12">
 <style>
 .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
   .badge-pill {
@@ -123,11 +123,11 @@
   .form-group { margin-bottom: 16px; }
   .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
   .form-control { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; }
-  select.form-control { 
-    appearance: none; 
-    cursor: pointer; 
+  select.form-control {
+    appearance: none;
+    cursor: pointer;
   }
-  
+
   /* Add custom dropdown arrow for single selects */
   select.form-control:not([multiple]) {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -136,7 +136,7 @@
     background-size: 14px;
     padding-right: 36px;
   }
-  
+
   /* Force dark background for native dropdown options so white text remains visible */
   select.form-control option {
     background-color: var(--bg-surface);
@@ -160,10 +160,10 @@
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; background: var(--accent); color: var(--text-main); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; width: 100%; }
   .btn:hover { filter: brightness(1.1); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  
+
   .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
   .metrics-grid-secondary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
-  
+
   .metric-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
   .metric-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
   .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
@@ -173,9 +173,9 @@
   .metric-card-sm .metric-label { font-size: 0.65rem; }
 
   .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); }
-  
+
   /* Local spinner removed â€” uses global TangentLoader from shell.html */
-  
+
   /* Pill Tags */
   .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .pill-tag {
@@ -288,7 +288,7 @@
     </a>
 
     <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-expanded="false">
+    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
       <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       <span>Toolkit</span>
     </button>
@@ -335,15 +335,15 @@
   <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
     <div style="position: relative; display: flex; align-items: center;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;">
+      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
     </div>
   </div>
 
   <div class="sidebar-nav-list">
     <!-- Category 1: Documents & PDF -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Documents & PDF</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
+      <div class="sidebar-group-content" id="sidebar-category-1">
       <a href="pdf-redactor.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
         <div class="item-text">
@@ -391,8 +391,8 @@
 
     <!-- Category 2: Business & Career -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Business & Career</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
+      <div class="sidebar-group-content" id="sidebar-category-2">
       <a href="resume-builder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
         <div class="item-text">
@@ -412,8 +412,8 @@
 
     <!-- Category 3: Images & Photos -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Images & Photos</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
+      <div class="sidebar-group-content" id="sidebar-category-3">
       <a href="photo-resizer.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="item-text">
@@ -461,8 +461,8 @@
 
     <!-- Category 4: Design & Dev Graphics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Design & Dev Graphics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
+      <div class="sidebar-group-content" id="sidebar-category-4">
       <a href="mockup-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <div class="item-text">
@@ -489,8 +489,8 @@
 
     <!-- Category 5: Audio & Video -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Audio & Video</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
+      <div class="sidebar-group-content" id="sidebar-category-5">
       <a href="screen-recorder.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         <div class="item-text">
@@ -510,8 +510,8 @@
 
     <!-- Category 6: Security & System -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Security & System</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
+      <div class="sidebar-group-content" id="sidebar-category-6">
       <a href="file-vault.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
         <div class="item-text">
@@ -538,8 +538,8 @@
 
     <!-- Category 7: Data & Analytics -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Data & Analytics</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
+      <div class="sidebar-group-content" id="sidebar-category-7">
       <a href="csv-insights.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
         <div class="item-text">
@@ -594,8 +594,8 @@
 
     <!-- Category 8: Utilities -->
     <div class="sidebar-group">
-      <div class="sidebar-group-title">Utilities</div>
-      <div class="sidebar-group-content">
+      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
+      <div class="sidebar-group-content" id="sidebar-category-8">
       <a href="qr-generator.html" class="sidebar-item">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <div class="item-text">
@@ -659,14 +659,14 @@
 </div>
 
 <div class="hygiene-workspace">
-  
+
   <!-- Recipe Builder Panel -->
   <div class="panel">
     <div class="panel-header">
       Recipe Builder
     </div>
     <div class="panel-body" style="padding: 16px;">
-      
+
       <!-- Structural Repairs -->
       <div class="accordion-item">
         <div class="accordion-header" onclick="toggleAccordion(this)">
@@ -792,7 +792,7 @@
         </button>
         <div style="display: flex; gap: 8px; margin-top: 16px;">
           <button class="btn btn-outline" id="btnExportRecipe" style="flex: 1; font-size: 0.8rem; padding: 6px;">Export (.json)</button>
-          <button class="btn btn-outline" id="btnImportRecipe" style="flex: 1; font-size: 0.8rem; padding: 6px;" onclick="document.getElementById(\'recipeFileInput\').click()">Import (.json)</button>
+          <button class="btn btn-outline" id="btnImportRecipe" style="flex: 1; font-size: 0.8rem; padding: 6px;">Import (.json)</button>
           <input type="file" id="recipeFileInput" accept=".json" style="display: none;">
         </div>
 
@@ -816,7 +816,7 @@
       </div>
     </div>
     <div class="panel-body">
-      
+
       <div class="dropzone" id="dropzone">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 12px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
         <h3 style="margin-bottom: 8px; color: var(--text-main);">Upload Dataset (CSV)</h3>
@@ -867,6 +867,7 @@
             Show rows with anomalies only
           </label>
         </div>
+        <p id="dateValidationWarning" role="status" hidden style="color: var(--text-main); margin: 12px 0;"></p>
         <div class="table-wrapper">
           <table class="preview-table" id="previewTable">
               <thead><tr id="previewThead"></tr></thead>
@@ -913,9 +914,9 @@
         <p>Automatically fix gaps in your analytics by calculating Means and Medians on the fly to fill missing blanks instantly.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>What happens to my CSV data when I upload it?</summary>
@@ -974,7 +975,7 @@
 </div>
 
 <!-- Global Shell Script -->
-<script src="assets/tangent.js?v=10"></script>
+<script src="assets/tangent.js?v=11"></script>
 
 <!-- Global TangentLoader Utility -->
 <script>
@@ -997,16 +998,16 @@
       var title = document.getElementById('toastTitle');
       var closeBtn = document.getElementById('toastCloseBtn');
       if (!toast || !title) return;
-      
+
       title.textContent = titleMsg || 'Task Complete!';
       toast.classList.add('show');
-      
+
       if (closeBtn) {
         closeBtn.onclick = function() {
           toast.classList.remove('show');
         };
       }
-      
+
       setTimeout(function() {
         toast.classList.remove('show');
       }, 12000);
@@ -1029,6 +1030,8 @@
     let multiSelectState = {
       selFormatDates: [],
       selFormatNumbers: [],
+      selFormatPhones: [],
+      selTitleCase: [],
       selDropMissingCols: [],
       selDedupCols: []
     };
@@ -1053,12 +1056,15 @@
     function renderPills(id) {
       const container = document.getElementById(id + '_pills');
       if (container) {
-        container.innerHTML = multiSelectState[id].map(val => `
-          <div class="pill-tag">
-            ${val}
-            <span class="remove" onclick="removePill('${id}', '${val}')">X</span>
-          </div>
-        `).join('');
+        container.replaceChildren();
+        for (const val of multiSelectState[id]) {
+          const pill = document.createElement('div'); pill.className = 'pill-tag';
+          pill.append(document.createTextNode(val));
+          const remove = document.createElement('button'); remove.className = 'remove'; remove.type = 'button'; remove.textContent = 'X';
+          remove.setAttribute('aria-label', 'Remove ' + val);
+          remove.addEventListener('click', () => removePill(id, val));
+          pill.append(remove); container.append(pill);
+        }
       }
     }
 
@@ -1067,7 +1073,7 @@
           let el = document.getElementById(id);
           if (el) el.addEventListener('change', () => addPill(id));
         });
-        
+
         let prev = document.getElementById('btnPrevPage');
         let next = document.getElementById('btnNextPage');
         if (prev) prev.addEventListener('click', () => updatePreview(processedHeaders, processedData, previewCurrentPage - 1));
@@ -1089,20 +1095,25 @@
     const col = document.getElementById('selImputeCol').value;
     const method = document.getElementById('selImputeMethod').value;
     const customVal = document.getElementById('txtImputeCustom').value;
-    
+
     if(!col) return alert("Select a column first.");
     if(method === 'custom' && !customVal) return alert("Enter a custom value.");
-    
+
     // Remove existing rule for this col if exists
     imputationRules = imputationRules.filter(r => r.col !== col);
     imputationRules.push({ col, method, customVal });
-    
+
     renderImputationRules();
   });
 
   function renderImputationRules() {
     const list = document.getElementById('imputationRulesList');
-    list.innerHTML = imputationRules.map(r => `<div>&bull; ${r.col}: ${r.method} ${r.method==='custom'?`("${r.customVal}")`:''}</div>`).join('');
+    list.replaceChildren();
+    for (const r of imputationRules) {
+      const item = document.createElement('div');
+      item.textContent = '• ' + r.col + ': ' + r.method + (r.method === 'custom' ? ' (' + r.customVal + ')' : '');
+      list.append(item);
+    }
   }
 
   // File Handling
@@ -1124,25 +1135,36 @@
     if (file.name.split('.').pop().toLowerCase() !== 'csv') {
       return alert("Only CSV files are supported.");
     }
+    cancelProcessing();
+    const loadOperation = operation;
     originalFileName = file.name;
-    
+
     document.getElementById('dropzone').style.display = 'none';
     document.getElementById('dashboardArea').style.display = 'block';
-    
+    document.getElementById('btnRunRecipe').disabled = true;
+    document.getElementById('btnExport').disabled = true;
+    document.getElementById('btnClear').disabled = false;
+
     Papa.parse(file, {
-      header: true,
+      header: false,
       skipEmptyLines: false, // We handle empty rows in the pipeline
       complete: function(results) {
-        currentHeaders = results.meta.fields || [];
-        rawData = results.data;
+        if (loadOperation !== operation) return;
+        const loadedHeaders = results.data[0] || [];
+        if (new Set(loadedHeaders).size !== loadedHeaders.length) return alert('Duplicate CSV headers must be renamed before loading.');
+        if (results.errors.length || results.data.slice(1).some(values => values.length !== loadedHeaders.length && values.some(value => String(value).trim() !== ''))) {
+          return alert('CSV rows must match the header column count. Correct the source file before loading.');
+        }
+        currentHeaders = loadedHeaders;
+        rawData = results.data.slice(1).map(values => Object.fromEntries(currentHeaders.map((h,i) => [h, values[i] ?? ''])));
         populateDropdowns();
-        
+
         // Initial preview
         processedData = rawData;
         processedHeaders = [...currentHeaders];
         updatePreview(processedHeaders, processedData);
         updateStats(rawData.length, rawData.length, currentHeaders.length, {emptyDropped:0, missingDropped:0, deduped:0, imputed:0});
-        
+
         document.getElementById('btnRunRecipe').disabled = false;
         document.getElementById('btnExport').disabled = false;
         document.getElementById('btnClear').disabled = false;
@@ -1152,26 +1174,30 @@
 
     function populateDropdowns() {
       const selects = document.querySelectorAll(".col-select");
-      let opts = '<option value="">-- Select Column --</option>' + currentHeaders.map(h => `<option value="${h}">${h}</option>`).join("");
-      selects.forEach(sel => sel.innerHTML = opts);
+      selects.forEach(sel => {
+        sel.replaceChildren(new Option('-- Select Column --', ''));
+        for (const h of currentHeaders) sel.add(new Option(h, h));
+      });
     }
 
     function getMultiSelectValues(id) {
       return multiSelectState[id] || [];
     }
 
+  const missingValue = value => value == null || ['', 'null', 'nan', 'n/a', '-'].includes(String(value).trim().toLowerCase());
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   // Preview Render
     function updatePreview(headers, data, page = 0) {
         previewCurrentPage = page;
       // 1. Profiling pass
-      let stats = {};
+      let stats = Object.create(null);
       headers.forEach(h => stats[h] = { missing: 0, space: 0 });
-      
+
       for (let i = 0; i < data.length; i++) {
         let row = data[i];
         for (let h of headers) {
            let val = row[h];
-           if (val === undefined || val === null || String(val).trim() === "") {
+           if (missingValue(val)) {
              stats[h].missing++;
            } else if (String(val) !== String(val).trim()) {
              stats[h].space++;
@@ -1185,54 +1211,54 @@
         let badges = "";
         if (stats[h].missing > 0) badges += `<div class="badge-anomaly">${stats[h].missing} empty</div>`;
         if (stats[h].space > 0) badges += `<div class="badge-warning">${stats[h].space} spaces</div>`;
-        return `<th>${h}<br>${badges}</th>`;
+        return `<th>${escapeHtml(h)}<br>${badges}</th>`;
       }).join("");
 
       // 3. Render Body
         const tbody = document.getElementById("previewTbody");
         let htmlStr = "";
         const showAnomaliesOnly = document.getElementById("chkShowAnomalies") && document.getElementById("chkShowAnomalies").checked;
-        
+
         let anomalyData = [];
         let totalRows = data.length;
         if (showAnomaliesOnly) {
           anomalyData = data.filter(row => {
             for (let h of headers) {
               let val = row[h];
-              if (val === undefined || val === null || String(val).trim() === "" || String(val) !== String(val).trim()) return true;
+              if (missingValue(val) || String(val) !== String(val).trim()) return true;
             }
             return false;
           });
           totalRows = anomalyData.length;
         }
-        
+
         let totalPages = Math.ceil(totalRows / previewPageSize);
         if (previewCurrentPage >= totalPages && totalPages > 0) previewCurrentPage = totalPages - 1;
-        
+
         let startIdx = previewCurrentPage * previewPageSize;
         let endIdx = Math.min(startIdx + previewPageSize, totalRows);
         let displayRows = (showAnomaliesOnly ? anomalyData : data).slice(startIdx, endIdx);
-      
+
       for (let row of displayRows) {
           htmlStr += "<tr>" + headers.map(h => {
            let val = row[h];
            let strVal = val !== undefined && val !== null ? String(val) : "";
            let cellClass = "";
-           let displayVal = strVal.replace(/</g, "&lt;");
-           
-           if (strVal.trim() === "") {
+           let displayVal = escapeHtml(strVal);
+
+           if (missingValue(strVal)) {
              cellClass = "cell-missing";
              displayVal = "<span style=\"opacity:0.5; font-style:italic;\">null</span>";
            } else if (strVal !== strVal.trim()) {
              cellClass = "cell-whitespace";
              displayVal = displayVal.replace(/^ +| +$/g, match => match.replace(/ /g, "Â·"));
            }
-           
+
            return `<td class="${cellClass}">${displayVal}</td>`;
         }).join("") + "</tr>";
         }
         tbody.innerHTML = htmlStr;
-        
+
         let info = document.getElementById("previewRowInfo");
         if(info) info.innerHTML = "Showing rows <b style=\"color: var(--text-main);\">" + (totalRows === 0 ? 0 : startIdx + 1) + " - " + endIdx + "</b> of <b style=\"color: var(--text-main);\">" + totalRows.toLocaleString() + "</b>";
         let btnPrev = document.getElementById("btnPrevPage");
@@ -1245,12 +1271,16 @@
     document.getElementById('statRowsIn').innerText = inCount.toLocaleString();
     document.getElementById('statRowsOut').innerText = outCount.toLocaleString();
     document.getElementById('statCols').innerText = colCount.toLocaleString();
-    
+
     if (audit) {
       document.getElementById('statEmptyDropped').innerText = audit.emptyDropped.toLocaleString();
       document.getElementById('statMissingDropped').innerText = audit.missingDropped.toLocaleString();
       document.getElementById('statDeduped').innerText = audit.deduped.toLocaleString();
       document.getElementById('statImputed').innerText = audit.imputed.toLocaleString();
+      const warning = document.getElementById('dateValidationWarning');
+      warning.hidden = !audit.invalidDates;
+      warning.hidden = !(audit.invalidDates || audit.invalidNumbers);
+      warning.textContent = [audit.invalidDates ? audit.invalidDates.toLocaleString() + ' invalid date cells' : '', audit.invalidNumbers ? audit.invalidNumbers.toLocaleString() + ' unrecognized numeric cells' : ''].filter(Boolean).join(' and ') + ' were left unchanged. Review them before exporting.';
     }
   }
 
@@ -1258,12 +1288,66 @@
   const workerCode = `
     self.onmessage = function(e) {
       const { data, headers, recipe } = e.data;
-      
+
       let newHeaders = [...headers];
       let rows = data;
-      let audit = { emptyDropped: 0, missingDropped: 0, deduped: 0, imputed: 0 };
+      let audit = { emptyDropped: 0, missingDropped: 0, deduped: 0, imputed: 0, invalidDates: 0, invalidNumbers: 0 };
+      const missing = ${missingValue.toString()};
+      function wordNumber(value) {
+        const units = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+        const tens = {twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+        let tokens = value.toLowerCase().replace(/-/g, ' ').trim().split(/ +/);
+        let sign = 1;
+        if (tokens[0] === 'minus' || tokens[0] === 'negative') {sign = -1; tokens.shift();}
+        if (!tokens.length) return null;
+        const point = tokens.indexOf('point');
+        let fraction = '';
+        if (point !== -1) {
+          const digits = tokens.slice(point+1).map(word => units.indexOf(word));
+          if (!digits.length || digits.some(d => d < 0 || d > 9)) return null;
+          fraction = '.' + digits.join(''); tokens = tokens.slice(0,point);
+        }
+        function small(words, allowAnd = false) {
+          if (!words.length) return null;
+          if (words[0] === 'and') {if (!allowAnd) return null; words = words.slice(1);}
+          let value = 0;
+          if (words[1] === 'hundred') {
+            const digit = units.indexOf(words[0]); if (digit < 1 || digit > 9) return null;
+            value = digit * 100; words = words.slice(2);
+            if (words[0] === 'and') words = words.slice(1);
+            if (!words.length) return value;
+          }
+          const unit = units.indexOf(words[0]);
+          if (unit >= 0 && words.length === 1) return value + unit;
+          const ten = tens[words[0]];
+          if (ten && words.length === 1) return value + ten;
+          const last = units.indexOf(words[1]);
+          if (ten && words.length === 2 && last > 0 && last < 10) return value + ten + last;
+          return null;
+        }
+        let total = 0, start = 0, previous = Infinity;
+        const scales = {thousand:1000,million:1000000,billion:1000000000};
+        for (let i=0;i<tokens.length;i++) {
+          const scale = scales[tokens[i]];
+          if (!scale) continue;
+          const group = small(tokens.slice(start,i));
+          if (group === null || group === 0 || scale >= previous) return null;
+          total += group * scale; previous = scale; start = i+1;
+        }
+        if (start < tokens.length) {const last = small(tokens.slice(start), start > 0); if(last === null)return null; total += last;}
+        else if (!start) return null;
+        return Number.isSafeInteger(total) ? (sign < 0 ? '-' : '') + total + fraction : null;
+      }
 
       try {
+        const selected = [...(recipe.formats.dateCols || []), ...(recipe.formats.numberCols || []), ...(recipe.formats.phoneCols || []), ...(recipe.formats.titleCols || []), ...recipe.missing.dropMissingCols, ...recipe.missing.rules.map(r => r.col), ...recipe.dedup.dedupCols];
+        for (const col of selected) if (!headers.includes(col)) throw new Error('Recipe column is missing: ' + col);
+        if (!['none','exact','keys'].includes(recipe.dedup.dedupMode)) throw new Error('Unsupported deduplication method.');
+        if (recipe.dedup.dedupMode === 'keys' && !recipe.dedup.dedupCols.length) throw new Error('Select at least one key column before deduplicating.');
+        for (const rule of recipe.missing.rules) {
+          if (!['mean','median','mode','custom'].includes(rule.method)) throw new Error('Unsupported imputation method.');
+          if (rule.method === 'custom' && missing(rule.customVal)) throw new Error('Custom replacement must contain a usable value.');
+        }
         // 1. Structural Pass (Headers)
         if (recipe.structure.cleanHeaders) {
           const seen = new Set();
@@ -1284,14 +1368,14 @@
         // Remap data to new headers if changed, and clone to avoid mutating original ref
         let outRows = [];
         for (let i=0; i < rows.length; i++) {
-           let newRow = {};
+           let newRow = Object.create(null);
            let isEmpty = true;
            for (let j=0; j < headers.length; j++) {
              let val = rows[i][headers[j]];
              newRow[newHeaders[j]] = val;
              if (val !== undefined && val !== null && String(val).trim() !== "") isEmpty = false;
            }
-           
+
            if (recipe.structure.dropEmptyRows && isEmpty) {
                audit.emptyDropped++;
                continue;
@@ -1303,74 +1387,108 @@
         // 2. Data Cleansing & Formatting Pass
           const { trimAll, stripControl, dateCols = [], dateLocale = 'US', numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
           const cRegex = /[\x00-\x1F\x7F]/g;
-          
-          const wordToNum = { "zero":0, "one":1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9, "ten":10, "eleven":11, "twelve":12, "thirteen":13, "fourteen":14, "fifteen":15, "sixteen":16, "seventeen":17, "eighteen":18, "nineteen":19, "twenty":20 };
-          
+
           for (let i=0; i < rows.length; i++) {
              let row = rows[i];
              for (let j=0; j < newHeaders.length; j++) { let h = newHeaders[j]; let orig_h = headers[j];
                 let val = row[h];
-                if (val === undefined || val === null) continue;
-                
+                if (missing(val)) continue;
+
                 let strVal = String(val);
                 if (stripControl) strVal = strVal.replace(cRegex, '');
                 if (trimAll) strVal = strVal.trim();
                 if (!strVal) continue;
-                
+
                 if (dateCols.includes(orig_h)) {
                      let dStr = strVal.replace(/(st|nd|rd|th)/ig, '');
                      let parsedDate = null;
-                     
-                     let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+
+                     function calendarDate(year, month, day) {
+                         const date = new Date(year, month-1, day);
+                         return date.getFullYear() === year && date.getMonth() === month-1 && date.getDate() === day ? date : null;
+                     }
+                     let m = dStr.match(/^([0-9]{1,2})[-/]([0-9]{1,2})[-/]([0-9]{2,4})$/);
+                     const iso = dStr.match(/^([0-9]{4})[-/]([0-9]{1,2})[-/]([0-9]{1,2})$/);
+                     const namedMDY = dStr.match(/^([A-Za-z]+)[ .-]+([0-9]{1,2})[, .-]+([0-9]{4})$/);
+                     const namedDMY = dStr.match(/^([0-9]{1,2})[ .-]+([A-Za-z]+)[, .-]+([0-9]{4})$/);
                      if (m) {
                          let p1 = parseInt(m[1]), p2 = parseInt(m[2]), p3 = parseInt(m[3]);
                          if (p3 < 100) p3 += 2000;
-                         if (p1 > 12 && p2 <= 12) { parsedDate = new Date(p3, p2-1, p1); }
-                         else if (p2 > 12 && p1 <= 12) { parsedDate = new Date(p3, p1-1, p2); }
+                         if (p1 > 12 && p2 <= 12) { parsedDate = calendarDate(p3, p2, p1); }
+                         else if (p2 > 12 && p1 <= 12) { parsedDate = calendarDate(p3, p1, p2); }
                          else if (p1 <= 12 && p2 <= 12) {
-                            if (dateLocale === 'EU') { parsedDate = new Date(p3, p2-1, p1); }
-                            else { parsedDate = new Date(p3, p1-1, p2); } 
+                            if (dateLocale === 'EU') { parsedDate = calendarDate(p3, p2, p1); }
+                            else { parsedDate = calendarDate(p3, p1, p2); }
                          }
                      }
-                     
-                     if (!parsedDate) {
+
+                     if (iso) parsedDate = calendarDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
+                     if (namedMDY || namedDMY) {
+                         const parts = namedMDY || namedDMY;
+                         const monthName = (namedMDY ? parts[1] : parts[2]).slice(0,3).toLowerCase();
+                         const month = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(monthName)+1;
+                         parsedDate = calendarDate(Number(parts[3]), month, Number(namedMDY ? parts[2] : parts[1]));
+                     }
+                     if (!m && !iso && !namedMDY && !namedDMY) {
                          let d = new Date(dStr);
                          if (!isNaN(d.getTime())) { parsedDate = d; }
                      }
-                     
+                     if (!parsedDate) audit.invalidDates++;
+
                      if (parsedDate && !isNaN(parsedDate.getTime())) {
                          let y = parsedDate.getFullYear();
                          let mo = String(parsedDate.getMonth() + 1).padStart(2, '0');
                          let da = String(parsedDate.getDate()).padStart(2, '0');
-                         
+
                          if (dateLocale === 'EU') strVal = da + '/' + mo + '/' + y;
                          else if (dateLocale === 'US') strVal = mo + '/' + da + '/' + y;
-                         else strVal = y + '-' + mo + '-' + da; 
+                         else strVal = y + '-' + mo + '-' + da;
                      }
                   }
-                  
+
                   if (numberCols.includes(orig_h)) {
-                   let lower = strVal.toLowerCase();
-                   if (wordToNum[lower] !== undefined) {
-                     strVal = String(wordToNum[lower]);
+                   const accountingNegative = strVal.trim().startsWith('(') && strVal.trim().endsWith(')');
+                   let lower = strVal.trim().toLowerCase();
+                   const words = wordNumber(lower);
+                   if (words !== null) {
+                     strVal = words;
                    } else {
-                     if (lower.endsWith('k')) { strVal = strVal.slice(0,-1) + "000"; }
-                     else if (lower.endsWith('m')) { strVal = strVal.slice(0,-1) + "000000"; }
-                     let cleanNum = strVal.replace(/[^0-9.-]/g, '');
-                     if(cleanNum) strVal = cleanNum;
+                     let numeric = accountingNegative ? lower.slice(1,-1) : lower;
+                     const scale = numeric.endsWith('k') ? 3 : numeric.endsWith('m') ? 6 : 0;
+                     if (scale) numeric = numeric.slice(0,-1);
+                     numeric = numeric.replace(/^[$£€]/, '').replace(/[$£€]$/, '').trim();
+                     if (!/^[+-]?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:[.][0-9]+)?(?:e[+-]?[0-9]+)?$/.test(numeric) && !/^[+-]?[.][0-9]+(?:e[+-]?[0-9]+)?$/.test(numeric)) {audit.invalidNumbers++; continue;}
+                     let cleanNum = numeric.replace(/,/g, '');
+                     const scientific = cleanNum.match(/^(.+)e([+-]?[0-9]+)$/);
+                     let exponent = scale;
+                     if (scientific) {cleanNum = scientific[1]; exponent += Number(scientific[2]);}
+                     if (Math.abs(exponent) > 1000) {audit.invalidNumbers++; continue;}
+                     const parts = cleanNum.match(/^([+-]?)([0-9]*)(?:[.]([0-9]*))?$/);
+                     if(parts && (parts[2] || parts[3])) {
+                       if(exponent) {
+                         const fraction = parts[3] || '';
+                         let digits = (parts[2] || '0') + fraction;
+                         let point = (parts[2] || '0').length + exponent;
+                         if (point <= 0) {digits = '0'.repeat(1-point) + digits; point = 1;}
+                         if (point >= digits.length) digits = digits.padEnd(point, '0');
+                         cleanNum = parts[1] + digits.slice(0,point).replace(/^0+(?=[0-9])/, '') + (point < digits.length ? '.' + digits.slice(point) : '');
+                       }
+                       if(accountingNegative) cleanNum = '-' + cleanNum.replace(/^[+-]/, '');
+                       strVal = cleanNum;
+                     }
                    }
                 }
-                
+
                 if (phoneCols.includes(orig_h)) {
                    let nums = strVal.replace(/[^0-9]/g, '');
-                   if (nums.length === 10) { strVal = nums.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
-                   else if (nums.length === 11 && nums.startsWith('1')) { strVal = nums.replace(/1(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'); }
+                   if (nums.length === 10) { strVal = nums.replace(/([0-9]{3})([0-9]{3})([0-9]{4})/, '$1-$2-$3'); }
+                   else if (nums.length === 11 && nums.startsWith('1')) { strVal = nums.replace(/1([0-9]{3})([0-9]{3})([0-9]{4})/, '$1-$2-$3'); }
                 }
-                
+
                 if (titleCols.includes(orig_h)) {
-                   strVal = strVal.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+                   strVal = strVal.toLowerCase().replace(/(^|[\\s-])\\S/g, txt => txt.toUpperCase());
                 }
-  
+
                 row[h] = strVal;
              }
           }
@@ -1384,7 +1502,7 @@
                 let idx = headers.indexOf(c);
                 if (idx > -1) {
                   let newCol = newHeaders[idx];
-                  if (!r[newCol] || String(r[newCol]).trim() === "") return false;
+                  if (missing(r[newCol])) return false;
                 }
              }
              return true;
@@ -1395,17 +1513,18 @@
         const imputation = recipe.missing.rules;
         if (imputation.length > 0) {
            // Calculate stats per column
-           let stats = {};
+           let stats = Object.create(null);
            for (let rule of imputation) {
               let idx = headers.indexOf(rule.col);
               if(idx === -1) continue;
               let newCol = newHeaders[idx];
-              
+
               if (rule.method === 'mean' || rule.method === 'median') {
                  let vals = [];
                  for (let r of rows) {
-                    let v = parseFloat(r[newCol]);
-                    if(!isNaN(v)) vals.push(v);
+                    if(missing(r[newCol])) continue;
+                    let v = Number(r[newCol]);
+                    if(Number.isFinite(v)) vals.push(v);
                  }
                  vals.sort((a,b) => a-b);
                  if(vals.length > 0) {
@@ -1413,18 +1532,19 @@
                       mean: vals.reduce((a,b)=>a+b, 0) / vals.length,
                       median: (vals.length % 2 !== 0) ? vals[Math.floor(vals.length / 2)] : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2
                    };
-                 }
+                 } else { throw new Error('Cannot fill ' + rule.col + ' with ' + rule.method + ': no usable numeric values. Select numeric formatting or correct the source values.'); }
               } else if (rule.method === 'mode') {
-                 let counts = {};
+                 let counts = Object.create(null);
                  let maxCount = 0;
                  let mode = "";
                  for (let r of rows) {
-                    let v = String(r[newCol]||"").trim();
-                    if(v) {
+                    let v = String(r[newCol] ?? "").trim();
+                    if(!missing(r[newCol])) {
                        counts[v] = (counts[v] || 0) + 1;
                        if(counts[v] > maxCount) { maxCount = counts[v]; mode = v; }
                     }
                  }
+                 if (!maxCount) throw new Error('Cannot fill ' + rule.col + ' with mode: no usable values.');
                  stats[newCol] = { mode };
               }
            }
@@ -1436,9 +1556,9 @@
                  let idx = headers.indexOf(rule.col);
                  if(idx === -1) continue;
                  let newCol = newHeaders[idx];
-                 let val = String(r[newCol]||"").trim();
-                 
-                 if (val === "") {
+                 let val = r[newCol];
+
+                 if (missing(val)) {
                     if (rule.method === 'custom') { r[newCol] = rule.customVal; audit.imputed++; }
                     else if (rule.method === 'mean' && stats[newCol]) { r[newCol] = stats[newCol].mean.toFixed(2); audit.imputed++; }
                     else if (rule.method === 'median' && stats[newCol]) { r[newCol] = stats[newCol].median; audit.imputed++; }
@@ -1456,17 +1576,13 @@
            rows = rows.filter(r => {
               let key = "";
               if (dedupMode === 'exact') {
-                 key = newHeaders.map(h => r[h]).join('|');
+                 key = JSON.stringify(newHeaders.map(h => r[h] ?? ''));
               } else if (dedupMode === 'keys') {
-                 key = dedupCols.map(c => {
+                 key = JSON.stringify(dedupCols.map(c => {
                     let idx = headers.indexOf(c);
                     return idx > -1 ? r[newHeaders[idx]] : "";
-                 }).join('|');
-              } else if (dedupMode === 'fuzzy') {
-                 key = dedupCols.map(c => {
-                    let idx = headers.indexOf(c);
-                    return idx > -1 ? soundex(r[newHeaders[idx]]) : "";
-                 }).join('|');
+                 }));
+
               }
               if (seen.has(key)) return false;
               seen.add(key);
@@ -1483,8 +1599,14 @@
   `;
   const blob = new Blob([workerCode], { type: 'application/javascript' });
   const workerUrl = URL.createObjectURL(blob);
-  
+
   let worker = null;
+  let operation = 0;
+  function cancelProcessing() {
+    operation++;
+    if (worker) worker.terminate();
+    worker = null; TangentLoader.hide();
+  }
 
   document.getElementById('btnRunRecipe').addEventListener('click', () => {
     if (!rawData.length) return;
@@ -1499,7 +1621,9 @@
         stripControl: document.getElementById('chkStripControlChars').checked,
           dateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
         dateCols: getMultiSelectValues('selFormatDates'),
-        numberCols: getMultiSelectValues('selFormatNumbers')
+        numberCols: getMultiSelectValues('selFormatNumbers'),
+        phoneCols: getMultiSelectValues('selFormatPhones'),
+        titleCols: getMultiSelectValues('selTitleCase')
       },
       missing: {
         dropMissingCols: getMultiSelectValues('selDropMissingCols'),
@@ -1511,29 +1635,35 @@
       }
     };
 
+    cancelProcessing();
+    const runOperation = operation;
+    document.getElementById('btnExport').disabled = true;
     TangentLoader.show('Running pipeline...');
 
     if (worker) worker.terminate();
     worker = new Worker(workerUrl);
 
     worker.onmessage = function(e) {
+      if (runOperation !== operation) return;
       TangentLoader.hide();
       if (e.data.status === 'success') {
         processedData = e.data.data;
         processedHeaders = e.data.headers;
         updatePreview(processedHeaders, processedData);
         updateStats(rawData.length, processedData.length, processedHeaders.length, e.data.audit);
+        document.getElementById('btnExport').disabled = false;
       } else {
         alert("Processing Error: " + e.data.message);
       }
     };
 
+    worker.onerror = event => {if (runOperation === operation) {cancelProcessing(); alert('Processing Error: ' + event.message);}};
     worker.postMessage({ data: rawData, headers: currentHeaders, recipe });
   });
 
   document.getElementById('btnExport').addEventListener('click', () => {
     if (!processedData.length) return;
-    
+
     const csv = Papa.unparse({ fields: processedHeaders, data: processedData });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -1545,7 +1675,7 @@
     document.body.removeChild(link);
   });
 
-  
+
     // JSON Recipe Export
     document.getElementById('btnExportRecipe').addEventListener('click', () => {
         const recipe = {
@@ -1566,23 +1696,35 @@
         a.click();
     });
 
+    document.getElementById('btnImportRecipe').addEventListener('click', () => document.getElementById('recipeFileInput').click());
     // JSON Recipe Import
     document.getElementById('recipeFileInput').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        const importOperation = operation;
         const reader = new FileReader();
         reader.onload = (ev) => {
+            if (importOperation !== operation) return;
             try {
                 const recipe = JSON.parse(ev.target.result);
+                if (!recipe || typeof recipe !== 'object' || Array.isArray(recipe)) throw new Error('Expected a recipe object.');
+                for (const key of ['chkCleanHeaders','chkDropEmptyRows','chkTrimAll','chkStripControlChars']) if (recipe[key] !== undefined && typeof recipe[key] !== 'boolean') throw new Error('Invalid checkbox setting.');
+                if (recipe.multiSelectState && (typeof recipe.multiSelectState !== 'object' || Array.isArray(recipe.multiSelectState))) throw new Error('Invalid column selections.');
+                if (recipe.selDedupMode && !['none','exact','keys'].includes(recipe.selDedupMode)) throw new Error('Invalid deduplication method.');
+                if (recipe.selDateLocale && !['US','EU','ISO'].includes(recipe.selDateLocale)) throw new Error('Invalid date locale.');
+                for (const values of Object.values(recipe.multiSelectState || {})) {
+                  if (!Array.isArray(values) || values.some(col => typeof col !== 'string' || (rawData.length && !currentHeaders.includes(col)))) throw new Error('Invalid or missing recipe column.');
+                }
+                if (recipe.imputationRules && (!Array.isArray(recipe.imputationRules) || recipe.imputationRules.some(r => !r || typeof r.col !== 'string' || !['mean','median','mode','custom'].includes(r.method) || (rawData.length && !currentHeaders.includes(r.col)) || (r.method === 'custom' && (typeof r.customVal !== 'string' || missingValue(r.customVal)))))) throw new Error('Invalid imputation rule.');
                 document.getElementById('chkCleanHeaders').checked = !!recipe.chkCleanHeaders;
                 document.getElementById('chkDropEmptyRows').checked = !!recipe.chkDropEmptyRows;
                 document.getElementById('chkTrimAll').checked = !!recipe.chkTrimAll;
                 document.getElementById('chkStripControlChars').checked = !!recipe.chkStripControlChars;
                 if(recipe.selDateLocale && document.getElementById('selDateLocale')) document.getElementById('selDateLocale').value = recipe.selDateLocale;
                 if(recipe.selDedupMode) document.getElementById('selDedupMode').value = recipe.selDedupMode;
-                
+
                 if(recipe.multiSelectState) {
-                    multiSelectState = recipe.multiSelectState;
+                    multiSelectState = Object.fromEntries(['selFormatDates','selFormatNumbers','selFormatPhones','selTitleCase','selDropMissingCols','selDedupCols'].map(id => [id, Array.isArray(recipe.multiSelectState[id]) ? recipe.multiSelectState[id] : []]));
                     Object.keys(multiSelectState).forEach(id => renderPills(id));
                 }
                 if(recipe.imputationRules) {
@@ -1592,7 +1734,7 @@
                 document.getElementById('recipeFileInput').value = '';
                 if (rawData.length > 0) document.getElementById('btnRunRecipe').click();
             } catch (err) {
-                alert('Invalid recipe JSON file.');
+                alert('Invalid recipe JSON file: ' + err.message);
             }
         };
         reader.readAsText(file);
@@ -1606,6 +1748,7 @@
     });
 
     document.getElementById('btnClear').addEventListener('click', () => {
+    cancelProcessing();
     // Reset state
     rawData = [];
     currentHeaders = [];
@@ -1613,14 +1756,14 @@
     processedHeaders = [];
     imputationRules = [];
     document.getElementById('fileInput').value = '';
-    
+
     // Reset UI
     document.getElementById('dashboardArea').style.display = 'none';
     document.getElementById('dropzone').style.display = 'block';
     document.getElementById('btnRunRecipe').disabled = true;
     document.getElementById('btnExport').disabled = true;
     document.getElementById('btnClear').disabled = true;
-    
+
     renderImputationRules();
     document.querySelectorAll('.col-select').forEach(sel => sel.innerHTML = '');
       Object.keys(multiSelectState).forEach(id => { multiSelectState[id] = []; renderPills(id); });

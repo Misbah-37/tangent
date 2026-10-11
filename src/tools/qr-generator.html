@@ -1,12 +1,12 @@
 ﻿<!-- --- HEAD_META --- -->
 <title>Free Offline QR Code Generator | No Expiration | Tangent</title>
 <link rel="canonical" href="https://runtangent.com/qr-generator">
-<meta name="description" content="Generate customizable, high-resolution QR codes offline in your browser. URL, Wi-Fi, and contact vCard support with instant PNG and SVG export.">
+<meta name="description" content="Generate customizable, high-resolution QR codes offline in your browser. URL, Wi-Fi, and contact vCard support with instant PNG export.">
 <!-- Foundation & Social Meta Tags -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tangent">
 <meta property="og:title" content="Free Offline QR Code Generator | No Expiration | Tangent">
-<meta property="og:description" content="Create high-resolution QR codes offline with zero server tracking. Instant PNG/SVG downloads and Wi-Fi presets.">
+<meta property="og:description" content="Create high-resolution QR codes offline with zero server tracking. Instant PNG downloads and Wi-Fi presets.">
 <meta property="og:image" content="https://runtangent.com/social-banner.png">
 
 <!-- Schema.org FAQ Structured Data -->
@@ -53,21 +53,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    
-    
-    
+
+
+
   }
 
   body {
@@ -449,9 +449,9 @@
       .canvas-wrapper { padding: 12px; max-width: 100%; width: 100%; box-sizing: border-box; }
       .canvas-wrapper canvas { max-width: 100% !important; width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; display: inline-block !important; box-sizing: border-box !important; object-fit: contain !important; }
       .split-layout { gap: 20px; }}
-  
-    
-    
+
+
+
     @media (max-width: 768px) {
       body, html {
         overflow-x: hidden !important;
@@ -542,9 +542,9 @@
 </div>
 
 <div class="app-container">
-  
+
   <div class="tool-panel">
-    
+
     <!-- Type Mode Selector -->
     <div class="mode-selector">
       <button type="button" class="mode-btn active" onclick="setMode('url')" id="mode-url">
@@ -584,7 +584,7 @@
     <div class="split-layout">
       <!-- Input Configuration -->
       <div class="input-section">
-        
+
         <!-- URL Mode -->
         <div id="fields-url" class="mode-fields">
           <div class="input-group">
@@ -658,7 +658,7 @@
         <!-- Color Palette Quick Chips -->
         <div class="palette-chips">
           <button type="button" class="palette-chip" onclick="applyPalette('#000000', '#FFFFFF')">Monochrome</button>
-          <button type="button" class="palette-chip" onclick="applyPalette('#00d2ff', '#08090d')">Tangent Cyan</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#08090d', '#00d2ff')">Tangent Cyan</button>
           <button type="button" class="palette-chip" onclick="applyPalette('#0f172a', '#f1f5f9')">Midnight</button>
           <button type="button" class="palette-chip" onclick="applyPalette('#059669', '#FFFFFF')">Emerald</button>
         </div>
@@ -680,7 +680,7 @@
         <div class="canvas-wrapper">
           <div id="qrCanvas"></div>
         </div>
-        
+
         <div class="export-group">
           <button type="button" id="downloadPngBtn" class="btn-accent" onclick="downloadPNG()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -690,7 +690,7 @@
             </svg>
             Download PNG
           </button>
-          
+
           <button type="button" id="copyImgBtn" class="btn-accent btn-secondary" onclick="copyQRImage()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -726,8 +726,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       </div>
-      <h3>Vector SVG & High-DPI PNG</h3>
-      <p>Download infinite-resolution vector SVGs for print billboards, packaging, and t-shirts, or high-res PNGs for websites and menus.</p>
+      <h3>High-resolution PNG</h3>
+      <p>Download PNGs at your selected resolution for websites, menus and printed materials.</p>
     </div>
   </div>
 
@@ -742,7 +742,7 @@
   <div class="faq-box">
     <details>
       <summary>Can the QR codes be scanned when printed on physical materials?</summary>
-      <p>Yes. With standard error correction (up to 30%), the generated QR codes scan reliably on business cards, menus, packaging, and outdoor banners.</p>
+      <p>Use sufficient print size and contrast, and test the final download on your intended scanner before sharing.</p>
     </details>
   </div>
   <div class="faq-box">
@@ -754,12 +754,19 @@
 </div>
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
 <script>
   let activeMode = 'url';
   const qrCanvas = document.getElementById('qrCanvas');
   const fgColorInput = document.getElementById('fgColor');
   const bgColorInput = document.getElementById('bgColor');
   const sizeSelect = document.getElementById('sizeSelect');
+  let qrReady=false,qrBusy=false;
+  const qrStatus=document.createElement('p');qrStatus.id='qrStatus';qrStatus.setAttribute('role','status');qrCanvas.parentElement.after(qrStatus);
+  function qrButtons(){['downloadPngBtn','copyImgBtn'].forEach(id=>document.getElementById(id).disabled=!qrReady||qrBusy);}
+  const wifiEscape=value=>value.replace(/[\\;,:"]/g,'\\$&');
+  const cardEscape=value=>value.replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/[;,]/g,'\\$&');
+
 
 
 
@@ -778,39 +785,39 @@
     if (activeMode === 'url') {
       return document.getElementById('urlInput').value.trim() || 'https://runtangent.com/';
     } else if (activeMode === 'wifi') {
-      const ssid = document.getElementById('wifiSsid').value.trim();
-      const pass = document.getElementById('wifiPassword').value.trim();
+      const ssid = document.getElementById('wifiSsid').value;
+      const pass = document.getElementById('wifiPassword').value;
       const enc = document.getElementById('wifiEncryption').value;
-      if (!ssid) return 'WIFI:S:MyNetwork;T:WPA;P:Password;;';
-      return `WIFI:S:${ssid};T:${enc};P:${pass};;`;
+      if (!ssid) throw Error('Enter a Wi-Fi network name.');
+      return `WIFI:S:${wifiEscape(ssid)};T:${enc};P:${enc === 'nopass' ? '' : wifiEscape(pass)};;`;
     } else if (activeMode === 'vcard') {
-      const name = document.getElementById('vcardName').value.trim() || 'Alex Rivera';
+      const name = document.getElementById('vcardName').value.trim();
       const phone = document.getElementById('vcardPhone').value.trim();
       const email = document.getElementById('vcardEmail').value.trim();
-      return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+      if(!name) throw Error('Enter a contact name.');
+      return `BEGIN:VCARD\r\nVERSION:3.0\r\nFN:${cardEscape(name)}\r\nTEL:${cardEscape(phone)}\r\nEMAIL:${cardEscape(email)}\r\nEND:VCARD`;
     } else {
-      return document.getElementById('rawTextInput').value.trim() || 'Tangent Client-Side Utilities';
+      return document.getElementById('rawTextInput').value;
     }
   }
 
   function generateQR() {
-    const payload = getPayload();
-    const size = parseInt(sizeSelect.value) || 600;
-    const fg = fgColorInput.value;
-    const bg = bgColorInput.value;
-
-    document.getElementById('fgHex').textContent = fg.toUpperCase();
-    document.getElementById('bgHex').textContent = bg.toUpperCase();
-
-    qrCanvas.innerHTML = '';
-    new QRCode(qrCanvas, {
-      text: payload,
-      width: size,
-      height: size,
-      colorDark: fg,
-      colorLight: bg,
-      correctLevel: QRCode.CorrectLevel.H
-    });
+    qrReady=false;qrCanvas.replaceChildren();
+    document.getElementById('fgHex').textContent=fgColorInput.value.toUpperCase();document.getElementById('bgHex').textContent=bgColorInput.value.toUpperCase();
+    try {
+      const payload=getPayload(),size=parseInt(sizeSelect.value)||600,fg=fgColorInput.value,bg=bgColorInput.value;
+      if(!payload) throw Error('Enter text to generate a QR code.');
+      if(new TextEncoder().encode(payload).length>1200) throw Error('Use at most 1,200 UTF-8 bytes at this error-correction level.');
+      const luminance=hex=>{const c=hex.slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);return c[0]*0.2126+c[1]*0.7152+c[2]*0.0722;};
+      const dark=luminance(fg),light=luminance(bg);
+      if(light<=dark || (light+0.05)/(dark+0.05)<4.5) throw Error('Use dark modules on a lighter background with stronger contrast.');
+      const holder=document.createElement('div');const qr=new QRCode(holder,{text:payload,width:size,height:size,colorDark:fg,colorLight:bg,correctLevel:QRCode.CorrectLevel.H});
+      const count=qr._oQRCode.getModuleCount(),canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,size,size);ctx.fillStyle=fg;
+      for(let y=0;y<count;y++)for(let x=0;x<count;x++)if(qr._oQRCode.isDark(y,x)){const x1=Math.round((x+4)*size/(count+8)),y1=Math.round((y+4)*size/(count+8));ctx.fillRect(x1,y1,Math.round((x+5)*size/(count+8))-x1,Math.round((y+5)*size/(count+8))-y1);}
+      qrCanvas.append(canvas);qrReady=true;qrStatus.textContent='Ready. Test the downloaded code with your scanner before sharing.';
+    } catch(error){qrCanvas.replaceChildren();qrStatus.textContent=error.message.startsWith('Use')||error.message.startsWith('Enter')?error.message:'Could not generate this code. Shorten the content and try again.';}
+    qrButtons();
   }
 
   function applyPalette(fg, bg) {
@@ -820,6 +827,7 @@
   }
 
   function downloadPNG() {
+    if(!qrReady||qrBusy)return;
     const link = document.createElement('a');
     link.download = `Tangent_QR_${activeMode}.png`;
     const canvas = qrCanvas.querySelector('canvas');
@@ -832,25 +840,11 @@
   }
 
   async function copyQRImage() {
-    const btnText = document.getElementById('copyBtnText');
-    try {
-      const canvas = qrCanvas.querySelector('canvas');
-      if (!canvas) throw new Error("No canvas");
-      canvas.toBlob(async (blob) => {
-        const item = new ClipboardItem({ "image/png": blob });
-        await navigator.clipboard.write([item]);
-        btnText.textContent = "Copied to Clipboard!";
-        setTimeout(() => {
-          btnText.textContent = "Copy to Clipboard";
-        }, 2000);
-      });
-    } catch (err) {
-      console.warn("Direct clipboard copy failed:", err);
-      btnText.textContent = "Right-click QR to copy";
-      setTimeout(() => {
-        btnText.textContent = "Copy to Clipboard";
-      }, 2500);
-    }
+    if(!qrReady||qrBusy)return;qrBusy=true;qrButtons();
+    const snapshot=document.createElement('canvas'),source=qrCanvas.querySelector('canvas');snapshot.width=source.width;snapshot.height=source.height;snapshot.getContext('2d').drawImage(source,0,0);
+    try{const blob=await TangentMedia.encode(snapshot,'image/png');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);qrStatus.textContent='QR image copied.';}
+    catch(error){qrStatus.textContent='Could not copy the image. Download the PNG instead.';}
+    finally{qrBusy=false;qrButtons();}
   }
 
   // Real-time Event Listeners
@@ -868,11 +862,3 @@
   // Initial Generation
   generateQR();
 </script>
-
-
-
-
-
-
-
-

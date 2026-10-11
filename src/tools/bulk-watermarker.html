@@ -1,6 +1,6 @@
-﻿<!-- --- HEAD_META --- -->
+ÃƒÂ¯Ã‚Â»Ã‚Â¿<!-- --- HEAD_META --- -->
 <title>Bulk Image Watermarker & Stamper | Tangent</title>
-<meta name="description" content="Watermark hundreds of images instantly in your browser. 100% private, no cloud uploads, no file size limits. Export directly to ZIP.">
+<meta name="description" content="Watermark hundreds of images instantly in your browser. Local processing with no cloud uploads; batch size depends on browser memory. Export directly to ZIP.">
 <link rel="canonical" href="https://runtangent.com/bulk-watermarker">
 
 <!-- Foundation & Social Meta Tags -->
@@ -46,12 +46,12 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Bulk Image Watermarker</h1>
-  <p>Batch watermark hundreds of images instantly. Securely processed offline with zero cloud uploads or file size limits.</p>
+  <p>Batch watermark hundreds of images instantly. Securely processed offline with zero cloud uploads. Available browser memory limits batch size.</p>
 </div>
 
 <div class="watermark-studio">
   <div class="grid-layout">
-    
+
     <!-- Sidebar Controls -->
     <div class="panel">
       <div class="drop-zone" id="dropZone">
@@ -60,12 +60,12 @@
         <p style="margin:0; font-size:0.85rem; color:var(--text-muted);" id="fileCount">0 files selected</p>
         <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" multiple style="display:none;">
       </div>
-      
+
       <div class="control-group">
         <label>Watermark Text</label>
-        <input type="text" id="wmText" value="© Tangent" placeholder="e.g. © 2026 Your Name">
+        <input type="text" id="wmText" value="Ãƒâ€šÃ‚Â© Tangent" placeholder="e.g. Ãƒâ€šÃ‚Â© 2026 Your Name">
       </div>
-      
+
       <div class="control-group">
         <label>Position</label>
         <select id="wmPosition">
@@ -76,7 +76,7 @@
           <option value="center">Center</option>
         </select>
       </div>
-      
+
       <div class="control-group" style="display:flex; gap:16px;">
         <div style="flex:1;">
           <label>Color</label>
@@ -92,7 +92,7 @@
         <label>Size Scale <span id="scaleVal">5%</span></label>
         <input type="range" id="wmScale" min="0.01" max="0.2" step="0.01" value="0.05">
       </div>
-      
+
       <div style="display:flex; gap:12px;">
         <button id="btnClearWM" class="btn-clear-ghost" style="display:none;" title="Clear Queue">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -116,7 +116,7 @@
         <div id="noPreviewMsg" style="color:var(--text-muted);">Upload images to see preview</div>
       </div>
     </div>
-    
+
   </div>
 </div>
 
@@ -146,9 +146,9 @@
         <p>Your finished images are compressed directly on your device into a ready-to-download ZIP file using JSZip technology.</p>
       </div>
     </div>
-  
+
     <div class="faq-title">Frequently Asked Questions</div>
-  
+
     <div class="faq-box">
       <details>
         <summary>Is there a file size limit for bulk processing?</summary>
@@ -173,28 +173,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
+<script src="assets/media-utils.js"></script>
 <script>
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   const fileCount = document.getElementById('fileCount');
-  
+
   const wmText = document.getElementById('wmText');
   const wmPosition = document.getElementById('wmPosition');
   const wmOpacity = document.getElementById('wmOpacity');
   const wmScale = document.getElementById('wmScale');
   const wmColor = document.getElementById('wmColor');
-  
+
   const opacityVal = document.getElementById('opacityVal');
   const scaleVal = document.getElementById('scaleVal');
-  
+
   const previewCanvas = document.getElementById('previewCanvas');
   const noPreviewMsg = document.getElementById('noPreviewMsg');
   const btnProcess = document.getElementById('btnProcess');
   const btnClearWM = document.getElementById('btnClearWM');
   const statusText = document.getElementById('statusText');
-  
+
   let imageFiles = [];
   let firstImageObj = null;
+  let watermarkOperation = 0, watermarkBusy = false;
 
   dropZone.addEventListener('click', () => fileInput.click());
   dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -220,56 +222,41 @@
   wmPosition.addEventListener('change', renderPreview);
   wmColor.addEventListener('input', renderPreview);
 
-  function handleFiles(files) {
-    imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-    if(imageFiles.length === 0) {
-      alert("Please upload valid image files (JPG, PNG, WebP).");
-      return;
-    }
-    fileCount.textContent = `${imageFiles.length} file${imageFiles.length > 1 ? 's' : ''} loaded`;
-    btnProcess.disabled = false;
-    btnClearWM.style.display = 'block';
-
-  btnClearWM.addEventListener('click', () => {
-    imageFiles = [];
-    firstImageObj = null;
-    fileInput.value = '';
-    fileCount.textContent = '0 files selected';
-    previewCanvas.style.display = 'none';
-    noPreviewMsg.style.display = 'block';
-    btnProcess.disabled = true;
-    btnClearWM.style.display = 'none';
-    statusText.textContent = 'Ready';
-  });
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        firstImageObj = img;
-        noPreviewMsg.style.display = 'none';
-        previewCanvas.style.display = 'block';
-        renderPreview();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(imageFiles[0]);
+  function clearWatermarks() {
+    watermarkOperation++;watermarkBusy=false;
+    imageFiles=[];firstImageObj=null;fileInput.value='';fileCount.textContent='0 files selected';
+    previewCanvas.style.display='none';noPreviewMsg.style.display='block';btnProcess.disabled=true;
+    btnClearWM.style.display='none';statusText.textContent='Ready';
+  }
+  btnClearWM.addEventListener('click',clearWatermarks);
+  async function handleFiles(files) {
+    const selected=Array.from(files);
+    clearWatermarks();const operation=watermarkOperation;
+    imageFiles=selected.filter(file=>file.type.startsWith('image/'));
+    if(!imageFiles.length){statusText.textContent='Choose supported image files.';return;}
+    fileCount.textContent=`${imageFiles.length} files loaded`;btnClearWM.style.display='block';
+    statusText.textContent='Loading preview...';
+    try {
+      const image=await TangentMedia.loadImage(imageFiles[0]);if(operation!==watermarkOperation)return;
+      firstImageObj=image;noPreviewMsg.style.display='none';previewCanvas.style.display='block';
+      renderPreview();btnProcess.disabled=false;statusText.textContent='Ready';
+    } catch(error){if(operation===watermarkOperation)statusText.textContent=error.message;}
   }
 
   function applyWatermarkToCanvas(canvas, img, text, pos, opacity, scale, colorHex) {
     canvas.width = img.width;
     canvas.height = img.height;
     const ctx = canvas.getContext('2d');
-    
+
     ctx.drawImage(img, 0, 0);
-    
+
     // Set opacity globally for both text and shadow
     ctx.globalAlpha = opacity;
-    
+
     const fontSize = Math.max(20, Math.floor(img.width * scale));
     ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
     ctx.fillStyle = colorHex;
-    
+
     ctx.shadowColor = '#000000';
     ctx.shadowBlur = Math.max(4, fontSize * 0.1);
     ctx.shadowOffsetX = 2;
@@ -279,7 +266,7 @@
     const textWidth = metrics.width;
     const textHeight = fontSize;
     const padding = fontSize;
-    
+
     let x = 0, y = 0;
     switch(pos) {
       case 'bottom-right': x = img.width - textWidth - padding; y = img.height - padding; break;
@@ -288,7 +275,7 @@
       case 'top-left': x = padding; y = padding + textHeight; break;
       case 'center': x = (img.width - textWidth) / 2; y = (img.height + textHeight) / 2; break;
     }
-    
+
     ctx.fillText(text, x, y);
     ctx.globalAlpha = 1.0; // Reset just in case
   }
@@ -296,76 +283,35 @@
   function renderPreview() {
     if(!firstImageObj) return;
     applyWatermarkToCanvas(
-      previewCanvas, 
-      firstImageObj, 
-      wmText.value, 
-      wmPosition.value, 
-      parseFloat(wmOpacity.value), 
+      previewCanvas,
+      firstImageObj,
+      wmText.value,
+      wmPosition.value,
+      parseFloat(wmOpacity.value),
       parseFloat(wmScale.value),
       wmColor.value
     );
   }
 
   btnProcess.addEventListener('click', async () => {
-    if(imageFiles.length === 0) return;
-    btnProcess.disabled = true;
-    statusText.textContent = `Processing 0 / ${imageFiles.length}...`;
-    
-    const zip = new JSZip();
-    const hiddenCanvas = document.createElement('canvas');
-    
-    const loadImage = (file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    };
-    
-    const getBlob = (canvas, type) => {
-      return new Promise(resolve => canvas.toBlob(resolve, type, 0.92));
-    };
-
-    for(let i = 0; i < imageFiles.length; i++) {
-      statusText.textContent = `Processing ${i + 1} / ${imageFiles.length}...`;
-      const file = imageFiles[i];
-      const img = await loadImage(file);
-      
-      applyWatermarkToCanvas(
-        hiddenCanvas, img, wmText.value, wmPosition.value, 
-        parseFloat(wmOpacity.value), parseFloat(wmScale.value), wmColor.value
-      );
-      
-      const type = file.type || 'image/jpeg';
-      const ext = file.name.split('.').pop() || 'jpg';
-      const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || `image_${i}`;
-      
-      const blob = await getBlob(hiddenCanvas, type);
-      zip.file(`${baseName}_watermarked.${ext}`, blob);
-    }
-    
-    statusText.textContent = `Zipping files...`;
-    const content = await zip.generateAsync({ type: "blob" });
-    saveAs(content, "watermarked_images.zip");
-    
-    statusText.textContent = `Download complete!`;
-    btnProcess.disabled = false;
-    btnClearWM.style.display = 'block';
-
-  btnClearWM.addEventListener('click', () => {
-    imageFiles = [];
-    firstImageObj = null;
-    fileInput.value = '';
-    fileCount.textContent = '0 files selected';
-    previewCanvas.style.display = 'none';
-    noPreviewMsg.style.display = 'block';
-    btnProcess.disabled = true;
-    btnClearWM.style.display = 'none';
-    statusText.textContent = 'Ready';
-  });
+    if(!imageFiles.length||watermarkBusy||!firstImageObj)return;
+    const operation=watermarkOperation,files=[...imageFiles];
+    const settings={text:wmText.value,position:wmPosition.value,opacity:Number(wmOpacity.value),scale:Number(wmScale.value),color:wmColor.value};
+    watermarkBusy=true;btnProcess.disabled=true;
+    try {
+      const zip=new JSZip(),canvas=document.createElement('canvas'),used=new Set();
+      for(let i=0;i<files.length;i++) {
+        if(operation!==watermarkOperation)return;
+        statusText.textContent=`Processing ${i+1} / ${files.length}...`;
+        const file=files[i],image=await TangentMedia.loadImage(file);if(operation!==watermarkOperation)return;
+        applyWatermarkToCanvas(canvas,image,settings.text,settings.position,settings.opacity,settings.scale,settings.color);
+        const blob=await TangentMedia.encode(canvas,file.type,0.92);if(operation!==watermarkOperation)return;
+        zip.file(TangentMedia.uniqueName(used,file.name,'_watermarked',blob.type),blob);
+      }
+      statusText.textContent='Zipping files...';const content=await zip.generateAsync({type:'blob'});
+      if(operation!==watermarkOperation)return;
+      saveAs(content,'watermarked_images.zip');statusText.textContent=`Download complete: ${files.length} images.`;
+    } catch(error){if(operation===watermarkOperation)statusText.textContent='Could not export: '+error.message;}
+    finally{if(operation===watermarkOperation){watermarkBusy=false;btnProcess.disabled=!imageFiles.length||!firstImageObj;}}
   });
 </script>

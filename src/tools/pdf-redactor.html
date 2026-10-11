@@ -2,7 +2,7 @@
 <title>PDF Redactor & Metadata Scrubber | Tangent</title>
   <meta name="description" content="Permanently black out sensitive text, account numbers, and signatures from PDFs with guaranteed visual burn-in flattening. 100% offline, zero server uploads.">
   <meta name="keywords" content="pdf redactor, redact pdf online, black out text in pdf, remove pdf metadata, sanitize pdf, client side pdf editor, private pdf redactor">
-  
+
   <!-- Canonical & Social Meta -->
   <link rel="canonical" href="https://runtangent.com/pdf-redactor">
   <meta property="og:title" content="PDF Redactor & Metadata Scrubber | Tangent">
@@ -11,7 +11,7 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://runtangent.com/social-banner.png">
   <meta property="og:site_name" content="Tangent">
-  
+
   <!-- Favicon & Icons -->
   <!-- PDF Engine Libraries -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -726,7 +726,7 @@
       line-height: 1.6;
       font-size: 0.95rem;
     }
-    
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -955,7 +955,7 @@
     let totalPages = 1;
     let currentScale = 1.5;
     let redactType = 'blackout'; // 'blackout' or 'stamp'
-    
+
     // Store redactions in unscaled PDF points: pageNum -> array of { id, x, y, w, h, type }
     let redactions = {};
     let selectedBoxId = null;
@@ -1048,14 +1048,17 @@
       }
     });
 
+    let fileOperation=0, renderOperation=0, activeRender=null;
     async function loadPdfFile(file) {
-      pdfFileName = file.name;
-      const arrayBuffer = await file.arrayBuffer();
-      pdfRawBytes = new Uint8Array(arrayBuffer);
-      
+      const operation=++fileOperation;
+
       try {
-        const loadingTask = pdfjsLib.getDocument({ data: pdfRawBytes });
-        pdfDoc = await loadingTask.promise;
+        const bytes=new Uint8Array(await file.arrayBuffer());
+        if(operation!==fileOperation) return;
+        const candidate=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+        const metadata=await candidate.getMetadata().catch(()=>null);
+        if(operation!==fileOperation) {await candidate.destroy();return;}
+        pdfDoc=candidate;pdfRawBytes=bytes;pdfFileName=file.name;
         totalPages = pdfDoc.numPages;
         currentPageNum = 1;
         redactions = {};
@@ -1064,7 +1067,6 @@
         historyIndex = -1;
 
         // Inspect metadata
-        const metadata = await pdfDoc.getMetadata().catch(() => null);
         displayMetadata(metadata);
 
                 workspace.style.display = 'block';
@@ -1085,15 +1087,16 @@
           currentScale = 1.35;
         }
         updatePageSelectOptions();
-        
+
         saveHistoryState('Initial Document Load');
         await renderCurrentPage();
       } catch (err) {
+        if(operation!==fileOperation) return;
         alert('Failed to parse PDF document: ' + err.message);
       }
     }
 
-    
+
     function hasUnsavedRedactions() {
       return Object.values(redactions).some(arr => Array.isArray(arr) && arr.length > 0);
     }
@@ -1112,6 +1115,7 @@
         const confirmed = confirm('Closing this document will discard unsaved redactions. Continue?');
         if (!confirmed) return;
       }
+      fileOperation++;renderOperation++;if(activeRender)activeRender.cancel();
       pdfDoc = null;
       pdfRawBytes = null;
       pdfFileName = 'document.pdf';
@@ -1185,7 +1189,7 @@
     function updateUndoRedoButtons() {
       const canUndo = (historyIndex > 0);
       const canRedo = (historyIndex < historyStack.length - 1);
-      
+
       document.querySelectorAll('.btn-undo, #undo-btn').forEach(btn => {
         btn.disabled = !canUndo;
       });
@@ -1216,35 +1220,21 @@
 
     // --- RENDERING ENGINE ---
     async function renderCurrentPage() {
-      if (!pdfDoc) return;
-      
-      updatePageNavUI();
-      zoomDisplay.textContent = `${Math.round(currentScale * 100)}%`;
-      prevBtn.disabled = (currentPageNum <= 1);
-      nextBtn.disabled = (currentPageNum >= totalPages);
-
-      const page = await pdfDoc.getPage(currentPageNum);
-      const viewport = page.getViewport({ scale: currentScale });
-
-      // Explicitly size canvases and wrapper so mobile zooming expands properly
-      const canvasWrapper = document.getElementById('canvas-wrapper');
-      canvasWrapper.style.width = viewport.width + 'px';
-      canvasWrapper.style.height = viewport.height + 'px';
-
-      pdfCanvas.width = viewport.width;
-      pdfCanvas.height = viewport.height;
-      pdfCanvas.style.width = viewport.width + 'px';
-      pdfCanvas.style.height = viewport.height + 'px';
-
-      drawCanvas.width = viewport.width;
-      drawCanvas.height = viewport.height;
-      drawCanvas.style.width = viewport.width + 'px';
-      drawCanvas.style.height = viewport.height + 'px';
-
-      const renderContext = { canvasContext: pdfCtx, viewport: viewport };
-      await page.render(renderContext).promise;
-
-      redrawPageRedactions();
+      if(!pdfDoc) return;
+      const operation=++renderOperation, source=pdfDoc, number=currentPageNum;
+      if(activeRender) {const previous=activeRender;previous.cancel();try {await previous.promise;} catch(_) {}}
+      try {
+        const page=await source.getPage(number);
+        if(operation!==renderOperation||source!==pdfDoc) return;
+        updatePageNavUI();zoomDisplay.textContent=Math.round(currentScale*100)+'%';
+        prevBtn.disabled=number<=1;nextBtn.disabled=number>=totalPages;
+        const viewport=page.getViewport({scale:currentScale});
+        const wrapper=document.getElementById('canvas-wrapper');wrapper.style.width=viewport.width+'px';wrapper.style.height=viewport.height+'px';
+        for(const canvas of [pdfCanvas,drawCanvas]) {canvas.width=viewport.width;canvas.height=viewport.height;canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';}
+        const task=page.render({canvasContext:pdfCtx,viewport});activeRender=task;
+        try {await task.promise;} finally {if(activeRender===task)activeRender=null;}
+        if(operation===renderOperation&&source===pdfDoc) redrawPageRedactions();
+      } catch(error) {if(error.name!=='RenderingCancelledException'&&operation===renderOperation) alert('Unable to display page: '+error.message);}
     }
 
     // Convert unscaled PDF points to current canvas pixels
@@ -1255,7 +1245,7 @@
     function redrawPageRedactions() {
       drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
       const list = redactions[currentPageNum] || [];
-      
+
       list.forEach(box => {
         const isSelected = (box.id === selectedBoxId);
         drawBox(drawCtx, box, currentScale, isSelected);
@@ -1680,7 +1670,7 @@
       } else if (interactionMode === 'resize') {
         const box = getSelectedBox();
         if (!box || !initialBoxState) return;
-        
+
         const curPdfX = toPdfCoord(pt.x);
         const curPdfY = toPdfCoord(pt.y);
         const startPdfX = toPdfCoord(dragStartX);
@@ -1942,9 +1932,10 @@
     async function exportRedactedPdf() {
       if (!pdfDoc) return;
 
+      const operation=fileOperation, source=pdfDoc, pages=totalPages, boxes=JSON.parse(JSON.stringify(redactions)), name=pdfFileName;
       progressOverlay.style.display = 'flex';
       progressText.textContent = 'Permanently burning in redactions...';
-      
+
       try {
         const { PDFDocument, PDFName } = PDFLib;
         // updateMetadata: false stops pdf-lib from auto-injecting its own producer/dates
@@ -1953,12 +1944,12 @@
         const purgeMeta = document.getElementById('purge-meta-checkbox').checked;
 
         // Render each page with burn-in flattening
-        for (let p = 1; p <= totalPages; p++) {
-          progressSub.textContent = `Processing Page ${p} of ${totalPages}...`;
-          
-          const page = await pdfDoc.getPage(p);
+        for (let p = 1; p <= pages; p++) {
+          progressSub.textContent = `Processing Page ${p} of ${pages}...`;
+
+          const page = await source.getPage(p);
           const viewport = page.getViewport({ scale: exportScale });
-          
+
           // Offscreen render canvas
           const offCanvas = document.createElement('canvas');
           offCanvas.width = viewport.width;
@@ -1969,7 +1960,7 @@
           await page.render({ canvasContext: offCtx, viewport: viewport }).promise;
 
           // 2. Draw burned-in redactions scaled to high DPI
-          const pageBoxes = redactions[p] || [];
+          const pageBoxes = boxes[p] || [];
 
           pageBoxes.forEach(box => {
             // Draw box directly using PDF points scaled to exportScale
@@ -1995,7 +1986,7 @@
         // Apply 100% complete metadata purging (Zero leaks, sterile PDF)
         if (purgeMeta) {
           progressSub.textContent = 'Purging all metadata tags...';
-          
+
           // Strip any default fields
           newPdfDoc.setTitle('');
           newPdfDoc.setAuthor('');
@@ -2020,11 +2011,12 @@
         // updateMetadata: false guarantees pdf-lib will NOT inject its own Producer, CreationDate or ModDate!
         const finalPdfBytes = await newPdfDoc.save({ updateMetadata: false });
 
+        if(operation!==fileOperation) return;
         // Trigger Download
         const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
         const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        const cleanName = pdfFileName.replace(/\.pdf$/i, '');
+        const cleanName = name.replace(/\.pdf$/i, '');
         link.download = `Tangent_Redacted_${cleanName}.pdf`;
         link.href = downloadUrl;
         document.body.appendChild(link);
@@ -2034,6 +2026,7 @@
         URL.revokeObjectURL(downloadUrl);
 
       } catch (err) {
+        if(operation!==fileOperation) return;
         alert('Export failed: ' + err.message);
       } finally {
         progressOverlay.style.display = 'none';

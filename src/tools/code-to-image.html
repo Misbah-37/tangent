@@ -282,12 +282,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 18px;
-    background: var(--bg-surface);
+    background: #252526;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     user-select: none;
   }
 
   .window-controls {
+    color: #94a3b8;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -304,7 +305,7 @@
 
   .window-title {
     font-size: 13px;
-    color: var(--text-muted);
+    color: #94a3b8;
     font-family: ui-monospace, monospace;
     font-weight: 500;
     outline: none;
@@ -352,7 +353,7 @@
     min-width: 420px;
     background: transparent;
     border: none;
-    color: var(--text-main);
+    color: #e2e8f0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 14px;
     line-height: 1.65;
@@ -360,7 +361,7 @@
     white-space: pre;
     word-break: normal;
     overflow-wrap: normal;
-    overflow: hidden; /* No scrollbars inside the code card! Auto-expands height! */
+    overflow-x: auto; overflow-y: hidden; /* Long lines remain accessible. */
     resize: none;
     tab-size: 4;
     box-sizing: border-box;
@@ -428,20 +429,20 @@
     <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
   </div>
   <h1>Code-to-Image Studio.</h1>
-  <p>Turn source code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, macOS window chrome, and syntax themes.</p>
+  <p>Turn source code into high-resolution, presentation-ready screenshots with customizable gradient backdrops, window chrome and plain-text code styling.</p>
 </div>
 
 <div class="studio-layout">
-  
+
   <!-- Left Controls Column -->
   <div class="control-panel">
-    
+
     <div class="panel-section">
       <div class="section-label">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
         Canvas Aesthetics
       </div>
-      
+
       <div class="form-group">
         <div class="field-label">Background Backdrop</div>
         <div class="palette-grid">
@@ -529,7 +530,7 @@
   <div class="canvas-stage-wrapper">
     <div class="snippet-card" id="snippetCard">
       <div class="window-container" id="windowContainer">
-        
+
         <div class="window-header" id="windowHeader">
           <div class="window-controls" id="windowControls">
             <span class="dot dot-red"></span>
@@ -543,8 +544,8 @@
         <div class="code-body-wrapper">
           <div class="line-numbers" id="lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
           <textarea id="codeEditor" class="code-input-area" spellcheck="false">// Async streaming telemetry parser
-pub async fn process_metrics<S>(mut stream: S) -> Result<Summary, Error> 
-where 
+pub async fn process_metrics<S>(mut stream: S) -> Result<Summary, Error>
+where
     S: Stream<Item = Bytes> + Unpin,
 {
     let mut total_packets = 0;
@@ -563,6 +564,8 @@ where
 </div>
 
 <!-- Hidden Canvas used for high-DPI rasterization -->
+<p style="font-size:12px;color:var(--text-muted);">Scroll long code lines horizontally. Exports include each complete line; the selected window width is a minimum. PNGs use 2x resolution, up to 25 million pixels.</p>
+<div id="codeExportStatus" role="status" style="font-size:13px;margin:12px 0;"></div>
 <canvas id="renderCanvas"></canvas>
 
 <!-- Educational & Security Architecture Section -->
@@ -614,6 +617,7 @@ where
 </div>
 
 <!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
 <script>
   const snippetCard = document.getElementById('snippetCard');
   const windowContainer = document.getElementById('windowContainer');
@@ -739,102 +743,55 @@ where
     }
   });
 
-  // High-Resolution 2x Rasterizer using Canvas
+  // Render native Canvas primitives, without SVG foreignObject or markup interpolation.
   function generateCanvasBlob() {
-    return new Promise((resolve) => {
-      const scale = 2; // 2x Retina
-      const cardRect = snippetCard.getBoundingClientRect();
-      const width = Math.round(cardRect.width * scale);
-      const height = Math.round(cardRect.height * scale);
-
-      renderCanvas.width = width;
-      renderCanvas.height = height;
-      const ctx = renderCanvas.getContext('2d');
-      ctx.scale(scale, scale);
-
-      const svgXml = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${cardRect.width}" height="${cardRect.height}">
-          <foreignObject width="100%" height="100%">
-            <div xmlns="http://www.w3.org/1999/xhtml">
-              <style>
-                .snippet-card { border-radius: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: inline-flex; justify-content: center; }
-                .window-container { background: #1e1e1e; border-radius: 10px; box-shadow: 0 20px 68px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; width: ${windowContainer.offsetWidth}px; }
-                .window-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--bg-surface); border-bottom: 1px solid rgba(255,255,255,0.06); }
-                .window-controls { display: flex; align-items: center; gap: 8px; }
-                .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-                .dot-red { background: #ff5f56; }
-                .dot-yellow { background: #ffbd2e; }
-                .dot-green { background: #27c93f; }
-                .window-title { font-size: 13px; color: var(--text-muted); font-family: ui-monospace, monospace; }
-                .code-body-wrapper { display: flex; padding: 22px 24px; background: #1e1e1e; }
-                .line-numbers { padding-right: 18px; margin-right: 14px; border-right: 1px solid rgba(255,255,255,0.08); color: #52525b; font-size: ${fontSizeSlider.value}px; line-height: 1.65; text-align: right; }
-                pre { margin: 0; color: var(--text-main); font-size: ${fontSizeSlider.value}px; line-height: 1.65; white-space: pre; }</style>
-              <div class="snippet-card" style="padding: ${paddingSlider.value}px; background: ${activeGradient === 'transparent' ? 'transparent' : activeGradient};">
-                <div class="window-container">
-                  ${windowHeader.style.display !== 'none' ? `
-                  <div class="window-header">
-                    <div class="window-controls">
-                      <span class="dot dot-red"></span>
-                      <span class="dot dot-yellow"></span>
-                      <span class="dot dot-green"></span>
-                    </div>
-                    <div class="window-title">${windowTitleDisplay.textContent}</div>
-                    <div style="width: 52px;"></div>
-                  </div>` : ''}
-                  <div class="code-body-wrapper">
-                    ${lineNumbersToggle.checked ? `<div class="line-numbers">${lineNumbers.innerHTML}</div>` : ''}
-                    <pre><code>${codeEditor.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </foreignObject>
-        </svg>
-      `;
-
-      const img = new Image();
-      const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
-
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        renderCanvas.toBlob(blob => {
-          resolve(blob);
-        }, 'image/png');
-      };
-      img.src = url;
-    });
-  }
-
-  // Download PNG Action
-  downloadPngBtn.addEventListener('click', async () => {
-    downloadPngBtn.disabled = true;
-    const blob = await generateCanvasBlob();
-    const link = document.createElement('a');
-    link.download = `${fileNameInput.value || 'code-snippet'}.png`;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    downloadPngBtn.disabled = false;
-  });
-
-  // Copy PNG to Clipboard Action
-  copyPngBtn.addEventListener('click', async () => {
-    try {
-      copyBtnText.textContent = "Rendering...";
-      const blob = await generateCanvasBlob();
-      const item = new ClipboardItem({ 'image/png': blob });
-      await navigator.clipboard.write([item]);
-      copyBtnText.textContent = "Copied to Clipboard!";
-      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2000);
-    } catch (err) {
-      console.warn("Clipboard write failed:", err);
-      copyBtnText.textContent = "Right-click download instead";
-      setTimeout(() => { copyBtnText.textContent = "Copy Image to Clipboard"; }, 2500);
+    const text=codeEditor.value,title=windowTitleDisplay.textContent,mode=chromeSelect.value;
+    const fontSize=Number(fontSizeSlider.value),lineHeight=fontSize*1.65,padding=Number(paddingSlider.value),numbers=lineNumbersToggle.checked;
+    const editorStyle=getComputedStyle(codeEditor),headerStyle=getComputedStyle(windowHeader),titleStyle=getComputedStyle(windowTitleDisplay);
+    const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    ctx.font=`${fontSize}px ${editorStyle.fontFamily}`;
+    const lines=text.replace(/\r\n?/g,'\n').split('\n').map(line=>{let column=0;return [...line].map(character=>{if(character==='\t'){const count=4-column%4;column+=count;return ' '.repeat(count);}column++;return character;}).join('');});
+    const gutter=numbers?ctx.measureText(String(lines.length)).width+33:0;
+    let windowWidth=Math.max(windowContainer.getBoundingClientRect().width,48+gutter+Math.max(0,...lines.map(line=>ctx.measureText(line).width)));
+    ctx.font=`13px ${titleStyle.fontFamily}`;
+    if(mode!=='none')windowWidth=Math.max(windowWidth,ctx.measureText(title).width+200);
+    const headerHeight=mode==='none'?0:Math.max(42,windowHeader.getBoundingClientRect().height);
+    const windowHeight=headerHeight+44+lines.length*lineHeight,width=Math.ceil(windowWidth+padding*2),height=Math.ceil(windowHeight+padding*2);
+    TangentMedia.checkSize(width*2,height*2);canvas.width=width*2;canvas.height=height*2;ctx.scale(2,2);ctx.beginPath();ctx.roundRect(0,0,width,height,16);ctx.clip();
+    if(activeGradient!=='transparent'){
+      if(activeGradient.startsWith('linear-gradient')){const delta=(width+height)/4,gradient=ctx.createLinearGradient(width/2-delta,height/2-delta,width/2+delta,height/2+delta);const colors=activeGradient.match(/#[0-9a-f]{6}/gi);colors.forEach((color,index)=>gradient.addColorStop(index/(colors.length-1),color));ctx.fillStyle=gradient;}
+      else ctx.fillStyle=activeGradient;
+      ctx.fillRect(0,0,width,height);
     }
-  });
-
-  // Initialize
-  syncEditorDimensions();
-  window.addEventListener('load', syncEditorDimensions);
+    ctx.save();ctx.shadowColor='rgba(0,0,0,0.55)';ctx.shadowBlur=34;ctx.shadowOffsetY=10;ctx.fillStyle='#1e1e1e';ctx.beginPath();ctx.roundRect(padding,padding,windowWidth,windowHeight,10);ctx.fill();ctx.restore();
+    ctx.save();ctx.beginPath();ctx.roundRect(padding,padding,windowWidth,windowHeight,10);ctx.clip();
+    if(headerHeight){
+      ctx.fillStyle=headerStyle.backgroundColor;ctx.fillRect(padding,padding,windowWidth,headerHeight);
+      if(mode==='mac'){['#ff5f56','#ffbd2e','#27c93f'].forEach((color,index)=>{ctx.fillStyle=color;ctx.beginPath();ctx.arc(padding+24+index*20,padding+headerHeight/2,6,0,Math.PI*2);ctx.fill();});}
+      else if(mode==='windows'){ctx.fillStyle=getComputedStyle(windowControls).color;ctx.font='13px monospace';ctx.textBaseline='middle';ctx.fillText('\u2014 \u25a1 \u00d7',padding+18,padding+headerHeight/2);}
+      ctx.fillStyle=titleStyle.color;ctx.font=`500 13px ${titleStyle.fontFamily}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(title,padding+windowWidth/2,padding+headerHeight/2);
+      ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.beginPath();ctx.moveTo(padding,padding+headerHeight);ctx.lineTo(padding+windowWidth,padding+headerHeight);ctx.stroke();
+    }
+    ctx.font=`${fontSize}px ${editorStyle.fontFamily}`;ctx.textBaseline='top';
+    lines.forEach((line,index)=>{const y=padding+headerHeight+22+index*lineHeight;
+      if(numbers){ctx.fillStyle='#52525b';ctx.textAlign='right';ctx.fillText(String(index+1),padding+24+gutter-33,y);}
+      ctx.fillStyle=editorStyle.color;ctx.textAlign='left';ctx.fillText(line,padding+24+gutter,y);
+    });
+    if(numbers){ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.beginPath();ctx.moveTo(padding+24+gutter-14,padding+headerHeight+22);ctx.lineTo(padding+24+gutter-14,padding+windowHeight-22);ctx.stroke();}
+    ctx.restore();return TangentMedia.encode(canvas,'image/png');
+  }
+  let exportBusy=false;
+  async function exportCode(copy){
+    if(exportBusy)return;
+    const status=document.getElementById('codeExportStatus'),name=fileNameInput.value||'code-snippet';
+    exportBusy=true;downloadPngBtn.disabled=true;copyPngBtn.disabled=true;status.textContent='Rendering PNG...';
+    try{
+      const blob=await generateCanvasBlob();
+      if(copy){if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw new Error('Clipboard image copying is unavailable. Use Download PNG.');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);status.textContent='Image copied to clipboard.';}
+      else{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name.replace(/\.png$/i,'')+'.png';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);status.textContent='PNG downloaded.';}
+    }catch(error){status.textContent='Could not export image: '+error.message;}
+    finally{exportBusy=false;downloadPngBtn.disabled=false;copyPngBtn.disabled=false;}
+  }
+  downloadPngBtn.addEventListener('click',()=>exportCode(false));copyPngBtn.addEventListener('click',()=>exportCode(true));
+  syncEditorDimensions();window.addEventListener('load',syncEditorDimensions);
 </script>

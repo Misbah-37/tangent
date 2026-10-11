@@ -50,21 +50,21 @@
 <!-- --- TOOL_STYLES --- -->
 <style>
 :root {
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
     --success-bg: rgba(16, 185, 129, 0.12);
     --success-border: rgba(16, 185, 129, 0.35);
-    
-    
-    
+
+
+
   }
 
   body {
@@ -491,13 +491,13 @@
 </div>
 
 <div class="app-container">
-  
+
   <div class="tool-panel">
-    
+
     <!-- Setup Screen -->
     <div id="setup-screen">
       <label style="display:block; font-size:0.92rem; font-weight:600; color: var(--text-main); margin-bottom:14px;">Select Difficulty Mode</label>
-      
+
       <div class="diff-grid">
         <div class="diff-card active" onclick="selectDifficulty('easy')" id="card-easy">
           <div class="diff-card-title">Easy</div>
@@ -527,7 +527,7 @@
 
     <!-- Active Test Screen -->
     <div id="test-screen" style="display:none;">
-      
+
       <!-- Live HUD -->
       <div class="typing-hud">
         <div class="hud-stat">
@@ -566,7 +566,7 @@
       <!-- Results Card -->
       <div class="results-card" id="resultsCard">
         <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Benchmark Results</h3>
-        
+
         <div class="results-metrics">
           <div class="metric-box">
             <div class="metric-val" id="finalWpm">0</div>
@@ -629,7 +629,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
       </div>
       <h3>Private In-Browser Analytics</h3>
-      <p>Detailed session burst graphs and speed percentiles are computed and stored in your browser's private localStorage with zero user tracking.</p>
+      <p>Session speed graphs stay in memory. Only your best WPM for each difficulty is saved in this browser when storage is available. No percentiles or session text are stored.</p>
     </div>
   </div>
 
@@ -844,7 +844,7 @@
 
   function getCurrentWpm() {
     if (!startTime || totalCharactersTyped === 0) return 0;
-    const elapsedMinutes = (new Date().getTime() - startTime) / 60000;
+    const elapsedMinutes = Math.max(1000,new Date().getTime() - startTime) / 60000;
     return Math.max(0, Math.round((totalCharactersTyped / 5) / elapsedMinutes));
   }
 
@@ -937,6 +937,7 @@
   }
 
   function finishTest() {
+    if(!isTestActive)return;isTestActive=false;
       if(window.TangentToast) window.TangentToast.show("Test Completed!");
     if (wpmTimer) {
       clearInterval(wpmTimer);
@@ -984,11 +985,11 @@
     }
 
     const storageKey = `tangent_typing_best_${currentDifficulty}`;
-    const previousBest = parseInt(localStorage.getItem(storageKey) || "0", 10);
+    let previousBest=0,storageAvailable=true;try{const stored=Number(localStorage.getItem(storageKey)||0);previousBest=Number.isFinite(stored)&&stored>=0?stored:0;}catch(e){storageAvailable=false;}
     let isNewBest = false;
 
     if (wpm > previousBest) {
-      localStorage.setItem(storageKey, wpm);
+      try{localStorage.setItem(storageKey,wpm);}catch(e){storageAvailable=false;}
       isNewBest = true;
     }
 
@@ -999,7 +1000,7 @@
           <circle cx="12" cy="8" r="7"></circle>
           <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
         </svg>
-        ${isNewBest ? 'New Personal Record' : 'Personal Best'}: ${bestScore} WPM (${currentDifficulty.toUpperCase()})
+        ${isNewBest ? 'New Personal Record' : 'Personal Best'}: ${bestScore} WPM (${currentDifficulty.toUpperCase()})${storageAvailable?'':' - saving unavailable'}
       </div>
     `;
 
@@ -1049,6 +1050,9 @@
     render();
   }
 
+  let composing=false,committedText=null;
+  hiddenInput.addEventListener('compositionstart',()=>{composing=true;});
+  hiddenInput.addEventListener('compositionend',e=>{composing=false;if(!isTestActive)return;committedText=e.data;for(const ch of e.data||'')processChar(ch);setTimeout(()=>{committedText=null;},0);hiddenInput.value='';});
   hiddenInput.addEventListener("keydown", (e) => {
     if (!isTestActive) return;
     if (e.key === "Enter") {
@@ -1069,21 +1073,15 @@
       return;
     }
 
-    const insertingTypes = ["insertText", "insertCompositionText", "insertReplacementText"];
+    const insertingTypes = ["insertText", "insertCompositionText", "insertReplacementText", "insertFromComposition"];
     if (!insertingTypes.includes(e.inputType)) return;
 
     let data = e.data;
     if (!data) return;
 
-    if (data.length > 1) {
-      if (lastComposition && data.startsWith(lastComposition)) {
-        data = data.slice(lastComposition.length);
-      } else {
-        data = data.endsWith(" ") ? " " : "";
-        if (!data) return;
-      }
-    }
-
+    if(e.isComposing||composing)return;
+    if(committedText===e.data){committedText=null;return;}
+    lastComposition='';
     for (const ch of data) {
       processChar(ch);
     }
@@ -1121,7 +1119,7 @@
     totalCharactersTyped = 0;
     errors = 0;
     isTestActive = true;
-    lastComposition = "";
+    lastComposition = "";composing=false;committedText=null;
     if (wpmTimer) {
       clearInterval(wpmTimer);
       wpmTimer = null;

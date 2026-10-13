@@ -1,5 +1,0 @@
-ID	Date	Description	Amount	Quantity	Note
-00123	2026-10-01	Sample income	100	2	"Embedded	tab"
-00234	2026-10-02	Sample expense	-20	1	Unicode Ω
-00345	2026-10-03	Missing amount		0	"line one
-line two"

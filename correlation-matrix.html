@@ -15,7 +15,7 @@
 
 <link rel="canonical" href="https://runtangent.com/correlation-matrix.html" />
 <title>Correlation Matrix Studio | Tangent</title>
-<meta name="description" content="Discover variable relationships with instant Pearson correlation heatmaps and basic statistical testing. 100% private.">
+<meta name="description" content="Discover variable relationships with Pearson and Spearman correlation heatmaps and paired observation counts. 100% private.">
 <link rel="canonical" href="https://runtangent.com/correlation-matrix">
 <!-- Structured Data for Correlation Matrix Studio -->
 <script type="application/ld+json">
@@ -665,7 +665,7 @@
     <span>100% Client-Side Processing</span>
   </div>
   <h1>Correlation Matrix Studio</h1>
-  <p>Discover variable relationships with instant Pearson correlation heatmaps and basic statistical testing.</p>
+  <p>Discover variable relationships with Pearson and Spearman correlation heatmaps and paired observation counts.</p>
 </div>
 
 <div class="matrix-workspace">
@@ -696,6 +696,9 @@
       <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1); font-size: 0.85rem; color: var(--text-muted);">
         Select variables to include in the matrix:
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px"><button type="button" onclick="selectAllVariables(true)">Select all</button><button type="button" onclick="selectAllVariables(false)">Select none</button><span id="selectionCount" role="status"></span></div>
+      <label style="display:block;padding:0 16px 12px">Method <select id="correlationMethod" onchange="setCorrelationMethod(this.value)"><option value="pearson">Pearson (linear)</option><option value="spearman">Spearman (rank)</option></select></label>
+      <p id="methodNotice" style="padding:0 16px;color:var(--text-muted);font-size:.85rem" role="status">Pearson measures linear relationships. Missing values are excluded pairwise; coefficients are not significance tests.</p>
       <div id="varList" style="padding: 8px;"></div>
     </div>
   </div>
@@ -703,10 +706,11 @@
   <!-- Right Panel: Heatmap -->
   <div class="panel" style="position: relative;">
     <div class="panel-header">
-      <span>Pearson Correlation Matrix</span>
+      <span id="matrixHeading">Pearson Correlation Matrix</span>
+      <button type="button" id="btnMatrixCsv" style="display:none" onclick="exportMatrixCsv()">Export matrix CSV</button>
       <button class="btn-primary" id="btnDownload" style="display: none; padding: 4px 10px; font-size: 0.8rem;" onclick="downloadHeatmap()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Download
+        Download image
       </button>
     </div>
     <div class="panel-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-base);" id="heatmapContainer">
@@ -725,8 +729,8 @@
       <div class="feature-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       </div>
-      <h3>Pearson's r</h3>
-      <p>The tool calculates the Pearson correlation coefficient between every pair of numerical variables. It measures the linear correlation, outputting a value between -1 and 1.</p>
+      <h3>Pearson and Spearman</h3>
+      <p>Choose Pearson for linear relationships or Spearman for monotonic rank relationships. Spearman uses average ranks for ties after excluding missing pairs. Both coefficients range from -1 to 1; no significance testing is performed.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">
@@ -753,7 +757,7 @@
         <span class="faq-toggle-icon">+</span>
       </button>
       <div class="faq-answer">
-        <p>A correlation of exactly 0 means there is no linear relationship between the two variables. Changing one variable does not reliably predict any change in the other variable. On the matrix, these are colored as dark, neutral cells.</p>
+        <p>A correlation of exactly 0 means there is no linear relationship between the two variables. Changing one variable does not reliably predict any change in the other variable. On the matrix, these use the neutral midpoint of the color scale.</p>
       </div>
     </div>
     <div class="faq-item">
@@ -762,7 +766,7 @@
         <span class="faq-toggle-icon">+</span>
       </button>
       <div class="faq-answer">
-        <p>No, Pearson correlation requires numerical inputs. When you upload a dataset, this tool automatically scans the first 100 rows to determine data types. Any column containing text or dates is automatically excluded from the matrix options.</p>
+        <p>No, Pearson correlation requires numerical inputs. When you upload a dataset, this tool automatically scans the first 500 rows to determine data types. Columns must have at least 80% parseable numeric values among nonblank sampled cells. Invalid numeric cells are excluded pairwise.</p>
       </div>
     </div>
     <div class="faq-item">
@@ -869,6 +873,9 @@
   let rawData = [];
   let numericalCols = [];
   let selectedCols = [];
+  let correlationMethod="pearson";
+  function currentCorrelation(a,b){return TangentData[correlationMethod](rawData,a,b);}
+  function setCorrelationMethod(method){if(!["pearson","spearman"].includes(method))return;correlationMethod=method;generateMatrix();}
 
   // Dropzone Setup
   const dropzone = document.getElementById('dropzone');
@@ -925,12 +932,13 @@
     const operation = ++fileOperation;
     file.text().then(text => {
       if(operation !== fileOperation) return;
-      const parsed = TangentData.parseCsv(text); processData(parsed.data);
+      let parsed;try{parsed=TangentData.parseCsv(text);}catch(error){if(error.message.includes('column names cannot be empty')&&text.replace(/^\uFEFF/,'').startsWith(','))throw new Error('The first CSV header is blank. This may be an exported correlation matrix. Upload raw observations with named columns; this tool recalculates correlations, not existing matrix values.');throw error;}processData(parsed.data);
     }).catch(error => {if(operation === fileOperation) {resetStudio(); alert(error.message);}});
   }
 
         function processData(data) {
     if (data.length === 0) return;
+    const matrixWarning=looksLikeMatrix(data);
     rawData = data;
 
     const keys = Object.keys(data[0]);
@@ -954,7 +962,8 @@
     });
     let notice=document.getElementById('correlationNotice');
     if(!notice) {notice=document.createElement('p');notice.id='correlationNotice';notice.setAttribute('role','status');document.getElementById('varsArea').prepend(notice);}
-    notice.textContent=rejected.toLocaleString()+' invalid numeric cells excluded; correlations use finite paired observations. Columns below 80% numeric in the first 500 rows are omitted.';
+    notice.style.cssText='padding:12px 16px;margin:0;color:var(--text-muted);font-size:.85rem;line-height:1.5';
+    notice.textContent=(matrixWarning?'Warning: This resembles a precomputed correlation matrix. Results below are correlations of its coefficients, not the original observations. Upload raw observations instead. ':'')+rejected.toLocaleString()+' invalid numeric cells excluded; correlations use finite paired observations. Columns below 80% numeric in the first 500 rows are omitted.';
 
     if (numericalCols.length < 2) {
       alert("Dataset must contain at least 2 numerical columns to calculate correlation.");
@@ -1008,25 +1017,42 @@
     return TangentData.pearson(rawData,colX,colY).r;
   }
 
-  // Color Mapping: -1 (Red) to 0 (Dark) to +1 (Green)
   function getColorForCorrelation(r) {
-    if (r < 0) {
-      const intensity = Math.abs(r);
-      const r_c = Math.round(21 + (239 - 21) * intensity);
-      const g_c = Math.round(24 + (68 - 24) * intensity);
-      const b_c = Math.round(33 + (68 - 33) * intensity);
-      return `rgb(${r_c}, ${g_c}, ${b_c})`;
-    } else {
-      const intensity = r;
-      const r_c = Math.round(21 + (16 - 21) * intensity);
-      const g_c = Math.round(24 + (185 - 24) * intensity);
-      const b_c = Math.round(33 + (129 - 33) * intensity);
-      return `rgb(${r_c}, ${g_c}, ${b_c})`;
-    }
+    const light=document.documentElement.getAttribute('data-theme')==='light';
+    const neutral=light?[248,250,252]:[21,24,33];
+    const endpoint=r<0?[239,68,68]:[16,185,129];
+    return `rgb(${neutral.map((v,i)=>Math.round(v+(endpoint[i]-v)*Math.min(1,Math.abs(r)))).join(', ')})`;
+  }
+  function getCorrelationTextColor(background) {
+    const rgb=background.match(/\d+/g).map(Number);
+    const linear=rgb.map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;});
+    const luminance=linear[0]*0.2126+linear[1]*0.7152+linear[2]*0.0722;
+    return (luminance+0.05)/0.05 >= 1.05/(luminance+0.05)?'#000000':'#ffffff';
+  }
+
+  function looksLikeMatrix(data){
+    if(!data.length)return false;const keys=Object.keys(data[0]);
+    const numeric=keys.filter(k=>data.every(row=>TangentData.parseNumber(row[k])!==null));
+    if(numeric.length<2||numeric.length!==data.length)return false;
+    const labels=keys.filter(k=>!numeric.includes(k));
+    if(labels.length!==1||!data.every((row,i)=>String(row[labels[0]])===numeric[i]))return false;
+    return data.every((row,i)=>numeric.every((k,j)=>{const v=TangentData.parseNumber(row[k]);return Math.abs(v)<=1.000001&&Math.abs(v-TangentData.parseNumber(data[j][numeric[i]]))<0.00001&&(i!==j||Math.abs(v-1)<0.00001);}));
+  }
+  function selectAllVariables(all){selectedCols=all?[...numericalCols]:[];document.querySelectorAll('#varList input').forEach(cb=>cb.checked=all);generateMatrix();}
+  function exportMatrixCsv(){
+    if(selectedCols.length<2)return;
+    const rows=[['Variable',...selectedCols],...selectedCols.map(a=>[a,...selectedCols.map(b=>{const r=currentCorrelation(a,b).r;return r===null?'':r.toFixed(2);})])];
+    const blob=new Blob([rows.map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`tangent_${correlationMethod}_correlation_matrix.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
 
   function generateMatrix() {
     const container = document.getElementById('heatmapContainer');
+    const methodLabel=correlationMethod==='spearman'?'Spearman':'Pearson';
+    document.getElementById('matrixHeading').textContent=methodLabel+' Correlation Matrix';
+    document.getElementById('methodNotice').textContent=(correlationMethod==='spearman'?'Spearman measures monotonic relationships using average ranks for ties.':'Pearson measures linear relationships.')+' Missing values are excluded pairwise before calculation; coefficients are not significance tests.';
+    document.getElementById('selectionCount').textContent=`${selectedCols.length} of ${numericalCols.length} selected`;
+    document.getElementById('btnMatrixCsv').style.display=selectedCols.length>=2?'inline-flex':'none';
     if (selectedCols.length < 2) {
       container.innerHTML = `<div style="color: var(--text-muted);">Please select at least 2 variables.</div>`;
       document.getElementById('btnDownload').style.display = 'none';
@@ -1044,10 +1070,10 @@
     selectedCols.forEach((rowCol, i) => {
       html += `<tr><th title="${escapeHtml(rowCol)}" style="text-align: right; padding-right: 12px;">${escapeHtml(rowCol.substring(0,12))}${rowCol.length>12?'...':''}</th>`;
       selectedCols.forEach((colCol, j) => {
-        const result = TangentData.pearson(rawData,rowCol,colCol);
+        const result = currentCorrelation(rowCol,colCol);
         const r=result.r, val=r === null ? 'N/A' : r.toFixed(2);
         const color=r === null ? 'transparent' : getColorForCorrelation(r);
-        html += `<td style="background: ${color}; color: var(--text-main); font-weight: ${r !== null && Math.abs(r)>0.5?'bold':'normal'};" title="${escapeHtml(rowCol)} vs ${escapeHtml(colCol)}; ${result.n.toLocaleString()} paired rows; r = ${val}">${val}</td>`;
+        html += `<td style="background: ${color}; color: ${r === null ? 'var(--text-main)' : getCorrelationTextColor(color)}; font-weight: ${r !== null && Math.abs(r)>0.5?'bold':'normal'};" title="${escapeHtml(rowCol)} vs ${escapeHtml(colCol)}; ${result.n.toLocaleString()} paired rows; ${correlationMethod==='spearman'?'rho':'r'} = ${val}">${val}</td>`;
       });
       html += `</tr>`;
     });
@@ -1063,11 +1089,15 @@
     `;
 
     container.innerHTML = html;
+    container.querySelector('.legend-bar').style.background=`linear-gradient(90deg, ${getColorForCorrelation(-1)}, ${getColorForCorrelation(0)}, ${getColorForCorrelation(1)})`;
   }
+
+  new MutationObserver(()=>{if(selectedCols.length>=2)generateMatrix();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
   function resetStudio() {
     fileOperation++;
     rawData = []; numericalCols = []; selectedCols = [];
+    document.getElementById('btnMatrixCsv').style.display='none';
     document.getElementById('setupArea').style.display = 'block';
     document.getElementById('varsArea').style.display = 'none';
     document.getElementById('btnClear').style.display = 'none';
@@ -1091,23 +1121,21 @@
     `;
   }
 
-  function downloadHeatmap() {
-    const container = document.getElementById('heatmapContainer');
-
-    // Disable any scrolling during capture so the full matrix renders
-    const originalOverflow = container.style.overflow;
-    container.style.overflow = 'visible';
-
-    html2canvas(container, {
-      backgroundColor: '#08090d',
-      scale: 2 // High res
-    }).then(canvas => {
-      container.style.overflow = originalOverflow;
-      const link = document.createElement('a');
-      link.download = 'tangent_correlation_matrix.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
+  let imageExportBusy=false;
+  async function downloadHeatmap() {
+    if(imageExportBusy||selectedCols.length<2)return;
+    imageExportBusy=true;const button=document.getElementById('btnDownload');button.disabled=true;
+    const container=document.getElementById('heatmapContainer');
+    const width=Math.ceil(container.querySelector('table').scrollWidth+48);
+    try{
+      if(width*container.scrollHeight*4>32000000)throw new Error('Matrix image is too large. Select fewer variables or export CSV.');
+      const canvas=await html2canvas(container,{backgroundColor:getComputedStyle(container).backgroundColor,scale:2,width:Math.max(width,container.clientWidth),onclone:doc=>{
+        const clone=doc.getElementById('heatmapContainer');clone.style.width=Math.max(width,container.clientWidth)+'px';clone.style.overflow='visible';
+        const inner=clone.querySelector('.heatmap-container');inner.style.overflow='visible';inner.style.width='100%';inner.style.maxWidth='none';
+      }});
+      const link=document.createElement('a');link.download=`tangent_${correlationMethod}_correlation_matrix.png`;link.href=canvas.toDataURL('image/png');link.click();
+    }catch(error){alert('Image export failed: '+error.message);}
+    finally{imageExportBusy=false;button.disabled=false;}
   }
 </script>
 </body>

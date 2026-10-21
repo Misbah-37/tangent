@@ -1,0 +1,5 @@
+const actions=document.getElementById('file-actions');for(const [id,label] of [['downloadMdBtn','Download MD'],['downloadHtmlBtn','Export HTML'],['printPdfBtn','Print / PDF']]){const button=document.getElementById(id);button.className=id==='printPdfBtn'?'primary-action':'';button.textContent=label;actions.append(button)}
+const groups=[...document.querySelectorAll('.control-bar>.toolbar-group')];const copy=document.getElementById('copyMarkdownBtn');document.querySelector('.studio-status-bar').append(copy);groups[1].remove();document.getElementById('markdownInput').setAttribute('aria-label','Markdown source');
+document.querySelector('[data-workspace-return]').onclick=e=>{e.preventDefault();const w=document.getElementById('workspace');w.focus({preventScroll:true});w.scrollIntoView({behavior:'smooth'})};
+
+const draftControls=document.getElementById('saveDraft')?.closest('div');if(draftControls){draftControls.classList.add('draft-controls');document.querySelector('.control-bar').append(draftControls);}

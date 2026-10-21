@@ -1,14 +1,42 @@
-Copyright (c) 2026 Tangent. All Rights Reserved.
+RunTangent License - Free Use with Commercial Clone Restriction
+Copyright (c) 2026 RunTangent. All rights reserved except as granted below.
 
-1. USE OF THE HOSTED WEBSITE (END-USERS)
-Permission is freely granted to any person to use the hosted version of the Tangent suite (the website) for any purpose, including personal, educational, professional, and commercial work tasks. 
+1. FREE USE, INCLUDING COMMERCIAL WORK
+Permission is granted, without charge, to use RunTangent for personal,
+educational, nonprofit, professional and commercial purposes. This includes
+business operations and paid client work. You may use, sell and distribute your
+own documents, images, recordings and other outputs produced with the tools.
+This license does not claim ownership of your inputs or outputs or grant rights
+to third-party material included in them.
 
-2. RESTRICTIONS ON THE SOURCE CODE (DEVELOPERS)
-The source code of this project is proprietary. You may view, download, and modify the source code strictly for personal, local, or educational purposes. 
+2. SOURCE USE AND MODIFICATION
+You may view, copy, run, self-host and modify this software, including for
+internal business use and paid client work, subject to section 3. You may share
+unmodified or modified copies without charge, retaining this license and
+applicable copyright and attribution notices. Recipients receive the same terms.
 
-You may NOT use the source code, or any modified version of it, for commercial or monetization purposes. This strictly prohibits:
-- Selling the software, the source code, or any derivative works.
-- Hosting a public instance of the software that generates revenue (e.g., through advertisements, paywalls, or subscriptions).
-- Packaging the software into a paid application, commercial product, or SaaS platform.
+3. COMMERCIAL CLONE RESTRICTION
+Without separate written permission from the copyright holder, you may not sell,
+license for a fee, or otherwise monetize a competing application or service that
+copies or incorporates this software or a substantial portion of its code or
+project-owned assets, whether modified, rebranded, hosted or packaged.
+This includes paid downloads, subscriptions, paywalls, advertising-supported
+clones and bundled offerings that charge for access to the copied tools.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Using RunTangent to perform paid work or generate deliverables is permitted;
+selling access to a competing copy of its tools is not. This restriction applies
+to copied or derived material, not independently developed software merely
+because it provides similar functionality.
+
+4. BRANDING AND THIRD-PARTY MATERIAL
+This license does not grant rights to use the RunTangent name or marks to imply
+endorsement or official affiliation. Third-party libraries, fonts and other
+components remain governed by their respective licenses and notices. These
+restrictions do not replace or narrow permissions granted by those licenses.
+
+5. WARRANTY AND LIABILITY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE
+COPYRIGHT HOLDERS SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
+ARISING FROM THE SOFTWARE OR ITS USE.

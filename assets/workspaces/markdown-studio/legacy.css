@@ -1,0 +1,430 @@
+
+  :root {}
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-main);
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .studio-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* Control Bar */
+  .control-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px 12px 0 0;
+    padding: 12px 16px;
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tool-btn:hover {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border-color: var(--accent);
+  }
+
+  .tool-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #08090d;
+    font-weight: 700;
+  }
+
+  .tool-btn.primary:hover {
+    background: #33dcff;
+    border-color: #33dcff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  }
+
+  .tool-select {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .tool-select:focus {
+    border-color: var(--accent);
+  }
+
+  /* Split Workspace */
+  .workspace-pane {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 720px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden;
+  }
+
+  .editor-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid var(--border-color);
+    background: var(--bg-base);
+  }
+
+  .pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+  }
+
+  .markdown-editor {
+    flex: 1;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 20px;
+    color: var(--text-main);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  .preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-base);
+    overflow: hidden;
+  }
+
+  .preview-content {
+    flex: 1;
+    padding: 32px 40px;
+    overflow-y: auto;
+    color: var(--text-muted);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* Academic Document Styles within Preview */
+  .preview-content.theme-academic {
+    font-family: "Georgia", "Cambria", "Times New Roman", serif;
+    color: var(--text-main);
+  }
+  .preview-content.theme-modern {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .preview-content.theme-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13.5px;
+  }
+
+  .preview-content h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .preview-content h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .preview-content h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #93c5fd;
+    margin: 20px 0 10px;
+  }
+
+  .preview-content p {
+    margin-bottom: 16px;
+  }
+
+  .preview-content blockquote {
+    margin: 16px 0;
+    padding: 12px 20px;
+    background: rgba(0, 210, 255, 0.05);
+    border-left: 4px solid var(--accent);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .preview-content code {
+    background: var(--bg-surface);
+    color: #38bdf8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.9em;
+  }
+
+  .preview-content pre {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 18px 0;
+  }
+
+  .preview-content pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--text-main);
+  }
+
+  .preview-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .preview-content th, .preview-content td {
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+  }
+
+  .preview-content th {
+    background: var(--bg-card);
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .preview-content tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .preview-content hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 28px 0;
+  }
+
+  .preview-content ul, .preview-content ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+
+  .preview-content li {
+    margin-bottom: 6px;
+  }
+
+  /* KaTeX formula enhancements */
+  .katex-display {
+    padding: 12px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* Status Bar */
+  .studio-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 10px 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .stats-cluster {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-badge strong {
+    color: var(--text-main);
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Print Stylesheet for Academic Papers */
+  @media print {
+    @page {
+      margin: 0; /* Kills browser URL, Date, and Page Number watermarks */
+      size: auto;
+    }
+    body { background: #fff !important; }
+
+    /* Hide the entire app UI during print */
+    body > *:not(#pdfPrintTable) {
+      display: none !important;
+    }
+
+    .preview-content {
+      position: relative !important;
+      width: 100% !important;
+      padding: 0 2.54cm !important; /* 1-inch side margins */
+      background: #ffffff !important;
+      color: #111827 !important;
+      font-size: 12pt !important;
+      line-height: 1.6 !important;
+      overflow: visible !important;
+      height: auto !important;
+    }
+    .preview-content h1, .preview-content h2, .preview-content h3 {
+      color: #000000 !important;
+      border-bottom-color: var(--text-main) !important;
+    }
+    .preview-content code, .preview-content pre {
+      background: #f3f4f6 !important;
+      color: #111827 !important;
+      border-color: var(--text-main) !important;
+    }
+    .preview-content blockquote {
+      background: #f9fafb !important;
+      border-left-color: #3b82f6 !important;
+      color: #374151 !important;
+    }
+    .preview-content table, .preview-content th, .preview-content td {
+      border-color: var(--text-muted) !important;
+      color: #111827 !important;
+    }
+    .preview-content th {
+      background: #f3f4f6 !important;
+    }}
+
+  @media (max-width: 900px) {
+    .workspace-pane {
+      grid-template-columns: 1fr;
+      height: 900px;
+    }
+    .editor-wrapper {
+      height: 450px;
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .preview-wrapper {
+      height: 450px;
+    }}

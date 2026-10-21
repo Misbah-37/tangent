@@ -1,0 +1,62 @@
+/* Preserve the homepage composition; artwork replaces only the data glow. */
+#data:before,[data-theme="dark"] #data:before{background-image:url('data-prism-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:center;inset:0 -50px;opacity:.38;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #data:before{opacity:.19;mix-blend-mode:screen}
+@media(max-width:650px){#data:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.28}[data-theme="dark"] #data:before{opacity:.16}}
+#data .data-link-icon{width:52px;height:52px;min-width:52px;border-radius:13px;flex:none}#data .data-link-icon svg{width:28px;height:28px}#data .data-category-tools>a{min-height:76px;gap:14px;font-size:14px}#data .data-category-tools{row-gap:12px}
+@media(max-width:650px){#data .data-link-icon{width:44px;height:44px;min-width:44px;border-radius:11px}#data .data-link-icon svg{width:24px;height:24px}#data .data-category-tools>a{gap:10px;font-size:13px;min-width:0}}
+
+#documents:before,[data-theme="dark"] #documents:before{background-image:url('documents-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #documents:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#documents:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #documents:before{opacity:.15}}
+
+#media:before,[data-theme="dark"] #media:before{background-image:url('media-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #media:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#media:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #media:before{opacity:.15}}
+
+#audio:before,[data-theme="dark"] #audio:before{background-image:url('audio-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #audio:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#audio:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #audio:before{opacity:.15}}
+
+#security:before,[data-theme="dark"] #security:before{background-image:url('security-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #security:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#security:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #security:before{opacity:.15}}
+
+#business:before,[data-theme="dark"] #business:before{background-image:url('business-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #business:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#business:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #business:before{opacity:.15}}
+
+#utilities:before,[data-theme="dark"] #utilities:before{background-image:url('utilities-art-v1.webp');background-repeat:no-repeat;background-size:100% auto;background-position:65% center;inset:0 -50px;opacity:.34;mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%);-webkit-mask-image:radial-gradient(ellipse 60% 55% at 62% 50%,#000 30%,transparent 90%)}
+[data-theme="dark"] #utilities:before{opacity:.18;mix-blend-mode:screen}
+@media(max-width:650px){#utilities:before{background-size:auto 75%;background-position:60% center;inset:0 -20px;opacity:.25}[data-theme="dark"] #utilities:before{opacity:.15}}
+
+/* Keep artwork inside its section and fade the actual painted bounds. */
+#data:before,#documents:before,#media:before,#audio:before,#security:before,#business:before,#utilities:before{inset:0}
+[data-theme="dark"] #data:before,[data-theme="dark"] #documents:before,[data-theme="dark"] #media:before,[data-theme="dark"] #audio:before,[data-theme="dark"] #security:before,[data-theme="dark"] #business:before,[data-theme="dark"] #utilities:before{inset:0;background-size:cover;background-position:center;mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%);mask-composite:intersect;-webkit-mask-composite:source-in;opacity:.18}
+
+/* More breathing room between category sections. */
+.category+.category{margin-top:104px}
+@media(max-width:650px){.category+.category{margin-top:64px}}
+
+/* Longer quiet falloff at the top and bottom of dark artwork. */
+[data-theme="dark"] #data:before,[data-theme="dark"] #documents:before,[data-theme="dark"] #media:before,[data-theme="dark"] #audio:before,[data-theme="dark"] #security:before,[data-theme="dark"] #business:before,[data-theme="dark"] #utilities:before{mask-image:linear-gradient(to bottom,transparent 0%,#000 26%,#000 62%,transparent 96%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 26%,#000 62%,transparent 96%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%)}
+
+/* Quieter artwork across category backgrounds. */
+#data:before,#documents:before,#media:before,#audio:before,#security:before,#business:before,#utilities:before{opacity:.25}
+[data-theme="dark"] #data:before,[data-theme="dark"] #documents:before,[data-theme="dark"] #media:before,[data-theme="dark"] #audio:before,[data-theme="dark"] #security:before,[data-theme="dark"] #business:before,[data-theme="dark"] #utilities:before{opacity:.12}
+@media(max-width:650px){#data:before,#documents:before,#media:before,#audio:before,#security:before,#business:before,#utilities:before{opacity:.20}[data-theme="dark"] #data:before,[data-theme="dark"] #documents:before,[data-theme="dark"] #media:before,[data-theme="dark"] #audio:before,[data-theme="dark"] #security:before,[data-theme="dark"] #business:before,[data-theme="dark"] #utilities:before{opacity:.10}}
+
+/* Equal lift for each hero link, preserving its staggered resting position. */
+.suite-art .art-tool{--hero-x:0px;--hero-y:0px;--hero-lift:0px;transform:translate(var(--hero-x),calc(var(--hero-y) + var(--hero-lift)));transition:transform .25s ease}
+.suite-art .art-tool:nth-child(2){--hero-y:-14px}
+.suite-art .art-tool:nth-child(3){--hero-x:-12px}
+.suite-art .art-tool:nth-child(4){--hero-y:-10px}
+.suite-art .art-tool:nth-child(n):is(:hover,:focus-visible){--hero-lift:-8px;transform:translate(var(--hero-x),calc(var(--hero-y) + var(--hero-lift)))}
+@media(prefers-reduced-motion:reduce){.suite-art .art-tool:nth-child(n):is(:hover,:focus-visible){--hero-lift:0px}}
+
+/* Fill the painted layer before masking so no internal image edge survives. */
+:root:not([data-theme="dark"]) #data:before,:root:not([data-theme="dark"]) #documents:before,:root:not([data-theme="dark"]) #media:before,:root:not([data-theme="dark"]) #audio:before,:root:not([data-theme="dark"]) #security:before,:root:not([data-theme="dark"]) #business:before,:root:not([data-theme="dark"]) #utilities:before{background-size:cover;background-position:center;mask-image:linear-gradient(to bottom,transparent 0%,#000 26%,#000 60%,transparent 96%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 26%,#000 60%,transparent 96%),linear-gradient(to right,transparent 0%,#000 22%,#000 78%,transparent 100%);mask-composite:intersect;-webkit-mask-composite:source-in}
+
+.support-tangent{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:38px 0;margin-top:48px;border-top:1px solid var(--line)}.support-tangent h2{font-size:25px;letter-spacing:-.7px;margin:0 0 10px}.support-tangent p{font-size:15px;line-height:1.7;color:var(--muted);margin:0;max-width:620px}.support-tangent-button{display:inline-flex;align-items:center;justify-content:center;gap:18px;padding:13px 20px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap}.support-tangent-button:hover{border-color:#087e9c;color:#087e9c}[data-theme="dark"] .support-tangent-button:hover{color:#7cd6f1;border-color:#7cd6f1}@media(max-width:650px){.support-tangent{align-items:flex-start;flex-direction:column;gap:22px}.support-tangent h2{font-size:23px}}
+
+/* Final user choice: retain artwork in hero only. */
+.category:before,[data-theme="dark"] .category:before,:root:not([data-theme="dark"]) .category:before{display:none!important;background:none!important}

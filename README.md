@@ -1,130 +1,145 @@
-<div align="center">
+# RunTangent
 
-  <img src="assets/og-banner.png" alt="Tangent Suite Banner" width="550" />
+Browser tools for data, documents, images, media and everyday work.
 
-  <p align="center">
-    <strong>Ultra-fast, 100% private, client-side digital utilities.</strong><br>
-    Break away from bloated web apps. Process documents, compress images, and organize files locally without transmitting a single byte to an external server.
-  </p>
+[Open RunTangent](https://runtangent.com/) · [Browse tools](https://runtangent.com/tools.html)
 
-  <p align="center">
-    <a href="https://runtangent.com/"><strong>Explore Live Site &rarr;</strong></a>
-    <br />
-    <br />
-    <img src="https://img.shields.io/badge/Privacy-100%25%20Client--Side-00d2ff?style=flat-square" alt="Privacy" />
-    <img src="https://img.shields.io/badge/Telemetry-Zero-success?style=flat-square" alt="No Telemetry" />
-    <img src="https://img.shields.io/badge/License-Non--Commercial-orange?style=flat-square" alt="License" />
-  </p>
+## Privacy and network use
 
-</div>
+File processing takes place in your browser. Individual tools may download
+libraries, fonts, OCR resources or AI models, so full offline operation depends
+on the tool and which resources are already available. Browser memory, device
+performance and format support impose practical limits.
 
----
+Password Shield can optionally query Pwned Passwords using a five-character
+hash prefix; the password and full hash are not sent. External links such as
+support and payment destinations open third-party services.
 
-## The Tangent Philosophy
+Some tools offer optional local draft or progress saving. Saved content remains
+in that browser until cleared; closing a tab does not necessarily erase it.
+Check each tool's saving controls before using a shared device.
 
-Most utility websites quietly upload your sensitive photos, contracts, and financial PDFs to remote cloud servers to process them. 
+## Tools
 
-**Tangent is engineered differently:**
-- **0 Bytes Outbound:** All web tools run 100% inside your browser's local sandbox via WebAssembly and client-side JavaScript.
-- **No Accounts, No Tracking:** Zero sign-ups, zero analytics cookies, and zero personal data collection.
-- **Offline Capable:** Once loaded, web utilities continue running seamlessly even if you disconnect from the internet.
+31 active tools. Background Remover has been retired; its old route displays a
+notice and links to the remaining image tools.
 
----
+### Data & Analytics
 
-## The Toolkit (31 Tools)
+- [CSV Insights](csv-insights.html): Explore CSV data with summaries, charts, filters and pivot tables.
+- [Tabular Editor](tabular-editor.html): Edit cells in CSV, TSV, Excel and JSON files, then download your changes.
+- [SQL Analytics Studio](sql-studio.html): Run SQL queries on loaded datasets and export query results.
+- [Data Hygiene Profiler](data-hygiene.html): Clean and standardize CSV values, review changes and export the result.
+- [Correlation Matrix Studio](correlation-matrix.html): Calculate correlations between numeric columns and inspect variable pairs.
+- [Log Analyzer](log-analyzer.html): Parse supported log files, filter records and export matching entries.
+- [Finance Dashboard](finance-dashboard.html): Review transaction CSVs with summaries, charts, filters and exports.
+- [Data Extractor](data-extractor.html): Extract tables or selected text from HTML source into structured rows.
 
-### Data & Analytics Suite
-1. **CSV Insights Studio** (`csv-insights.html`): High-performance client-side CSV parser, pivot table builder, and data profiler.
-2. **SQL Analytics Studio** (`sql-studio.html`): Run complex SQL queries locally against CSV, JSON, and Parquet files using DuckDB-WASM.
-3. **Data Hygiene & Anomaly Profiler** (`data-hygiene.html`): Instantly detect missing values, duplicate rows, trailing spaces, and outliers in datasets.
-4. **Correlation Matrix Studio** (`correlation-matrix.html`): Generate Pearson correlation grids, heatmaps, and statistical tests entirely offline.
-5. **Server & Application Log Analyzer** (`log-analyzer.html`): Parse standard Apache/Nginx web logs and Syslog files to securely analyze server errors without cloud uploads.
-6. **Private Finance Dashboard** (`finance-dashboard.html`): Visualize bank statements locally and generate spending breakdowns with zero cloud uploads.
-7. **HTML Data Extractor** (`data-extractor.html`): Extract tables, lists, and structured data from HTML locally using CSS selectors and export to CSV.
+### Audio & Video
 
-### Document & PDF Utilities
-8. **PDF Redactor & Metadata Scrubber** (`pdf-redactor.html`): Visually black out sensitive data and purge hidden author, device, and GPS metadata via `pdf-lib`.
-9. **PDF Suite** (`pdf-converter.html`): Merge, split, extract, and compress PDFs locally.
-10. **Client-Side Document OCR** (`document-ocr.html`): Extract editable text from scanned PDFs, images, and screenshots 100% offline using WebAssembly Tesseract.js.
-11. **Document Signer** (`document-signer.html`): Visually sign PDFs and documents locally with drawn, typed, or uploaded signatures.
-12. **Smart Receipt Extractor** (`receipt-extractor.html`): Batch scan receipts and extract dates, vendors, and totals to a clean CSV using local OCR.
-13. **Resume Builder** (`resume-builder.html`): Build ATS-friendly, professional resumes with live side-by-side preview and instant PDF export.
-14. **Invoice Generator** (`invoice-generator.html`): Generate professional invoices and receipts with itemized taxes, custom logos, and printable PDF layouts.
-15. **Markdown Studio** (`markdown-studio.html`): Write technical and academic papers with split-screen Markdown, live KaTeX math preview, and PDF/HTML export.
+- [Screen Recorder](screen-recorder.html): Record a screen, window or browser tab with the audio your browser provides.
+- [Audio Transcriber](audio-transcriber.html): Transcribe audio into text with a model running in your browser.
 
-### Media & Design Utilities
-16. **Screen & Audio Recorder** (`screen-recorder.html`): Record full HD screen, app window, or browser tab with microphone and system audio (VP9/H.264) and zero watermarks.
-17. **Confidential AI Transcriber** (`audio-transcriber.html`): Transcribe audio and video recordings locally in your browser using a WebAssembly Whisper AI model.
-18. **AI Background Remover** (`background-remover.html`): Remove backgrounds from high-resolution images offline in browser memory and export transparent PNGs.
-19. **Screenshot Beautifier & Mockup Studio** (`mockup-generator.html`): Transform raw screenshots into presentation mockups with macOS window frames, gradients, and 3D shadows.
-20. **Photo EXIF Scrubber** (`photo-scrubber.html`): Inspect and strip hidden GPS coordinates, camera models, and EXIF metadata from images.
-21. **Photo Resizer & Compressor** (`photo-resizer.html`): Scale, crop, compress, and convert JPEGs, PNGs, and WebP images with pixel precision.
-22. **HEIC to JPG Converter** (`heic-converter.html`): Convert Apple HEIC photos to standard JPG or PNG files locally without cloud uploads.
-23. **Bulk Image Watermarker** (`bulk-watermarker.html`): Batch stamp copyright text and watermarks across hundreds of images offline.
-24. **Color Palette Generator** (`color-palette.html`): Extract cohesive color palettes from images and export CSS design tokens offline.
-25. **Code to Image** (`code-to-image.html`): Render syntax-highlighted code snippets into presentation-ready images.
-26. **SVG Optimizer** (`svg-optimizer.html`): Inspect, clean, minify, and rasterize vector SVGs via local DOM parsing.
+### Design & Dev Graphics
 
-### Security & System Utilities
-27. **Password Strength Meter** (`password-meter.html`): Audit passwords against compromised breach records using k-Anonymity and generate high-entropy passphrases.
-28. **File Organizer** (`file-organizer.html`): Structure messy directories into clean categories locally.
-29. **File Vault** (`file-vault.html`): Lock sensitive photos and documents with client-side AES-GCM encryption.
-30. **QR Code Generator** (`qr-generator.html`): Generate customizable, error-corrected QR codes from URLs or text offline.
-31. **Typing Speed Test** (`typing-test.html`): Distraction-free WPM velocity and accuracy benchmark saved purely to `localStorage`.
+- [Screenshot Beautifier](mockup-generator.html): Frame screenshots with backgrounds, padding and visual styling.
+- [Code-to-Image](code-to-image.html): Turn code snippets into styled images for sharing.
+- [SVG Optimizer](svg-optimizer.html): Optimize SVG markup and download a smaller SVG file.
 
----
+### Images & Photos
 
-## Running Locally
+- [Photo Resizer](photo-resizer.html): Resize, crop and convert photos for your next use.
+- [Photo Scrubber](photo-scrubber.html): Remove image metadata and download a separate cleaned copy.
+- [Bulk Watermarker](bulk-watermarker.html): Apply text watermarks to multiple images and download new copies.
+- [Color Palette Generator](color-palette.html): Extract a colour palette from an image and compare colour contrast.
+- [HEIC Converter](heic-converter.html): Convert HEIC photos to a more widely supported image format.
 
-Because Tangent is built with modern vanilla web standards, you don't need `npm install` or complex build pipelines.
+### Documents & PDF
 
-Simply clone the repository and serve the files locally:
+- [PDF Redactor](pdf-redactor.html): Mark sensitive areas in a PDF and export a redacted copy.
+- [PDF Studio](pdf-converter.html): Merge, split, convert and refine PDF documents.
+- [Document OCR](document-ocr.html): Extract editable text from scanned documents and images.
+- [Academic Markdown](markdown-studio.html): Write Markdown, preview your document and prepare an export.
+- [Visual e-Signer](document-signer.html): Place a visual signature on a document and export a copy.
+- [Receipt Scanner](receipt-extractor.html): Read receipt images or a single-page PDF and review the extracted details.
 
-```bash
-# Clone the repository
-git clone https://github.com/Misbah-37/tangent.git
+### Security & System
 
-# Navigate to directory
-cd tangent
+- [File Lockbox](file-vault.html): Encrypt files with a password or unlock an existing Tangent container.
+- [Password Shield](password-meter.html): Assess password strength, generate passwords and optionally check for breaches.
+- [File Organizer](file-organizer.html): Plan and organize files in your browser, with copies as the default.
 
-# Serve with Python
+### Utilities
+
+- [QR Generator](qr-generator.html): Create QR codes with custom colours and an optional centre logo.
+- [Typing Practice](typing-test.html): Measure typing speed and accuracy, or practise at your own pace.
+
+### Business & Career
+
+- [Resume Studio](resume-builder.html): Build a resume with live preview, layout choices and browser PDF saving.
+- [Invoice & Receipt Studio](invoice-generator.html): Create invoices, receipts and estimates with reusable clients and payment balances.
+
+## Run locally
+
+From the repository directory, serve the generated site with Python:
+
+```sh
 python -m http.server 8000
-
-# Or serve with Node.js
-npx serve .
 ```
 
-Open `http://localhost:8000` in your browser.
+Open http://localhost:8000 . Stop the server with Ctrl+C. No npm installation is
+needed for this preview. Some browser APIs require localhost or HTTPS, user
+permission and a supported browser; a local HTTP server is preferable to opening
+HTML files directly.
 
----
+## Source and generated pages
 
-## Static Site Generator (SSG) & Master Shell Architecture
+This deployment branch contains generated public files only. The development
+paths and compilation command below apply to the separate development checkout;
+they are not included in this publishing branch.
 
-Tangent uses a lightweight, zero-dependency Python template compiler (`build.py`) with a single master shell (`templates/shell.html`):
-- **Single Source of Truth**: The global navigation, push-sidebar, and 2-line footer are defined once in `templates/shell.html`.
-- **Modular Tool Fragments**: Tool workspaces, styles, and scripts live cleanly in `src/tools/` without repetitive boilerplate.
-- **Zero-Flicker Static Output**: Running `python build.py` compiles pure static HTML files with 0ms Cumulative Layout Shift (CLS) and 100% crawlable SEO markup.
+- `tools.json`: active tool catalog, directory entries and sitemap inputs.
+- `src/index.html` and `src/directory.html`: homepage and directory sources.
+- `src/tools/`: tool page fragments.
+- `src/content/`: supporting content such as FAQs.
+- `templates/editorial.html`: homepage and directory layout.
+- `templates/workspace.html`: shared tool header, footer and page structure.
+- `assets/`: runtime scripts, styles, libraries and artwork.
+- `templates/shell.html`: retained legacy template; not the active tool layout.
+- Root HTML files: generated output. Edit sources rather than generated pages.
 
-```bash
-# Compile all 31 tool pages and homepage, regenerate sitemap, and run the pre-flight audit
-python build.py
+After source changes, compile locally with:
+
+```sh
+python build.py --local-only
 ```
 
----
+This regenerates public pages and the sitemap while skipping external sync and
+audit hooks. Plain `python build.py` can invoke those hooks; it is not the default
+local preview command. Compilation does not publish the website.
 
-## Security & Architecture
+Read `GEMINI.md` and `coordination/WORKFLOW.md` before contributing to the shared
+checkout. Preserve unrelated changes and follow the current scoped assignment.
 
-| Feature | Tangent Implementation |
-| :--- | :--- |
-| **Server Uploads** | **None.** Processing occurs in browser memory or native offline binary. |
-| **Content Security Policy** | Strict inline execution with pinned CDNs (`cdnjs.cloudflare.com`, `cdn.jsdelivr.net`). |
-| **Network Telemetry** | No Google Analytics, no Facebook Pixel, no tracking pixels. |
-| **Data Retention** | Data disappears as soon as you close or refresh the tab. |
+## Static hosting
 
----
+The website is served as static HTML, CSS and JavaScript. An upload candidate
+contains public pages and their runtime assets; source, prototypes, coordination
+reports, backups, sample data and desktop downloads do not belong in the public
+upload. Keep directory structure intact and upload the candidate's `public/`
+contents as the website root. Local compilation and staging do not deploy it.
+
+The public name is **RunTangent**, with capital R and T. The domain remains
+`runtangent.com`. Existing internal identifiers, saved-data keys and `.tangent`
+encrypted file formats retain their original names for compatibility. Container
+format documentation is in `docs/formats/`.
 
 ## License
 
-Copyright © 2026 Tangent. Released under a **Custom Non-Commercial License**. 
-- **The Website:** Free to use for any personal or commercial work tasks.
-- **The Source Code:** Proprietary. You may not steal, host, monetize, or sell the source code. See `LICENSE` for exact details.
+Free for personal and commercial use, including business operations, internal
+self-hosting and paid client work. Your own outputs may be sold or shared.
+
+The custom [LICENSE](LICENSE) restricts selling or monetizing a competing app or
+service built from this code or substantial project-owned assets. Independent
+implementations with similar functionality are not restricted. Third-party
+components retain their own licenses. Read LICENSE for the governing terms.

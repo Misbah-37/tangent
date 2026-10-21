@@ -1,73 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<script>
-  (function() {
-    try {
-      if (localStorage.getItem('tangent_theme') === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    } catch (e) {}
-  })();
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="canonical" href="https://runtangent.com/csv-insights.html" />
-<link rel="canonical" href="https://runtangent.com/csv-insights" />
-<title>CSV Insights Studio | Tangent</title>
-<meta name="description" content="Instantly analyze, pivot, and visualize CSV data securely in your browser. 100% private data analytics with zero cloud uploads.">
-<link rel="canonical" href="https://runtangent.com/csv-insights">
-<!-- Structured Data for CSV Insights -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "CSV Insights | Tangent",
-  "description": "Drag and drop any CSV file to instantly profile data, build pivot tables, and generate stunning charts in your browser.",
-  "applicationCategory": "Data&AnalyticsApplication",
-  "operatingSystem": "All",
-  "url": "https://runtangent.com/csv-insights.html",
-  "offers": {
-    "@type": "Offer",
-    "price": "0.00",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
-
-<!-- Favicons -->
-<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
-<link rel="icon" type="image/png" href="favicon.png?v=2">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-<!-- Structured Data for CSV Insights -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "CSV Insights | Tangent",
-  "description": "Drag and drop any CSV file to instantly profile data, build pivot tables, and generate stunning charts in your browser.",
-  "applicationCategory": "Data&AnalyticsApplication",
-  "operatingSystem": "All",
-  "url": "https://runtangent.com/csv-insights.html",
-  "offers": {
-    "@type": "Offer",
-    "price": "0.00",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
-
-<!-- Favicons -->
-<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
-<link rel="icon" type="image/png" href="favicon.png?v=2">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-
-<link rel="stylesheet" href="assets/tangent.css?v=12">
-<style>
-:root {}
+<!doctype html>
+<html lang="en" ><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="assets/theme.js?v=1"></script>
+<title>CSV Insights | RunTangent</title>
+<meta name="description" content="Profile CSV columns, explore distributions, filter rows and build charts and pivot tables in your browser.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="CSV Insights | RunTangent"><meta property="og:description" content="Profile CSV columns, explore distributions, filter rows and build charts and pivot tables in your browser.">
+<link rel="icon" href="favicon.ico?v=2">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
+  :root {}
 
   /* ---------- Hero ---------- */
   .clean-header { text-align: center; margin: 48px auto 40px; padding: 0 32px; max-width: 700px; }
@@ -171,477 +109,15 @@
   select.form-control option {
     background-color: var(--bg-surface);
     color: var(--text-main);
-  }
-
-/* ── Tangent Global Loader ── */
-#tangentLoader {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(8, 9, 13, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 20px;
-}
-.tl-logo-wrap {
-  position: relative;
-  width: 88px;
-  height: 88px;
-}
-.tl-logo-wrap svg {
-  width: 88px;
-  height: 88px;
-  overflow: visible;
-}
-/* Arc draws itself */
-.tl-arc {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-/* Line fades and scales in after arc */
-.tl-line {
-  transform-origin: 32px 14px;
-  transform-box: fill-box;
-  animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-@keyframes tlDrawArc {
-  0%   { stroke-dashoffset: 1; opacity: 0.2; }
-  20%  { opacity: 1; }
-  70%  { stroke-dashoffset: 0; }
-  90%  { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: 1; opacity: 0.2; }
-}
-@keyframes tlPulseLine {
-  0%, 30%  { opacity: 0; transform: scaleY(0.1); }
-  60%, 85% { opacity: 1; transform: scaleY(1); }
-  100%     { opacity: 0; transform: scaleY(0.1); }
-}
-/* Glow ring behind logo */
-.tl-glow {
-  position: absolute;
-  inset: -12px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
-  animation: tlGlowPulse 1.6s ease-in-out infinite;
-}
-@keyframes tlGlowPulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.9); }
-  50%       { opacity: 1;   transform: scale(1.1); }
-}
-.tl-message {
-  color: #94a3b8;
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  font-family: Inter, -apple-system, sans-serif;
-  animation: tlFadeMsg 1.6s ease-in-out infinite;
-}
-@keyframes tlFadeMsg {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 1; }
-}
-
-</style>
-
-<!-- Enforce Custom Domain Canonical -->
-<script>
-  if (window.location.hostname.includes("github.io")) {
-    window.location.replace("https://runtangent.com" + window.location.pathname + window.location.hash);
-  }
-</script>
-</head>
-<body>
-
-
-<!-- Global Navigation -->
-<nav class="global-nav">
-  <div class="nav-left">
-    <a href="index.html" class="nav-brand">
-      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M 32 14 V 44" stroke="var(--text-main)" stroke-width="7" stroke-linecap="round"/>
-      </svg>
-      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:var(--text-main); font-weight:800;">Tan</span><span style="color:var(--accent); font-weight:800;">gent</span></span>
-    </a>
-
-    <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
-      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-      <span>Toolkit</span>
-    </button>
-  </div>
-
-  <div class="nav-right">
-    <!-- Theme Toggle -->
-    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Light/Dark Mode" title="Toggle Theme" style="background:none; border:none; color:var(--text-main); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; border-radius:8px; margin-right:8px;">
-      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
-
-    <!-- Hamburger Button (Mobile Only) -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </button>
-
-    <!-- Navigation Links -->
-    <div class="nav-links" id="navLinks">
-      <a href="/#trust" class="nav-link">Privacy Guarantee</a>
-      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        <span>GitHub</span>
-      </a>
-    </div>
-  </div>
-</nav>
-
-<!-- TANGENT_SIDEBAR_START -->
-<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
-  <div class="sidebar-header">
-    <span class="sidebar-title">Toolkit</span>
-    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-  </div>
-  <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
-    <div style="position: relative; display: flex; align-items: center;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
-    </div>
-  </div>
-
-  <div class="sidebar-nav-list">
-    <!-- Category 1: Documents & PDF -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
-      <div class="sidebar-group-content" id="sidebar-category-1">
-      <a href="pdf-redactor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
-        <div class="item-text">
-          <div class="item-title">PDF Redactor</div>
-          <div class="item-desc">Blackout data & wipe metadata</div>
-        </div>
-      </a>
-      <a href="pdf-converter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        <div class="item-text">
-          <div class="item-title">PDF Suite</div>
-          <div class="item-desc">Merge, split, compress, & convert</div>
-        </div>
-      </a>
-      <a href="document-ocr.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
-        <div class="item-text">
-          <div class="item-title">Document OCR</div>
-          <div class="item-desc">Extract text from scans & images</div>
-        </div>
-      </a>
-      <a href="markdown-studio.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Academic Markdown</div>
-          <div class="item-desc">LaTeX math, paper presets & PDF</div>
-        </div>
-      </a>
-      <a href="document-signer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
-        <div class="item-text">
-          <div class="item-title">Visual e-Signer</div>
-          <div class="item-desc">Visually sign PDFs & docs</div>
-        </div>
-      </a>
-      <a href="receipt-extractor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
-        <div class="item-text">
-          <div class="item-title">Receipt Scanner</div>
-          <div class="item-desc">Extract expenses to CSV</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 2: Business & Career -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
-      <div class="sidebar-group-content" id="sidebar-category-2">
-      <a href="resume-builder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">Resume Studio</div>
-          <div class="item-desc">ATS-friendly resume builder</div>
-        </div>
-      </a>
-      <a href="invoice-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Invoice & Receipt Studio</div>
-          <div class="item-desc">Professional PDF invoices & receipts</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 3: Images & Photos -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
-      <div class="sidebar-group-content" id="sidebar-category-3">
-      <a href="photo-resizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        <div class="item-text">
-          <div class="item-title">Photo Resizer</div>
-          <div class="item-desc">Scale dimensions & WebP convert</div>
-        </div>
-      </a>
-      <a href="photo-scrubber.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">Photo Scrubber</div>
-          <div class="item-desc">Strip GPS & EXIF camera tags</div>
-        </div>
-      </a>
-      <a href="bulk-watermarker.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5L16 10 4 20"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Bulk Watermarker</div>
-          <div class="item-desc">Batch image copyright stamper</div>
-        </div>
-      </a>
-      <a href="color-palette.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Color Palette Generator</div>
-          <div class="item-desc">Extract color palettes from images</div>
-        </div>
-      </a>
-      <a href="background-remover.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
-        <div class="item-text">
-          <div class="item-title">Background Remover</div>
-          <div class="item-desc">Local AI transparent PNG</div>
-        </div>
-      </a>
-      <a href="heic-converter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">HEIC Converter</div>
-          <div class="item-desc">Apple photos to JPG</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 4: Design & Dev Graphics -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
-      <div class="sidebar-group-content" id="sidebar-category-4">
-      <a href="mockup-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Screenshot Beautifier</div>
-          <div class="item-desc">macOS frames, gradients, & shadows</div>
-        </div>
-      </a>
-      <a href="code-to-image.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Code-to-Image</div>
-          <div class="item-desc">Carbon-style snippet frames</div>
-        </div>
-      </a>
-      <a href="svg-optimizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
-        <div class="item-text">
-          <div class="item-title">SVG Optimizer</div>
-          <div class="item-desc">Minify, clean & rasterize SVG</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 5: Audio & Video -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
-      <div class="sidebar-group-content" id="sidebar-category-5">
-      <a href="screen-recorder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-        <div class="item-text">
-          <div class="item-title">Screen Recorder</div>
-          <div class="item-desc">No 5-min cap, zero watermarks</div>
-        </div>
-      </a>
-      <a href="audio-transcriber.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-        <div class="item-text">
-          <div class="item-title">Audio Transcriber</div>
-          <div class="item-desc">Local Whisper AI minutes</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 6: Security & System -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
-      <div class="sidebar-group-content" id="sidebar-category-6">
-      <a href="file-vault.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">File Lockbox</div>
-          <div class="item-desc">PIN & password file safe</div>
-        </div>
-      </a>
-      <a href="password-meter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Password Shield</div>
-          <div class="item-desc">Entropy meter & passphrase gen</div>
-        </div>
-      </a>
-      <a href="file-organizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">File Organizer</div>
-          <div class="item-desc">In-browser & desktop sorter</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 7: Data & Analytics -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
-      <div class="sidebar-group-content" id="sidebar-category-7">
-      <a href="csv-insights.html" class="sidebar-item active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">CSV Insights</div>
-          <div class="item-desc">Instant dashboards & charts</div>
-        </div>
-      </a>
-      <a href="sql-studio.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4"></path></svg>
-        <div class="item-text">
-          <div class="item-title">SQL Analytics Studio</div>
-          <div class="item-desc">Run local SQL on CSV/Parquet</div>
-        </div>
-      </a>
-      <a href="data-hygiene.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Data Hygiene Profiler</div>
-          <div class="item-desc">Cleanse CSVs & find anomalies</div>
-        </div>
-      </a>
-      <a href="correlation-matrix.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Correlation Matrix Studio</div>
-          <div class="item-desc">Pearson heatmaps & stats</div>
-        </div>
-      </a>
-      <a href="log-analyzer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Log Analyzer</div>
-          <div class="item-desc">Parse server & app logs</div>
-        </div>
-      </a>
-      <a href="finance-dashboard.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 14h.01"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Finance Dashboard</div>
-          <div class="item-desc">Bank CSV visualizer</div>
-        </div>
-      </a>
-      <a href="data-extractor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Data Extractor</div>
-          <div class="item-desc">Local HTML scraper to CSV</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 8: Utilities -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
-      <div class="sidebar-group-content" id="sidebar-category-8">
-      <a href="qr-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        <div class="item-text">
-          <div class="item-title">QR Generator</div>
-          <div class="item-desc">Custom styling & vector download</div>
-        </div>
-      </a>
-      <a href="typing-test.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Typing Test</div>
-          <div class="item-desc">100 sentences & paragraphs</div>
-        </div>
-      </a>
-      </div>
-    </div>
-  </div>
-  <div class="sidebar-support-widget">
-    <div class="support-title">Support Tangent</div>
-    <div class="support-desc">If this saved you time today, help keep the suite free and ad-free.</div>
-    <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="support-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      Support
-    </a>
-  </div>
-</aside>
-<!-- TANGENT_SIDEBAR_END -->
-
-<!-- Backdrop Overlay for Mobile -->
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-<!-- ── Global Tangent Loader ── -->
-<div id="tangentLoader" role="status" aria-live="polite" aria-label="Loading">
-  <div class="tl-logo-wrap">
-    <div class="tl-glow"></div>
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path class="tl-arc"
-        d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14"
-        stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
-        pathLength="1"/>
-      <path class="tl-line"
-        d="M 32 14 V 44"
-        stroke="var(--text-main)" stroke-width="6" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="tl-message" id="tangentLoaderMsg">Processing...</div>
-</div>
-
-<!-- Push-Canvas Wrapper -->
-<div class="app-canvas" id="appCanvas">
-
-<div class="clean-header">
-  <div class="badge-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
-  </div>
-  <h1>CSV Insights Studio</h1>
-  <p>Instantly profile columns, build pivot charts, and visualize data securely in your browser. Powered by a Web Worker. Zero cloud uploads. Zero dependencies.</p>
-</div>
-
-<div class="dropzone" id="dropzone">
+  }</style><link rel="stylesheet" href="assets/workspaces/csv-insights/style.css?v=10">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="canonical" href="https://runtangent.com/csv-insights.html">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "CSV Insights", "description": "Profile CSV columns, explore distributions, filter rows and build charts and pivot tables in your browser.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/csv-insights.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What can I explore in CSV Insights?", "acceptedAnswer": {"@type": "Answer", "text": "Load a CSV to profile columns, build grouped charts in Manual Explorer, or inspect records in Raw Data Grid. Search profile cards by column name or type without filtering rows. This tool explores data; it does not edit or clean source values."}}, {"@type": "Question", "name": "Does my dataset leave my browser?", "acceptedAnswer": {"@type": "Answer", "text": "CSV parsing and analysis run in this page and its background worker. No dataset upload is needed. Work is held in browser memory, not automatically saved. Download results before closing, reloading or replacing the dataset."}}, {"@type": "Question", "name": "How do row filters, search and chart drill-downs work together?", "acceptedAnswer": {"@type": "Answer", "text": "Row rules combine with AND and the Slice Data search. Categories match exact text and case; numeric/date bounds are inclusive and exclude missing or invalid values. Date bounds use YYYY-MM-DD; source slash dates use month/day/year. Clear rules and search separately. Chart drill-downs narrow the grid further; clearing a drill-down returns to the underlying slice."}}, {"@type": "Question", "name": "What can I download?", "acceptedAnswer": {"@type": "Answer", "text": "Save charts as PNG, export grouped pivot results from Manual Explorer as CSV, or export all records matching the current Raw Data Grid view across pages. Row exports preserve source values; pivot exports contain calculated groups. A grid drill-down does not change the underlying Manual Explorer pivot."}}, {"@type": "Question", "name": "How should I interpret the statistics and limits?", "acceptedAnswer": {"@type": "Answer", "text": "Numeric profiles exclude blanks and nonnumeric values. Quartiles and the 90th percentile use linear interpolation; standard deviation uses the population convention. IQR outliers are review flags, remain included in statistics and are not automatically removed. Device memory limits apply. Automatic types and charts support exploration, not statistical guarantees; use Correlation Matrix for dedicated relationship analysis."}}]}]</script>
+<style></style></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="page"><div class="nav"><a href="index.html" class="brand" aria-label="RunTangent home"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 50C22 50 14 42 14 32S22 14 32 14H54" stroke="#00b7d9" stroke-width="7" stroke-linecap="round"/><path d="M32 14v30" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span>RunTangent</span></a><nav class="nav-links" aria-label="Main navigation"><a href="tools.html">Tools</a><a class="category-nav" href="index.html#categories-title">Categories</a><a href="index.html#tangent-pro">RunTangent Pro</a></nav><form class="nav-search" action="tools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input name="q" type="search" aria-label="Search tools" placeholder="Search tools…"></form><select class="theme-choice" data-theme-choice aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></div></div></header>
+<main class="page" id="main"><section class="editor-intro insights-intro"><span class="eyebrow">DATA &amp; ANALYTICS / CSV INSIGHTS</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">▥</span>CSV Insights</h1><p class="tool-description">Explore CSV data with summaries, charts, filters and pivot tables.</p><p class="tool-tagline">Find the story inside your rows.</p></section><div class="editor-toolbar insights-toolbar"><span id="insightsFilename">No file loaded</span><button id="insightsLoad">Load CSV</button><span id="insightsActions"></span></div><div class="dropzone" id="dropzone">
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 16px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
-  <h3>Upload Dataset (CSV)</h3>
-  <p>Drop your file here or click to browse. Fully client-side processing.</p>
+  <h3>A place for patterns to come into view.</h3>
+  <p>Load a CSV to explore distributions, compare groups, and inspect your records. You can also drop your file here.</p>
   <input type="file" id="fileInput" accept=".csv" style="display:none;">
   <button class="btn btn-outline" id="browseBtn" style="padding: 10px 24px; font-size: 1.05rem;">Browse Files</button>
 </div>
@@ -678,6 +154,7 @@
     </div>
   </div>
 
+  <details class="row-rule-panel"><summary>Row filters</summary><div class="profiler-controls"><label>Column<select id="rowRuleColumn"></select></label><label>Condition<select id="rowRuleKind"><option value="equals">Category equals (exact)</option><option value="gte">Number ≥</option><option value="lte">Number ≤</option><option value="after">Date on / after</option><option value="before">Date on / before</option></select></label><label>Value<input id="rowRuleValue" placeholder="Category, number or YYYY-MM-DD"></label><button id="rowRuleAdd" class="btn btn-outline">Add rule</button><button id="rowRuleClear" class="btn btn-outline">Clear row rules</button></div><p>Rules combine with AND and your search slice. Numeric/date bounds are inclusive; missing or invalid values do not match ranges. Date bounds use YYYY-MM-DD; source slash dates use month/day/year.</p><p id="rowRuleStatus" role="status"></p><div id="rowRuleList"></div></details>
   <div class="tabs-nav">
     <button class="tab-btn active" data-tab="tab-auto">Auto-Profiler</button>
     <button class="tab-btn" data-tab="tab-manual">Manual Explorer</button>
@@ -685,7 +162,7 @@
   </div>
 
   <div class="tab-content active" id="tab-auto">
-    <div class="profiler-grid" id="profilerGrid"></div>
+    <div class="profiler-controls"><label>Find a column<input id="profileSearch" type="search" placeholder="Search column names"></label><label>Column type<select id="profileType"><option value="all">All types</option><option value="numeric">Numeric</option><option value="date">Date</option><option value="categorical">Categorical / text</option></select></label><button id="profileReset" class="btn btn-outline">Show all columns</button><span id="profileCount" role="status" aria-live="polite"></span></div><p class="profile-view-note">These controls change the cards shown, not the dataset or analysis slice.</p><p id="profileEmpty" hidden>No columns match these controls. Choose Show all columns to restore the overview.</p><div class="profiler-grid" id="profilerGrid"></div>
   </div>
 
   <div class="tab-content" id="tab-manual">
@@ -747,7 +224,7 @@
     </div>
   </div>
 
-  <div class="tab-content" id="tab-raw">
+  <div class="tab-content" id="tab-raw"><div class="raw-actions"><p>Inspect the current slice. A row export includes all matching records across pages.</p><button id="btnExportRows" class="btn btn-outline">Export current rows</button></div>
     <div class="table-wrapper">
       <table class="preview-table">
         <thead><tr id="rawThead"></tr></thead>
@@ -762,44 +239,6 @@
         </div>
       </div>
   </div>
-</div>
-
-<div class="info-section">
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-      </div>
-      <h3>Zero-Cloud Privacy</h3>
-      <p>100% offline architecture guarantees your financial models, customer emails, and private datasets never touch an external server or API.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-      </div>
-      <h3>Web Worker Profiling</h3>
-      <p>Analyzes column distributions and statistical measures using a background CPU thread without ever freezing your browser interface.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
-      </div>
-      <h3>Interactive Explorations</h3>
-      <p>Pivot thousands of rows on the fly with instantaneous chart rendering — no libraries, no build step, just the browser's own canvas engine.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-      </div>
-      <h3>Raw Data Inspection</h3>
-      <p>Instantly browse the first 100 rows of your raw CSV file in a clean, scrollable grid to verify data integrity before rendering charts.</p>
-    </div>
-  </div>
-
-  <div class="faq-title">Frequently Asked Questions</div>
-  <div class="faq-box"><details><summary>Is my CSV data uploaded to a server?</summary><p>No. This tool runs completely inside your web browser using HTML5 and vanilla client-side JavaScript. Your data never leaves your computer, and there's no third-party library loaded from a CDN either.</p></details></div>
-  <div class="faq-box"><details><summary>How does the Auto-Profiler work?</summary><p>When you upload a file, a background Web Worker scans every column to detect its type (numeric, date, or categorical), computes statistics like median and standard deviation, and builds a histogram — all without freezing your browser.</p></details></div>
-  <div class="faq-box"><details><summary>Can I save the charts I build?</summary><p>Yes — every chart, in both the Auto-Profiler and the Manual Explorer, has a "Save as PNG" option that renders straight from the canvas, no server round-trip needed.</p></details></div>
 </div>
 
 <div id="tooltip"></div>
@@ -819,77 +258,9 @@
   </div>
 </div>
 
-  <!-- Standard Global Footer -->
-  <footer class="global-footer">
-    <div style="margin-bottom: 16px;">
-      <a href="index.html">Home</a>
-      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="mailto:hello@runtangent.com">Contact</a>
-      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
-    </div>
-    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
-  </footer>
-
-</div>
+<section class="editor-guide" aria-labelledby="insights-guide"><div class="guide-heading"><span class="eyebrow">FROM RECORDS TO RELATIONSHIPS</span><h2 id="insights-guide">A clearer view.<br>A better question.</h2><p>Explore CSV data in your browser, from column distributions to grouped summaries. Start with the overview, then investigate the details behind it.</p></div><section><h3>How to explore a dataset</h3><ol class="guide-steps"><li><strong>Open your CSV.</strong> Load a file and review the detected columns in Auto-Profiler. Check the distributions and summary statistics before drawing conclusions.</li><li><strong>Ask a focused question.</strong> Switch to Manual Explorer, choose a grouping column and measure, and select the chart and aggregation that suit your question.</li><li><strong>Check the underlying rows.</strong> Use Row filters for exact categories or inclusive numeric/date bounds, combined with Slice Data search. Rules use AND. Inspect matching records in Raw Data Grid; clear row rules and search separately to restore the full dataset.</li><li><strong>Keep your findings.</strong> Save a chart as PNG, export grouped pivots from Manual Explorer, or export all matching grid records across pages. A chart drill-down narrows the grid further; clearing it returns to the current slice. Download results before closing or replacing the dataset.</li></ol></section><div class="guide-capabilities"><article><h3>Understand the columns</h3><p>Review distributions and numeric summaries, including quartiles and the 90th percentile. Find columns by name or type; these card controls do not filter dataset rows. Open Understand these statistics for calculation and exclusion details.</p></article><article><h3>Compare your groups</h3><p>Choose dimensions and measures in Manual Explorer, build a chart and download the grouped result.</p></article><article><h3>Inspect the records</h3><p>Use Raw Data Grid to check the underlying rows. Keep your original file; this workspace is not an automatic save.</p></article></div><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Explore with<br>confidence.</h3><p>What the views show, and how to keep your results.</p><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What can I explore in CSV Insights?</summary><p>Load a CSV to profile columns, build grouped charts in Manual Explorer, or inspect records in Raw Data Grid. Search profile cards by column name or type without filtering rows. This tool explores data; it does not edit or clean source values.</p></details><details><summary>Does my dataset leave my browser?</summary><p>CSV parsing and analysis run in this page and its background worker. No dataset upload is needed. Work is held in browser memory, not automatically saved. Download results before closing, reloading or replacing the dataset.</p></details><details><summary>How do row filters, search and chart drill-downs work together?</summary><p>Row rules combine with AND and the Slice Data search. Categories match exact text and case; numeric/date bounds are inclusive and exclude missing or invalid values. Date bounds use YYYY-MM-DD; source slash dates use month/day/year. Clear rules and search separately. Chart drill-downs narrow the grid further; clearing a drill-down returns to the underlying slice.</p></details><details><summary>What can I download?</summary><p>Save charts as PNG, export grouped pivot results from Manual Explorer as CSV, or export all records matching the current Raw Data Grid view across pages. Row exports preserve source values; pivot exports contain calculated groups. A grid drill-down does not change the underlying Manual Explorer pivot.</p></details><details><summary>How should I interpret the statistics and limits?</summary><p>Numeric profiles exclude blanks and nonnumeric values. Quartiles and the 90th percentile use linear interpolation; standard deviation uses the population convention. IQR outliers are review flags, remain included in statistics and are not automatically removed. Device memory limits apply. Automatic types and charts support exploration, not statistical guarantees; use Correlation Matrix for dedicated relationship analysis.</p></details></div></section></section></main>
 
 
-<!-- Global Success Toast -->
-<div class="tangent-toast" id="tangentToast">
-  <div class="toast-content">
-    <div class="toast-header">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      <span id="toastTitle">Success!</span>
-    </div>
-    <div class="toast-body">
-      If Tangent saved you time today, consider supporting the project to keep it 100% free and ad-free.
-    </div>
-    <div class="toast-actions">
-      <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="toast-btn toast-btn-primary">Support Tangent</a>
-      <button class="toast-btn toast-btn-ghost" id="toastCloseBtn">Dismiss</button>
-    </div>
-  </div>
-</div>
-
-<!-- Global Shell Script -->
-<script src="assets/tangent.js?v=11"></script>
-
-<!-- Global TangentLoader Utility -->
-<script>
-  window.TangentLoader = {
-    show: function(msg) {
-      var el = document.getElementById('tangentLoader');
-      var msgEl = document.getElementById('tangentLoaderMsg');
-      if (msgEl) msgEl.textContent = msg || 'Processing...';
-      if (el) el.style.display = 'flex';
-    },
-    hide: function() {
-      var el = document.getElementById('tangentLoader');
-      if (el) el.style.display = 'none';
-    }
-  };
-
-  window.TangentToast = {
-    show: function(titleMsg) {
-      var toast = document.getElementById('tangentToast');
-      var title = document.getElementById('toastTitle');
-      var closeBtn = document.getElementById('toastCloseBtn');
-      if (!toast || !title) return;
-
-      title.textContent = titleMsg || 'Task Complete!';
-      toast.classList.add('show');
-
-      if (closeBtn) {
-        closeBtn.onclick = function() {
-          toast.classList.remove('show');
-        };
-      }
-
-      setTimeout(function() {
-        toast.classList.remove('show');
-      }, 12000);
-    }
-  };
-</script>
 
 <script src="assets/data-utils.js?v=1"></script>
 <script>
@@ -928,8 +299,8 @@
     '  var sum = 0; for (var i=0;i<n;i++) sum += sorted[i];',
     '  var mean = sum/n;',
           '  var median = (n % 2 === 1) ? sorted[(n-1)/2] : (sorted[n/2-1] + sorted[n/2]) / 2;',
-      '  var q1 = (n % 2 === 1) ? sorted[Math.floor(n*0.25)] : sorted[Math.round(n*0.25)];',
-      '  var q3 = (n % 2 === 1) ? sorted[Math.floor(n*0.75)] : sorted[Math.round(n*0.75)];',
+    '  function quantile(p) {var pos=(n-1)*p,lo=Math.floor(pos),hi=Math.ceil(pos),weight=pos-lo;return (1-weight)*sorted[lo]+weight*sorted[hi];}',
+    '  var q1 = quantile(0.25), q3 = quantile(0.75), p90 = quantile(0.90);',
       '  var iqr = q3 - q1;',
       '  var lowerBound = q1 - 1.5 * iqr;',
       '  var upperBound = q3 + 1.5 * iqr;',
@@ -940,7 +311,7 @@
     '  for (var k=0;k<n;k++) { var key = sorted[k]; distinctMap[key] = (distinctMap[key]||0)+1; }',
     '  var distinctVals = Object.keys(distinctMap).map(Number).sort(function(a,b){return a-b;});',
     '  var distinctCount = distinctVals.length;',
-    '  var out = { min:min, max:max, mean:mean, median:median, stdev:stdev, distinctCount:distinctCount, outliers:outliers };',
+    '  var out = { min:min, max:max, mean:mean, median:median, stdev:stdev, distinctCount:distinctCount, outliers:outliers, p25:q1, p75:q3, p90:p90, iqr:iqr, numericCount:n };',
     '  if (distinctCount <= 20) {',
     '    out.mode = "discrete";',
     '    out.labels = distinctVals.map(function(v){ return fmtNum(v); });',
@@ -1544,7 +915,7 @@
       var stat = currentStats[h];
       var color = COLORS[i % COLORS.length];
       var card = document.createElement('div');
-      card.className = 'profile-card';
+      card.className = 'profile-card';card.dataset.columnName=h;card.dataset.columnType=stat.type;
 
       var badgeClass = 'badge-' + stat.type;
       var idBadge = '';
@@ -1564,6 +935,8 @@
           '<div class="stats-row"><span>Mean<strong>' + stat.mean.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
           '<span>Std Dev<strong>' + stat.stdev.toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</strong></span>' +
           '<span>Outliers<strong>' + (stat.outliers || 0).toLocaleString() + '</strong></span></div>';
+        statsRowHtml += '<div class="stats-row percentile-row"><span>Q1 · 25th<strong>'+stat.p25.toLocaleString(undefined,{maximumFractionDigits:2})+'</strong></span><span>Q3 · 75th<strong>'+stat.p75.toLocaleString(undefined,{maximumFractionDigits:2})+'</strong></span><span>90th percentile<strong>'+stat.p90.toLocaleString(undefined,{maximumFractionDigits:2})+'</strong></span></div>';
+        statsRowHtml += '<details class="stat-explanation"><summary>Understand these statistics</summary><p>Calculated from '+stat.numericCount.toLocaleString()+' numeric values in the current slice. Quartiles mark the lower and upper edges of the middle half; the 90th percentile describes the upper tail. Percentiles use linear interpolation between sorted values. Std Dev uses the population convention. Outliers fall strictly outside Q1 − 1.5 × IQR and Q3 + 1.5 × IQR, where IQR = Q3 − Q1. They are review flags, not errors, and remain included in the statistics. Blank and nonnumeric values are excluded.</p></details>';
         if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' non-numeric value(s) excluded from stats</span>');
       } else if (stat.type === 'date') {
         statsRowHtml =
@@ -1615,9 +988,27 @@
       if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
       });
     });
+    filterProfileCards();
   }
 
+  function filterProfileCards() {
+    var query=document.getElementById('profileSearch').value.trim().toLowerCase(),type=document.getElementById('profileType').value,shown=0;
+    document.querySelectorAll('#profilerGrid .profile-card').forEach(function(card){var match=card.dataset.columnName.toLowerCase().includes(query)&&(type==='all'||card.dataset.columnType===type);card.hidden=!match;if(match)shown++;});
+    document.getElementById('profileCount').textContent='Showing '+shown+' of '+currentHeaders.length+' columns';document.getElementById('profileEmpty').hidden=shown!==0;
+    chartRegistry.forEach(function(entry){if(!entry.canvas.closest('.profile-card').hidden)drawBarChart(entry.canvas,{labels:entry.stat.labels,values:entry.stat.dist,color:entry.getColor(),yTitle:'Count'});});
+  }
+  document.getElementById('profileSearch').addEventListener('input',filterProfileCards);
+  document.getElementById('profileType').addEventListener('change',filterProfileCards);
+  document.getElementById('profileReset').addEventListener('click',function(){document.getElementById('profileSearch').value='';document.getElementById('profileType').value='all';filterProfileCards();});
+
+  var rowRules=[];
+  function renderRowRules(){var list=document.getElementById('rowRuleList');list.replaceChildren();rowRules.forEach(function(rule,i){var button=document.createElement('button');button.textContent=rule.column+' '+rule.kind+' '+rule.text+' ×';button.setAttribute('aria-label','Remove rule '+button.textContent);button.addEventListener('click',function(){rowRules.splice(i,1);renderRowRules();document.getElementById('btnApplyGlobalFilter').click();});list.appendChild(button);});}
+  function matchesRowRules(row){return rowRules.every(function(rule){var raw=row[rule.column];if(rule.kind==='equals')return String(raw??'')===rule.text;var n=(rule.kind==='gte'||rule.kind==='lte')?TangentData.parseNumber(raw):TangentData.dateToken(raw);if(n===null)return false;return rule.kind==='gte'||rule.kind==='after'?n>=rule.value:n<=rule.value;});}
+  document.getElementById('rowRuleAdd').addEventListener('click',function(){if(!originalData)return;var column=document.getElementById('rowRuleColumn').value,kind=document.getElementById('rowRuleKind').value,text=document.getElementById('rowRuleValue').value,value=text;var status=document.getElementById('rowRuleStatus');if(kind!=='equals'){if(kind==='gte'||kind==='lte')value=TangentData.parseNumber(text);else value=/^\d{4}-\d{2}-\d{2}$/.test(text)?TangentData.dateToken(text):null;if(value===null){status.textContent='Enter a valid number or calendar date (YYYY-MM-DD) for this condition.';return;}}status.textContent='';rowRules.push({column:column,kind:kind,text:text,value:value});renderRowRules();document.getElementById('btnApplyGlobalFilter').click();});
+  document.getElementById('rowRuleClear').addEventListener('click',function(){rowRules=[];renderRowRules();document.getElementById('rowRuleStatus').textContent='';document.getElementById('btnApplyGlobalFilter').click();});
+
   function populateDropdowns() {
+      var ruleSelect=document.getElementById('rowRuleColumn'),oldColumn=ruleSelect.value;ruleSelect.replaceChildren();currentHeaders.forEach(function(h){var o=document.createElement('option');o.value=o.textContent=h;ruleSelect.appendChild(o);});if(currentHeaders.includes(oldColumn))ruleSelect.value=oldColumn;
       var opts = currentHeaders.map(function (h) { return '<option value="' + escapeHtml(h) + '">' + escapeHtml(h) + '</option>'; }).join('');
       document.querySelectorAll('.col-select').forEach(function (sel) {
         if (sel.id === 'selGroupBy') {
@@ -1916,6 +1307,13 @@
       if (btnNext) btnNext.disabled = (rawGridCurrentPage >= totalPages - 1);
     }
 
+    document.getElementById('btnExportRows').addEventListener('click', function () {
+      var records = currentFilterFn ? rawData.filter(currentFilterFn) : rawData;
+      function quote(value) {var text=String(value == null ? '' : value);return /[",\r\n]/.test(text) ? '"'+text.replace(/"/g,'""')+'"' : text;}
+      var csv=[currentHeaders.map(quote).join(',')].concat(records.map(function(row){return currentHeaders.map(function(h){return quote(row[h]);}).join(',');})).join('\r\n');
+      var url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));var a=document.createElement('a');a.href=url;a.download='Current_Rows.csv';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    });
+
     // Attach pagination listeners if not already attached
     if (!window.rawPaginationAttached) {
       document.getElementById('btnPrevPage').addEventListener('click', function() {
@@ -1962,13 +1360,20 @@
   });
   fileInput.addEventListener('change', function (e) { if (e.target.files.length) handleFile(e.target.files[0]); });
 
+  function clearDatasetFilterUI() {
+    ['filterMsg','globalFilterBanner'].forEach(function(id){var banner=document.getElementById(id);if(banner)banner.remove();});
+    document.getElementById('txtGlobalFilter').value='';currentFilterFn=null;rawGridCurrentPage=0;document.getElementById('profileSearch').value='';document.getElementById('profileType').value='all';rowRules=[];renderRowRules();document.getElementById('rowRuleValue').value='';document.getElementById('rowRuleStatus').textContent='';
+  }
+
   document.getElementById('btnCloseFile').addEventListener('click', function () {
     dataOperation++; if(worker)worker.terminate(); if(window.TangentLoader)TangentLoader.hide();
-    rawData = []; currentHeaders = []; currentStats = null; manualChartMeta = null;
+    rawData = []; originalData = null; currentHeaders = []; currentStats = null; manualChartMeta = null;
+    clearDatasetFilterUI();
     fileInput.value = '';
     document.getElementById('profilerGrid').innerHTML = '';
     document.getElementById('workspace').style.display = 'none';
-    document.getElementById('dropzone').style.display = 'block';
+    document.getElementById('dropzone').style.display = 'flex';
+    document.getElementById('insightsFilename').textContent='No file loaded';document.getElementById('btnCloseFile').disabled=true;document.body.classList.remove('has-data');
   });
 
   function handleFile(file) {
@@ -1982,6 +1387,7 @@
       if(operation !== dataOperation) return;
       if (worker) worker.terminate();
       worker = new Worker(workerUrl);
+      var adoptingNewFile = true;
       worker.onmessage = function (ev) {
         if(operation !== dataOperation) return;
         if(ev.data.status === 'error') {if(window.TangentLoader) TangentLoader.hide(); alert(ev.data.message); return;}
@@ -1994,11 +1400,13 @@
         document.getElementById('statRows').textContent = currentRowCount.toLocaleString();
         document.getElementById('statCols').textContent = currentHeaders.length.toLocaleString();
 
+        if (adoptingNewFile) {clearDatasetFilterUI();adoptingNewFile=false;}
         populateDropdowns();
-        populateRawGrid();
+        populateRawGrid(null);
 
         if (window.TangentLoader) window.TangentLoader.hide();
         dropzone.style.display = 'none';
+        document.getElementById('insightsFilename').textContent=file.name;document.getElementById('btnCloseFile').disabled=false;document.body.classList.add('has-data');
         document.getElementById('workspace').style.display = 'block';
 
         renderAutoProfilerGrid();
@@ -2086,7 +1494,7 @@
               filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + escapeHtml(xCol) + ' = ' + escapeHtml(clickedLabel) + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
               document.getElementById('btnClearFilter').addEventListener('click', function() {
                   filterMsg.remove();
-                  populateRawGrid();
+                  populateRawGrid(null);
               });
           }
       });
@@ -2165,7 +1573,7 @@
               filterMsg.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; vertical-align:-2px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg> Cross-Filtered: <b>' + escapeHtml(header) + ' = ' + escapeHtml(clickedLabel) + '</b></span> <button id="btnClearFilter" class="btn" style="height: 28px; padding: 0 12px; font-size: 11px;">Clear Filter</button>';
               document.getElementById('btnClearFilter').addEventListener('click', function() {
                   filterMsg.remove();
-                  populateRawGrid();
+                  populateRawGrid(null);
               });
           }
       });
@@ -2202,6 +1610,8 @@
 
       if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Slicing Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Recalculating distributions</span>'; window.TangentLoader.show(''); }
 
+      filtered=filtered.filter(matchesRowRules);
+      var oldDrill=document.getElementById("filterMsg");if(oldDrill)oldDrill.remove();
       // --- UX BANNER LOGIC ---
         var globalMsg = document.getElementById('globalFilterBanner');
         if (query) {
@@ -2235,5 +1645,10 @@
 
 })();
 </script>
-</body>
-</html>
+<script>document.querySelector("[data-workspace-return]").addEventListener("click",function(e){e.preventDefault();const w=document.getElementById("workspace"),t=getComputedStyle(w).display==="none"?document.getElementById("dropzone"):w;t.scrollIntoView({block:"start"});t.tabIndex=-1;t.focus({preventScroll:true});});</script><script>
+const actions=document.getElementById('insightsActions'),closeButton=document.getElementById('btnCloseFile');actions.append(closeButton);closeButton.disabled=true;closeButton.textContent='Close file';
+document.getElementById('insightsLoad').addEventListener('click',()=>{if(document.body.classList.contains('has-data')&&!confirm('Open another CSV and replace the current analysis? Download any results you need first.'))return;document.getElementById('fileInput').value='';document.getElementById('fileInput').click();});
+</script>
+<div class="page"><footer class="footer"><span>RunTangent · Thoughtful tools for everyday work.</span><nav aria-label="Footer"><a href="index.html#trust">Privacy</a><a href="tools.html">All tools</a><a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:hello@runtangent.com">Contact</a></nav></footer></div>
+
+</body></html>

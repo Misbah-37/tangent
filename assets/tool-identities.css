@@ -1,0 +1,5 @@
+/* Clear tool identity leads; expressive copy supports it. */
+h1[data-tool-identity]{font-size:clamp(32px,4vw,52px)!important;line-height:1.14!important;letter-spacing:-1.5px!important;overflow-wrap:normal}
+.editor-intro .tool-description,.hygiene-intro .tool-description,p.tool-description{font-size:17px!important;line-height:1.7!important;color:var(--ink)!important;max-width:800px;margin-top:18px!important;margin-bottom:10px!important}
+.editor-intro .tool-tagline,.hygiene-intro .tool-tagline,p.tool-tagline{font-size:16px!important;line-height:1.6!important;color:var(--muted)!important;margin-top:0!important;font-style:italic}
+@media(max-width:650px){h1[data-tool-identity]{font-size:32px!important;letter-spacing:-1px!important}.editor-intro .tool-description,p.tool-description{font-size:15px!important}.editor-intro .tool-tagline,p.tool-tagline{font-size:14px!important}}

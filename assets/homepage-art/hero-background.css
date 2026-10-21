@@ -1,0 +1,6 @@
+/* One faint artwork across the full hero, with existing content above it. */
+.hero:has(.suite-art){position:relative;isolation:isolate}
+.hero:has(.suite-art):before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:url('hero-ribbon-v1.webp') center/cover no-repeat;opacity:.18;mask-image:linear-gradient(to bottom,transparent,#000 20%,#000 75%,transparent),linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 20%,#000 75%,transparent),linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);mask-composite:intersect;-webkit-mask-composite:source-in}
+.suite-art:before,[data-theme="dark"] .suite-art:before{background:none}
+[data-theme="dark"] .hero:has(.suite-art):before{opacity:.09;mix-blend-mode:screen}
+@media(max-width:650px){.hero:has(.suite-art):before{opacity:.13;background-position:60% center}[data-theme="dark"] .hero:has(.suite-art):before{opacity:.08}}

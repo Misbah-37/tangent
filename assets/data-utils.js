@@ -75,5 +75,18 @@
     const r=(covariance/Math.sqrt(sx))/Math.sqrt(sy);
     return {r:Number.isFinite(r)?Math.max(-1,Math.min(1,r)):null,n};
   }
-  root.TangentData = Object.freeze({escapeHtml,parseNumber,csvCell,parseCsv,dateToken,pearson});
+  function spearman(rows,xCol,yCol) {
+    // Delete missing pairs before assigning ranks; ties receive average ranks.
+    const pairs=rows.filter(row=>typeof row[xCol]==='number'&&Number.isFinite(row[xCol])&&typeof row[yCol]==='number'&&Number.isFinite(row[yCol]));
+    function ranks(column){
+      const sorted=pairs.map((row,index)=>({value:row[column],index})).sort((a,b)=>a.value-b.value);
+      const result=new Array(sorted.length);
+      for(let start=0;start<sorted.length;){let end=start+1;while(end<sorted.length&&sorted[end].value===sorted[start].value)end++;
+        const rank=(start+1+end)/2;for(let i=start;i<end;i++)result[sorted[i].index]=rank;start=end;}
+      return result;
+    }
+    const x=ranks(xCol),y=ranks(yCol);
+    return pearson(x.map((value,i)=>({x:value,y:y[i]})),'x','y');
+  }
+  root.TangentData = Object.freeze({escapeHtml,parseNumber,csvCell,parseCsv,dateToken,pearson,spearman});
 })(globalThis);

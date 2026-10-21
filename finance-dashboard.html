@@ -1,65 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<script>
-  (function() {
-    try {
-      if (localStorage.getItem('tangent_theme') === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    } catch (e) {}
-  })();
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="canonical" href="https://runtangent.com/finance-dashboard.html" />
-<title>Private Finance & Budget Dashboard | Tangent</title>
-<meta name="description" content="Analyze your bank statements and track spending locally. Instantly generate financial charts and insights with zero cloud uploads or linked accounts.">
-<link rel="canonical" href="https://runtangent.com/finance-dashboard">
-
-<!-- Foundation & Social Meta Tags -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Tangent">
-<meta property="og:title" content="Private Finance Dashboard | Tangent">
-<meta property="og:description" content="Analyze your bank statements locally. Generate financial charts with zero cloud uploads.">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Tangent Finance Dashboard",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "Any"
-}
-</script>
-<!-- Structured Data for Finance Dashboard -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Finance Dashboard | Tangent",
-  "description": "Visualize bank statements locally. Generate spending charts with zero cloud uploads or linked accounts.",
-  "applicationCategory": "Data&AnalyticsApplication",
-  "operatingSystem": "All",
-  "url": "https://runtangent.com/finance-dashboard.html",
-  "offers": {
-    "@type": "Offer",
-    "price": "0.00",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
-
-<!-- Favicons -->
-<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
-<link rel="icon" type="image/png" href="favicon.png?v=2">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-
-<link rel="stylesheet" href="assets/tangent.css?v=12">
-<style>
-.finance-studio {
+<!doctype html>
+<html lang="en" ><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="assets/theme.js?v=1"></script>
+<title>Finance Dashboard | RunTangent</title>
+<meta name="description" content="Review income and expenses from CSV transactions. Choose date formats, filter the ledger and export matching transactions.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Finance Dashboard | RunTangent"><meta property="og:description" content="Review income and expenses from CSV transactions. Choose date formats, filter the ledger and export matching transactions.">
+<link rel="icon" href="favicon.ico?v=2">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
+  .finance-studio {
     max-width: 1200px;
     margin: 0 auto 60px auto;
     padding: 0 20px;
@@ -182,476 +128,12 @@
   }
   .btn-accent:active {
     transform: scale(0.97);
-  }
-
-/* ── Tangent Global Loader ── */
-#tangentLoader {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(8, 9, 13, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 20px;
-}
-.tl-logo-wrap {
-  position: relative;
-  width: 88px;
-  height: 88px;
-}
-.tl-logo-wrap svg {
-  width: 88px;
-  height: 88px;
-  overflow: visible;
-}
-/* Arc draws itself */
-.tl-arc {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: tlDrawArc 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-/* Line fades and scales in after arc */
-.tl-line {
-  transform-origin: 32px 14px;
-  transform-box: fill-box;
-  animation: tlPulseLine 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-@keyframes tlDrawArc {
-  0%   { stroke-dashoffset: 1; opacity: 0.2; }
-  20%  { opacity: 1; }
-  70%  { stroke-dashoffset: 0; }
-  90%  { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: 1; opacity: 0.2; }
-}
-@keyframes tlPulseLine {
-  0%, 30%  { opacity: 0; transform: scaleY(0.1); }
-  60%, 85% { opacity: 1; transform: scaleY(1); }
-  100%     { opacity: 0; transform: scaleY(0.1); }
-}
-/* Glow ring behind logo */
-.tl-glow {
-  position: absolute;
-  inset: -12px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
-  animation: tlGlowPulse 1.6s ease-in-out infinite;
-}
-@keyframes tlGlowPulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.9); }
-  50%       { opacity: 1;   transform: scale(1.1); }
-}
-.tl-message {
-  color: #94a3b8;
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  font-family: Inter, -apple-system, sans-serif;
-  animation: tlFadeMsg 1.6s ease-in-out infinite;
-}
-@keyframes tlFadeMsg {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 1; }
-}
-
-</style>
-
-<!-- Enforce Custom Domain Canonical -->
-<script>
-  if (window.location.hostname.includes("github.io")) {
-    window.location.replace("https://runtangent.com" + window.location.pathname + window.location.hash);
-  }
-</script>
-</head>
-<body>
-
-
-<!-- Global Navigation -->
-<nav class="global-nav">
-  <div class="nav-left">
-    <a href="index.html" class="nav-brand">
-      <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-        <path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M 32 14 V 44" stroke="var(--text-main)" stroke-width="7" stroke-linecap="round"/>
-      </svg>
-      <span style="display:inline-flex; align-items:center; letter-spacing:-0.5px;"><span style="color:var(--text-main); font-weight:800;">Tan</span><span style="color:var(--accent); font-weight:800;">gent</span></span>
-    </a>
-
-    <!-- Push-Sidebar Toggle Button -->
-    <button type="button" class="toolkit-toggle-btn" id="toolkitToggle" aria-label="Toggle Toolkit Directory" aria-controls="tangentSidebar" aria-expanded="false">
-      <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-      <span>Toolkit</span>
-    </button>
-  </div>
-
-  <div class="nav-right">
-    <!-- Theme Toggle -->
-    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Light/Dark Mode" title="Toggle Theme" style="background:none; border:none; color:var(--text-main); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; border-radius:8px; margin-right:8px;">
-      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
-
-    <!-- Hamburger Button (Mobile Only) -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </button>
-
-    <!-- Navigation Links -->
-    <div class="nav-links" id="navLinks">
-      <a href="/#trust" class="nav-link">Privacy Guarantee</a>
-      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer" class="nav-link">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:text-bottom; margin-right:3px;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        <span>GitHub</span>
-      </a>
-    </div>
-  </div>
-</nav>
-
-<!-- TANGENT_SIDEBAR_START -->
-<aside class="tangent-sidebar" id="tangentSidebar" aria-label="Toolkit Directory">
-  <div class="sidebar-header">
-    <span class="sidebar-title">Toolkit</span>
-    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="Close Sidebar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-  </div>
-  <div class="sidebar-search" style="padding: 0 16px 12px 16px;">
-    <div style="position: relative; display: flex; align-items: center;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="search" id="toolkitSearch" aria-label="Search tools" placeholder="Search tools..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--item-hover); color: var(--text-main); font-size: 0.9rem; transition: 0.2s;">
-    </div>
-  </div>
-
-  <div class="sidebar-nav-list">
-    <!-- Category 1: Documents & PDF -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-1">Documents & PDF</button>
-      <div class="sidebar-group-content" id="sidebar-category-1">
-      <a href="pdf-redactor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="8" y1="13" x2="16" y2="13"></line></svg>
-        <div class="item-text">
-          <div class="item-title">PDF Redactor</div>
-          <div class="item-desc">Blackout data & wipe metadata</div>
-        </div>
-      </a>
-      <a href="pdf-converter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        <div class="item-text">
-          <div class="item-title">PDF Suite</div>
-          <div class="item-desc">Merge, split, compress, & convert</div>
-        </div>
-      </a>
-      <a href="document-ocr.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="4" y1="12" x2="20" y2="12"></line><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>
-        <div class="item-text">
-          <div class="item-title">Document OCR</div>
-          <div class="item-desc">Extract text from scans & images</div>
-        </div>
-      </a>
-      <a href="markdown-studio.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="13" y2="11"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Academic Markdown</div>
-          <div class="item-desc">LaTeX math, paper presets & PDF</div>
-        </div>
-      </a>
-      <a href="document-signer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
-        <div class="item-text">
-          <div class="item-title">Visual e-Signer</div>
-          <div class="item-desc">Visually sign PDFs & docs</div>
-        </div>
-      </a>
-      <a href="receipt-extractor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2L18 4l-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 10h8M8 14h8"/></svg>
-        <div class="item-text">
-          <div class="item-title">Receipt Scanner</div>
-          <div class="item-desc">Extract expenses to CSV</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 2: Business & Career -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-2">Business & Career</button>
-      <div class="sidebar-group-content" id="sidebar-category-2">
-      <a href="resume-builder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line><circle cx="5" cy="7" r="1"></circle><circle cx="5" cy="11" r="1"></circle><circle cx="5" cy="15" r="1"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">Resume Studio</div>
-          <div class="item-desc">ATS-friendly resume builder</div>
-        </div>
-      </a>
-      <a href="invoice-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="18" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Invoice & Receipt Studio</div>
-          <div class="item-desc">Professional PDF invoices & receipts</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 3: Images & Photos -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-3">Images & Photos</button>
-      <div class="sidebar-group-content" id="sidebar-category-3">
-      <a href="photo-resizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        <div class="item-text">
-          <div class="item-title">Photo Resizer</div>
-          <div class="item-desc">Scale dimensions & WebP convert</div>
-        </div>
-      </a>
-      <a href="photo-scrubber.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">Photo Scrubber</div>
-          <div class="item-desc">Strip GPS & EXIF camera tags</div>
-        </div>
-      </a>
-      <a href="bulk-watermarker.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5L16 10 4 20"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Bulk Watermarker</div>
-          <div class="item-desc">Batch image copyright stamper</div>
-        </div>
-      </a>
-      <a href="color-palette.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Color Palette Generator</div>
-          <div class="item-desc">Extract color palettes from images</div>
-        </div>
-      </a>
-      <a href="background-remover.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
-        <div class="item-text">
-          <div class="item-title">Background Remover</div>
-          <div class="item-desc">Local AI transparent PNG</div>
-        </div>
-      </a>
-      <a href="heic-converter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">HEIC Converter</div>
-          <div class="item-desc">Apple photos to JPG</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 4: Design & Dev Graphics -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-4">Design & Dev Graphics</button>
-      <div class="sidebar-group-content" id="sidebar-category-4">
-      <a href="mockup-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Screenshot Beautifier</div>
-          <div class="item-desc">macOS frames, gradients, & shadows</div>
-        </div>
-      </a>
-      <a href="code-to-image.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><circle cx="6.5" cy="6" r="1"></circle><circle cx="9.5" cy="6" r="1"></circle><circle cx="12.5" cy="6" r="1"></circle><polyline points="8 15 10 13 8 11"></polyline><line x1="12" y1="15" x2="16" y2="15"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Code-to-Image</div>
-          <div class="item-desc">Carbon-style snippet frames</div>
-        </div>
-      </a>
-      <a href="svg-optimizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="19" r="2"></circle><path d="M12 17V5"></path><circle cx="5" cy="5" r="2"></circle><circle cx="19" cy="5" r="2"></circle><line x1="7" y1="5" x2="17" y2="5"></line><path d="M5 7c0 4 7 8 7 10"></path><path d="M19 7c0 4-7 8-7 10"></path></svg>
-        <div class="item-text">
-          <div class="item-title">SVG Optimizer</div>
-          <div class="item-desc">Minify, clean & rasterize SVG</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 5: Audio & Video -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-5">Audio & Video</button>
-      <div class="sidebar-group-content" id="sidebar-category-5">
-      <a href="screen-recorder.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-        <div class="item-text">
-          <div class="item-title">Screen Recorder</div>
-          <div class="item-desc">No 5-min cap, zero watermarks</div>
-        </div>
-      </a>
-      <a href="audio-transcriber.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-        <div class="item-text">
-          <div class="item-title">Audio Transcriber</div>
-          <div class="item-desc">Local Whisper AI minutes</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 6: Security & System -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-6">Security & System</button>
-      <div class="sidebar-group-content" id="sidebar-category-6">
-      <a href="file-vault.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.5"></circle></svg>
-        <div class="item-text">
-          <div class="item-title">File Lockbox</div>
-          <div class="item-desc">PIN & password file safe</div>
-        </div>
-      </a>
-      <a href="password-meter.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Password Shield</div>
-          <div class="item-desc">Entropy meter & passphrase gen</div>
-        </div>
-      </a>
-      <a href="file-organizer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">File Organizer</div>
-          <div class="item-desc">In-browser & desktop sorter</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 7: Data & Analytics -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-7">Data & Analytics</button>
-      <div class="sidebar-group-content" id="sidebar-category-7">
-      <a href="csv-insights.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-        <div class="item-text">
-          <div class="item-title">CSV Insights</div>
-          <div class="item-desc">Instant dashboards & charts</div>
-        </div>
-      </a>
-      <a href="sql-studio.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4-3.58 4-8 4-8-1.79-8-4zm0 5c0 2.21 3.58 4 8 4s8-1.79 8-4M4 17c0 2.21 3.58 4 8 4s8-1.79 8-4"></path></svg>
-        <div class="item-text">
-          <div class="item-title">SQL Analytics Studio</div>
-          <div class="item-desc">Run local SQL on CSV/Parquet</div>
-        </div>
-      </a>
-      <a href="data-hygiene.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Data Hygiene Profiler</div>
-          <div class="item-desc">Cleanse CSVs & find anomalies</div>
-        </div>
-      </a>
-      <a href="correlation-matrix.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Correlation Matrix Studio</div>
-          <div class="item-desc">Pearson heatmaps & stats</div>
-        </div>
-      </a>
-      <a href="log-analyzer.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Log Analyzer</div>
-          <div class="item-desc">Parse server & app logs</div>
-        </div>
-      </a>
-      <a href="finance-dashboard.html" class="sidebar-item active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><path d="M12 14h.01"></path></svg>
-        <div class="item-text">
-          <div class="item-title">Finance Dashboard</div>
-          <div class="item-desc">Bank CSV visualizer</div>
-        </div>
-      </a>
-      <a href="data-extractor.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Data Extractor</div>
-          <div class="item-desc">Local HTML scraper to CSV</div>
-        </div>
-      </a>
-      </div>
-    </div>
-
-    <!-- Category 8: Utilities -->
-    <div class="sidebar-group">
-      <button type="button" class="sidebar-group-title" aria-expanded="false" aria-controls="sidebar-category-8">Utilities</button>
-      <div class="sidebar-group-content" id="sidebar-category-8">
-      <a href="qr-generator.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        <div class="item-text">
-          <div class="item-title">QR Generator</div>
-          <div class="item-desc">Custom styling & vector download</div>
-        </div>
-      </a>
-      <a href="typing-test.html" class="sidebar-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="12" x2="8" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
-        <div class="item-text">
-          <div class="item-title">Typing Test</div>
-          <div class="item-desc">100 sentences & paragraphs</div>
-        </div>
-      </a>
-      </div>
-    </div>
-  </div>
-  <div class="sidebar-support-widget">
-    <div class="support-title">Support Tangent</div>
-    <div class="support-desc">If this saved you time today, help keep the suite free and ad-free.</div>
-    <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="support-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      Support
-    </a>
-  </div>
-</aside>
-<!-- TANGENT_SIDEBAR_END -->
-
-<!-- Backdrop Overlay for Mobile -->
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-<!-- ── Global Tangent Loader ── -->
-<div id="tangentLoader" role="status" aria-live="polite" aria-label="Loading">
-  <div class="tl-logo-wrap">
-    <div class="tl-glow"></div>
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path class="tl-arc"
-        d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14"
-        stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
-        pathLength="1"/>
-      <path class="tl-line"
-        d="M 32 14 V 44"
-        stroke="var(--text-main)" stroke-width="6" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="tl-message" id="tangentLoaderMsg">Processing...</div>
-</div>
-
-<!-- Push-Canvas Wrapper -->
-<div class="app-canvas" id="appCanvas">
-
-<div class="clean-header">
-  <div class="privacy-shield-pill">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-    </svg>
-    <span>100% CLIENT-SIDE PRIVACY SHIELD</span>
-  </div>
-  <h1>Finance Dashboard</h1>
-  <p>Visualize your bank statements locally. Drop a CSV file to instantly generate spending insights. Your financial data never leaves your browser.</p>
-</div>
-
-<div class="finance-studio">
+  }</style><link rel="stylesheet" href="assets/workspaces/finance-dashboard/style.css?v=6">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="canonical" href="https://runtangent.com/finance-dashboard.html">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "Finance Dashboard", "description": "Review income and expenses from CSV transactions. Choose date formats, filter the ledger and export matching transactions.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/finance-dashboard.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What kind of CSV can I analyse?", "acceptedAnswer": {"@type": "Answer", "text": "Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview."}}, {"@type": "Question", "name": "How do date formats and invalid values affect totals?", "acceptedAnswer": {"@type": "Answer", "text": "Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches."}}, {"@type": "Question", "name": "How do transaction filters work?", "acceptedAnswer": {"@type": "Answer", "text": "From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page."}}, {"@type": "Question", "name": "Does selecting a currency convert my transactions?", "acceptedAnswer": {"@type": "Answer", "text": "No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention."}}, {"@type": "Question", "name": "What can I export, and is my work saved?", "acceptedAnswer": {"@type": "Answer", "text": "Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory, dependencies may load from CDNs, and work is not automatically saved. Keep original files; memory limits apply."}}]}]</script>
+<style></style></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="page"><div class="nav"><a href="index.html" class="brand" aria-label="RunTangent home"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 50C22 50 14 42 14 32S22 14 32 14H54" stroke="#00b7d9" stroke-width="7" stroke-linecap="round"/><path d="M32 14v30" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span>RunTangent</span></a><nav class="nav-links" aria-label="Main navigation"><a href="tools.html">Tools</a><a class="category-nav" href="index.html#categories-title">Categories</a><a href="index.html#tangent-pro">RunTangent Pro</a></nav><form class="nav-search" action="tools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input name="q" type="search" aria-label="Search tools" placeholder="Search tools…"></form><select class="theme-choice" data-theme-choice aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></div></div></header>
+<main class="page" id="main"><section class="editor-intro finance-intro"><span class="eyebrow">DATA &amp; ANALYTICS / FINANCE DASHBOARD</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">⇄</span>Finance Dashboard</h1><p class="tool-description">Review transaction CSVs with summaries, charts, filters and exports.</p><p class="tool-tagline">Money in. Money out. A clearer picture.</p></section><div class="finance-toolbar"><span>Local transaction CSV · signed amounts</span><button id="financeLoad">Load CSV</button><label class="currency-label">Display currency<select id="displayCurrency"><option>USD</option><option>INR</option><option>EUR</option><option>GBP</option><option>PKR</option><option>AED</option><option>JPY</option></select></label><div id="financeActions"></div></div><p class="currency-note">Display formatting only · no exchange-rate conversion. Use one currency consistently. Amounts display with two decimal places.</p><div class="finance-studio" id="workspace" tabindex="-1">
   <div class="drop-zone" id="dropZone">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -659,13 +141,13 @@
       <line x1="12" y1="18" x2="12" y2="12"></line>
       <line x1="9" y1="15" x2="15" y2="15"></line>
     </svg>
-    <h3>Drop your Bank CSV Statement</h3>
-    <p style="color:var(--text-muted); margin-top:8px;">or click to browse files</p>
+    <h3>A place to see the balance.</h3>
+    <p style="color:var(--text-muted); margin-top:8px;">Load a transaction CSV to bring incoming and outgoing amounts into view.</p>
     <input type="file" id="fileInput" accept=".csv" style="display:none;">
   </div>
 
   <div id="columnMapping" style="display:none; background:var(--bg-card); padding:30px; border-radius:12px; margin-bottom:30px; border:1px solid var(--border-color);">
-    <h3 style="margin-bottom:20px;">Map Your Columns</h3>
+    <h3 style="margin-bottom:20px;">Map Your Columns</h3><p id="financeImportNotice" role="status"></p>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-bottom:24px;">
       <div style="flex:1; min-width:200px;">
         <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Date Column</label>
@@ -686,7 +168,7 @@
         </select>
       </div>
     </div>
-    <button id="btnAnalyze" class="btn-accent">Analyze Data</button>
+    <label class="date-format-label">Source date format<select id="sourceDateFormat"><option value="iso">ISO · YYYY-MM-DD</option><option value="mdy">Month/day/year · MM/DD/YYYY</option><option value="dmy">Day/month/year · DD/MM/YYYY</option></select></label><p class="date-format-note">Choose explicitly before analysing. Dates are calendar days without timezone conversion. Invalid dates stay in amount totals and the ledger but are excluded from the daily chart.</p><button id="btnAnalyze" class="btn-accent">Analyze Data</button>
   </div>
 
   <div id="dashboardControls" style="display:none; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -694,7 +176,7 @@
     <button id="btnCloseFile" class="btn-accent" style="background:transparent; border:1px solid var(--border-color); color:var(--text-muted); padding:8px 16px;">✕ Close File</button>
   </div>
 
-  <div class="dashboard-grid" id="dashboardGrid">
+<div id="transactionFilters" hidden><div class="transaction-filter-controls"><label>From day<input id="filterFrom" type="date"></label><label>Through day<input id="filterThrough" type="date"></label><label>Category<select id="filterCategory"><option value="">All categories</option></select></label><button id="applyTransactionFilters">Apply filters</button><button id="clearTransactionFilters">Clear filters</button><button id="exportTransactionView">Export current transactions</button></div><p>Dates are inclusive calendar days. Active date bounds exclude transactions without valid dates. CSV exports every matching transaction across pages, using parsed numeric amounts without currency conversion.</p><p id="transactionFilterStatus" role="status"></p></div>  <div class="dashboard-grid" id="dashboardGrid">
     <div class="stat-card">
       <div class="stat-title">Total Inflow</div>
       <div class="stat-value value-positive" id="valInflow">$0.00</div>
@@ -745,131 +227,16 @@
 </div>
 
 
-  <!-- Educational & Security Architecture Section -->
-  <div class="info-section">
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        </div>
-        <h3>Private Data Parsing</h3>
-        <p>Bank statements are parsed locally via your browser's FileReader API. Your financial data is never exposed to external servers.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
-        </div>
-        <h3>Instant Analytics</h3>
-        <p>Automatically generates beautiful, dynamic charts for tracking income, categorizing expenses, and mapping your daily cash flow.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        </div>
-        <h3>Zero Cloud Tracking</h3>
-        <p>No telemetry, no database storage, and no tracking scripts. You process your finances entirely in an offline sandbox.</p>
-      </div>
-    </div>
-
-    <div class="faq-title">Frequently Asked Questions</div>
-
-    <div class="faq-box">
-      <details>
-        <summary>Is my bank statement uploaded to a server?</summary>
-        <p>No. Tangent operates on a strict 100% client-side processing model. When you drag and drop your CSV, it is read directly into your device's memory and parsed offline. Nothing is ever uploaded.</p>
-      </details>
-    </div>
-    <div class="faq-box">
-      <details>
-        <summary>What CSV formats are supported?</summary>
-        <p>The dashboard can process almost any standard bank statement CSV as long as it contains standard headers for dates and amounts (e.g., Date, Amount, Description). It automatically ignores extra meta-rows at the top of the file.</p>
-      </details>
-    </div>
-    <div class="faq-box">
-      <details>
-        <summary>Does this tool support multiple currencies?</summary>
-        <p>Yes. The tool processes the raw numbers exactly as they appear in your statement and does not forcefully convert currencies, so it works natively with USD, EUR, GBP, or any other numeric format.</p>
-      </details>
-    </div>
-  </div>
-
-  <!-- Standard Global Footer -->
-  <footer class="global-footer">
-    <div style="margin-bottom: 16px;">
-      <a href="index.html">Home</a>
-      <a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="mailto:hello@runtangent.com">Contact</a>
-      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
-    </div>
-    <div>&copy; 2026 Tangent. Built for speed, privacy, and precision.</div>
-  </footer>
-
-</div>
-
-
-<!-- Global Success Toast -->
-<div class="tangent-toast" id="tangentToast">
-  <div class="toast-content">
-    <div class="toast-header">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      <span id="toastTitle">Success!</span>
-    </div>
-    <div class="toast-body">
-      If Tangent saved you time today, consider supporting the project to keep it 100% free and ad-free.
-    </div>
-    <div class="toast-actions">
-      <a href="https://misbahul0.gumroad.com/l/support-tangent" target="_blank" rel="noopener noreferrer" class="toast-btn toast-btn-primary">Support Tangent</a>
-      <button class="toast-btn toast-btn-ghost" id="toastCloseBtn">Dismiss</button>
-    </div>
-  </div>
-</div>
-
-<!-- Global Shell Script -->
-<script src="assets/tangent.js?v=11"></script>
-
-<!-- Global TangentLoader Utility -->
-<script>
-  window.TangentLoader = {
-    show: function(msg) {
-      var el = document.getElementById('tangentLoader');
-      var msgEl = document.getElementById('tangentLoaderMsg');
-      if (msgEl) msgEl.textContent = msg || 'Processing...';
-      if (el) el.style.display = 'flex';
-    },
-    hide: function() {
-      var el = document.getElementById('tangentLoader');
-      if (el) el.style.display = 'none';
-    }
-  };
-
-  window.TangentToast = {
-    show: function(titleMsg) {
-      var toast = document.getElementById('tangentToast');
-      var title = document.getElementById('toastTitle');
-      var closeBtn = document.getElementById('toastCloseBtn');
-      if (!toast || !title) return;
-
-      title.textContent = titleMsg || 'Task Complete!';
-      toast.classList.add('show');
-
-      if (closeBtn) {
-        closeBtn.onclick = function() {
-          toast.classList.remove('show');
-        };
-      }
-
-      setTimeout(function() {
-        toast.classList.remove('show');
-      }, 12000);
-    }
-  };
-</script>
-
+<section class="editor-guide" aria-labelledby="finance-guide"><div class="guide-heading"><span class="eyebrow">FOLLOW THE MOVEMENT</span><h2 id="finance-guide">Make room<br>for perspective.</h2><p>Turn a transaction CSV into a view of inflow, outflow and net movement. Check the source and mappings before interpreting the totals.</p></div><section><h3>How to explore transactions</h3><ol class="guide-steps"><li><strong>Load your CSV.</strong> Start with one currency and one signed amount column. Keep your original file.</li><li><strong>Map the details.</strong> Choose date, description and amount columns, with an optional category. Select ISO, month/day/year or day/month/year explicitly, and check the amount sign convention.</li><li><strong>Review the overview.</strong> Analyse totals and charts, then use inclusive date bounds and category filters. Review the matching ledger and distinguish the import notice from the current-view status.</li><li><strong>Keep the context.</strong> Export all current transactions across pages as CSV. Display currency changes formatting only. Totals describe included transactions, not your bank balance; keep the original source records.</li></ol></section><aside class="guide-limits"><h3>A clear view starts with consistent data</h3><p>Missing amounts are excluded. Choose the source date format explicitly; invalid dates remain in totals but are excluded from the daily chart. Display currency changes formatting only, without converting amounts. Verify mappings and source values when totals look unexpected.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear totals.<br>Clear boundaries.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What kind of CSV can I analyse?</summary><p>Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview.</p></details><details><summary>How do date formats and invalid values affect totals?</summary><p>Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches.</p></details><details><summary>How do transaction filters work?</summary><p>From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page.</p></details><details><summary>Does selecting a currency convert my transactions?</summary><p>No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention.</p></details><details><summary>What can I export, and is my work saved?</summary><p>Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory, dependencies may load from CDNs, and work is not automatically saved. Keep original files; memory limits apply.</p></details></div></section></section></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="assets/data-utils.js?v=1"></script>
+<script src="assets/data-utils.js?v=1"></script><script src="assets/workspaces/finance-dashboard/import.js?v=1"></script>
 
 <script>
+  function calendarDay(value,format){const text=String(value??'').trim();let match,y,m,d;if(format==='iso'){match=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text);if(!match)return null;[,y,m,d]=match.map(Number);}else{match=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text);if(!match)return null;y=Number(match[3]);m=Number(match[format==='mdy'?1:2]);d=Number(match[format==='mdy'?2:1]);}if(y<1||y>9999)return null;const date=new Date(0);date.setUTCFullYear(y,m-1,d);date.setUTCHours(0,0,0,0);if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d)return null;return String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+  function formatMoney(value){return new Intl.NumberFormat(undefined,{style:'currency',currency:document.getElementById('displayCurrency').value,currencyDisplay:'code',minimumFractionDigits:2,maximumFractionDigits:2}).format(value);}
+  function currencyTooltip(context){const value=typeof context.parsed==='number'?context.parsed:context.parsed.y;return (context.label?context.label+': ':'')+formatMoney(value);}
+  document.getElementById('displayCurrency').addEventListener('change',()=>{const incoming=ledgerRows.reduce((sum,tx)=>sum+Math.max(0,tx.amt),0),outgoing=ledgerRows.reduce((sum,tx)=>sum+Math.max(0,-tx.amt),0);document.getElementById('valInflow').textContent=formatMoney(incoming);document.getElementById('valOutflow').textContent=formatMoney(outgoing);document.getElementById('valNet').textContent=formatMoney(incoming-outgoing);if(ledgerRows.length){renderLedgerPage();renderCharts(ledgerRows,incoming,outgoing,ledgerCategory);}});
   let fileOperation = 0;
   let rawData = [];
   let parsedHeaders = [];
@@ -907,11 +274,14 @@
       return;
     }
     const operation = ++fileOperation;
-    file.text().then(text => {
+    FinanceCsvImport.cancel();
+    file.text().then(async text => {
       if (operation !== fileOperation) return;
-      const parsed = TangentData.parseCsv(text);
+      const parsed = await FinanceCsvImport.read(text);
+      if (!parsed || operation !== fileOperation) return;
       if (!parsed.data.length) throw new Error('CSV contains no data rows.');
       rawData = parsed.data; parsedHeaders = parsed.headers; setupMapping();
+      document.getElementById("financeImportNotice").textContent = parsed.skippedRecords ? `Using record ${parsed.headerRecord} as the header; ${parsed.skippedRecords} introductory/blank records skipped. ${parsed.data.length} data records ready for mapping.` : `${parsed.data.length} data records ready for mapping.`;
     }).catch(error => {if(operation === fileOperation) alert(error.message);});
   }
 
@@ -960,6 +330,7 @@
       {
         validTx.push({
           date: row[dCol] || "Unknown",
+          dateKey:calendarDay(row[dCol],document.getElementById('sourceDateFormat').value),
           desc: row[descCol] || "Unknown",
           amt: amt,
           category: catCol ? (row[catCol] || "Uncategorized") : null
@@ -967,12 +338,12 @@
       }
     });
 
-    document.getElementById('valInflow').textContent = "$" + inflow.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-    document.getElementById('valOutflow').textContent = "$" + outflow.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('valInflow').textContent = formatMoney(inflow);
+    document.getElementById('valOutflow').textContent = formatMoney(outflow);
 
     const net = inflow - outflow;
     const netEl = document.getElementById('valNet');
-    netEl.textContent = (net < 0 ? "-$" : "$") + Math.abs(net).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    netEl.textContent = formatMoney(net);
     netEl.className = "stat-value " + (net >= 0 ? "value-positive" : "value-negative");
 
     document.getElementById('dashboardControls').style.display = 'flex';
@@ -981,14 +352,20 @@
     document.getElementById('tableWrapper').style.display = 'block';
     columnMapping.style.display = 'none';
 
+    analysedTransactions=validTx;ledgerCategory=!!catCol;document.getElementById('transactionFilters').hidden=false;document.getElementById('filterFrom').value='';document.getElementById('filterThrough').value='';const categorySelect=document.getElementById('filterCategory');categorySelect.replaceChildren();const allOption=document.createElement('option');allOption.value='';allOption.textContent='All categories';categorySelect.append(allOption);if(catCol)Array.from(new Set(validTx.map(tx=>tx.category))).sort().forEach(category=>{const option=document.createElement('option');option.value=option.textContent=category;categorySelect.append(option);});categorySelect.disabled=!catCol;document.getElementById('transactionFilterStatus').textContent='Showing '+validTx.length+' of '+validTx.length+' analysed transactions.';
     renderTable(validTx, !!catCol);
     renderCharts(validTx, inflow, outflow, !!catCol);
     let notice = document.getElementById('amountNotice');
     if (!notice) {notice=document.createElement('p');notice.id='amountNotice';notice.setAttribute('role','status');document.getElementById('tableWrapper').prepend(notice);}
-    notice.textContent = validTx.length.toLocaleString() + ' transactions included; ' + rejected.toLocaleString() + ' rows excluded because the amount is missing or invalid.';
+    notice.textContent = validTx.length.toLocaleString() + ' transactions included; ' + rejected.toLocaleString() + ' rows excluded because the amount is missing or invalid. '+validTx.filter(tx=>!tx.dateKey).length.toLocaleString()+' included transactions have missing or invalid dates: retained in amount totals and the ledger, excluded from the daily chart.';
   });
 
-  let ledgerRows = [], ledgerCategory = false, ledgerPage = 0;
+  let analysedTransactions=[],ledgerRows = [], ledgerCategory = false, ledgerPage = 0;
+  function updateTransactionView(rows){const inflow=rows.reduce((sum,tx)=>sum+Math.max(0,tx.amt),0),outflow=rows.reduce((sum,tx)=>sum+Math.max(0,-tx.amt),0);document.getElementById('valInflow').textContent=formatMoney(inflow);document.getElementById('valOutflow').textContent=formatMoney(outflow);const net=document.getElementById('valNet');net.textContent=formatMoney(inflow-outflow);net.className='stat-value '+(inflow>=outflow?'value-positive':'value-negative');renderTable(rows,ledgerCategory);renderCharts(rows,inflow,outflow,ledgerCategory);document.getElementById('transactionFilterStatus').textContent='Showing '+rows.length+' of '+analysedTransactions.length+' analysed transactions. '+rows.filter(tx=>!tx.dateKey).length+' have invalid or missing dates.';}
+  document.getElementById('applyTransactionFilters').addEventListener('click',()=>{const from=document.getElementById('filterFrom').value,through=document.getElementById('filterThrough').value,category=document.getElementById('filterCategory').value;if((from&&!calendarDay(from,'iso'))||(through&&!calendarDay(through,'iso'))||(from&&through&&from>through)){document.getElementById('transactionFilterStatus').textContent='Enter valid date bounds with From on or before Through. Current view is unchanged.';return;}updateTransactionView(analysedTransactions.filter(tx=>(!from||(tx.dateKey&&tx.dateKey>=from))&&(!through||(tx.dateKey&&tx.dateKey<=through))&&(!category||tx.category===category)));});
+  document.getElementById('clearTransactionFilters').addEventListener('click',()=>{document.getElementById('filterFrom').value='';document.getElementById('filterThrough').value='';document.getElementById('filterCategory').value='';updateTransactionView(analysedTransactions);});
+  document.getElementById('exportTransactionView').addEventListener('click',()=>{const columns=['source_date','calendar_day','description','amount'];if(ledgerCategory)columns.push('category');const rows=[columns,...ledgerRows.map(tx=>{const r=[tx.date,tx.dateKey||'',tx.desc,String(tx.amt)];if(ledgerCategory)r.push(tx.category);return r;})];const url=URL.createObjectURL(new Blob([rows.map(r=>r.map(TangentData.csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='current_transactions.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+
   document.getElementById('ledgerPrev').addEventListener('click', () => {if(ledgerPage > 0) {ledgerPage--; renderLedgerPage();}});
   document.getElementById('ledgerNext').addEventListener('click', () => {if((ledgerPage+1)*100 < ledgerRows.length) {ledgerPage++; renderLedgerPage();}});
   function renderTable(txs, showCategory) {
@@ -1020,7 +397,7 @@
         <td>${escapeHtml(tx.desc)}</td>
         ${catHtml}
         <td style="text-align:right; color:${amtColor}; font-weight:600;">
-          ${tx.amt > 0 ? '+' : tx.amt < 0 ? '-' : ''}$${Math.abs(tx.amt).toFixed(2)}
+          ${tx.amt > 0 ? '+' : ''}${escapeHtml(formatMoney(tx.amt))}
         </td>
       `;
       tbody.appendChild(tr);
@@ -1051,17 +428,18 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } }
+        plugins: { legend: { position: 'bottom' }, tooltip:{callbacks:{label:currencyTooltip}} }
       }
     });
 
     // 2. Aggregate by date for Bar Chart
     let dateMap = Object.create(null);
     txs.forEach(tx => {
-      if(!dateMap[tx.date]) dateMap[tx.date] = 0;
-      dateMap[tx.date] += tx.amt;
+      if(!tx.dateKey)return;
+      if(!dateMap[tx.dateKey]) dateMap[tx.dateKey] = 0;
+      dateMap[tx.dateKey] += tx.amt;
     });
-    let sortedDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
+    let sortedDates = Object.keys(dateMap).sort();
     let balances = sortedDates.map(d => dateMap[d]);
 
     const timeCtx = document.getElementById('timeChart').getContext('2d');
@@ -1070,7 +448,7 @@
       data: {
         labels: sortedDates,
         datasets: [{
-          label: 'Net Daily ($)',
+          label: 'Net Daily ('+document.getElementById('displayCurrency').value+')',
           data: balances,
           backgroundColor: balances.map(b => b >= 0 ? '#10b981' : '#ef4444'),
           borderRadius: 4
@@ -1080,10 +458,10 @@
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { grid: { color: '#1f273b' } },
+          y: { ticks:{callback:value=>formatMoney(value)}, grid: { color: '#1f273b' } },
           x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
         },
-        plugins: { legend: { display: false } }
+        plugins: { legend: { display: false }, tooltip:{callbacks:{label:currencyTooltip}} }
       }
     });
 
@@ -1109,7 +487,7 @@
       categoryChartInstance = new Chart(catCtx, {
         type: 'doughnut',
         data: {
-          labels: sortedDates.length > 0 ? sortedCats : [],
+          labels: sortedCats,
           datasets: [{
             data: catData,
             backgroundColor: catColors,
@@ -1120,7 +498,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom' } }
+          plugins: { legend: { position: 'bottom' }, tooltip:{callbacks:{label:currencyTooltip}} }
         }
       });
     } else {
@@ -1138,8 +516,9 @@
     dropZone.style.display = 'block';
 
     fileOperation++;
+    FinanceCsvImport.cancel();
     rawData = [];
-    ledgerRows = []; ledgerPage = 0;
+    ledgerRows = []; analysedTransactions=[];ledgerPage = 0;document.getElementById('transactionFilters').hidden=true;
     parsedHeaders = [];
     fileInput.value = '';
     if(pieChartInstance) pieChartInstance.destroy();
@@ -1147,5 +526,7 @@
     if(categoryChartInstance) categoryChartInstance.destroy();
   });
 </script>
-</body>
-</html>
+<script>document.getElementById('financeLoad').addEventListener('click',()=>document.getElementById('fileInput').click());document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<div class="page"><footer class="footer"><span>RunTangent · Thoughtful tools for everyday work.</span><nav aria-label="Footer"><a href="index.html#trust">Privacy</a><a href="tools.html">All tools</a><a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:hello@runtangent.com">Contact</a></nav></footer></div>
+
+</body></html>

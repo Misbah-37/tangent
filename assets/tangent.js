@@ -29,6 +29,9 @@
     setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
   }
 
+  const compactSidebar=window.matchMedia('(max-width: 960px)');
+  compactSidebar.addEventListener('change',event=>{if(event.matches)setSidebarState(false,false);});
+
   // Restore desktop state on load
   try {
     const stored = localStorage.getItem('tangent_sidebar_open');
@@ -166,10 +169,12 @@
   // Initialize UI based on current attribute (set by head script)
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   updateThemeUI(isLight);
+  window.addEventListener('themechange',()=>updateThemeUI(document.documentElement.getAttribute('data-theme')==='light'));
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const isCurrentlyLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if(window.TangentTheme){window.TangentTheme.setPreference(isCurrentlyLight?'dark':'light');return;}
       if (isCurrentlyLight) {
         document.documentElement.removeAttribute('data-theme');
         try { localStorage.setItem('tangent_theme', 'dark'); } catch(e){}

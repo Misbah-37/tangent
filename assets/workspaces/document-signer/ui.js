@@ -1,0 +1,14 @@
+const panel=document.createElement('aside');panel.className='signing-panel';panel.innerHTML='<h3>Make your mark</h3><p>Create a signature or add a finishing detail to this page.</p>';
+const groups=[...signerWorkspace.querySelectorAll('.toolbar-group')];panel.append(groups[1]);panel.append(undoBtn);
+const form=signerWorkspace.querySelector('#flattenFormFields').parentElement.parentElement;form.removeAttribute('style');panel.append(form);
+const help=document.createElement('p');help.textContent='Drag a mark to move it. Use its handles to resize or rotate. Remove a mark with its × control.';panel.append(help);
+const stage=signerWorkspace.querySelector('.stage-viewport');const layout=document.createElement('div');layout.className='signing-layout';stage.before(layout);layout.append(stage,panel);
+downloadSignedPdfBtn.className='primary-action';downloadSignedPdfBtn.textContent='Download PDF';document.getElementById('exportSlot').append(downloadSignedPdfBtn);groups[2].remove();downloadSignedPdfBtn.disabled=true;
+document.getElementById('loadPdf').onclick=()=>pdfFileInput.click();
+const originalLoad=loadPdfFile;loadPdfFile=async file=>{await originalLoad(file);if(pdfDoc){document.getElementById('filename').textContent=file.name;document.getElementById('closePdf').disabled=false;downloadSignedPdfBtn.disabled=false;}};
+document.getElementById('closePdf').onclick=async()=>{++fileOperation;++renderOperation;if(activeRender){activeRender.cancel();try{await activeRender.promise}catch(_){}}const old=pdfDoc;pdfDoc=null;rawPdfBytes=null;placedStamps=[];stampsLayer.replaceChildren();pdfFileInput.value='';signerWorkspace.style.display='none';dropZone.style.display='block';document.getElementById('filename').textContent='No PDF loaded';document.getElementById('closePdf').disabled=true;downloadSignedPdfBtn.disabled=true;sigModal.classList.remove('active');if(old)await old.destroy();};
+sigModal.setAttribute('role','dialog');sigModal.setAttribute('aria-modal','true');sigModal.setAttribute('aria-label','Create your signature');
+createSignatureBtn.addEventListener('click',()=>closeModalBtn.focus());
+for(const el of [closeModalBtn,cancelSigBtn,saveSigBtn])el.addEventListener('click',()=>{if(!sigModal.classList.contains('active'))createSignatureBtn.focus()});
+document.addEventListener('keydown',e=>{if(!sigModal.classList.contains('active'))return;if(e.key==='Escape'){sigModal.classList.remove('active');createSignatureBtn.focus()}if(e.key==='Tab'){const els=[...sigModal.querySelectorAll('button,input')].filter(x=>x.offsetParent!==null&&!x.disabled);if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===els.at(-1)){e.preventDefault();els[0].focus()}}});
+document.querySelector('[data-workspace-return]').onclick=e=>{e.preventDefault();document.getElementById('workspace').focus({preventScroll:true});document.getElementById('workspace').scrollIntoView({behavior:'smooth'})};

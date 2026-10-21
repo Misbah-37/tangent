@@ -1,0 +1,417 @@
+
+  :root {}
+
+  .clean-header {
+    text-align: center;
+    padding: 36px 20px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .clean-header .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .clean-header h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-main);
+    margin-bottom: 12px;
+  }
+
+  .clean-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .signer-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* Upload Dropzone */
+  .upload-dropzone {
+    background: var(--bg-base);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+  }
+
+  .upload-dropzone:hover, .upload-dropzone.dragover {
+    border-color: var(--accent);
+    background: rgba(0, 210, 255, 0.04);
+  }
+
+  .dropzone-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent);
+    border-radius: 12px;
+    margin: 0 auto 14px;
+  }
+
+  .upload-dropzone h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 6px;
+  }
+
+  .upload-dropzone p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+
+  /* Workspace View */
+  .signer-workspace {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Toolbar */
+  .signer-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 18px;
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tool-btn:hover {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border-color: var(--accent);
+  }
+
+  .tool-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #08090d;
+    font-weight: 700;
+  }
+
+  .tool-btn.primary:hover {
+    background: #33dcff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  }
+
+  /* Document Stage Canvas */
+  .stage-viewport {
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 32px;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    min-height: 700px;
+  }
+
+  .page-wrapper {
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    background: #ffffff;
+    user-select: none;
+  }
+
+  #pdfCanvas {
+    display: block;
+  }
+
+  /* Placed Elements on Page */
+  .placed-stamp {
+    position: absolute;
+    cursor: move;
+    outline: 2px dashed rgba(0, 210, 255, 0.7);
+    background: rgba(0, 210, 255, 0.05);
+    padding: 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .placed-stamp img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    max-width: 100%;
+    max-height: 100%;
+    pointer-events: none;
+  }
+
+  .placed-stamp .stamp-delete {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: var(--text-main);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  .placed-stamp .stamp-resize {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    color: #08090d;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: nwse-resize;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  .placed-stamp .stamp-rotate-btn {
+    position: absolute;
+    bottom: -8px;
+    left: -8px;
+    width: 20px;
+    height: 20px;
+    background: #10b981;
+    color: var(--text-main);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  .placed-stamp .stamp-opac-btn {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    background: #f59e0b;
+    color: var(--text-main);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 11;
+  }
+
+  /* Signature Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 540px;
+    max-width: 100%;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+
+  .modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-base);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(0, 210, 255, 0.04);
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .pad-canvas-wrap {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #sigPadCanvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    display: block;
+  }
+
+  .pad-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .color-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .color-dot.active {
+    border-color: var(--text-main);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+  }
+
+  /* FAQ Section */
+  .faq-container {
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .faq-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 24px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .faq-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+  }
+
+  .faq-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }

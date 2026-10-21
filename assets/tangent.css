@@ -821,3 +821,4 @@ body {
 
 .theme-toggle-btn { transition: 0.2s ease; }
 .theme-toggle-btn:hover { color: var(--accent) !important; background: var(--bg-card-hover) !important; }
+.theme-choice{font:12px Segoe UI,Arial,sans-serif;border:1px solid var(--border-color);border-radius:7px;padding:7px 8px;min-height:36px;background:var(--bg-surface);color:var(--text-main);margin-right:8px;max-width:100px}

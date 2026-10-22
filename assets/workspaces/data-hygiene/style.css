@@ -117,3 +117,5 @@ html[data-tool-concept="hygiene"] .has-dataset .panel-header{padding-bottom:12px
 .faq-questions summary:after,.faq-questions details[open] summary:after{content:none}
 .faq-questions p{margin-left:32px;margin-right:0}
 @media(prefers-reduced-motion:reduce){.faq-questions summary:before{transition:none}}
+
+html[data-tool-concept="hygiene"] #dropzone:focus-visible{outline:3px solid var(--accent);outline-offset:3px}

@@ -29,7 +29,7 @@
   .accordion-content { padding: 16px; display: none; border-top: 1px solid var(--border-color); background: var(--bg-main); }
   .accordion-content.active { display: block; }
   .accordion-icon { transition: transform 0.2s; }
-  .accordion-content.active + .accordion-header .accordion-icon { transform: rotate(180deg); }
+  .accordion-header[aria-expanded="true"] .accordion-icon { transform: rotate(180deg); }
 
   .form-group { margin-bottom: 16px; }
   .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
@@ -100,7 +100,7 @@
   .cell-missing { background: rgba(255, 68, 68, 0.1) !important; color: #ff4444; }
   .cell-whitespace { background: rgba(255, 193, 7, 0.1) !important; color: #d4a017; font-family: monospace; }
   .badge-anomaly { display: inline-block; background: rgba(255,68,68,0.15); color: #ff4444; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-right: 4px; }
-  .badge-warning { display: inline-block; background: rgba(255,193,7,0.15); color: #d4a017; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }</style><link rel="stylesheet" href="assets/workspace-first.css?v=1"><link rel="stylesheet" href="assets/editorial.css?v=6"><link rel="stylesheet" href="assets/workspaces/data-hygiene/style.css?v=15">
+  .badge-warning { display: inline-block; background: rgba(255,193,7,0.15); color: #d4a017; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }</style><link rel="stylesheet" href="assets/workspace-first.css?v=1"><link rel="stylesheet" href="assets/editorial.css?v=6"><link rel="stylesheet" href="assets/workspaces/data-hygiene/style.css?v=16">
 <link rel="stylesheet" href="assets/tool-identities.css?v=1">
 <link rel="canonical" href="https://runtangent.com/data-hygiene.html">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "Data Hygiene Profiler", "description": "Clean, standardize and validate CSV data locally in your browser. Compare source values with a live preview and download the cleaned result.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/data-hygiene.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do source, live preview and completed output differ?", "acceptedAnswer": {"@type": "Answer", "text": "Original source shows untouched input. Preview with changes applies the current recipe to the full dataset, with Source / preview comparison available. Execute creates completed output for Download CSV. Later preview edits do not overwrite that export. Export affected rows instead uses the selected review view and issue type, including all matching rows and all columns across pages."}}, {"@type": "Question", "name": "Can I control missing values and how they are filled?", "acceptedAnswer": {"@type": "Answer", "text": "Toggle blank cells, N/A, NULL, NaN and the dash marker, or add custom markers one per line. Matching ignores case and surrounding spaces. Unchecked markers remain text. Fill with mean, median, mode or custom text; literal replacements such as N/A are preserved. Numeric fills use usable values across the full dataset, excluding configured missing markers and empty numeric strings. A numeric fill cannot run without usable numbers."}}, {"@type": "Question", "name": "How do deduplication and validation rules work?", "acceptedAnswer": {"@type": "Answer", "text": "Exact deduplication compares all fields; key deduplication compares selected columns. The first matching row stays, and comparisons retain source row identities for removed records. Validation flags values without modifying them: required values, inclusive numeric/date ranges and exact allowed categories. Date checks expect valid YYYY-MM-DD values. Optional values classified as missing skip range and category checks."}}, {"@type": "Question", "name": "Does my data leave the device, and how large can it be?", "acceptedAnswer": {"@type": "Answer", "text": "CSV parsing, cleaning and review run in browser memory; uploaded CSV contents are not sent to a processing server. Website assets and third-party libraries can require network requests, so offline availability is not guaranteed. Practical capacity depends on browser/device memory, data and recipe. Background workers help with cleaning, but large previews and comparisons may take time. Keep the original CSV and download results before closing."}}, {"@type": "Question", "name": "How do I reuse a recipe, and is the Python preview executable?", "acceptedAnswer": {"@type": "Answer", "text": "Named presets are stored in this browser, including column names, replacement text, missing markers and validation settings, not dataset row arrays. Clearing browser storage removes them; export recipe JSON to keep a backup or move settings. The Python preview is an illustrative pipeline outline with helper calls, not a standalone executable. Close preview or press Escape to return without losing your dataset."}}]}]</script>
@@ -132,7 +132,7 @@
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="chkStripControlChars">
-            <span><strong>Strip Control Characters</strong> Remove invisible ASCII, zero-width spaces, and BOM markers that break database imports.</span>
+            <span><strong>Strip Control Characters</strong> Remove ASCII control characters, zero-width spaces (U+200B), and BOM markers (U+FEFF). Preserves language and emoji joiners (U+200C/U+200D).</span>
           </label>
         </div>
       </div>
@@ -149,31 +149,35 @@
               <span><strong>Trim All Whitespace</strong> Remove leading/trailing spaces across the entire dataset.</span>
             </label>
             <div class="form-group">
-              <label>Reformat & Standardize Dates</label>
-                <div style="display: flex; gap: 8px;">
-                  <select id="selFormatDates" class="form-control col-select" style="flex: 1;"></select>
-                  <select id="selDateLocale" class="form-control" style="width: 140px;" title="Date Format Assumption">
-                    <option value="US">US (MM/DD/YYYY)</option>
-                    <option value="EU">EU (DD/MM/YYYY)</option>
+              <label for="selFormatDates">Reformat & Standardize Dates</label>
+              <select id="selFormatDates" class="form-control col-select"></select>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                <label for="selDateInputLocale" style="flex:1;min-width:180px">Input order
+                  <select id="selDateInputLocale" class="form-control"><option value="US">Month / day / year</option><option value="EU">Day / month / year</option></select>
+                </label>
+                <label for="selDateLocale" style="flex:1;min-width:180px">Output format
+                  <select id="selDateLocale" class="form-control" title="Date output format">
+                    <option value="US">US (MM/DD/YYYY)</option><option value="EU">EU (DD/MM/YYYY)</option><option value="ISO">ISO (YYYY-MM-DD)</option>
                   </select>
-                </div>
+                </label>
+              </div>
               <div id="selFormatDates_pills" class="pill-container"></div>
-              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Smart parsing to convert and unify dates to your chosen format.</small>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Ambiguous numeric dates use Input order. Output format controls the exported date; ISO and named-month inputs do not depend on numeric order.</small>
             </div>
             <div class="form-group">
-              <label>Clean Numeric / Currency</label>
+              <label for="selFormatNumbers">Clean Numeric / Currency</label>
               <select id="selFormatNumbers" class="form-control col-select"></select>
               <div id="selFormatNumbers_pills" class="pill-container"></div>
               <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Strips currency symbols, fixes 'k' (e.g. 60k), and parses word numbers.</small>
             </div>
             <div class="form-group">
-              <label>Standardize Phone Numbers</label>
+              <label for="selFormatPhones">Standardize Phone Numbers</label>
               <select id="selFormatPhones" class="form-control col-select"></select>
               <div id="selFormatPhones_pills" class="pill-container"></div>
               <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Converts raw phone numbers to standard XXX-XXX-XXXX format.</small>
             </div>
             <div class="form-group">
-              <label>Title-Case Text</label>
+              <label for="selTitleCase">Title-Case Text</label>
               <select id="selTitleCase" class="form-control col-select"></select>
               <div id="selTitleCase_pills" class="pill-container"></div>
               <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Properly capitalizes names and addresses (e.g. helen keller &rarr; Helen Keller).</small>
@@ -189,22 +193,22 @@
         </div>
         <div class="accordion-content">
           <fieldset id="missing-policy" style="border:0;padding:0;margin:0 0 18px"><legend>Treat these values as missing</legend><div class="missing-options"><label><input id="missing-blank" type="checkbox" checked> Blank cells</label><label><input type="checkbox" data-missing-marker="N/A" checked> N/A</label><label><input type="checkbox" data-missing-marker="NULL" checked> NULL</label><label><input type="checkbox" data-missing-marker="NaN" checked> NaN</label><label><input type="checkbox" data-missing-marker="-" checked> -</label></div><label for="missing-custom">Additional markers (one per line)</label><textarea id="missing-custom" rows="2"></textarea><small>Matching ignores case and surrounding spaces. Unchecked markers remain valid text. Exports preserve stored values.</small></fieldset><div class="form-group">
-            <label>Drop Rows Missing Critical Data In:</label>
+            <label for="selDropMissingCols">Drop Rows Missing Critical Data In:</label>
             <select id="selDropMissingCols" class="form-control col-select"></select>
               <div id="selDropMissingCols_pills" class="pill-container"></div>
           </div>
           <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top: 16px;">
-            <label>Impute (Fill) Missing Data</label>
+            <label for="selImputeCol">Impute (Fill) Missing Data</label>
             <select id="selImputeCol" class="form-control col-select" style="margin-bottom: 8px;">
               <option value="">-- Select Column --</option>
             </select>
-            <select id="selImputeMethod" class="form-control">
+            <select id="selImputeMethod" aria-label="Imputation method" class="form-control">
               <option value="mean">Fill with Mean (Numeric)</option>
               <option value="median">Fill with Median (Numeric)</option>
               <option value="mode">Fill with Mode (Most Frequent)</option>
               <option value="custom">Fill with Custom Value</option>
             </select>
-            <input type="text" id="txtImputeCustom" class="form-control" style="margin-top: 8px; display: none;" placeholder="e.g. Unknown or N/A">
+            <input type="text" id="txtImputeCustom" aria-label="Custom missing-value replacement" class="form-control" style="margin-top: 8px; display: none;" placeholder="e.g. Unknown or N/A">
             <button class="btn btn-outline" style="margin-top: 8px; padding: 6px; font-size: 0.8rem;" id="btnAddImputation">Add Rule</button>
             <div id="imputationRulesList" style="margin-top: 12px; font-size: 0.8rem; color: var(--accent);"></div>
           </div>
@@ -219,15 +223,15 @@
         </div>
         <div class="accordion-content">
           <div class="form-group">
-            <label>Deduplicate Based On:</label>
-            <select id="selDedupMode" class="form-control" onchange="document.getElementById('dedupColsWrapper').style.display = this.value === 'keys' ? 'block' : 'none'">
+            <label for="selDedupMode">Deduplicate Based On:</label>
+            <select id="selDedupMode" class="form-control">
               <option value="none">Do Not Deduplicate</option>
               <option value="exact">Exact Row Match (All Columns)</option>
               <option value="keys">Specific Key Columns</option>
             </select>
           </div>
           <div class="form-group" id="dedupColsWrapper" style="display: none;">
-            <label>Select Key Columns (Must match exactly)</label>
+            <label for="selDedupCols">Select Key Columns (Must match exactly)</label>
             <select id="selDedupCols" class="form-control col-select"></select>
               <div id="selDedupCols_pills" class="pill-container"></div>
           </div>
@@ -265,7 +269,7 @@
     </div>
     <div class="panel-body">
 
-      <div class="dropzone" id="dropzone">
+      <div class="dropzone" id="dropzone" role="group" tabindex="0" aria-label="Upload CSV: click or press Enter or Space to browse">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 12px;"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"></path><path d="M16 16l-4-4-4 4"></path></svg>
         <h3 style="margin-bottom: 8px; color: var(--text-main);">Upload Dataset (CSV)</h3>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Drop your file here or click to browse. Processes securely in your browser RAM.</p>
@@ -274,6 +278,9 @@
       </div>
 
       <div id="dashboardArea" style="display: none;">
+        <details id="headerImportNotice" hidden style="margin-bottom:12px;padding:10px;border:1px solid var(--border-color);border-radius:6px">
+          <summary id="headerImportSummary"></summary><ul id="headerImportMappings"></ul>
+        </details>
         <div class="metrics-grid">
           <div class="metric-card">
             <div class="metric-value" id="statRowsIn">0</div>
@@ -338,7 +345,7 @@
 
 
   <div id="toolStatus" class="tool-status" role="status">Ready to load a CSV file.</div><section class="hygiene-guide" aria-labelledby="hygiene-guide-title"><div class="guide-heading"><span class="tool-eyebrow">A CLEARER WAY TO CLEAN CSV DATA</span><h2 id="hygiene-guide-title">From messy rows<br>to a reliable starting point.</h2><p>Data Hygiene brings CSV cleaning, inspection and reusable recipes into one browser workspace. Check the source, explore changes, and review the result before exporting.</p></div><section aria-labelledby="hygiene-how"><h3 id="hygiene-how">How to clean a CSV</h3><ol class="guide-steps"><li><strong>Load and inspect.</strong> Open a CSV and inspect the original values. Use issue filters to find missing values, surrounding whitespace or validation failures.</li><li><strong>Choose your rules.</strong> Enable the repairs you need, choose formatting columns, set your missing-value policy and add fills or deduplication. Structural and whitespace repairs start unchecked.</li><li><strong>Review the proposed changes.</strong> Switch to Preview with changes or Source / preview comparison. The live preview processes the full dataset while preserving the source and completed output.</li><li><strong>Execute and export.</strong> Run the recipe, inspect the completed result, then download the cleaned CSV. Save a named preset or export recipe JSON for the next dataset.</li></ol></section><section aria-labelledby="hygiene-capabilities"><h3 id="hygiene-capabilities">Tools for the details that matter</h3><div class="guide-capabilities"><article><h4>Clean and standardize</h4><p>Sanitize headers, prune empty rows, strip control characters and trim whitespace. Format dates, numeric and currency values, US phone numbers and title-case text in selected columns.</p></article><article><h4>Find and explain issues</h4><p>Inspect affected rows and columns, separate missing values from whitespace issues, and apply validation rules. Compare source and changed values with retained source row identities.</p></article><article><h4>Repeat a considered recipe</h4><p>Save presets on this browser, share settings through recipe JSON, and inspect a concise Python-style outline. Applying settings updates the preview; Execute creates the completed export.</p></article></div></section><aside class="guide-limits"><h3>Local processing, practical limits</h3><p>Your CSV is processed in browser memory. Website assets may load from the network. Large datasets, detailed comparisons and live preview use memory and may take time. Keep the original CSV and download your results before closing the page. Presets store settings; they are not dataset backups.</p></aside><section class="guide-faq" aria-labelledby="hygiene-faq"><div class="faq-intro"><span class="tool-eyebrow">A FEW THINGS WORTH KNOWING</span><h3 id="hygiene-faq">Clear answers.<br>Confident next steps.</h3><p>How your data is handled, what the controls mean, and how to keep your work.</p><a href="data-hygiene.html#main" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>How do source, live preview and completed output differ?</summary><p>Original source shows untouched input. Preview with changes applies the current recipe to the full dataset, with Source / preview comparison available. Execute creates completed output for Download CSV. Later preview edits do not overwrite that export. Export affected rows instead uses the selected review view and issue type, including all matching rows and all columns across pages.</p></details><details><summary>Can I control missing values and how they are filled?</summary><p>Toggle blank cells, N/A, NULL, NaN and the dash marker, or add custom markers one per line. Matching ignores case and surrounding spaces. Unchecked markers remain text. Fill with mean, median, mode or custom text; literal replacements such as N/A are preserved. Numeric fills use usable values across the full dataset, excluding configured missing markers and empty numeric strings. A numeric fill cannot run without usable numbers.</p></details><details><summary>How do deduplication and validation rules work?</summary><p>Exact deduplication compares all fields; key deduplication compares selected columns. The first matching row stays, and comparisons retain source row identities for removed records. Validation flags values without modifying them: required values, inclusive numeric/date ranges and exact allowed categories. Date checks expect valid YYYY-MM-DD values. Optional values classified as missing skip range and category checks.</p></details><details><summary>Does my data leave the device, and how large can it be?</summary><p>CSV parsing, cleaning and review run in browser memory; uploaded CSV contents are not sent to a processing server. Website assets and third-party libraries can require network requests, so offline availability is not guaranteed. Practical capacity depends on browser/device memory, data and recipe. Background workers help with cleaning, but large previews and comparisons may take time. Keep the original CSV and download results before closing.</p></details><details><summary>How do I reuse a recipe, and is the Python preview executable?</summary><p>Named presets are stored in this browser, including column names, replacement text, missing markers and validation settings, not dataset row arrays. Clearing browser storage removes them; export recipe JSON to keep a backup or move settings. The Python preview is an illustrative pipeline outline with helper calls, not a standalone executable. Close preview or press Escape to return without losing your dataset.</p></details></div></section><nav class="guide-related" aria-label="Related tools"><span>Continue exploring</span><a href="csv-insights.html">CSV Insights →</a><a href="sql-studio.html">SQL Studio →</a><a href="correlation-matrix.html">Correlation Matrix →</a></nav></section></main><script>window.TangentLoader={show(msg){document.getElementById('toolStatus').textContent=msg||'Processing…';document.querySelector('.hygiene-workspace').setAttribute('aria-busy','true');},hide(){document.getElementById('toolStatus').textContent='Ready. Review your data before exporting.';document.querySelector('.hygiene-workspace').setAttribute('aria-busy','false');}};</script>
-<script src="assets/workspace-first.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/validation.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/review.js?v=8" defer></script><script src="assets/workspaces/data-hygiene/ui.js?v=3" defer></script><script src="assets/workspaces/data-hygiene/presets.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/python-export.js?v=2" defer></script>
+<script src="assets/workspace-first.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/validation.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/review.js?v=9" defer></script><script src="assets/workspaces/data-hygiene/ui.js?v=3" defer></script><script src="assets/workspaces/data-hygiene/presets.js?v=1" defer></script><script src="assets/workspaces/data-hygiene/python-export.js?v=3" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   let rawData = [];
@@ -437,7 +444,10 @@
     for (const r of imputationRules) {
       const item = document.createElement('div');
       item.textContent = '• ' + r.col + ': ' + r.method + (r.method === 'custom' ? ' (' + r.customVal + ')' : '');
-      list.append(item);
+      const remove=document.createElement('button');remove.type='button';remove.className='btn btn-outline';remove.textContent='Remove';remove.style.cssText='width:auto;flex-shrink:0;padding:4px 8px;font-size:12px';remove.setAttribute('aria-label','Remove '+r.method+' imputation for '+r.col);
+      remove.addEventListener('click',()=>{imputationRules=imputationRules.filter(rule=>rule.col!==r.col);renderImputationRules();document.getElementById('selImputeCol').focus();window.HygieneReview?.settingsChanged();});
+      item.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;overflow-wrap:anywhere';
+      item.append(remove);list.append(item);
     }
   }
 
@@ -445,6 +455,8 @@
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
 
+  dropzone.addEventListener('click',event=>{if(!event.target.closest('button,input,a'))fileInput.click();});
+  dropzone.addEventListener('keydown',event=>{if(event.target===dropzone&&['Enter',' '].includes(event.key)){event.preventDefault();fileInput.click();}});
   dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--accent)"; });
   dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = "var(--border-color)"; });
   dropzone.addEventListener('drop', (e) => {
@@ -456,6 +468,30 @@
     if (e.target.files.length) handleFile(e.target.files[0]);
   });
 
+  // Keep positional columns distinct before constructing keyed row objects.
+  // Reserve original names so generated suffixes cannot steal a later column name.
+  function uniqueImportHeaders(headers) {
+    const reserved = new Set(headers), used = new Set();
+    return headers.map((original,index) => {
+      let name = original;
+      if (!name.trim() || used.has(name)) {
+        const base = name.trim() ? name : 'column';
+        let suffix = 1;
+        do { name = base + '_' + suffix++; } while (used.has(name) || reserved.has(name));
+      }
+      used.add(name);
+      return name;
+    });
+  }
+  function showImportHeaderMapping(original, imported) {
+    const changed = original.map((name,index) => ({name, imported:imported[index], index})).filter(item => item.name !== item.imported);
+    const notice=document.getElementById('headerImportNotice'), list=document.getElementById('headerImportMappings');
+    list.replaceChildren();notice.hidden=!changed.length;notice.open=false;
+    document.getElementById('headerImportSummary').textContent=changed.length+' duplicate or blank column name(s) renamed on import. All column values are preserved.';
+    for (const item of changed) {
+      const entry=document.createElement('li');entry.textContent='Column '+(item.index+1)+': '+(item.name||'(blank)')+' -> '+item.imported;list.append(entry);
+    }
+  }
   function handleFile(file) {
     if (file.name.split('.').pop().toLowerCase() !== 'csv') {
       return alert("Only CSV files are supported.");
@@ -477,11 +513,11 @@
       complete: function(results) {
         if (loadOperation !== operation) return;
         const loadedHeaders = results.data[0] || [];
-        if (new Set(loadedHeaders).size !== loadedHeaders.length) return alert('Duplicate CSV headers must be renamed before loading.');
         if (results.errors.some(error => error.code !== 'UndetectableDelimiter') || results.data.slice(1).some(values => values.length !== loadedHeaders.length && values.some(value => String(value).trim() !== ''))) {
           return alert('CSV rows must match the header column count. Correct the source file before loading.');
         }
-        currentHeaders = loadedHeaders;
+        currentHeaders = uniqueImportHeaders(loadedHeaders);
+        showImportHeaderMapping(loadedHeaders,currentHeaders);
         rawData = results.data.slice(1).map(values => Object.fromEntries(currentHeaders.map((h,i) => [h, values[i] ?? ''])));
         populateDropdowns();
 
@@ -723,8 +759,8 @@
         rows = outRows;
 
         // 2. Data Cleansing & Formatting Pass
-          const { trimAll, stripControl, dateCols = [], dateLocale = 'US', numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
-          const cRegex = /[\x00-\x1F\x7F]/g;
+          const { trimAll, stripControl, dateCols = [], dateLocale = 'US', dateInputLocale = dateLocale === 'EU' ? 'EU' : 'US', numberCols = [], phoneCols = [], titleCols = [] } = recipe.formats;
+          const cRegex = /[\\x00-\\x1F\\x7F\\u200B\\uFEFF]/g;
 
           for (let i=0; i < rows.length; i++) {
              let row = rows[i];
@@ -755,7 +791,7 @@
                          if (p1 > 12 && p2 <= 12) { parsedDate = calendarDate(p3, p2, p1); }
                          else if (p2 > 12 && p1 <= 12) { parsedDate = calendarDate(p3, p1, p2); }
                          else if (p1 <= 12 && p2 <= 12) {
-                            if (dateLocale === 'EU') { parsedDate = calendarDate(p3, p2, p1); }
+                            if (dateInputLocale === 'EU') { parsedDate = calendarDate(p3, p2, p1); }
                             else { parsedDate = calendarDate(p3, p1, p2); }
                          }
                      }
@@ -898,7 +934,7 @@
 
                  if (missing(val)) {
                     if (rule.method === 'custom') { r[newCol] = rule.customVal; audit.imputed++; }
-                    else if (rule.method === 'mean' && stats[newCol]) { r[newCol] = stats[newCol].mean.toFixed(2); audit.imputed++; }
+                    else if (rule.method === 'mean' && stats[newCol]) { r[newCol] = stats[newCol].mean; audit.imputed++; }
                     else if (rule.method === 'median' && stats[newCol]) { r[newCol] = stats[newCol].median; audit.imputed++; }
                     else if (rule.method === 'mode' && stats[newCol]) { r[newCol] = stats[newCol].mode; audit.imputed++; }
                  }
@@ -955,6 +991,7 @@
       formats: {
         trimAll: document.getElementById('chkTrimAll').checked,
         stripControl: document.getElementById('chkStripControlChars').checked,
+          dateInputLocale: document.getElementById('selDateInputLocale').value,
           dateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
         dateCols: getMultiSelectValues('selFormatDates'),
         numberCols: getMultiSelectValues('selFormatNumbers'),
@@ -1017,17 +1054,22 @@
     link.href = url;
     link.download = originalFileName.replace('.csv', '_sanitized.csv');
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try { link.click(); } finally {
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
   });
 
 
+    function syncRecipeControls(){document.getElementById('dedupColsWrapper').style.display=document.getElementById('selDedupMode').value==='keys'?'block':'none';}
+    document.getElementById('selDedupMode').addEventListener('change',syncRecipeControls);
     function readRecipe(){
         return {
           chkCleanHeaders: document.getElementById('chkCleanHeaders').checked,
           chkDropEmptyRows: document.getElementById('chkDropEmptyRows').checked,
           chkTrimAll: document.getElementById('chkTrimAll').checked,
           chkStripControlChars: document.getElementById('chkStripControlChars').checked,
+          selDateInputLocale: document.getElementById('selDateInputLocale').value,
           selDateLocale: document.getElementById('selDateLocale') ? document.getElementById('selDateLocale').value : 'US',
           selDedupMode: document.getElementById('selDedupMode').value,
           multiSelectState: multiSelectState,
@@ -1044,6 +1086,7 @@
                 if (recipe.multiSelectState && (typeof recipe.multiSelectState !== 'object' || Array.isArray(recipe.multiSelectState))) throw new Error('Invalid column selections.');
                 if (recipe.selDedupMode && !['none','exact','keys'].includes(recipe.selDedupMode)) throw new Error('Invalid deduplication method.');
                 if (recipe.selDateLocale && !['US','EU','ISO'].includes(recipe.selDateLocale)) throw new Error('Invalid date locale.');
+                if (recipe.selDateInputLocale && !['US','EU'].includes(recipe.selDateInputLocale)) throw new Error('Invalid date input order.');
                 for (const values of Object.values(recipe.multiSelectState || {})) {
                   if (!Array.isArray(values) || values.some(col => typeof col !== 'string' || (rawData.length && !currentHeaders.includes(col)))) throw new Error('Invalid or missing recipe column.');
                 }
@@ -1056,6 +1099,7 @@
                 document.getElementById('chkTrimAll').checked = !!recipe.chkTrimAll;
                 document.getElementById('chkStripControlChars').checked = !!recipe.chkStripControlChars;
                 if(recipe.selDateLocale && document.getElementById('selDateLocale')) document.getElementById('selDateLocale').value = recipe.selDateLocale;
+                document.getElementById('selDateInputLocale').value=recipe.selDateInputLocale||(recipe.selDateLocale==='EU'?'EU':'US');
                 if(recipe.selDedupMode) document.getElementById('selDedupMode').value = recipe.selDedupMode;
 
                 if(recipe.multiSelectState) {
@@ -1066,6 +1110,7 @@
                     imputationRules = recipe.imputationRules;
                     renderImputationRules();
                 }
+                syncRecipeControls();
                 document.getElementById('recipeFileInput').value = '';
                 window.HygieneReview?.settingsChanged();
     }
@@ -1077,7 +1122,9 @@
         const a = document.createElement('a');
         a.href = url;
         a.download = 'tangent_hygiene_recipe.json';
-        a.click();
+        try { a.click(); } finally {
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
     });
 
     document.getElementById('btnImportRecipe').addEventListener('click', () => document.getElementById('recipeFileInput').click());
@@ -1118,6 +1165,7 @@
 
     // Reset UI
     document.getElementById('dashboardArea').style.display = 'none';
+    document.getElementById('headerImportNotice').hidden = true;
     document.getElementById('dropzone').style.display = 'block';
     document.getElementById('btnRunRecipe').disabled = true;
     document.getElementById('btnExport').disabled = true;

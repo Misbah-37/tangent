@@ -1,0 +1,6 @@
+# Preserve exact bytes of pinned browser dependencies and their integrity manifests.
+assets/vendor/duckdb-wasm/1.32.0/** -text
+assets/workspaces/tabular-editor/vendor/** -text
+assets/workspaces/correlation-matrix/vendor/** -text
+assets/workspaces/finance-dashboard/vendor/** -text
+assets/workspaces/log-analyzer/vendor/** -text

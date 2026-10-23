@@ -5,22 +5,6 @@
 <meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="SQL Studio | RunTangent"><meta property="og:description" content="Query local CSV, JSON and Parquet files with DuckDB SQL in your browser. Inspect paginated results and export query output.">
 <link rel="icon" href="favicon.ico?v=2">
 <link rel="stylesheet" href="assets/editorial.css?v=6"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
-  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
-  .badge-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(58, 123, 213, 0.15); color: var(--accent);
-    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
-    font-weight: 600; margin-bottom: 16px;
-  }
-  .clean-header h1 {
-    font-size: 2.4rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    letter-spacing: -0.03em;
-    color: var(--text-main);
-  }
-  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-
   /* Workspace Layout */
   .sql-workspace {
     display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 24px; height: 700px; padding: 0 32px;
@@ -33,7 +17,7 @@
   .panel-header { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
   .schema-content { flex-grow: 1; overflow-y: auto; padding: 16px; }
 
-  .sql-dropzone { border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02); }
+  .sql-dropzone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02); }
   .sql-dropzone:hover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
   .sql-dropzone p { font-size: 0.85rem; color: var(--text-muted); margin-top: 8px; }
 
@@ -51,97 +35,11 @@
   .results-header { padding: 12px 16px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
   .results-body { flex-grow: 1; overflow: auto; padding: 0; }
   table.sql-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  table.sql-table th { background: rgba(255,255,255,0.02); position: sticky; top: 0; text-align: left; padding: 10px 16px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+  table.sql-table th { background: var(--bg-card); position: sticky; top: 0; z-index: 2; text-align: left; padding: 10px 16px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
   table.sql-table td { padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); white-space: nowrap; }
   table.sql-table tr:hover { background: rgba(255,255,255,0.02); }
 
-  /* Explainer & FAQ Styles */
-  .explainer-section {
-    max-width: 1000px;
-    margin: 80px auto 0 auto;
-    padding-top: 60px;
-    border-top: 1px solid var(--border-color);
-  }
-  .explainer-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 40px;
-    text-align: center;
-  }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin-bottom: 60px;
-  }
-  .feature-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 24px;
-    border-radius: 12px;
-  }
-  .feature-icon {
-    color: var(--accent);
-    margin-bottom: 16px;
-  }
-  .feature-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    color: var(--text-main);
-  }
-  .feature-card p {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-
-  /* FAQ Accordion */
-  .faq-container {
-    margin-bottom: 60px;
-  }
-  .faq-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    margin-bottom: 12px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .faq-question {
-    width: 100%;
-    text-align: left;
-    padding: 20px;
-    background: none;
-    border: none;
-    color: var(--text-main);
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .faq-question:hover { background: rgba(255, 255, 255, 0.02); }
-  .faq-answer {
-    padding: 0 20px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-    color: var(--text-muted);
-    line-height: 1.6;
-    font-size: 0.95rem;
-  }
-  .faq-item.active .faq-answer {
-    padding: 0 20px 20px 20px;
-    max-height: 500px;
-  }
-  .faq-toggle-icon {
-    font-size: 1.5rem;
-    font-weight: 300;
-    transition: transform 0.3s ease;
-  }
-  .faq-item.active .faq-toggle-icon {
-    transform: rotate(45deg);
-  }</style><link rel="stylesheet" href="assets/workspaces/sql-studio/style.css?v=4">
+</style><link rel="stylesheet" href="assets/workspaces/sql-studio/style.css?v=4">
 <link rel="stylesheet" href="assets/tool-identities.css?v=1">
 <link rel="canonical" href="https://runtangent.com/sql-studio.html">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "SQL Analytics Studio", "description": "Query local CSV, JSON and Parquet files with DuckDB SQL in your browser. Inspect paginated results and export query output.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/sql-studio.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which SQL does SQL Studio use?", "acceptedAnswer": {"@type": "Answer", "text": "SQL Studio uses DuckDB SQL. Common SELECT queries, joins, grouping and window functions are available, but database dialects differ. MySQL or SQL Server syntax may need adjustment. The SQL guide provides examples using your mounted tables; inserting an example never runs it automatically."}}, {"@type": "Question", "name": "Which files can I query?", "acceptedAnswer": {"@type": "Answer", "text": "Mount CSV, JSON or Parquet files as temporary tables and join them in a query. Inspect detected names and types in the schema. Double quotes identify tables or columns, including names with spaces; single quotes represent text values."}}, {"@type": "Question", "name": "How do I add a derived column or parse dates?", "acceptedAnswer": {"@type": "Answer", "text": "Use a SELECT expression to add a result column without changing the imported table. The guide includes YEAR(TRY_CAST(column AS DATE)) for date or ISO text values, and TRY_STRPTIME for explicit text date formats. Failed try-conversions become NULL. Adding generated columns after table creation is not supported by this engine."}}, {"@type": "Question", "name": "What is saved, and does my data leave the browser?", "acceptedAnswer": {"@type": "Answer", "text": "Files are processed by browser DuckDB; engine assets load from a CDN. Query text, up to 30 recent successful queries and 50 named queries can be stored in this browser. SQL can contain sensitive literal values. Storage may be unavailable, cleared or full; tables and query results are not persisted. Remount files after refresh and download useful results."}}, {"@type": "Question", "name": "Does exporting include every page, and what are the limits?", "acceptedAnswer": {"@type": "Answer", "text": "Results display 100 rows per page; CSV export includes the complete most recent successful query result, regardless of the page shown. Empty results have no CSV export. All result rows still occupy browser memory: pagination limits display size, not engine memory use. This is a temporary analytical workspace, not a persistent database server."}}]}]</script>
@@ -151,11 +49,12 @@
   <div class="schema-panel">
     <div class="panel-header">Database Schema</div>
     <div class="schema-content" id="schemaContent">
-      <div class="sql-dropzone" id="sqlDropzone" onclick="document.getElementById('fileInput').click()">
+      <div class="sql-dropzone" id="sqlDropzone" role="button" tabindex="0" aria-label="Mount CSV, JSON or Parquet files">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
         <p>Drop CSV, JSON or Parquet files here to mount tables</p>
       </div>
-      <input type="file" id="fileInput" accept=".csv,.parquet,.json" style="display: none;">
+      <input type="file" id="fileInput" multiple accept=".csv,.parquet,.json" style="display: none;">
+      <p>Files mount as separate tables. Existing tables are kept; repeated names get a numeric suffix.</p><ol id="mountResults" aria-live="polite" style="max-height:160px;overflow:auto;font-size:12px;overflow-wrap:anywhere"></ol>
       <div id="tableList" style="margin-top: 16px;"></div>
     </div>
   </div>
@@ -163,7 +62,7 @@
   <!-- Right Panel: Editor & Results -->
   <div class="editor-panel">
     <div class="editor-container" style="position: relative;">
-      <div id="editorLock" style="position: absolute; inset: 0; background: rgba(26, 29, 39, 0.95); backdrop-filter: blur(2px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
+      <div id="editorLock" style="position: absolute; inset: 0; background: var(--bg-card); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         <h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1.1rem;">A place for better questions.</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem;">Mount a local file to explore its tables with SQL.</p>
@@ -177,7 +76,7 @@
           </button>
           <button class="btn-run" id="btnRun">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            Run Query
+            Run Query (Ctrl/Cmd+Enter)
           </button>
         </div>
       </div>
@@ -196,26 +95,28 @@
   </div>
 </div>
 
-<section class="editor-guide" aria-labelledby="sql-guide"><div class="guide-heading"><span class="eyebrow">STRUCTURE. RELATIONSHIPS. ANSWERS.</span><h2 id="sql-guide">Follow a question.<br>Find the connection.</h2><p>A browser SQL workspace for querying local tables with DuckDB. Inspect a file, compare groups, or combine tables using explicit queries.</p></div><section><h3>How to query a dataset</h3><ol class="guide-steps"><li><strong>Mount your files.</strong> Wait for the engine to become ready, then mount CSV, JSON or Parquet files. Each file becomes a temporary table.</li><li><strong>Inspect the schema.</strong> Check table names, column names and detected types. Quote identifiers with double quotes when needed.</li><li><strong>Ask your question.</strong> Start with SELECT, add WHERE or GROUP BY, or insert a schema-based example from the SQL guide. Inserting does not execute it. Run the query when ready; DuckDB syntax can differ from other databases.</li><li><strong>Keep your result.</strong> Browse results in pages of 100 rows and export the complete successful result as CSV. Save a named query or revisit successful history. Tables must be remounted after refresh.</li></ol></section><aside class="guide-limits"><h3>A workspace for exploration</h3><p>Queries run against temporary browser tables. Keep your original files and download useful results. Browser memory and network availability for engine assets affect what you can run.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Familiar SQL.<br>Clear expectations.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which SQL does SQL Studio use?</summary><p>SQL Studio uses DuckDB SQL. Common SELECT queries, joins, grouping and window functions are available, but database dialects differ. MySQL or SQL Server syntax may need adjustment. The SQL guide provides examples using your mounted tables; inserting an example never runs it automatically.</p></details><details><summary>Which files can I query?</summary><p>Mount CSV, JSON or Parquet files as temporary tables and join them in a query. Inspect detected names and types in the schema. Double quotes identify tables or columns, including names with spaces; single quotes represent text values.</p></details><details><summary>How do I add a derived column or parse dates?</summary><p>Use a SELECT expression to add a result column without changing the imported table. The guide includes YEAR(TRY_CAST(column AS DATE)) for date or ISO text values, and TRY_STRPTIME for explicit text date formats. Failed try-conversions become NULL. Adding generated columns after table creation is not supported by this engine.</p></details><details><summary>What is saved, and does my data leave the browser?</summary><p>Files are processed by browser DuckDB; engine assets load from a CDN. Query text, up to 30 recent successful queries and 50 named queries can be stored in this browser. SQL can contain sensitive literal values. Storage may be unavailable, cleared or full; tables and query results are not persisted. Remount files after refresh and download useful results.</p></details><details><summary>Does exporting include every page, and what are the limits?</summary><p>Results display 100 rows per page; CSV export includes the complete most recent successful query result, regardless of the page shown. Empty results have no CSV export. All result rows still occupy browser memory: pagination limits display size, not engine memory use. This is a temporary analytical workspace, not a persistent database server.</p></details></div></section></section></main>
+<section class="editor-guide" aria-labelledby="sql-guide"><div class="guide-heading"><span class="eyebrow">STRUCTURE. RELATIONSHIPS. ANSWERS.</span><h2 id="sql-guide">Follow a question.<br>Find the connection.</h2><p>A browser SQL workspace for querying local tables with DuckDB. Inspect a file, compare groups, or combine tables using explicit queries.</p></div><section><h3>How to query a dataset</h3><ol class="guide-steps"><li><strong>Mount your files.</strong> Wait for the engine to become ready, then mount CSV, JSON or Parquet files. Each file becomes a temporary table.</li><li><strong>Inspect the schema.</strong> Check table names, column names and detected types. Quote identifiers with double quotes when needed.</li><li><strong>Ask your question.</strong> Start with SELECT, add WHERE or GROUP BY, or insert a schema-based example from the SQL guide. Inserting does not execute it. Run the query when ready; DuckDB syntax can differ from other databases.</li><li><strong>Keep your result.</strong> Browse results in pages of 100 rows and export the complete successful result as CSV. Save a named query or revisit successful history. Tables must be remounted after refresh.</li></ol></section><aside class="guide-limits"><h3>A workspace for exploration</h3><p>Queries run against temporary browser tables. Keep your original files and download useful results. Browser memory and network availability for engine assets affect what you can run.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Familiar SQL.<br>Clear expectations.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which SQL does SQL Studio use?</summary><p>SQL Studio uses DuckDB SQL. Common SELECT queries, joins, grouping and window functions are available, but database dialects differ. MySQL or SQL Server syntax may need adjustment. The SQL guide provides examples using your mounted tables; inserting an example never runs it automatically.</p></details><details><summary>Which files can I query?</summary><p>Mount CSV, JSON or Parquet files as temporary tables and join them in a query. Inspect detected names and types in the schema. Double quotes identify tables or columns, including names with spaces; single quotes represent text values.</p></details><details><summary>How do I add a derived column or parse dates?</summary><p>Use a SELECT expression to add a result column without changing the imported table. The guide includes YEAR(TRY_CAST(column AS DATE)) for date or ISO text values, and TRY_STRPTIME for explicit text date formats. Failed try-conversions become NULL. Adding generated columns after table creation is not supported by this engine.</p></details><details><summary>What is saved, and does my data leave the browser?</summary><p>Files are processed by browser DuckDB; the bundled engine loads from this site. SQL that accesses remote URLs or installs extensions can make additional network requests. Query text, up to 30 recent successful queries and 50 named queries can be stored in this browser. SQL can contain sensitive literal values. Storage may be unavailable, cleared or full; tables and query results are not persisted. Remount files after refresh and download useful results.</p></details><details><summary>Does exporting include every page, and what are the limits?</summary><p>Results display 100 rows per page; CSV export includes the complete most recent successful query result, regardless of the page shown. Empty results have no CSV export. Results stay in Arrow format in browser memory; only the visible page is converted for display. CSV export converts rows in chunks, but the download still needs memory. Pagination does not limit engine memory use. This is a temporary analytical workspace, not a persistent database server.</p></details></div></section></section></main>
 <script src="assets/data-utils.js?v=1"></script>
 <script type="module">
-  import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.1-dev106.0/+esm';
+  let duckdb = null;
 
   let db = null;
   let conn = null;
-  let lastQueryRows = null;
+  let lastQueryResult = null;
+  let exportBusy = false;
   let queryOperation = 0;
+  let mountQueue=Promise.resolve(),mountBusy=false,mountSequence=0;
   let resultPage=0;const resultPageSize=100;
   function renderResultPage(){
-    const rows=lastQueryRows||[],total=rows.length,start=resultPage*resultPageSize,end=Math.min(start+resultPageSize,total),table=document.getElementById('resultsTable');
+    const result=lastQueryResult,total=result?.table.numRows||0,start=resultPage*resultPageSize,end=Math.min(start+resultPageSize,total),table=document.getElementById('resultsTable');
     document.getElementById('resultPrev').disabled=!total||resultPage===0;document.getElementById('resultNext').disabled=end>=total;
     document.getElementById('resultPageInfo').textContent=total?'Showing '+(start+1)+'–'+end+' of '+total.toLocaleString()+' rows · Page '+(resultPage+1)+' of '+Math.ceil(total/resultPageSize):'0 rows returned.';
     if(!total){table.innerHTML='<tbody><tr><td>0 rows returned.</td></tr></tbody>';return;}
-    const columns=Object.keys(rows[0]);table.innerHTML='<thead><tr>'+columns.map(c=>'<th>'+TangentData.escapeHtml(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.slice(start,end).map(row=>'<tr>'+columns.map(c=>'<td>'+(row[c]==null?'<em>null</em>':TangentData.escapeHtml(String(row[c])))+'</td>').join('')+'</tr>').join('')+'</tbody>';
+    const columns=result.columns,rows=Array.from({length:end-start},(_,i)=>result.vectors.map(vector=>readResultCell(vector,start+i)));table.innerHTML='<thead><tr>'+columns.map(c=>'<th>'+TangentData.escapeHtml(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+columns.map((c,i)=>'<td>'+(row[i]==null?'<em>null</em>':TangentData.escapeHtml(String(row[i])))+'</td>').join('')+'</tr>').join('')+'</tbody>';
     document.querySelector('.results-body').scrollTop=0;
   }
   document.getElementById('resultPrev').addEventListener('click',()=>{if(resultPage>0){resultPage--;renderResultPage();}});
-  document.getElementById('resultNext').addEventListener('click',()=>{if(lastQueryRows&&(resultPage+1)*resultPageSize<lastQueryRows.length){resultPage++;renderResultPage();}});
+  document.getElementById('resultNext').addEventListener('click',()=>{if(lastQueryResult&&(resultPage+1)*resultPageSize<lastQueryResult.table.numRows){resultPage++;renderResultPage();}});
 
   const escapeHtml = TangentData.escapeHtml;
 
@@ -230,11 +131,11 @@
   function recordSuccessfulQuery(sql){if(sql.length>100000){libraryStatus.textContent='Query succeeded but was too long to store in history.';return;}storeLibrary({...library,history:[{sql},...library.history.filter(x=>x.sql!==sql)].slice(0,30)});}
   renderLibrary();
 
-  const exampleSchemas=new Map();
+  const exampleSchemas=new Map(),exampleRelations=new Map();
   const identifier=value=>'"'+String(value).replace(/"/g,'""')+'"';
   function refreshExample(){
     const table=document.getElementById('exampleTable').value,column=document.getElementById('exampleColumn').value,kind=document.getElementById('exampleKind').value;
-    let query='',note='';if(table){const t=identifier(table),c=identifier(column);
+    let query='',note='';if(table){const t=exampleRelations.get(table)||identifier(table),c=identifier(column);
       if(kind==='preview'){query='SELECT * FROM '+t+' LIMIT 100;';note='Preview up to 100 records without changing the table.';}
       if(kind==='count'){query='SELECT COUNT(*) AS row_count FROM '+t+';';note='Count all records in the mounted table.';}
       if(column&&kind==='groups'){query='SELECT '+c+', COUNT(*) AS row_count FROM '+t+' GROUP BY '+c+' ORDER BY row_count DESC;';note='Count records in each category, including a NULL group when present.';}
@@ -254,29 +155,61 @@
   let savedQuery=null;try{savedQuery=localStorage.getItem('tangent_sql_query');}catch(e){}
   if (savedQuery) sqlInput.value = savedQuery;
 
+  sqlInput.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();if(!mountBusy&&!document.getElementById('btnRun').disabled)document.getElementById('btnRun').click();}});
   sqlInput.addEventListener('input', () => {
     try{localStorage.setItem('tangent_sql_query', sqlInput.value);}catch(e){}
   });
 
   async function initDuckDB() {
     try {
-      const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
-      const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
+      duckdb=await import('./assets/vendor/duckdb-wasm/1.32.0/duckdb.mjs');
+      const runtime=name=>new URL('assets/vendor/duckdb-wasm/1.32.0/'+name,document.baseURI).href;
+      const LOCAL_BUNDLES={
+        mvp:{mainModule:runtime('duckdb-mvp.wasm'),mainWorker:runtime('duckdb-browser-mvp.worker.js')},
+        eh:{mainModule:runtime('duckdb-eh.wasm'),mainWorker:runtime('duckdb-browser-eh.worker.js')}
+      };
+      const bundle = await duckdb.selectBundle(LOCAL_BUNDLES);
 
       const worker_url = URL.createObjectURL(
-        new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' })
+        new Blob([`self.addEventListener('unhandledrejection', event => {
+          event.preventDefault();
+          self.postMessage({type:'RUNTANGENT_RUNTIME_FAILURE', message:String(event.reason?.message || event.reason || 'DuckDB runtime initialization failed.')});
+        }); importScripts(${JSON.stringify(bundle.mainWorker)});`], { type: 'text/javascript' })
       );
 
       const worker = new Worker(worker_url);
-      const logger = new duckdb.ConsoleLogger();
-      db = new duckdb.AsyncDuckDB(logger, worker);
-
-      await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-      URL.revokeObjectURL(worker_url);
+      let onWorkerError, onWorkerMessage;
+      const workerFailure = new Promise((resolve, reject) => {
+        onWorkerError = event => {
+          event.preventDefault();
+          reject(new Error(event.message || 'DuckDB runtime worker failed to load.'));
+        };
+        worker.addEventListener('error', onWorkerError);
+        onWorkerMessage = event => {
+          if (event.data?.type !== 'RUNTANGENT_RUNTIME_FAILURE') return;
+          event.stopImmediatePropagation();
+          reject(new Error(event.data.message));
+        };
+        worker.addEventListener('message', onWorkerMessage);
+      });
+      try {
+        const logger = new duckdb.ConsoleLogger();
+        db = new duckdb.AsyncDuckDB(logger, worker);
+        await Promise.race([db.instantiate(bundle.mainModule, bundle.pthreadWorker), workerFailure]);
+      } catch (error) {
+        worker.terminate();
+        throw error;
+      } finally {
+        worker.removeEventListener('error', onWorkerError);
+        worker.removeEventListener('message', onWorkerMessage);
+        URL.revokeObjectURL(worker_url);
+      }
 
       conn = await db.connect();
+      const extensionRepository = runtime('extensions').replace(/\/$/, '').replace(/'/g, "''");
+      await conn.query("INSTALL json FROM '"+extensionRepository+"'; LOAD json; INSTALL parquet FROM '"+extensionRepository+"'; LOAD parquet;");
       console.log("DuckDB initialized!");
-      setupDropzone();document.getElementById('engineStatus').textContent='DuckDB engine ready';document.getElementById('mountFile').disabled=false;
+      setupDropzone();document.getElementById('engineStatus').textContent='DuckDB engine ready · '+await db.getVersion()+' · Local runtime';document.getElementById('mountFile').disabled=false;
     } catch (e) {
       document.getElementById('engineStatus').textContent='Engine could not load. Check your connection and reload.';
       console.error(e);
@@ -285,68 +218,43 @@
   }
 
   function setupDropzone() {
-    const dropzone = document.getElementById('sqlDropzone');
-    const fileInput = document.getElementById('fileInput');
-
-    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--accent)"; });
-    dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = "rgba(255, 255, 255, 0.2)"; });
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = "rgba(255, 255, 255, 0.2)";
-      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) handleFile(e.target.files[0]);
-    });
+    const dropzone=document.getElementById('sqlDropzone'),input=document.getElementById('fileInput');
+    const browse=()=>{input.value='';input.click();};dropzone.addEventListener('click',browse);
+    dropzone.addEventListener('keydown',e=>{if(e.target===dropzone&&(e.key==='Enter'||e.key===' ')){e.preventDefault();browse();}});
+    dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.style.borderColor='var(--accent)';});
+    dropzone.addEventListener('dragleave',()=>{dropzone.style.borderColor='';});
+    dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.style.borderColor='';enqueueFiles(e.dataTransfer.files);});
+    input.addEventListener('change',e=>{const files=Array.from(e.target.files);input.value='';enqueueFiles(files);});
   }
-
+  function enqueueFiles(selection){
+    const files=Array.from(selection);if(!files.length)return;
+    mountQueue=mountQueue.then(async()=>{
+      mountBusy=true;const run=document.getElementById('btnRun'),status=document.getElementById('engineStatus'),list=document.getElementById('mountResults');run.disabled=true;let mounted=0;
+      try{for(const file of files){
+        const item=document.createElement('li');item.textContent='Mounting '+file.name+'…';list.append(item);while(list.children.length>50)list.firstElementChild.remove();
+        try{const result=await handleFile(file);mounted++;item.dataset.status='success';item.textContent=file.name+' → '+result.tableName+(result.warning?' · '+result.warning:'');}
+        catch(error){item.dataset.status='error';item.textContent=file.name+' · Could not mount: '+error.message;}
+      }}finally{mountBusy=false;run.disabled=exportBusy||document.getElementById('sqlInput').disabled;status.textContent='DuckDB engine ready · Mounted '+mounted+' of '+files.length+' files';}
+    }).catch(error=>{mountBusy=false;document.getElementById('btnRun').disabled=document.getElementById('sqlInput').disabled;document.getElementById('engineStatus').textContent='Mount queue failed: '+error.message;});
+  }
   async function handleFile(file) {
-    if (!conn) return alert("DuckDB is still loading...");
-    let tableName = file.name.split('.')[0].replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-
-    // SQL tables cannot start with a number. If it does, prefix it.
-    if (/^[0-9]/.test(tableName)) {
-      tableName = 'tbl_' + tableName;
-    }
-    // Fallback if name ends up empty
-    if (!tableName) {
-      tableName = 'data_table';
-    }
-
-    try {
-      const buffer = new Uint8Array(await file.arrayBuffer());
-      await db.registerFileBuffer(file.name, buffer);
-
-      const ext = file.name.split('.').pop().toLowerCase();
-      let query = "";
-      if (ext === 'csv') {
-        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${file.name.replace(/'/g, "''")}')`;
-      } else if (ext === 'parquet') {
-        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_parquet('${file.name.replace(/'/g, "''")}')`;
-      } else if (ext === 'json') {
-        query = `CREATE TABLE "${tableName}" AS SELECT * FROM read_json_auto('${file.name.replace(/'/g, "''")}')`;
-      } else {
-        return alert("Unsupported file type. Please use CSV, Parquet, or JSON.");
-      }
-
-      await conn.query(query);
-
-      const schema = await conn.query(`DESCRIBE "${tableName}"`);
-      renderSchema(tableName, schema.toArray());
-      const sqlInput = document.getElementById('sqlInput');
-
-      // Unlock Workspace
-      document.getElementById('editorLock').style.display = 'none';
-      sqlInput.disabled = false;
-
-      if (sqlInput.value.trim() === "") {
-        sqlInput.value = `SELECT * FROM "${tableName}" LIMIT 10;`;
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Error mounting table: " + e.message);
-    }
+    if(!conn)throw Error('DuckDB is still loading.');
+    const ext=file.name.split('.').pop().toLowerCase(),readers={csv:'read_csv_auto',json:'read_json_auto',parquet:'read_parquet'};
+    if(!readers[ext])throw Error('Use CSV, JSON or Parquet.');
+    let base=file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_]/g,'_').toLowerCase();
+    if(!base)base='data_table';if(/^[0-9]/.test(base))base='tbl_'+base;
+    const catalog=await conn.query('SELECT table_name FROM information_schema.tables');
+    const names=new Set(catalog.getChildAt(0).toArray().map(name=>String(name).toLowerCase()));
+    let tableName=base,suffix=2;while(names.has(tableName.toLowerCase()))tableName=base+'_'+suffix++;
+    const virtualName='sql_mount_'+(++mountSequence)+'.'+ext;let registered=false,outcome=null;
+    try{
+      await db.registerFileHandle(virtualName,file,duckdb.DuckDBDataProtocol.BROWSER_FILEREADER,true);registered=true;
+      await conn.query('CREATE TABLE '+identifier(tableName)+" AS SELECT * FROM "+readers[ext]+"('"+virtualName+"')");
+      const input=document.getElementById('sqlInput');document.getElementById('editorLock').style.display='none';input.disabled=false;
+      if(!input.value.trim())input.value='SELECT * FROM '+identifier(tableName)+' LIMIT 10;';
+      let warning='';try{await refreshSchema();}catch(error){warning='Table mounted; schema refresh failed: '+error.message;}
+      outcome={tableName,warning};return outcome;
+    }finally{if(registered)try{await db.dropFile(virtualName);}catch(error){if(outcome)outcome.warning+=(outcome.warning?' · ':'')+'Temporary file cleanup failed: '+error.message;}}
   }
 
   function renderSchema(tableName, columns) {
@@ -368,10 +276,83 @@
     });
 
     html += `</div></div>`;
-    list.innerHTML += html;
+    list.insertAdjacentHTML('beforeend', html);
   }
 
+  async function refreshSchema(operation=queryOperation){
+    const relations=await conn.query("SELECT table_catalog,table_schema,table_name,table_catalog=current_database() AS current_catalog FROM information_schema.tables ORDER BY table_catalog,table_schema,table_name");
+    const entries=[],catalogColumns=await conn.query("SELECT table_catalog,table_schema,table_name,column_name,data_type,ordinal_position FROM information_schema.columns ORDER BY table_catalog,table_schema,table_name,ordinal_position");
+    const columnRows=catalogColumns.toArray();
+    for(const row of relations.toArray()){
+      const qualified=[row.table_catalog,row.table_schema,row.table_name].map(identifier).join('.');
+      const name=row.current_catalog&&row.table_schema==='main'?row.table_name:row.table_catalog+'.'+row.table_schema+'.'+row.table_name;
+      const columns=columnRows.filter(c=>c.table_catalog===row.table_catalog&&c.table_schema===row.table_schema&&c.table_name===row.table_name).map(c=>({column_name:c.column_name,column_type:c.data_type}));
+      entries.push({name,qualified,columns});
+    }
+    if(operation!==queryOperation)return;
+    const select=document.getElementById('exampleTable'),previous=select.value;
+    exampleSchemas.clear();exampleRelations.clear();select.replaceChildren();document.getElementById('tableList').replaceChildren();
+    for(const entry of entries){exampleRelations.set(entry.name,entry.qualified);renderSchema(entry.name,entry.columns);}
+    if(exampleSchemas.has(previous))select.value=previous;refreshExampleColumns();
+  }
+  function jsonValue(value,type){
+    if(value==null)return null;
+    if(type?.typeId===7)return resultValue(value,{type});
+    if(type?.typeId===13)return Object.fromEntries(type.children.map(field=>[field.name,jsonValue(value[field.name],field.type)]));
+    if(type?.typeId===12)return Array.from(value,item=>jsonValue(item,type.children[0].type));
+    if(typeof value==='bigint')return value.toString();
+    if(value instanceof Date)return value.toISOString();
+    if(ArrayBuffer.isView(value))return Array.from(value,jsonValue);
+    if(Array.isArray(value))return value.map(jsonValue);
+    if(value instanceof Map)return Array.from(value,entry=>entry.map(jsonValue));
+    if(typeof value==='object'){
+      if(typeof value.toJSON==='function'){const converted=value.toJSON();if(converted!==value)return jsonValue(converted);}
+      if(typeof value.toArray==='function')return jsonValue(value.toArray());
+      return Object.fromEntries(Object.keys(value).map(key=>[key,jsonValue(value[key])]));
+    }
+    return value;
+  }
+  function readResultCell(vector,rowIndex){
+    // This pinned Arrow bundle misreads MONTH_DAY_NANO intervals via get().
+    // Read its specified 16-byte layout instead: int32 months, int32 days, int64 ns.
+    if(vector.type.typeId===11&&vector.type.unit===2){
+      let index=rowIndex;
+      for(const chunk of vector.data){if(index>=chunk.length){index-=chunk.length;continue;}if(!chunk.getValid(index))return null;
+        const offset=(chunk.offset+index)*16,values=chunk.values;
+        const bytes=new DataView(values.buffer,values.byteOffset+offset,16);
+        return JSON.stringify({months:bytes.getInt32(0,true),days:bytes.getInt32(4,true),nanoseconds:bytes.getBigInt64(8,true).toString()});
+      }
+    }
+    if(vector.type.typeId===10){
+      let index=rowIndex;
+      for(const chunk of vector.data){if(index>=chunk.length){index-=chunk.length;continue;}if(!chunk.getValid(index))return null;
+        const values=chunk.values,bytes=new DataView(values.buffer,values.byteOffset+(chunk.offset+index)*8,8),raw=bytes.getBigInt64(0,true);
+        const digits=vector.type.unit*3,perSecond=10n**BigInt(digits);let seconds=raw/perSecond,fraction=raw%perSecond;
+        if(fraction<0n){seconds--;fraction+=perSecond;}
+        const date=new Date(Number(seconds*1000n));
+        if(!Number.isFinite(date.getTime()))return JSON.stringify({epoch:raw.toString(),unit:['seconds','milliseconds','microseconds','nanoseconds'][vector.type.unit]});
+        let text=digits?fraction.toString().padStart(digits,'0'):'000';text=text.padEnd(3,'0');while(text.length>3&&text.endsWith('0'))text=text.slice(0,-1);
+        return date.toISOString().replace(/\.\d{3}Z$/,'')+'.'+text+'Z';
+      }
+    }
+    return resultValue(vector.get(rowIndex),{type:vector.type});
+  }
+  function resultValue(value,field){
+    if(value==null)return null;
+    if(field.type && (field.type.typeId===7 || field.type.constructor.name==='Decimal')){
+      const scale=field.type.scale;let integer;
+      if(typeof value==='bigint')integer=value;
+      else if(value instanceof Int32Array || value instanceof Uint32Array){integer=0n;for(let i=value.length-1;i>=0;i--)integer=(integer<<32n)+BigInt(value[i]>>>0);if(value[value.length-1]<0 || (value[value.length-1]>>>31))integer-=1n<<BigInt(value.length*32);}
+      if(integer!==undefined){const negative=integer<0n;if(negative)integer=-integer;let text=integer.toString();if(scale>0){text=text.padStart(scale+1,'0');text=text.slice(0,-scale)+'.'+text.slice(-scale);}else if(scale<0)text+='0'.repeat(-scale);return (negative?'-':'')+text;}
+    }
+    if(value instanceof Date)return field.type?.typeId===8?value.toISOString().slice(0,10):value.toISOString();
+    if((field.type?.typeId===8||field.type?.typeId===10)&&typeof value==='number'){
+      const date=new Date(value);if(Number.isFinite(date.getTime()))return field.type.typeId===8?date.toISOString().slice(0,10):date.toISOString();
+    }
+    return typeof value==='object'?JSON.stringify(jsonValue(value,field.type)):String(value);
+  }
   document.getElementById('btnRun').addEventListener('click', async () => {
+    if(mountBusy||exportBusy)return;
     if (!conn) return alert("DuckDB is not initialized.");
     const sql = document.getElementById('sqlInput').value.trim();
     if (!sql) return;
@@ -379,7 +360,7 @@
     const resultsHeader = document.getElementById('resultsHeader');
     const table = document.getElementById('resultsTable');
     const operation = ++queryOperation;
-    lastQueryRows = null;resultPage=0;document.getElementById('resultPrev').disabled=true;document.getElementById('resultNext').disabled=true;document.getElementById('resultPageInfo').textContent='Query running…';
+    lastQueryResult = null;resultPage=0;document.getElementById('resultPrev').disabled=true;document.getElementById('resultNext').disabled=true;document.getElementById('resultPageInfo').textContent='Query running…';
     document.getElementById('btnExport').style.display = 'none';
 
     try {
@@ -389,50 +370,46 @@
       const start = performance.now();
       const res = await conn.query(sql);
       if (operation !== queryOperation) return;
-      const rows = res.toArray().map(record=>{
-        const row=Object.fromEntries(res.schema.fields.map(field=>{
-          let value=record[field.name];
-          if(value!=null && field.type && (field.type.typeId===7 || field.type.constructor.name==='Decimal')){
-            const scale=field.type.scale;let integer;
-            if(typeof value==='bigint')integer=value;
-            else if(value instanceof Int32Array || value instanceof Uint32Array){integer=0n;for(let i=value.length-1;i>=0;i--)integer=(integer<<32n)+BigInt(value[i]>>>0);if(value[value.length-1]<0 || (value[value.length-1]>>>31))integer-=1n<<BigInt(value.length*32);}
-            if(integer!==undefined){const negative=integer<0n;if(negative)integer=-integer;let text=integer.toString();if(scale>0){text=text.padStart(scale+1,'0');text=text.slice(0,-scale)+'.'+text.slice(-scale);}else if(scale<0)text+='0'.repeat(-scale);value=(negative?'-':'')+text;}
-          }
-          return [field.name,value];
-        }));return row;
-      });
+      const fields=res.schema.fields,vectors=fields.map((_,index)=>res.getChildAt(index));
+
       const ms = (performance.now() - start).toFixed(1);
 
-      lastQueryRows = rows;
+      lastQueryResult = {table:res,vectors,columns:fields.map(field=>field.name)};
       recordSuccessfulQuery(sql);
 
-      resultsHeader.textContent='Results ('+rows.length.toLocaleString()+' rows) • '+ms+'ms';
-      document.getElementById('btnExport').style.display=rows.length?'flex':'none';resultPage=0;renderResultPage();
+      resultsHeader.textContent='Results ('+res.numRows.toLocaleString()+' rows) • '+ms+'ms';
+      document.getElementById('btnExport').style.display=res.numRows?'flex':'none';resultPage=0;renderResultPage();
 
     } catch (e) {
       if (operation !== queryOperation) return;
       resultsHeader.textContent = "Error";document.getElementById('resultPageInfo').textContent='Query failed. Run a valid query to browse results.';
       table.innerHTML = `<tbody><tr><td style="color: #ff4757;">${escapeHtml(e.message)}</td></tr></tbody>`;
+    } finally {
+      if(operation===queryOperation)try{await refreshSchema(operation);}catch(schemaError){if(operation===queryOperation)resultsHeader.textContent+=' · Schema refresh failed: '+schemaError.message;}
     }
   });
 
-  document.getElementById('btnExport').addEventListener('click', () => {
-    if (!lastQueryRows || lastQueryRows.length === 0) return;
-    const cols = Object.keys(lastQueryRows[0]);
-    const csv = [cols.map(TangentData.csvCell).join(','), ...lastQueryRows.map(row => cols.map(c => TangentData.csvCell(row[c])).join(','))].join('\r\n') + '\r\n';
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sql_results.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+  document.getElementById('btnExport').addEventListener('click', async () => {
+    const result=lastQueryResult;if(exportBusy||!result?.table.numRows)return;
+    exportBusy=true;const button=document.getElementById('btnExport'),run=document.getElementById('btnRun'),original=button.innerHTML;button.disabled=true;run.disabled=true;
+    try{
+      const parts=[result.columns.map(TangentData.csvCell).join(',')+'\r\n'];
+      for(let start=0;start<result.table.numRows;start+=1000){
+        const end=Math.min(start+1000,result.table.numRows),lines=[];
+        for(let i=start;i<end;i++)lines.push(result.vectors.map(vector=>TangentData.csvCell(readResultCell(vector,i))).join(','));
+        parts.push(lines.join('\r\n')+'\r\n');button.textContent='Preparing CSV… '+end.toLocaleString()+' / '+result.table.numRows.toLocaleString();
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+      const url=URL.createObjectURL(new Blob(parts,{type:'text/csv;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download='sql_results.csv';
+      try{link.click();}finally{setTimeout(()=>URL.revokeObjectURL(url),1000);}
+    }catch(error){document.getElementById('resultPageInfo').textContent='CSV export failed: '+error.message;}
+    finally{exportBusy=false;button.innerHTML=original;button.disabled=false;run.disabled=mountBusy||document.getElementById('sqlInput').disabled;}
   });
 
   // Init
   initDuckDB();
 </script>
-<script>document.getElementById('mountFile').addEventListener('click',()=>document.getElementById('fileInput').click());document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<script>document.getElementById('mountFile').addEventListener('click',()=>{const input=document.getElementById('fileInput');input.value='';input.click();});document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
 <div class="page"><footer class="footer"><span>RunTangent · Thoughtful tools for everyday work.</span><nav aria-label="Footer"><a href="index.html#trust">Privacy</a><a href="tools.html">All tools</a><a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:hello@runtangent.com">Contact</a></nav></footer></div>
 
 </body></html>

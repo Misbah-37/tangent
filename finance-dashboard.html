@@ -133,7 +133,7 @@
 <link rel="canonical" href="https://runtangent.com/finance-dashboard.html">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "Finance Dashboard", "description": "Review income and expenses from CSV transactions. Choose date formats, filter the ledger and export matching transactions.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/finance-dashboard.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What kind of CSV can I analyse?", "acceptedAnswer": {"@type": "Answer", "text": "Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview."}}, {"@type": "Question", "name": "How do date formats and invalid values affect totals?", "acceptedAnswer": {"@type": "Answer", "text": "Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches."}}, {"@type": "Question", "name": "How do transaction filters work?", "acceptedAnswer": {"@type": "Answer", "text": "From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page."}}, {"@type": "Question", "name": "Does selecting a currency convert my transactions?", "acceptedAnswer": {"@type": "Answer", "text": "No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention."}}, {"@type": "Question", "name": "What can I export, and is my work saved?", "acceptedAnswer": {"@type": "Answer", "text": "Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory, dependencies may load from CDNs, and work is not automatically saved. Keep original files; memory limits apply."}}]}]</script>
 <style></style></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="page"><div class="nav"><a href="index.html" class="brand" aria-label="RunTangent home"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 50C22 50 14 42 14 32S22 14 32 14H54" stroke="#00b7d9" stroke-width="7" stroke-linecap="round"/><path d="M32 14v30" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span><span class="brand-run">Run</span>Tangent</span></a><nav class="nav-links" aria-label="Main navigation"><a href="tools.html">Tools</a><a class="category-nav" href="index.html#categories-title">Categories</a><a href="index.html#tangent-pro">RunTangent Pro</a></nav><form class="nav-search" action="tools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input name="q" type="search" aria-label="Search tools" placeholder="Search tools…"></form><select class="theme-choice" data-theme-choice aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></div></div></header>
-<main class="page" id="main"><section class="editor-intro finance-intro"><span class="eyebrow">DATA &amp; ANALYTICS / FINANCE DASHBOARD</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">⇄</span>Finance Dashboard</h1><p class="tool-description">Review transaction CSVs with summaries, charts, filters and exports.</p><p class="tool-tagline">Money in. Money out. A clearer picture.</p></section><div class="finance-toolbar"><span>Local transaction CSV · signed amounts</span><button id="financeLoad">Load CSV</button><label class="currency-label">Display currency<select id="displayCurrency"><option>USD</option><option>INR</option><option>EUR</option><option>GBP</option><option>PKR</option><option>AED</option><option>JPY</option></select></label><div id="financeActions"></div></div><p class="currency-note">Display formatting only · no exchange-rate conversion. Use one currency consistently. Amounts display with two decimal places.</p><div class="finance-studio" id="workspace" tabindex="-1">
+<main class="page" id="main"><section class="editor-intro finance-intro"><span class="eyebrow">DATA &amp; ANALYTICS / FINANCE DASHBOARD</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">⇄</span>Finance Dashboard</h1><p class="tool-description">Review transaction CSVs with summaries, charts, filters and exports.</p><p class="tool-tagline">Money in. Money out. A clearer picture.</p></section><div class="finance-toolbar"><span>Local transaction CSV · signed amounts</span><button type="button" id="financeLoad">Load CSV</button><label class="currency-label">Display currency<select id="displayCurrency"><option>USD</option><option>INR</option><option>EUR</option><option>GBP</option><option>PKR</option><option>AED</option><option>JPY</option></select></label><div id="financeActions"></div></div><p class="currency-note">Display formatting only · no exchange-rate conversion. Use one currency consistently. Amounts display with two decimal places; aggregate totals are rounded to two decimals. Parsed source amounts remain unchanged in exports.</p><div class="finance-studio" id="workspace" tabindex="-1">
   <div class="drop-zone" id="dropZone">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -150,33 +150,33 @@
     <h3 style="margin-bottom:20px;">Map Your Columns</h3><p id="financeImportNotice" role="status"></p>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-bottom:24px;">
       <div style="flex:1; min-width:200px;">
-        <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Date Column</label>
-        <select id="mapDate" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:white; border:1px solid var(--border-color);"></select>
+        <label for="mapDate" style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Date Column</label>
+        <select id="mapDate" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border-color);"></select>
       </div>
       <div style="flex:1; min-width:200px;">
-        <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Description / Payee</label>
-        <select id="mapDesc" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:white; border:1px solid var(--border-color);"></select>
+        <label for="mapDesc" style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Description / Payee</label>
+        <select id="mapDesc" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border-color);"></select>
       </div>
       <div style="flex:1; min-width:200px;">
-        <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Amount</label>
-        <select id="mapAmt" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:white; border:1px solid var(--border-color);"></select>
+        <label for="mapAmt" style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Amount</label>
+        <select id="mapAmt" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border-color);"></select>
       </div>
       <div style="flex:1; min-width:200px;">
-        <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Category (Optional)</label>
-        <select id="mapCategory" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:white; border:1px solid var(--border-color);">
+        <label for="mapCategory" style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:0.9rem;">Category (Optional)</label>
+        <select id="mapCategory" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border-color);">
           <option value="">-- Skip / None --</option>
         </select>
       </div>
     </div>
-    <label class="date-format-label">Source date format<select id="sourceDateFormat"><option value="iso">ISO · YYYY-MM-DD</option><option value="mdy">Month/day/year · MM/DD/YYYY</option><option value="dmy">Day/month/year · DD/MM/YYYY</option></select></label><p class="date-format-note">Choose explicitly before analysing. Dates are calendar days without timezone conversion. Invalid dates stay in amount totals and the ledger but are excluded from the daily chart.</p><button id="btnAnalyze" class="btn-accent">Analyze Data</button>
+    <label class="date-format-label">Source date format<select id="sourceDateFormat"><option value="iso">ISO · YYYY-MM-DD</option><option value="mdy">Month/day/year · MM/DD/YYYY</option><option value="dmy">Day/month/year · DD/MM/YYYY</option></select></label><p class="date-format-note">Choose explicitly before analysing. Slash or hyphen month/day and day/month dates may include a valid clock time; ISO dates may include a valid time and offset. The written calendar day is preserved without timezone conversion. Invalid dates stay in amount totals and the ledger but are excluded from the daily chart.</p><button type="button" id="btnAnalyze" class="btn-accent">Analyze Data</button>
   </div>
 
   <div id="dashboardControls" style="display:none; justify-content:space-between; align-items:center; margin-bottom:20px;">
     <h3 style="margin:0;">Financial Summary</h3>
-    <button id="btnCloseFile" class="btn-accent" style="background:transparent; border:1px solid var(--border-color); color:var(--text-muted); padding:8px 16px;">✕ Close File</button>
+    <button type="button" id="btnCloseFile" class="btn-accent" style="background:transparent; border:1px solid var(--border-color); color:var(--text-muted); padding:8px 16px;">✕ Close File</button>
   </div>
 
-<div id="transactionFilters" hidden><div class="transaction-filter-controls"><label>From day<input id="filterFrom" type="date"></label><label>Through day<input id="filterThrough" type="date"></label><label>Category<select id="filterCategory"><option value="">All categories</option></select></label><button id="applyTransactionFilters">Apply filters</button><button id="clearTransactionFilters">Clear filters</button><button id="exportTransactionView">Export current transactions</button></div><p>Dates are inclusive calendar days. Active date bounds exclude transactions without valid dates. CSV exports every matching transaction across pages, using parsed numeric amounts without currency conversion.</p><p id="transactionFilterStatus" role="status"></p></div>  <div class="dashboard-grid" id="dashboardGrid">
+<div id="transactionFilters" hidden><div class="transaction-filter-controls"><label>From day<input id="filterFrom" type="date"></label><label>Through day<input id="filterThrough" type="date"></label><label>Category<select id="filterCategory"><option value="">All categories</option></select></label><button type="button" id="applyTransactionFilters">Apply filters</button><button type="button" id="clearTransactionFilters">Clear filters</button><button type="button" id="exportTransactionView">Export current transactions</button></div><p>Dates are inclusive calendar days. Active date bounds exclude transactions without valid dates. CSV exports every matching transaction across pages, using parsed numeric amounts without currency conversion.</p><p id="transactionFilterStatus" role="status"></p></div>  <div class="dashboard-grid" id="dashboardGrid">
     <div class="stat-card">
       <div class="stat-title">Total Inflow</div>
       <div class="stat-value value-positive" id="valInflow">$0.00</div>
@@ -227,17 +227,31 @@
 </div>
 
 
-<section class="editor-guide" aria-labelledby="finance-guide"><div class="guide-heading"><span class="eyebrow">FOLLOW THE MOVEMENT</span><h2 id="finance-guide">Make room<br>for perspective.</h2><p>Turn a transaction CSV into a view of inflow, outflow and net movement. Check the source and mappings before interpreting the totals.</p></div><section><h3>How to explore transactions</h3><ol class="guide-steps"><li><strong>Load your CSV.</strong> Start with one currency and one signed amount column. Keep your original file.</li><li><strong>Map the details.</strong> Choose date, description and amount columns, with an optional category. Select ISO, month/day/year or day/month/year explicitly, and check the amount sign convention.</li><li><strong>Review the overview.</strong> Analyse totals and charts, then use inclusive date bounds and category filters. Review the matching ledger and distinguish the import notice from the current-view status.</li><li><strong>Keep the context.</strong> Export all current transactions across pages as CSV. Display currency changes formatting only. Totals describe included transactions, not your bank balance; keep the original source records.</li></ol></section><aside class="guide-limits"><h3>A clear view starts with consistent data</h3><p>Missing amounts are excluded. Choose the source date format explicitly; invalid dates remain in totals but are excluded from the daily chart. Display currency changes formatting only, without converting amounts. Verify mappings and source values when totals look unexpected.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear totals.<br>Clear boundaries.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What kind of CSV can I analyse?</summary><p>Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview.</p></details><details><summary>How do date formats and invalid values affect totals?</summary><p>Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches.</p></details><details><summary>How do transaction filters work?</summary><p>From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page.</p></details><details><summary>Does selecting a currency convert my transactions?</summary><p>No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention.</p></details><details><summary>What can I export, and is my work saved?</summary><p>Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory, dependencies may load from CDNs, and work is not automatically saved. Keep original files; memory limits apply.</p></details></div></section></section></main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="assets/data-utils.js?v=1"></script><script src="assets/workspaces/finance-dashboard/import.js?v=1"></script>
+<section class="editor-guide" aria-labelledby="finance-guide"><div class="guide-heading"><span class="eyebrow">FOLLOW THE MOVEMENT</span><h2 id="finance-guide">Make room<br>for perspective.</h2><p>Turn a transaction CSV into a view of inflow, outflow and net movement. Check the source and mappings before interpreting the totals.</p></div><section><h3>How to explore transactions</h3><ol class="guide-steps"><li><strong>Load your CSV.</strong> Start with one currency and one signed amount column. Keep your original file.</li><li><strong>Map the details.</strong> Choose date, description and amount columns, with an optional category. Select ISO, month/day/year or day/month/year explicitly, and check the amount sign convention.</li><li><strong>Review the overview.</strong> Analyse totals and charts, then use inclusive date bounds and category filters. Review the matching ledger and distinguish the import notice from the current-view status.</li><li><strong>Keep the context.</strong> Export all current transactions across pages as CSV. Display currency changes formatting only. Totals describe included transactions, not your bank balance; keep the original source records.</li></ol></section><aside class="guide-limits"><h3>A clear view starts with consistent data</h3><p>Missing amounts are excluded. Choose the source date format explicitly; invalid dates remain in totals but are excluded from the daily chart. Display currency changes formatting only, without converting amounts. Verify mappings and source values when totals look unexpected.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear totals.<br>Clear boundaries.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What kind of CSV can I analyse?</summary><p>Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview.</p></details><details><summary>How do date formats and invalid values affect totals?</summary><p>Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches.</p></details><details><summary>How do transaction filters work?</summary><p>From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page.</p></details><details><summary>Does selecting a currency convert my transactions?</summary><p>No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention.</p></details><details><summary>What can I export, and is my work saved?</summary><p>Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory using libraries served from this site, and work is not automatically saved. Keep original files; memory limits apply.</p></details></div></section></section></main>
+<script src="assets/workspaces/finance-dashboard/vendor/papaparse-5.4.1.min.js"></script>
+<script src="assets/workspaces/finance-dashboard/vendor/chart-4.4.8.umd.js"></script>
+<script src="assets/data-utils.js?v=1"></script><script src="assets/workspaces/finance-dashboard/import.js?v=2"></script>
 
 <script>
-  function calendarDay(value,format){const text=String(value??'').trim();let match,y,m,d;if(format==='iso'){match=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text);if(!match)return null;[,y,m,d]=match.map(Number);}else{match=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text);if(!match)return null;y=Number(match[3]);m=Number(match[format==='mdy'?1:2]);d=Number(match[format==='mdy'?2:1]);}if(y<1||y>9999)return null;const date=new Date(0);date.setUTCFullYear(y,m-1,d);date.setUTCHours(0,0,0,0);if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d)return null;return String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+  function calendarDay(value,format){
+    const text=String(value??'').trim();
+    const timestamp=/^(.+?)(?:[T ](\d{1,2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(?: ?(AM|PM)|(Z|[+-]\d{2}:\d{2}))?)?$/i.exec(text);
+    if(!timestamp)return null;
+    const day=timestamp[1];
+    if(timestamp[2]!==undefined){const hour=Number(timestamp[2]),minute=Number(timestamp[3]),second=Number(timestamp[4]||0);if(minute>59||second>59||hour>(timestamp[5]?12:23)||(timestamp[5]&&hour<1))return null;const zone=timestamp[6];if(zone&&zone.toUpperCase()!=='Z'){const h=Number(zone.slice(1,3)),m=Number(zone.slice(4));if(h>14||m>59||(h===14&&m!==0))return null;}}
+    let match,y,m,d;
+    if(format==='iso'){match=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(day);if(!match)return null;[,y,m,d]=match.map(Number);}
+    else{match=/^(\d{1,2})([/-])(\d{1,2})\2(\d{4})$/.exec(day);if(!match)return null;y=Number(match[4]);m=Number(match[format==='mdy'?1:3]);d=Number(match[format==='mdy'?3:1]);}
+    if(y<1||y>9999)return null;const date=new Date(0);date.setUTCFullYear(y,m-1,d);date.setUTCHours(0,0,0,0);if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d)return null;
+    return String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  }
+  function moneySum(values){let sum=0,correction=0;for(const value of values){const next=sum+value;correction+=Math.abs(sum)>=Math.abs(value)?(sum-next)+value:(value-next)+sum;sum=next;}const result=Number((sum+correction).toFixed(2));if(!Number.isFinite(result))throw Error('Amount totals exceed the supported numeric range.');return Object.is(result,-0)?0:result;}
+  function totalsFor(rows){const incoming=moneySum(rows.map(tx=>Math.max(0,tx.amt))),outgoing=moneySum(rows.map(tx=>Math.max(0,-tx.amt)));return {incoming,outgoing,net:moneySum([incoming,-outgoing])};}
+  function showTotals(incoming,outgoing){document.getElementById('valInflow').textContent=formatMoney(incoming);document.getElementById('valOutflow').textContent=formatMoney(outgoing);const net=moneySum([incoming,-outgoing]),element=document.getElementById('valNet');element.textContent=formatMoney(net);element.className='stat-value '+(net>=0?'value-positive':'value-negative');}
   function formatMoney(value){return new Intl.NumberFormat(undefined,{style:'currency',currency:document.getElementById('displayCurrency').value,currencyDisplay:'code',minimumFractionDigits:2,maximumFractionDigits:2}).format(value);}
   function currencyTooltip(context){const value=typeof context.parsed==='number'?context.parsed:context.parsed.y;return (context.label?context.label+': ':'')+formatMoney(value);}
-  document.getElementById('displayCurrency').addEventListener('change',()=>{const incoming=ledgerRows.reduce((sum,tx)=>sum+Math.max(0,tx.amt),0),outgoing=ledgerRows.reduce((sum,tx)=>sum+Math.max(0,-tx.amt),0);document.getElementById('valInflow').textContent=formatMoney(incoming);document.getElementById('valOutflow').textContent=formatMoney(outgoing);document.getElementById('valNet').textContent=formatMoney(incoming-outgoing);if(ledgerRows.length){renderLedgerPage();renderCharts(ledgerRows,incoming,outgoing,ledgerCategory);}});
-  let fileOperation = 0;
+  document.getElementById('displayCurrency').addEventListener('change',()=>{if(!hasAnalysis)return;const {incoming,outgoing}=totalsFor(ledgerRows);showTotals(incoming,outgoing);renderLedgerPage();renderCharts(ledgerRows,incoming,outgoing,ledgerCategory);});
+  let fileOperation = 0,hasAnalysis=false;
   let rawData = [];
   let parsedHeaders = [];
 
@@ -265,7 +279,7 @@
     if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   });
   fileInput.addEventListener('change', (e) => {
-    if(e.target.files.length) handleFile(e.target.files[0]);
+    const file=e.target.files[0];e.target.value='';if(file)handleFile(file);
   });
 
   function handleFile(file) {
@@ -287,7 +301,9 @@
 
   function setupMapping() {
     dropZone.style.display = 'none';
-    columnMapping.style.display = 'block';
+    columnMapping.style.display = 'block';hasAnalysis=false;document.getElementById('btnCloseFile').style.display='inline-flex';
+    for(const id of ['dashboardControls','dashboardGrid','chartsLayout','tableWrapper'])document.getElementById(id).style.display='none';document.getElementById('transactionFilters').hidden=true;
+    for(const chart of [timeChartInstance,pieChartInstance,categoryChartInstance])chart?.destroy();timeChartInstance=pieChartInstance=categoryChartInstance=null;ledgerRows=[];analysedTransactions=[];
 
     [mapDate, mapDesc, mapAmt].forEach(sel => sel.innerHTML = '');
     mapCategory.innerHTML = '<option value="">-- Skip / None --</option>';
@@ -310,6 +326,7 @@
   }
 
   btnAnalyze.addEventListener('click', () => {
+    if(typeof window.Chart!=='function')return alert('Chart library could not load. Reload the page before analysing; the source is retained.');
     const dCol = mapDate.value;
     const descCol = mapDesc.value;
     const amtCol = mapAmt.value;
@@ -338,17 +355,13 @@
       }
     });
 
-    document.getElementById('valInflow').textContent = formatMoney(inflow);
-    document.getElementById('valOutflow').textContent = formatMoney(outflow);
-
-    const net = inflow - outflow;
-    const netEl = document.getElementById('valNet');
-    netEl.textContent = formatMoney(net);
-    netEl.className = "stat-value " + (net >= 0 ? "value-positive" : "value-negative");
+    if(!validTx.length)return alert('The mapped Amount column contains no valid numeric transactions. Choose another column.');
+    try{const totals=totalsFor(validTx);inflow=totals.incoming;outflow=totals.outgoing;}catch(error){return alert(error.message);}
+    showTotals(inflow,outflow);hasAnalysis=true;
 
     document.getElementById('dashboardControls').style.display = 'flex';
     document.getElementById('dashboardGrid').style.display = 'grid';
-    document.getElementById('chartsLayout').style.display = 'flex';
+    document.getElementById('chartsLayout').style.display = 'grid';
     document.getElementById('tableWrapper').style.display = 'block';
     columnMapping.style.display = 'none';
 
@@ -361,7 +374,7 @@
   });
 
   let analysedTransactions=[],ledgerRows = [], ledgerCategory = false, ledgerPage = 0;
-  function updateTransactionView(rows){const inflow=rows.reduce((sum,tx)=>sum+Math.max(0,tx.amt),0),outflow=rows.reduce((sum,tx)=>sum+Math.max(0,-tx.amt),0);document.getElementById('valInflow').textContent=formatMoney(inflow);document.getElementById('valOutflow').textContent=formatMoney(outflow);const net=document.getElementById('valNet');net.textContent=formatMoney(inflow-outflow);net.className='stat-value '+(inflow>=outflow?'value-positive':'value-negative');renderTable(rows,ledgerCategory);renderCharts(rows,inflow,outflow,ledgerCategory);document.getElementById('transactionFilterStatus').textContent='Showing '+rows.length+' of '+analysedTransactions.length+' analysed transactions. '+rows.filter(tx=>!tx.dateKey).length+' have invalid or missing dates.';}
+  function updateTransactionView(rows){const {incoming,outgoing}=totalsFor(rows);showTotals(incoming,outgoing);renderTable(rows,ledgerCategory);renderCharts(rows,incoming,outgoing,ledgerCategory);document.getElementById('transactionFilterStatus').textContent='Showing '+rows.length+' of '+analysedTransactions.length+' analysed transactions. '+rows.filter(tx=>!tx.dateKey).length+' have invalid or missing dates.';}
   document.getElementById('applyTransactionFilters').addEventListener('click',()=>{const from=document.getElementById('filterFrom').value,through=document.getElementById('filterThrough').value,category=document.getElementById('filterCategory').value;if((from&&!calendarDay(from,'iso'))||(through&&!calendarDay(through,'iso'))||(from&&through&&from>through)){document.getElementById('transactionFilterStatus').textContent='Enter valid date bounds with From on or before Through. Current view is unchanged.';return;}updateTransactionView(analysedTransactions.filter(tx=>(!from||(tx.dateKey&&tx.dateKey>=from))&&(!through||(tx.dateKey&&tx.dateKey<=through))&&(!category||tx.category===category)));});
   document.getElementById('clearTransactionFilters').addEventListener('click',()=>{document.getElementById('filterFrom').value='';document.getElementById('filterThrough').value='';document.getElementById('filterCategory').value='';updateTransactionView(analysedTransactions);});
   document.getElementById('exportTransactionView').addEventListener('click',()=>{const columns=['source_date','calendar_day','description','amount'];if(ledgerCategory)columns.push('category');const rows=[columns,...ledgerRows.map(tx=>{const r=[tx.date,tx.dateKey||'',tx.desc,String(tx.amt)];if(ledgerCategory)r.push(tx.category);return r;})];const url=URL.createObjectURL(new Blob([rows.map(r=>r.map(TangentData.csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='current_transactions.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
@@ -405,7 +418,7 @@
   }
 
   function renderCharts(txs, inTotal, outTotal, showCategory) {
-    Chart.defaults.color = '#94a3b8';
+    const theme=getComputedStyle(document.body);Chart.defaults.color=theme.getPropertyValue('--text-muted').trim();const gridColor=theme.getPropertyValue('--border-color').trim();
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
 
     if(pieChartInstance) pieChartInstance.destroy();
@@ -436,11 +449,11 @@
     let dateMap = Object.create(null);
     txs.forEach(tx => {
       if(!tx.dateKey)return;
-      if(!dateMap[tx.dateKey]) dateMap[tx.dateKey] = 0;
-      dateMap[tx.dateKey] += tx.amt;
+      if(!dateMap[tx.dateKey]) dateMap[tx.dateKey] = [];
+      dateMap[tx.dateKey].push(tx.amt);
     });
     let sortedDates = Object.keys(dateMap).sort();
-    let balances = sortedDates.map(d => dateMap[d]);
+    let balances = sortedDates.map(d => moneySum(dateMap[d]));
 
     const timeCtx = document.getElementById('timeChart').getContext('2d');
     timeChartInstance = new Chart(timeCtx, {
@@ -458,7 +471,7 @@
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { ticks:{callback:value=>formatMoney(value)}, grid: { color: '#1f273b' } },
+          y: { ticks:{callback:value=>formatMoney(value)}, grid: { color: gridColor } },
           x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
         },
         plugins: { legend: { display: false }, tooltip:{callbacks:{label:currencyTooltip}} }
@@ -472,13 +485,14 @@
       let catMap = Object.create(null);
       txs.forEach(tx => {
         if (tx.amt < 0) { // Only track expenses for the category breakdown
-          if(!catMap[tx.category]) catMap[tx.category] = 0;
-          catMap[tx.category] += Math.abs(tx.amt);
+          if(!catMap[tx.category]) catMap[tx.category] = [];
+          catMap[tx.category].push(Math.abs(tx.amt));
         }
       });
 
+      for(const key of Object.keys(catMap))catMap[key]=moneySum(catMap[key]);
       let sortedCats = Object.keys(catMap).sort((a,b) => catMap[b] - catMap[a]);
-      let catData = sortedCats.map(c => catMap[c]);
+      const remainder=sortedCats.slice(8);sortedCats=sortedCats.slice(0,8);let catData=sortedCats.map(c=>catMap[c]);if(remainder.length){let label='Other categories';while(sortedCats.includes(label))label='Remaining '+label;sortedCats.push(label);catData.push(moneySum(remainder.map(c=>catMap[c])));}
 
       // Generate some pretty colors for categories
       const catColors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#10b981', '#f43f5e', '#eab308', '#6366f1', '#14b8a6'];
@@ -513,7 +527,7 @@
     document.getElementById('chartsLayout').style.display = 'none';
     document.getElementById('tableWrapper').style.display = 'none';
 
-    dropZone.style.display = 'block';
+    dropZone.style.display = 'block';columnMapping.style.display='none';hasAnalysis=false;document.getElementById('btnCloseFile').style.display='none';
 
     fileOperation++;
     FinanceCsvImport.cancel();
@@ -523,10 +537,11 @@
     fileInput.value = '';
     if(pieChartInstance) pieChartInstance.destroy();
     if(timeChartInstance) timeChartInstance.destroy();
-    if(categoryChartInstance) categoryChartInstance.destroy();
+    if(categoryChartInstance) categoryChartInstance.destroy();timeChartInstance=pieChartInstance=categoryChartInstance=null;
   });
+  new MutationObserver(()=>{if(hasAnalysis){const {incoming,outgoing}=totalsFor(ledgerRows);renderCharts(ledgerRows,incoming,outgoing,ledgerCategory);}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 </script>
-<script>document.getElementById('financeLoad').addEventListener('click',()=>document.getElementById('fileInput').click());document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<script>document.getElementById('financeActions').append(document.getElementById('btnCloseFile'));document.getElementById('btnCloseFile').style.display='none';document.getElementById('financeLoad').addEventListener('click',()=>document.getElementById('fileInput').click());document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
 <div class="page"><footer class="footer"><span>RunTangent · Thoughtful tools for everyday work.</span><nav aria-label="Footer"><a href="index.html#trust">Privacy</a><a href="tools.html">All tools</a><a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:hello@runtangent.com">Contact</a></nav></footer></div>
 
 </body></html>

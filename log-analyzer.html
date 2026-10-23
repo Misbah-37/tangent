@@ -5,21 +5,10 @@
 <meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Log Analyzer | RunTangent"><meta property="og:description" content="Explore recognized Apache, Nginx and Syslog records locally. Filter log entries, inspect unmatched lines and export selected records.">
 <link rel="icon" href="favicon.ico?v=2">
 <link rel="stylesheet" href="assets/editorial.css?v=6"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
-  .clean-header { text-align: center; margin-bottom: 40px; padding: 0 32px; }
-  .badge-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(58, 123, 213, 0.15); color: var(--accent);
-    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
-    font-weight: 600; margin-bottom: 16px;
-  }
-  .clean-header h1 {
-    font-size: 2.4rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    letter-spacing: -0.03em;
-    color: var(--text-main);
-  }
-  .clean-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+
+
+
 
   /* Workspace */
   .log-workspace {
@@ -120,31 +109,17 @@
   }
   .log-search { width: 100%; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-family: inherit; }
 
-  /* Explainers */
-  .explainer-section { max-width: 1000px; margin: 80px auto 0 auto; padding: 60px 32px 0 32px; border-top: 1px solid var(--border-color); }
-  .explainer-title { font-size: 2rem; font-weight: 800; margin-bottom: 40px; text-align: center; }
-  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px; }
-  .feature-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px; }
-  .feature-icon { color: var(--accent); margin-bottom: 16px; }
-  .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
-  .feature-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
-
-  .faq-container { margin-bottom: 60px; }
-  .faq-item { background: var(--bg-card); border: 1px solid var(--border-color); margin-bottom: 12px; border-radius: 8px; overflow: hidden; }
-  .faq-question { width: 100%; text-align: left; padding: 20px; background: none; border: none; color: var(--text-main); font-size: 1.05rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
-  .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 500px; }
-  .faq-item.active .faq-toggle-icon { transform: rotate(45deg); }</style><link rel="stylesheet" href="assets/workspaces/log-analyzer/style.css?v=3">
+</style><link rel="stylesheet" href="assets/workspaces/log-analyzer/style.css?v=4">
 <link rel="stylesheet" href="assets/tool-identities.css?v=1">
 <link rel="canonical" href="https://runtangent.com/log-analyzer.html">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "Log Analyzer", "description": "Explore recognized Apache, Nginx and Syslog records locally. Filter log entries, inspect unmatched lines and export selected records.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/log-analyzer.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which log formats are supported?", "acceptedAnswer": {"@type": "Answer", "text": "Load .log or .txt files containing Apache/Nginx-style access records or a traditional Syslog pattern. The first 50 lines determine one parser mode. If none match, the file is rejected; custom, JSON and mixed-format logs are not universally supported."}}, {"@type": "Question", "name": "How are recognised and unmatched lines counted?", "acceptedAnswer": {"@type": "Answer", "text": "Dashboard summaries cover all recognised records. Nonempty lines that fail the detected pattern are counted separately; blank lines are excluded. Inspect unmatched lines to see their original source line numbers, including intervening blank lines. That inspector is independent of Raw Explorer filters."}}, {"@type": "Question", "name": "What do Explorer filters change?", "acceptedAnswer": {"@type": "Answer", "text": "Case-insensitive text search combines with exact status/severity and IP/host selections using AND. They filter Raw Explorer and its exports only, not dashboard totals or summaries. Results display 200 lines per page; Clear explorer filters restores all recognised records."}}, {"@type": "Question", "name": "What can I export, and are summaries security diagnoses?", "acceptedAnswer": {"@type": "Answer", "text": "Export all matching recognised records across pages as original text lines or mode-specific parsed CSV. Export unmatched lines separately with source line numbers. Summaries are investigation clues, not proof of an attack. Syslog severity is inferred from recognised process-text suffixes, not a complete severity decoder."}}, {"@type": "Question", "name": "Are my logs uploaded or saved?", "acceptedAnswer": {"@type": "Answer", "text": "Analysis runs in browser memory; chart dependencies may load from CDNs. Work is not automatically saved and device memory limits apply. Logs can contain sensitive IPs and messages; keep original files and review exported content before sharing. This is not a live monitoring service."}}]}]</script>
 <style></style></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="page"><div class="nav"><a href="index.html" class="brand" aria-label="RunTangent home"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 50C22 50 14 42 14 32S22 14 32 14H54" stroke="#00b7d9" stroke-width="7" stroke-linecap="round"/><path d="M32 14v30" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span><span class="brand-run">Run</span>Tangent</span></a><nav class="nav-links" aria-label="Main navigation"><a href="tools.html">Tools</a><a class="category-nav" href="index.html#categories-title">Categories</a><a href="index.html#tangent-pro">RunTangent Pro</a></nav><form class="nav-search" action="tools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input name="q" type="search" aria-label="Search tools" placeholder="Search tools…"></form><select class="theme-choice" data-theme-choice aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></div></div></header>
-<main class="page" id="main"><section class="editor-intro log-intro"><span class="eyebrow">DATA &amp; ANALYTICS / LOG ANALYZER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">≋</span>Log Analyzer</h1><p class="tool-description">Parse supported log files, filter records and export matching entries.</p><p class="tool-tagline">Find the signal. Follow the story.</p></section><div class="log-toolbar"><span>Local log files · access logs &amp; Syslog patterns</span><button id="loadLogFile">Load log</button><button id="tryLogSample">Try sample</button><button id="inspectUnmatched" disabled>Inspect unmatched lines</button></div><div class="log-workspace" id="workspace" tabindex="-1">
+<main class="page" id="main"><section class="editor-intro log-intro"><span class="eyebrow">DATA &amp; ANALYTICS / LOG ANALYZER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">≋</span>Log Analyzer</h1><p class="tool-description">Parse supported log files, filter records and export matching entries.</p><p class="tool-tagline">Find the signal. Follow the story.</p></section><div class="log-toolbar"><span>Local log files · access logs &amp; Syslog patterns</span><button type="button" id="loadLogFile">Load log</button><button type="button" id="tryLogSample">Try sample</button><button type="button" id="inspectUnmatched" disabled>Inspect unmatched lines</button></div><div class="log-workspace" id="workspace" tabindex="-1">
   <!-- Left Panel -->
   <div class="panel">
     <div class="panel-header">
       <span>Log Ingestion</span>
-      <button class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetTool()">Clear</button>
+      <button type="button" class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetTool()">Clear</button>
     </div>
 
     <div class="panel-body" id="setupArea">
@@ -152,8 +127,8 @@
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
         <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
         <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
-          <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
-          <button class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+          <button type="button" class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+          <button type="button" class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
         </div>
       </div>
       <input type="file" id="fileInput" accept=".txt,.log" style="display: none;">
@@ -163,11 +138,11 @@
       <div class="stat-grid" style="margin-top: 16px;">
         <div class="stat-card">
           <div class="stat-val" id="statTotal">0</div>
-          <div class="stat-lbl">Valid Requests</div>
+          <div class="stat-lbl" id="totalStatLabel">Recognized Requests</div>
         </div>
         <div class="stat-card">
           <div class="stat-val" id="statError">0%</div>
-          <div class="stat-lbl">Error Rate</div>
+          <div class="stat-lbl" id="errorStatLabel">HTTP Error Rate</div>
         </div>
       </div>
 
@@ -220,7 +195,7 @@
 
         <!-- Tab: Raw Explorer -->
         <div id="view-raw" role="tabpanel" aria-labelledby="tab-raw" style="display: none; flex-grow: 1; flex-direction: column; height: 100%;">
-          <div class="raw-filter-controls"><label>Status / severity<select id="rawStatusFilter"><option value="">All</option></select></label><label>IP / host<select id="rawSourceFilter"><option value="">All sources</option></select></label><button id="clearRawFilters">Clear explorer filters</button><button id="exportRawText">Export matching lines</button><button id="exportParsedCsv">Export parsed CSV</button></div><p class="raw-filter-note">Explorer filters affect the lines below and these exports. Dashboard totals and summaries still cover all recognised records. Unmatched lines are not included.</p><input aria-label="Search recognised log records" type="text" class="log-search" id="txtSearch" placeholder="Search paths, IPs, or status codes (e.g. '500')...">
+          <div class="raw-filter-controls"><label>Status / severity<select id="rawStatusFilter"><option value="">All</option></select></label><label>IP / host<input id="rawSourceFilter" list="rawSourceSuggestions" placeholder="All sources · or exact IP/host"><datalist id="rawSourceSuggestions"></datalist></label><button type="button" id="clearRawFilters">Clear explorer filters</button><button type="button" id="exportRawText">Export matching lines</button><button type="button" id="exportParsedCsv">Export parsed CSV</button></div><p id="sourceSuggestionNote" role="status"></p><p class="raw-filter-note">Explorer filters affect the lines below and these exports. Dashboard totals and summaries still cover all recognised records. Unmatched lines are not included.</p><input aria-label="Search recognised log records" type="text" class="log-search" id="txtSearch" placeholder="Search paths, IPs, or status codes (e.g. '500')...">
           <div class="log-container" id="rawLogs"></div>
         </div>
       </div>
@@ -228,21 +203,12 @@
   </div>
 </div>
 
-<section class="editor-guide" aria-labelledby="log-guide"><div class="guide-heading"><span class="eyebrow">TRACES BECOME CONTEXT</span><h2 id="log-guide">A little less noise.<br>A clearer trail.</h2><p>Inspect recognised log records, compare recurring sources and paths, and follow the lines behind a summary.</p></div><section><h3>How to explore a log file</h3><ol class="guide-steps"><li><strong>Load a log.</strong> Choose a .log or .txt file, or try the sample. Use one supported format per file.</li><li><strong>Check recognition.</strong> Review recognised and unmatched counts. Inspect unmatched lines by original line number to understand parser coverage.</li><li><strong>Follow a pattern.</strong> Explore sources and errors, then combine Raw Explorer search with status/severity and IP/host filters. Dashboard summaries still cover all recognised records.</li><li><strong>Keep the evidence.</strong> Export all matching recognised lines as text or parsed CSV, and unmatched lines separately as CSV. Keep the original log; summaries do not establish attack intent or incident severity.</li></ol></section><aside class="guide-limits"><h3>Recognition has boundaries</h3><p>The first 50 lines determine parser mode. Unsupported records are counted, not silently treated as valid events. This browser workspace is not a live monitoring system.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear signals.<br>Honest limits.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which log formats are supported?</summary><p>Load .log or .txt files containing Apache/Nginx-style access records or a traditional Syslog pattern. The first 50 lines determine one parser mode. If none match, the file is rejected; custom, JSON and mixed-format logs are not universally supported.</p></details><details><summary>How are recognised and unmatched lines counted?</summary><p>Dashboard summaries cover all recognised records. Nonempty lines that fail the detected pattern are counted separately; blank lines are excluded. Inspect unmatched lines to see their original source line numbers, including intervening blank lines. That inspector is independent of Raw Explorer filters.</p></details><details><summary>What do Explorer filters change?</summary><p>Case-insensitive text search combines with exact status/severity and IP/host selections using AND. They filter Raw Explorer and its exports only, not dashboard totals or summaries. Results display 200 lines per page; Clear explorer filters restores all recognised records.</p></details><details><summary>What can I export, and are summaries security diagnoses?</summary><p>Export all matching recognised records across pages as original text lines or mode-specific parsed CSV. Export unmatched lines separately with source line numbers. Summaries are investigation clues, not proof of an attack. Syslog severity is inferred from recognised process-text suffixes, not a complete severity decoder.</p></details><details><summary>Are my logs uploaded or saved?</summary><p>Analysis runs in browser memory; chart dependencies may load from CDNs. Work is not automatically saved and device memory limits apply. Logs can contain sensitive IPs and messages; keep original files and review exported content before sharing. This is not a live monitoring service.</p></details></div></section></section><dialog id="unmatchedDialog" aria-labelledby="unmatchedTitle"><div class="unmatched-heading"><h2 id="unmatchedTitle">Unmatched nonempty lines</h2><button id="closeUnmatched">Close</button></div><p>These lines did not match the detected parser mode. Line numbers refer to the original file, including blank lines. They are excluded from recognised-record summaries and Explorer exports.</p><div class="unmatched-controls"><span id="unmatchedPageStatus" role="status"></span><button id="unmatchedPrev">Previous</button><button id="unmatchedNext">Next</button><button id="exportUnmatched">Export all unmatched CSV</button></div><div id="unmatchedLines"></div></dialog></main>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<section class="editor-guide" aria-labelledby="log-guide"><div class="guide-heading"><span class="eyebrow">TRACES BECOME CONTEXT</span><h2 id="log-guide">A little less noise.<br>A clearer trail.</h2><p>Inspect recognised log records, compare recurring sources and paths, and follow the lines behind a summary.</p></div><section><h3>How to explore a log file</h3><ol class="guide-steps"><li><strong>Load a log.</strong> Choose a .log or .txt file, or try the sample. Use one supported format per file.</li><li><strong>Check recognition.</strong> Review recognised and unmatched counts. Inspect unmatched lines by original line number to understand parser coverage.</li><li><strong>Follow a pattern.</strong> Explore sources and errors, then combine Raw Explorer search with status/severity and IP/host filters. Dashboard summaries still cover all recognised records.</li><li><strong>Keep the evidence.</strong> Export all matching recognised lines as text or parsed CSV, and unmatched lines separately as CSV. Keep the original log; summaries do not establish attack intent or incident severity.</li></ol></section><aside class="guide-limits"><h3>Recognition has boundaries</h3><p>The first 50 lines determine parser mode. Unsupported records are counted, not silently treated as valid events. This browser workspace is not a live monitoring system.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear signals.<br>Honest limits.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which log formats are supported?</summary><p>Load .log or .txt files containing Apache/Nginx-style access records or a traditional Syslog pattern. The first 50 lines determine one parser mode. If none match, the file is rejected; custom, JSON and mixed-format logs are not universally supported.</p></details><details><summary>How are recognised and unmatched lines counted?</summary><p>Dashboard summaries cover all recognised records. Nonempty lines that fail the detected pattern are counted separately; blank lines are excluded. Inspect unmatched lines to see their original source line numbers, including intervening blank lines. That inspector is independent of Raw Explorer filters.</p></details><details><summary>What do Explorer filters change?</summary><p>Case-insensitive text search combines with exact status/severity and an exact IP/host value using AND. Suggestions list only the 100 most frequent sources; other sources remain filterable by typing their exact value. They filter Raw Explorer and its exports only, not dashboard totals or summaries. Results display 200 lines per page; Clear explorer filters restores all recognised records.</p></details><details><summary>What can I export, and are summaries security diagnoses?</summary><p>Export all matching recognised records across pages as text lines with line endings normalized to LF, or mode-specific parsed CSV. Export unmatched lines separately with source line numbers. Summaries are investigation clues, not proof of an attack. Syslog severity is inferred from recognised process-text suffixes, not a complete severity decoder.</p></details><details><summary>Are my logs uploaded or saved?</summary><p>Analysis runs in browser memory; chart libraries are served from this site. Work is not automatically saved and device memory limits apply. Logs can contain sensitive IPs and messages; keep original files and review exported content before sharing. This is not a live monitoring service.</p></details></div></section></section><dialog id="unmatchedDialog" aria-labelledby="unmatchedTitle"><div class="unmatched-heading"><h2 id="unmatchedTitle">Unmatched nonempty lines</h2><button type="button" id="closeUnmatched">Close</button></div><p>These lines did not match the detected parser mode. Line numbers refer to the original file, including blank lines. They are excluded from recognised-record summaries and Explorer exports.</p><div class="unmatched-controls"><span id="unmatchedPageStatus" role="status"></span><button type="button" id="unmatchedPrev">Previous</button><button type="button" id="unmatchedNext">Next</button><button type="button" id="exportUnmatched">Export all unmatched CSV</button></div><div id="unmatchedLines"></div></dialog></main>
+<script src="assets/workspaces/log-analyzer/vendor/chart-4.4.8.umd.js"></script>
 <script src="assets/data-utils.js?v=1"></script>
 <script>
   // FAQ Logic
-  document.querySelectorAll('.faq-question').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item = btn.parentElement;
-      const isActive = item.classList.contains('active');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-      if (!isActive) item.classList.add('active');
-    });
-  });
-
-﻿  // App State
+  // App State
   let parsedLogs = [];
   let statusChartInstance = null;
   let logMode = 'web'; // 'web' or 'syslog'
@@ -259,20 +225,21 @@
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault(); dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    if(e.dataTransfer.files.length!==1)return alert('Drop one .log or .txt file at a time.');handleFile(e.dataTransfer.files[0]);
   });
   fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length) handleFile(e.target.files[0]);
+    const file=e.target.files[0];e.target.value='';if(file)handleFile(file);
   });
 
-  let fileOperation = 0;
+  let fileOperation = 0,activeReader=null;
   function handleFile(file) {
-    const operation = ++fileOperation;
+    fileInput.value='';if(!/\.(log|txt)$/i.test(file.name))return alert('Choose an uncompressed .log or .txt file. Existing analysis retained.');
+    resetTool();const operation=fileOperation;document.getElementById('btnClear').style.display='block';document.getElementById('btnClear').textContent='Cancel loading';
     dropzone.innerHTML = `<p style="color: var(--accent);">Parsing file...</p>`;
-    const reader = new FileReader();
+    const reader = new FileReader();activeReader=reader;
     reader.onload = function(e) {
       if(operation !== fileOperation) return;
-      processLogs(e.target.result);
+      activeReader=null;processLogs(e.target.result);
     };
     reader.onerror = function() {
       if(operation !== fileOperation) return;
@@ -283,7 +250,7 @@
   }
 
   function loadSample() {
-    fileOperation++;
+    resetTool();
     dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
     const sample = `
 Sep 17 00:03:26 (none) kern.warn kernel:   Beacon lost - AP disabled!!!
@@ -299,11 +266,11 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   let unrecognized = 0;
   async function processLogs(text) {
     const operation = fileOperation;
-    const lines = text.split('\n');
+    const lines = String(text).replace(/^\uFEFF/,'').split(/\r?\n/);
     const pendingLogs = [];const pendingUnmatched=[];
 
-    const webRegex = /^([\d\.:a-fA-F]+)\s+\S+\s+\S+\s+\[(.*?)\]\s+"(\S+)\s+(\S+).*?"\s+(\d{3})/;
-    const syslogRegex = /^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:]+):\s+(.*)/;
+    const webRegex = /^([\d\.:a-fA-F]+)\s+\S+\s+\S+\s+\[(.*?)\]\s+"(\S+)\s+(\S+).*?"\s+(\d{3})/d;
+    const syslogRegex = /^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:]+):\s+(.*)/d;
 
     logMode = 'unknown';
     for(let i=0; i<Math.min(lines.length, 50); i++) {
@@ -329,7 +296,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       nonempty++;const beforeCount=pendingLogs.length;
       if (logMode === 'web') {
         const match = line.match(webRegex);
-        if (match) pendingLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5] });
+        if (match) pendingLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5],highlight:match.indices[5] });
       } else if (logMode === 'syslog') {
         const match = line.match(syslogRegex);
         if (match) {
@@ -342,7 +309,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
           if (procStr.match(/\.(err|crit|emerg|alert)/)) severity = 'error';
           if (procStr.includes('.notice')) severity = 'notice';
 
-          pendingLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity });
+          pendingLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity,highlight:match.indices[3] });
         }
       }
       if(pendingLogs.length===beforeCount)pendingUnmatched.push({line:index+1,raw:line});
@@ -365,10 +332,10 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
     document.getElementById('view-raw').style.display = 'none';
     switchTab('sec');
 
-    document.getElementById('btnClear').style.display = 'block';
+    document.getElementById('btnClear').style.display = 'block';document.getElementById('btnClear').textContent='Clear';
 
     const total = parsedLogs.length;
-    document.getElementById('statTotal').innerText = total.toLocaleString();
+    document.getElementById('statTotal').innerText = total.toLocaleString();document.getElementById('totalStatLabel').textContent=logMode==='web'?'Recognized Requests':'Recognized Events';document.getElementById('errorStatLabel').textContent=logMode==='web'?'HTTP Error Rate':'Warn / Error Rate';
     let notice=document.getElementById('logParseNotice');
     if(!notice) {notice=document.createElement('p');notice.id='logParseNotice';notice.setAttribute('role','status');document.getElementById('statTotal').after(notice);}
     notice.textContent=total.toLocaleString()+' recognized / '+unrecognized.toLocaleString()+' unrecognized nonempty lines';
@@ -411,7 +378,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       document.getElementById('tblIpsHead').innerHTML = '<tr><th>Process</th><th>Logs</th><th>% of Total</th></tr>';
       document.getElementById('err-title1').innerText = 'Most Frequent Log Messages';
       document.getElementById('tbl404Head').innerHTML = '<tr><th>Message</th><th>Count</th></tr>';
-      document.getElementById('err-title2').innerText = 'Recent Warnings & Errors';
+      document.getElementById('err-title2').innerText = 'Last Warnings & Errors (File Order)';
       document.getElementById('tbl500Head').innerHTML = '<tr><th>Timestamp</th><th>Process</th><th>Message</th></tr>';
 
       const processCounts = Object.create(null);
@@ -425,8 +392,8 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
         msgCounts[log.msg] = (msgCounts[log.msg] || 0) + 1;
         sevCounts[log.severity] = (sevCounts[log.severity] || 0) + 1;
 
-        if ((log.severity === 'warn' || log.severity === 'error') && recentErrors.length < 10) {
-          recentErrors.push(log);
+        if (log.severity === 'warn' || log.severity === 'error') {
+          recentErrors.push(log);if(recentErrors.length>10)recentErrors.shift();
         }
       });
 
@@ -437,11 +404,13 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
 
       const errTbody = document.getElementById('tbl500');
       if (recentErrors.length === 0) errTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);">No warnings/errors found.</td></tr>';
-      else errTbody.innerHTML = recentErrors.map(l => `<tr><td>${escapeHtml(l.date)}</td><td>${escapeHtml(l.process)}</td><td style="color:${l.severity==='error'?'var(--accent-danger)':'var(--accent-amber)'}">${escapeHtml(l.msg)}</td></tr>`).join('');
+      else errTbody.innerHTML = recentErrors.slice().reverse().map(l => `<tr><td>${escapeHtml(l.date)}</td><td>${escapeHtml(l.process)}</td><td style="color:${l.severity==='error'?'var(--accent-danger)':'var(--accent-amber)'}">${escapeHtml(l.msg)}</td></tr>`).join('');
     }
 
     document.getElementById('txtSearch').value='';
-    for(const [id,field]of [['rawStatusFilter',logMode==='web'?'status':'severity'],['rawSourceFilter',logMode==='web'?'ip':'host']]){const select=document.getElementById(id);select.replaceChildren();const all=document.createElement('option');all.value='';all.textContent=id==='rawStatusFilter'?'All':'All sources';select.append(all);Array.from(new Set(parsedLogs.map(row=>row[field]))).sort().forEach(value=>{const option=document.createElement('option');option.value=option.textContent=value;select.append(option);});}
+    const status=document.getElementById('rawStatusFilter');status.replaceChildren(new Option('All',''));const statusField=logMode==='web'?'status':'severity';Array.from(new Set(parsedLogs.map(row=>row[statusField]))).sort().forEach(value=>status.add(new Option(value,value)));
+    const counts=new Map(),sourceField=logMode==='web'?'ip':'host';for(const row of parsedLogs)counts.set(row[sourceField],(counts.get(row[sourceField])||0)+1);
+    const suggestions=document.getElementById('rawSourceSuggestions');suggestions.replaceChildren();Array.from(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,100).forEach(([value])=>{const option=document.createElement('option');option.value=value;suggestions.append(option);});document.getElementById('rawSourceFilter').value='';document.getElementById('sourceSuggestionNote').textContent='Suggestions show the '+Math.min(100,counts.size)+' most frequent of '+counts.size.toLocaleString()+' sources. Type any exact IP or host, including sources not suggested.';
     applyRawFilters();
   }
 
@@ -451,10 +420,11 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   document.getElementById('unmatchedPrev').addEventListener('click',()=>{if(unmatchedPage>0){unmatchedPage--;renderUnmatched();}});document.getElementById('unmatchedNext').addEventListener('click',()=>{if((unmatchedPage+1)*200<unmatchedLines.length){unmatchedPage++;renderUnmatched();}});
   document.getElementById('exportUnmatched').addEventListener('click',()=>{const text=[['line_number','raw'],...unmatchedLines.map(record=>[record.line,record.raw])].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='unmatched_log_lines.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 
-  function applyRawFilters(){const query=document.getElementById('txtSearch').value.toLowerCase(),status=document.getElementById('rawStatusFilter').value,source=document.getElementById('rawSourceFilter').value;renderRaw(parsedLogs.filter(row=>row.raw.toLowerCase().includes(query)&&(!status||(logMode==='web'?row.status:row.severity)===status)&&(!source||(logMode==='web'?row.ip:row.host)===source)));}
-  ['txtSearch','rawStatusFilter','rawSourceFilter'].forEach(id=>document.getElementById(id).addEventListener(id==='txtSearch'?'input':'change',applyRawFilters));
+  let filterTimer=null;
+  function applyRawFilters(){clearTimeout(filterTimer);filterTimer=null;const query=document.getElementById('txtSearch').value.toLowerCase(),status=document.getElementById('rawStatusFilter').value,source=document.getElementById('rawSourceFilter').value;renderRaw(parsedLogs.filter(row=>row.raw.toLowerCase().includes(query)&&(!status||(logMode==='web'?row.status:row.severity)===status)&&(!source||(logMode==='web'?row.ip:row.host)===source)));}
+  for(const id of ['txtSearch','rawSourceFilter'])document.getElementById(id).addEventListener('input',()=>{clearTimeout(filterTimer);filterTimer=setTimeout(applyRawFilters,150);});document.getElementById('rawStatusFilter').addEventListener('change',applyRawFilters);document.getElementById('rawSourceFilter').addEventListener('change',applyRawFilters);
   document.getElementById('clearRawFilters').addEventListener('click',()=>{['txtSearch','rawStatusFilter','rawSourceFilter'].forEach(id=>document.getElementById(id).value='');applyRawFilters();});
-  function downloadRawView(csv){const fields=logMode==='web'?['ip','date','method','url','status','raw']:['date','host','process','severity','msg','raw'];const text=csv?[fields,...rawRows.map(row=>fields.map(field=>row[field]))].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n'):rawRows.map(row=>row.raw).join('\n');const url=URL.createObjectURL(new Blob([text],{type:csv?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=csv?'matching_parsed_logs.csv':'matching_log_lines.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function downloadRawView(csv){if(filterTimer!==null)applyRawFilters();const fields=logMode==='web'?['ip','date','method','url','status','raw']:['date','host','process','severity','msg','raw'];const text=csv?[fields,...rawRows.map(row=>fields.map(field=>row[field]))].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n'):rawRows.map(row=>row.raw).join('\n');const url=URL.createObjectURL(new Blob([text],{type:csv?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=csv?'matching_parsed_logs.csv':'matching_log_lines.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   document.getElementById('exportRawText').addEventListener('click',()=>downloadRawView(false));document.getElementById('exportParsedCsv').addEventListener('click',()=>downloadRawView(true));
 
   function getTop(dict, limit) {
@@ -464,7 +434,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   function renderTable(id, data, rowRenderer) {
     const tbody = document.getElementById(id);
     if (data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" style="color: var(--text-muted);">No data available</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${document.getElementById(id+'Head').querySelectorAll('th').length}" style="color: var(--text-muted);">No data available</td></tr>`;
       return;
     }
     tbody.innerHTML = data.map(([k,v]) => rowRenderer(k, v)).join('');
@@ -478,6 +448,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   document.getElementById('rawPrev').addEventListener('click',()=>{if(rawPage>0) {rawPage--;renderRawPage();}});
   document.getElementById('rawNext').addEventListener('click',()=>{if((rawPage+1)*200<rawRows.length) {rawPage++;renderRawPage();}});
   function renderRaw(logs) {rawRows = logs;rawPage = 0;renderRawPage();}
+  function highlightRaw(log,colorClass){const [start,end]=log.highlight;return escapeHtml(log.raw.slice(0,start))+'<span class="'+colorClass+'">'+escapeHtml(log.raw.slice(start,end))+'</span>'+escapeHtml(log.raw.slice(end));}
   function renderRawPage() {
     const start = rawPage*200;
     document.getElementById('rawPageStatus').textContent = rawRows.length ? 'Showing '+(start+1).toLocaleString()+'–'+Math.min(start+200,rawRows.length).toLocaleString()+' of '+rawRows.length.toLocaleString()+' matching lines' : 'No matching lines';
@@ -489,13 +460,13 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
         if (l.status.startsWith('3')) colorClass = 'status-300';
         if (l.status.startsWith('4')) colorClass = 'status-400';
         if (l.status.startsWith('5')) colorClass = 'status-500';
-        const raw = escapeHtml(l.raw).replace(new RegExp(`\\s${l.status}\\s`), ` <span class="${colorClass}">${l.status}</span> `);
+        const raw=highlightRaw(l,colorClass);
         return `<div>${raw}</div>`;
       } else {
         let colorClass = 'status-200';
         if (l.severity === 'warn') colorClass = 'status-300';
         if (l.severity === 'error') colorClass = 'status-400';
-        const raw = escapeHtml(l.raw).replace(escapeHtml(l.process), `<span class="${colorClass}">${escapeHtml(l.process)}</span>`);
+        const raw=highlightRaw(l,colorClass);
         return `<div>${raw}</div>`;
       }
     }).join('');
@@ -503,6 +474,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   }
 
   function renderChart(data) {
+    if(typeof window.Chart!=='function'){document.getElementById('logParseNotice').textContent+=' Chart library unavailable; raw records and exports remain available.';return;}
     const ctx = document.getElementById('statusChart').getContext('2d');
     if (statusChartInstance) statusChartInstance.destroy();
 
@@ -529,7 +501,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
         labels: labels,
         datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
       },
-      options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#f8fafc' } } } }
+      options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-main').trim() } } } }
     });
   }
 
@@ -547,7 +519,7 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
   }
 
   function resetTool() {
-    fileOperation++;
+    fileOperation++;clearTimeout(filterTimer);filterTimer=null;if(activeReader?.readyState===1)activeReader.abort();activeReader=null;if(statusChartInstance)statusChartInstance.destroy();statusChartInstance=null;const dialog=document.getElementById('unmatchedDialog');if(dialog.open)dialog.close();document.getElementById('rawSourceSuggestions').replaceChildren();document.getElementById('sourceSuggestionNote').textContent='';
     rawRows = [];rawPage = 0;rawLogsDiv.innerHTML = '';
     unmatchedLines=[];unmatchedPage=0;document.getElementById('inspectUnmatched').disabled=true;document.getElementById('unmatchedLines').replaceChildren();
     parsedLogs = [];['txtSearch','rawStatusFilter','rawSourceFilter'].forEach(id=>document.getElementById(id).value='');
@@ -562,12 +534,13 @@ Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
       <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
-        <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
-        <button class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+        <button type="button" class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+        <button type="button" class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
       </div>
     `;
   }
 
+  new MutationObserver(()=>{if(statusChartInstance){statusChartInstance.options.plugins.legend.labels.color=getComputedStyle(document.body).getPropertyValue('--text-main').trim();statusChartInstance.update('none');}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 </script>
 <script>document.getElementById('loadLogFile').addEventListener('click',()=>document.getElementById('fileInput').click());document.getElementById('tryLogSample').addEventListener('click',loadSample);document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
 <div class="page"><footer class="footer"><span>RunTangent · Thoughtful tools for everyday work.</span><nav aria-label="Footer"><a href="index.html#trust">Privacy</a><a href="tools.html">All tools</a><a href="https://github.com/Misbah-37/tangent" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:hello@runtangent.com">Contact</a></nav></footer></div>

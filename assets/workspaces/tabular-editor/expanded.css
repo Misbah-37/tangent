@@ -32,3 +32,10 @@
 #expanded .canvas-bar{position:relative;z-index:12}
 #expanded .canvas-bar .expanded-panel{top:100%;right:12px;max-height:calc(100dvh - 160px)}
 @media(max-width:760px){#expanded .canvas-bar{flex-wrap:nowrap;min-height:48px}#expanded .canvas-bar .expanded-panel{right:6px;max-height:60dvh}}
+
+.dataset-dropzone{border:2px dashed var(--line);border-radius:12px;padding:32px 24px;text-align:center;cursor:pointer}
+.dataset-dropzone.drag-over{border-color:var(--accent);background:var(--surface)}
+.dataset-dropzone:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.dataset-dropzone .drop-hint{font-size:13px;color:var(--muted)}
+.edit-notes-panel{margin:8px 0;color:var(--muted)}
+.edit-notes-panel>summary{cursor:pointer;padding:8px 0}

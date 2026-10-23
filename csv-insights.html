@@ -169,11 +169,11 @@
     <div class="explorer-grid">
       <div class="explorer-sidebar">
                   <div class="form-group">
-            <label>X-Axis (Group By)</label>
+            <label for="selXAxis">X-Axis (Group By)</label>
             <select id="selXAxis" class="form-control col-select"></select>
           </div>
           <div class="form-group" id="grpDateBin" style="display: none; max-width: 140px;">
-            <label style="color: var(--accent);">Date Binning</label>
+            <label for="selDateBin" style="color: var(--accent);">Date Binning</label>
             <select id="selDateBin" class="form-control" style="background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.3);">
               <option value="none">Exact Date</option>
               <option value="month">Month</option>
@@ -182,17 +182,17 @@
             </select>
           </div>
         <div class="form-group">
-          <label>Y-Axis (Values)</label>
+          <label for="selYAxis">Y-Axis (Values)</label>
           <select id="selYAxis" class="form-control col-select"></select>
         </div>
         <div class="form-group" id="grpGroupBy">
-          <label>Color By (Optional)</label>
+          <label for="selGroupBy">Color By (Optional)</label>
           <select id="selGroupBy" class="form-control col-select">
             <option value="">None (1D Chart)</option>
           </select>
         </div>
         <div class="form-group">
-                      <label>Aggregation Method</label>
+                      <label for="selAggregation">Aggregation Method</label>
             <select id="selAggregation" class="form-control">
               <option value="sum">Sum</option>
               <option value="avg">Average</option>
@@ -204,12 +204,12 @@
             </select>
         </div>
         <div class="form-group">
-          <label>Chart Type</label>
+          <label for="selChartType">Chart Type</label>
           <select id="selChartType" class="form-control">
             <option value="bar">Bar Chart</option>
             <option value="line">Line Chart</option>
             <option value="doughnut">Doughnut Chart</option>
-            <option value="scatter">Scatter Plot</option>
+            <option value="scatter">Point Chart</option>
           </select>
         </div>
         <button class="btn" id="btnUpdateChart" style="width:100%;">Render Chart</button>
@@ -243,18 +243,18 @@
 
 <div id="tooltip"></div>
 
-<div id="fullChartModal">
+<div id="fullChartModal" role="dialog" aria-modal="true" aria-labelledby="fullChartModalTitle" aria-describedby="fullChartModalNote">
   <div class="modal-box">
     <div class="modal-head">
       <h3 id="fullChartModalTitle"></h3>
-      <button class="icon-btn" id="fullChartModalClose" title="Close">
+      <button class="icon-btn" id="fullChartModalClose" title="Close" aria-label="Close chart">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
     <div class="modal-scroll">
       <div id="fullChartModalCanvasWrap"><canvas id="fullChartModalCanvas"></canvas></div>
     </div>
-    <div class="modal-note" id="fullChartModalNote"></div>
+    <div class="modal-note" id="fullChartModalNote"></div><details><summary>Chart values and filters</summary><div id="modalBinControls" style="display:flex;flex-wrap:wrap;gap:8px;max-height:160px;overflow:auto"></div></details>
   </div>
 </div>
 
@@ -316,7 +316,7 @@
     '    out.mode = "discrete";',
     '    out.labels = distinctVals.map(function(v){ return fmtNum(v); });',
     '    out.dist = distinctVals.map(function(v){ return distinctMap[v]; });',
-    '    out.fullLabels = out.labels; out.fullDist = out.dist;',
+    '    out.fullLabels = out.labels; out.fullDist = out.dist; out.binValues = distinctVals;',
     '  } else {',
     '    out.mode = "continuous";',
     '    var binCount = Math.min(20, Math.max(8, Math.round(1 + 3.322*Math.log10(n))));',
@@ -332,7 +332,7 @@
     '    for (var m2=0;m2<n;m2++) { var idx2 = Math.floor((sorted[m2]-min)/fineBinSize); if (idx2>=fineBinCount) idx2=fineBinCount-1; if (idx2<0) idx2=0; fineDist[idx2]++; }',
     '    var fineLabels = [];',
     '    for (var b2=0;b2<fineBinCount;b2++) { var lo2 = min+b2*fineBinSize, hi2 = min+(b2+1)*fineBinSize; fineLabels.push(fmtCompact(lo2) + "\\u2013" + fmtCompact(hi2)); }',
-    '    out.fullLabels = fineLabels; out.fullDist = fineDist;',
+    '    out.fullLabels = fineLabels; out.fullDist = fineDist; out.binSpec = {min:min, max:max, count:binCount, size:binSize, fullCount:fineBinCount, fullSize:fineBinSize};',
     '  }',
     '  return out;',
     '}',
@@ -361,7 +361,7 @@
     '  var fineDist = new Array(fineBinCount).fill(0);',
     '  for (var i2=0;i2<n;i2++) { var idx2 = Math.floor((sorted[i2]-min)/fineBinSize); if (idx2>=fineBinCount) idx2=fineBinCount-1; if (idx2<0) idx2=0; fineDist[idx2]++; }',
     '  var fineLabels = []; for (var b2=0;b2<fineBinCount;b2++) fineLabels.push(formatDateLabel(min+b2*fineBinSize, range));',
-    '  out.fullLabels = fineLabels; out.fullDist = fineDist;',
+    '  out.fullLabels = fineLabels; out.fullDist = fineDist; out.binSpec = {min:min, max:max, count:binCount, size:binSize, fullCount:fineBinCount, fullSize:fineBinSize};',
     '  return out;',
     '}',
 
@@ -424,30 +424,26 @@
     '  return result;',
     '}',
 
-        'self.onmessage = function(e) { try {',
-    '  var headers, data;',
-    '  if (e.data.text) {',
-    '    var parsed = csvParse(e.data.text);',
-    '    headers = parsed.headers; data = parsed.data;',
-    '  } else {',
-    '    headers = e.data.headers; data = e.data.data;',
-    '  }',
-    '  var stats = Object.create(null);',
-    '  for (var c=0;c<headers.length;c++) {',
-    '    var h = headers[c];',
-    '    var colValues = new Array(data.length);',
-    '    for (var r=0;r<data.length;r++) colValues[r] = data[r][h];',
-    '    stats[h] = classifyAndProfile(colValues, data.length);',
-    '  }',
-    '  self.postMessage({ headers: headers, rowCount: data.length, data: data, stats: stats });',
-    '  } catch(error) {self.postMessage({status: "error", message: error.message});}',
-    '};'
+    "var sourceHeaders=null, sourceRows=null;",
+    "function matchesRule(row,rule){var raw=row[rule.column];if(rule.kind==='equals')return String(raw??'')===rule.text;var n=(rule.kind==='gte'||rule.kind==='lte')?parseNumber(raw):dateToken(raw);if(n===null)return false;return rule.kind==='gte'||rule.kind==='after'?n>=rule.value:n<=rule.value;}",
+    "self.onmessage = async function(e){var request=e.data;try{",
+    " if(request.type==='load'){var parsed=csvParse(await request.file.text());sourceHeaders=parsed.headers;sourceRows=parsed.data;}",
+    " else if(request.type!=='filter')throw Error('Unsupported dataset operation.');",
+    " if(!sourceRows)throw Error('Load a CSV before filtering.');",
+    " var query=String(request.query||'').trim().toLowerCase(),colon=query.indexOf(':'),key=colon<0?null:query.slice(0,colon).trim(),value=colon<0?query:query.slice(colon+1).trim(),rules=request.rules||[];",
+    " var headers=sourceHeaders,data=sourceRows;",
+    " if(query||rules.length)data=sourceRows.filter(function(row){return (!query||headers.some(function(h){return (key===null||h.toLowerCase()===key)&&String(row[h]??'').toLowerCase().includes(value);}))&&rules.every(function(rule){return matchesRule(row,rule);});});",
+    " var stats=Object.create(null);",
+    " for(var c=0;c<headers.length;c++){var h=headers[c],colValues=new Array(data.length);for(var r=0;r<data.length;r++)colValues[r]=data[r][h];stats[h]=classifyAndProfile(colValues,data.length);}",
+    " self.postMessage({status:'snapshot',requestId:request.requestId,headers:headers,rowCount:data.length,data:data,stats:stats});",
+    " }catch(error){self.postMessage({status:'error',requestId:request.requestId,message:error.message});}",
+    "};"
   ].join('\n');
 
   var workerBlob = new Blob([workerSrc], { type: 'application/javascript' });
   var workerUrl = URL.createObjectURL(workerBlob);
   var worker = null;
-  var dataOperation = 0;
+  var dataOperation = 0, datasetRequest = 0;
 
   var COLORS = ['#b4cd25', '#45b4b7', '#255e7e', '#eb5e66', '#fdb827', '#936cb0', '#25a898', '#f04945', '#3388ff', '#e83e8c'];
   var tooltipEl = document.getElementById('tooltip');
@@ -491,6 +487,7 @@
     canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
   }
 
+  function chartPalette() { var css=getComputedStyle(document.body);return {text:css.getPropertyValue('--text-main').trim()||'#17202a',muted:css.getPropertyValue('--text-muted').trim()||'#526170',line:css.getPropertyValue('--border-color').trim()||'#cbd5e1',surface:css.getPropertyValue('--bg-card').trim()||'#fff'}; }
   function drawBarChart(canvas, opts) {
     var labels = opts.labels, values = opts.values, color = opts.color;
     var xTitle = opts.xTitle || '', yTitle = opts.yTitle || '';
@@ -510,8 +507,8 @@
     var plotW = w - marginLeft - marginRight;
     var plotH = h - marginTop - marginBottom;
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.strokeStyle = chartPalette().line;
+    ctx.fillStyle = chartPalette().muted;
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     var yTicks = 4;
@@ -543,7 +540,7 @@
       ctx.fill();
     }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillStyle = chartPalette().muted;
     ctx.font = '9px sans-serif';
     var approxLabelWidth = 46;
     var maxLabelsFit = Math.max(1, Math.floor(plotW / approxLabelWidth));
@@ -562,14 +559,14 @@
     }
 
     if (xTitle) {
-      ctx.fillStyle = '#94a3b8'; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = chartPalette().muted; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillText(xTitle, marginLeft + plotW / 2, h - 4);
     }
     if (yTitle) {
       ctx.save();
       ctx.translate(10, marginTop + plotH / 2);
       ctx.rotate(-Math.PI / 2);
-      ctx.fillStyle = '#94a3b8'; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = chartPalette().muted; ctx.font = '600 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillText(yTitle, 0, 0);
       ctx.restore();
     }
@@ -647,8 +644,8 @@
     function yPos(v) { return marginTop + plotH - ((v - yMin) / yRange) * plotH; }
     var zeroY = yPos(0);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.strokeStyle = chartPalette().line;
+    ctx.fillStyle = chartPalette().muted;
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     var yTicks = 5;
@@ -675,7 +672,7 @@
             }
             ctx.fillStyle = c;
             ctx.fillRect(legX, 6, 12, 12);
-            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.fillStyle = chartPalette().muted;
             ctx.fillText(txt, legX + 16, 6);
             legX += 16 + tw + 16;
         }
@@ -760,7 +757,7 @@
       }
     }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillStyle = chartPalette().muted;
     ctx.font = '10px sans-serif';
     var approxLabelWidth = 60;
     var maxLabelsFit = Math.max(1, Math.floor(plotW / approxLabelWidth));
@@ -779,14 +776,14 @@
     canvas.__clickMeta = { marginLeft: marginLeft, plotW: plotW, barSlot: barSlot, labels: labels };
 
     if (xTitle) {
-      ctx.fillStyle = '#94a3b8'; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = chartPalette().muted; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillText(xTitle, marginLeft + plotW / 2, h - 6);
     }
     if (yTitle) {
       ctx.save();
       ctx.translate(14, marginTop + plotH / 2);
       ctx.rotate(-Math.PI / 2);
-      ctx.fillStyle = '#94a3b8'; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = chartPalette().muted; ctx.font = '600 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillText(yTitle, 0, 0);
       ctx.restore();
     }
@@ -860,13 +857,29 @@
 
   var MAX_BARS = 200;
   var modalEl = document.getElementById('fullChartModal');
+  // Match the worker's bin allocation, never its rounded display labels.
+  function profileBinMatches(stat,value,index,full) {
+    if (value == null || String(value).trim() === '') return false;
+    if (stat.type === 'categorical') return String(value).trim() === String((full ? stat.fullLabels : stat.labels)[index]);
+    var number = stat.type === 'date' ? TangentData.dateToken(value) : TangentData.parseNumber(value);
+    if (number === null) return false;
+    if (stat.binValues) return number === stat.binValues[index];
+    var spec=stat.binSpec;if(!spec)return false;
+    var count=full?spec.fullCount:spec.count,size=full?spec.fullSize:spec.size;
+    if(number<spec.min||number>spec.max)return false;
+    return Math.max(0,Math.min(count-1,Math.floor((number-spec.min)/size)))===index;
+  }
+  function showInsightsProgress(message) { if(window.TangentLoader) window.TangentLoader.show(message); }
   var modalCanvas = document.getElementById('fullChartModalCanvas');
   var modalWrap = document.getElementById('fullChartModalCanvasWrap');
-  var _lastModalArgs = null;
+  var _lastModalArgs = null, modalReturnFocus = null;
+  attachBarTooltip(modalCanvas);
 
   function openFullChartModal(header, stat, color) {
+    if(modalEl.style.display !== 'flex')modalReturnFocus=document.activeElement;
     modalEl.style.display = 'flex';
     _lastModalArgs = [header, stat, color];
+    document.getElementById('fullChartModalClose').focus();
 
     var labels = stat.fullLabels || stat.labels;
     var dist = stat.fullDist || stat.dist;
@@ -883,6 +896,7 @@
     if (stat.nonConforming) noteParts.push(stat.nonConforming.toLocaleString() + ' value(s) did not match this column\u2019s detected type and are excluded from the chart.');
     document.getElementById('fullChartModalNote').textContent = noteParts.join(' ');
 
+    var controls=document.getElementById('modalBinControls');controls.replaceChildren();labels.forEach(function(label,index){var button=document.createElement('button');button.type='button';button.className='btn btn-outline';button.textContent=label+': '+dist[index]+' rows';button.addEventListener('click',function(){selectModalBin(index);});controls.append(button);});
     var parent = modalWrap.parentElement;
     var minAvailableWidth = parent.clientWidth;
     var perBar = stat.type === 'categorical' ? 60 : 50;
@@ -897,12 +911,12 @@
       yTitle: 'Count'
     });
   }
-  function closeFullChartModal() { modalEl.style.display = 'none'; }
+  function closeFullChartModal() { modalEl.style.display = 'none'; tooltipEl.style.display='none';if(modalReturnFocus?.isConnected)modalReturnFocus.focus(); }
   document.getElementById('fullChartModalClose').addEventListener('click', closeFullChartModal);
   modalEl.addEventListener('click', function (e) { if (e.target === modalEl) closeFullChartModal(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeFullChartModal(); });
+  document.addEventListener('keydown', function (e) { if(modalEl.style.display!=='flex')return;if(e.key==='Escape'){e.preventDefault();closeFullChartModal();}if(e.key==='Tab'){var items=[...modalEl.querySelectorAll('button,summary,[tabindex]')].filter(el=>el.getClientRects().length&&!el.disabled&&(!el.closest('details:not([open])')||el.tagName==='SUMMARY'));var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}} });
 
-  var rawData = [], currentHeaders = [], currentStats = null, currentRowCount = 0, originalData = null;
+  var rawData = [], currentHeaders = [], currentStats = null, currentRowCount = 0, hasDataset = false;
   var chartRegistry = [];
   var manualChartMeta = null;
 
@@ -940,8 +954,8 @@
         if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' non-numeric value(s) excluded from stats</span>');
       } else if (stat.type === 'date') {
         statsRowHtml =
-          '<div class="stats-row"><span>Earliest<strong>' + new Date(stat.min).toLocaleDateString() + '</strong></span>' +
-          '<span>Latest<strong>' + new Date(stat.max).toLocaleDateString() + '</strong></span></div>';
+          '<div class="stats-row"><span>Earliest<strong>' + new Date(stat.min).toLocaleDateString(undefined,{timeZone:'UTC'}) + '</strong></span>' +
+          '<span>Latest<strong>' + new Date(stat.max).toLocaleDateString(undefined,{timeZone:'UTC'}) + '</strong></span></div>';
         if (stat.nonConforming > 0) secondaryParts.push('<span class="warn">\u26A0 ' + stat.nonConforming.toLocaleString() + ' value(s) did not parse as dates</span>');
       } else {
         statsRowHtml = '<div class="stats-row"><span>Unique<strong>' + stat.distinctCount.toLocaleString() + ' (' + pct(stat.distinctCount, stat.valued) + '%)</strong></span></div>';
@@ -968,6 +982,7 @@
       attachBarTooltip(canvas);
       chartRegistry.push({ canvas: canvas, stat: stat, getColor: function () { return chartColor; } });
 
+      var chartButton=card.querySelector('.chart-wrap');chartButton.tabIndex=0;chartButton.setAttribute('role','button');chartButton.setAttribute('aria-label','Open '+h+' distribution');chartButton.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();chartButton.click();}});
       card.querySelector('.chart-wrap').addEventListener('click', function () { openFullChartModal(h, stat, chartColor); });
       card.querySelector('.color-picker').addEventListener('input', function (e) {
         chartColor = e.target.value;
@@ -977,8 +992,8 @@
         var exportCanvas = document.createElement('canvas');
         exportCanvas.width = canvas.width + 40; exportCanvas.height = canvas.height + 60;
         var ectx = exportCanvas.getContext('2d');
-        ectx.fillStyle = '#0f172a'; ectx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-        ectx.fillStyle = '#f8fafc'; ectx.font = '600 16px sans-serif';
+        ectx.fillStyle = chartPalette().surface; ectx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        ectx.fillStyle = chartPalette().text; ectx.font = '600 16px sans-serif';
         ectx.fillText(h + ' Profile', 20, 30);
         ectx.drawImage(canvas, 20, 45, canvas.width, canvas.height);
         var link = document.createElement('a');
@@ -1004,7 +1019,7 @@
   var rowRules=[];
   function renderRowRules(){var list=document.getElementById('rowRuleList');list.replaceChildren();rowRules.forEach(function(rule,i){var button=document.createElement('button');button.textContent=rule.column+' '+rule.kind+' '+rule.text+' ×';button.setAttribute('aria-label','Remove rule '+button.textContent);button.addEventListener('click',function(){rowRules.splice(i,1);renderRowRules();document.getElementById('btnApplyGlobalFilter').click();});list.appendChild(button);});}
   function matchesRowRules(row){return rowRules.every(function(rule){var raw=row[rule.column];if(rule.kind==='equals')return String(raw??'')===rule.text;var n=(rule.kind==='gte'||rule.kind==='lte')?TangentData.parseNumber(raw):TangentData.dateToken(raw);if(n===null)return false;return rule.kind==='gte'||rule.kind==='after'?n>=rule.value:n<=rule.value;});}
-  document.getElementById('rowRuleAdd').addEventListener('click',function(){if(!originalData)return;var column=document.getElementById('rowRuleColumn').value,kind=document.getElementById('rowRuleKind').value,text=document.getElementById('rowRuleValue').value,value=text;var status=document.getElementById('rowRuleStatus');if(kind!=='equals'){if(kind==='gte'||kind==='lte')value=TangentData.parseNumber(text);else value=/^\d{4}-\d{2}-\d{2}$/.test(text)?TangentData.dateToken(text):null;if(value===null){status.textContent='Enter a valid number or calendar date (YYYY-MM-DD) for this condition.';return;}}status.textContent='';rowRules.push({column:column,kind:kind,text:text,value:value});renderRowRules();document.getElementById('btnApplyGlobalFilter').click();});
+  document.getElementById('rowRuleAdd').addEventListener('click',function(){if(!hasDataset)return;var column=document.getElementById('rowRuleColumn').value,kind=document.getElementById('rowRuleKind').value,text=document.getElementById('rowRuleValue').value,value=text;var status=document.getElementById('rowRuleStatus');if(kind!=='equals'){if(kind==='gte'||kind==='lte')value=TangentData.parseNumber(text);else value=/^\d{4}-\d{2}-\d{2}$/.test(text)?TangentData.dateToken(text):null;if(value===null){status.textContent='Enter a valid number or calendar date (YYYY-MM-DD) for this condition.';return;}}status.textContent='';rowRules.push({column:column,kind:kind,text:text,value:value});renderRowRules();document.getElementById('btnApplyGlobalFilter').click();});
   document.getElementById('rowRuleClear').addEventListener('click',function(){rowRules=[];renderRowRules();document.getElementById('rowRuleStatus').textContent='';document.getElementById('btnApplyGlobalFilter').click();});
 
   function populateDropdowns() {
@@ -1033,12 +1048,12 @@
         var x = (rawX === undefined || rawX === null || String(rawX).trim() === '') ? 'Unknown' : String(rawX).trim();
 
         if (isDate && binMode !== 'none' && x !== 'Unknown') {
-          var d = new Date(x);
+          var timestamp = TangentData.dateToken(x); var d = new Date(timestamp === null ? NaN : timestamp);
           if (!isNaN(d.getTime())) {
-            var yyyy = d.getFullYear();
+            var yyyy = d.getUTCFullYear();
             if (binMode === 'year') x = String(yyyy);
-            else if (binMode === 'month') x = yyyy + '-' + String(d.getMonth() + 1).padStart(2, '0');
-            else if (binMode === 'quarter') x = yyyy + '-Q' + Math.ceil((d.getMonth() + 1) / 3);
+            else if (binMode === 'month') x = yyyy + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+            else if (binMode === 'quarter') x = yyyy + '-Q' + Math.ceil((d.getUTCMonth() + 1) / 3);
           }
         }
 
@@ -1088,7 +1103,7 @@
               emptyCanvas.width = wrapper.parentElement.clientWidth;
               emptyCanvas.height = 300;
               var ctx = emptyCanvas.getContext('2d');
-              ctx.fillStyle = 'rgba(255,255,255,0.5)';
+              ctx.fillStyle = chartPalette().muted;
               ctx.font = '14px sans-serif';
               ctx.textAlign = 'center';
               ctx.fillText('No data available for the current filter.', emptyCanvas.width/2, emptyCanvas.height/2);
@@ -1230,8 +1245,8 @@
 
     var canvas = document.getElementById('manualChartCanvas');
     var mark = manualChartMeta.type === 'bar' ? 'bar' : (manualChartMeta.type === 'line' ? 'line' : 'points');
-    var color = (manualChartMeta.type === 'bar') ? manualChartMeta.labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
-    drawCartesianChart(canvas, { mark: mark, labels: manualChartMeta.labels, values: manualChartMeta.dataPoints, color: color, xTitle: manualChartMeta.xCol, yTitle: manualChartMeta.agg.toUpperCase() + ' of ' + manualChartMeta.yCol });
+    var color = manualChartMeta.seriesNames ? COLORS : (manualChartMeta.type === 'bar') ? manualChartMeta.labels.map(function (_, i) { return COLORS[i % COLORS.length]; }) : '#3a7bd5';
+    drawCartesianChart(canvas, { mark: mark, labels: manualChartMeta.labels, values: manualChartMeta.dataPoints, seriesNames: manualChartMeta.seriesNames, color: color, xTitle: manualChartMeta.xCol, yTitle: manualChartMeta.agg.toUpperCase() + ' of ' + manualChartMeta.yCol });
   });
 
     document.getElementById('btnExportPivot').addEventListener('click', function () {
@@ -1246,9 +1261,8 @@
     link.setAttribute("href", url);
     link.setAttribute("download", "Aggregated_Pivot.csv");
     document.body.appendChild(link);
-    link.click();
-      if(window.TangentToast) window.TangentToast.show("Chart Saved Successfully!");
-    document.body.removeChild(link);
+    try { link.click(); } finally { link.remove(); setTimeout(function(){URL.revokeObjectURL(url);},1000); }
+      if(window.TangentToast) window.TangentToast.show("Pivot exported successfully!");
   });
 
   document.getElementById('btnSaveImage').addEventListener('click', function () {
@@ -1257,7 +1271,7 @@
     var newCanvas = document.createElement('canvas');
     newCanvas.width = canvas.width; newCanvas.height = canvas.height;
     var ctx = newCanvas.getContext('2d');
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = chartPalette().surface;
     ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
     ctx.drawImage(canvas, 0, 0);
     var link = document.createElement('a');
@@ -1328,11 +1342,14 @@
   // =========================================================================
   // 11. TABS
   // =========================================================================
+  function syncTabState(){document.querySelectorAll('.tab-btn').forEach(function(btn){var selected=btn.classList.contains('active');btn.setAttribute('aria-selected',String(selected));btn.tabIndex=selected?0:-1;});}
+  var tabList=document.querySelector('.tabs-nav');tabList.setAttribute('role','tablist');tabList.setAttribute('aria-label','CSV analysis views');
+  document.querySelectorAll('.tab-btn').forEach(function(btn,i){var id=btn.dataset.tab;btn.id='insights-tab-'+i;btn.setAttribute('role','tab');btn.setAttribute('aria-controls',id);var panel=document.getElementById(id);panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',btn.id);btn.addEventListener('keydown',function(e){var tabs=[...tabList.querySelectorAll('.tab-btn')],target;if(e.key==='Home')target=0;else if(e.key==='End')target=tabs.length-1;else if(e.key==='ArrowRight')target=(i+1)%tabs.length;else if(e.key==='ArrowLeft')target=(i+tabs.length-1)%tabs.length;else return;e.preventDefault();tabs[target].focus();tabs[target].click();});});syncTabState();
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
       document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
-      btn.classList.add('active');
+      btn.classList.add('active');syncTabState();
       var tabId = btn.getAttribute('data-tab');
       document.getElementById(tabId).classList.add('active');
 
@@ -1340,7 +1357,7 @@
       if (manualControls) manualControls.style.display = (tabId === 'tab-manual') ? 'flex' : 'none';
 
       if (tabId === 'tab-manual' && manualChartMeta) renderManualChart();
-      if (tabId === 'tab-auto') chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
+      if (tabId === 'tab-auto') chartRegistry.forEach(function (entry) { if(!document.getElementById('tab-auto').classList.contains('active') || entry.canvas.closest('[hidden]') || !entry.canvas.getBoundingClientRect().width)return; drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
     });
   });
 
@@ -1366,56 +1383,42 @@
   }
 
   document.getElementById('btnCloseFile').addEventListener('click', function () {
-    dataOperation++; if(worker)worker.terminate(); if(window.TangentLoader)TangentLoader.hide();
-    rawData = []; originalData = null; currentHeaders = []; currentStats = null; manualChartMeta = null;
+    dataOperation++; datasetRequest++; if(worker)worker.terminate();worker=null; if(window.TangentLoader)TangentLoader.hide();
+    rawData = []; hasDataset = false; currentHeaders = []; currentStats = null; manualChartMeta = null;
     clearDatasetFilterUI();
     fileInput.value = '';
     document.getElementById('profilerGrid').innerHTML = '';
     document.getElementById('workspace').style.display = 'none';
-    document.getElementById('dropzone').style.display = 'flex';
+    document.getElementById('dropzone').style.display = ''; chartRegistry = [];
     document.getElementById('insightsFilename').textContent='No file loaded';document.getElementById('btnCloseFile').disabled=true;document.body.classList.remove('has-data');
   });
 
   function handleFile(file) {
-    var operation = ++dataOperation;
-    if(worker) worker.terminate();
     if (file.name.split('.').pop().toLowerCase() !== 'csv') { alert('Only CSV files are supported.'); return; }
-    if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Profiling Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Analyzing distributions via Web Worker</span>'; window.TangentLoader.show(''); }
-    originalData = null;
-      var reader = new FileReader();
-    reader.onload = function (e) {
-      if(operation !== dataOperation) return;
-      if (worker) worker.terminate();
-      worker = new Worker(workerUrl);
-      var adoptingNewFile = true;
-      worker.onmessage = function (ev) {
-        if(operation !== dataOperation) return;
-        if(ev.data.status === 'error') {if(window.TangentLoader) TangentLoader.hide(); alert(ev.data.message); return;}
-        currentHeaders = ev.data.headers;
-        currentStats = ev.data.stats;
-        currentRowCount = ev.data.rowCount;
-        rawData = ev.data.data;
-          if (!originalData) originalData = rawData;
-
-        document.getElementById('statRows').textContent = currentRowCount.toLocaleString();
-        document.getElementById('statCols').textContent = currentHeaders.length.toLocaleString();
-
-        if (adoptingNewFile) {clearDatasetFilterUI();adoptingNewFile=false;}
-        populateDropdowns();
-        populateRawGrid(null);
-
-        if (window.TangentLoader) window.TangentLoader.hide();
-        dropzone.style.display = 'none';
-        document.getElementById('insightsFilename').textContent=file.name;document.getElementById('btnCloseFile').disabled=false;document.body.classList.add('has-data');
-        document.getElementById('workspace').style.display = 'block';
-
-        renderAutoProfilerGrid();
-        renderManualChart();
-      };
-      worker.onerror = function(error) {if(operation === dataOperation) {if(window.TangentLoader) TangentLoader.hide(); alert(error.message);}};
-      worker.postMessage({ text: e.target.result });
+    var operation=++dataOperation;
+    if(worker)worker.terminate();
+    hasDataset=false;rawData=[];manualChartMeta=null;chartRegistry=[];
+    clearDatasetFilterUI();
+    document.getElementById('workspace').style.display='none';
+    document.getElementById('profilerGrid').replaceChildren();
+    showInsightsProgress('Profiling dataset…');
+    worker=new Worker(workerUrl);
+    var adoptingNewFile=true;
+    worker.onmessage=function(ev){
+      if(operation!==dataOperation||ev.data.requestId!==datasetRequest)return;
+      if(ev.data.status==='error'){if(window.TangentLoader)TangentLoader.hide();if(!hasDataset){dropzone.style.display='';document.body.classList.remove('has-data');document.getElementById('insightsFilename').textContent='No file loaded';document.getElementById('btnCloseFile').disabled=true;}alert(ev.data.message);return;}
+      currentHeaders=ev.data.headers;currentStats=ev.data.stats;currentRowCount=ev.data.rowCount;rawData=ev.data.data;hasDataset=true;
+      document.getElementById('statRows').textContent=currentRowCount.toLocaleString();
+      document.getElementById('statCols').textContent=currentHeaders.length.toLocaleString();
+      if(adoptingNewFile){clearDatasetFilterUI();adoptingNewFile=false;}
+      populateDropdowns();populateRawGrid(null);
+      if(window.TangentLoader)TangentLoader.hide();
+      dropzone.style.display='none';document.getElementById('insightsFilename').textContent=file.name;
+      document.getElementById('btnCloseFile').disabled=false;document.body.classList.add('has-data');
+      document.getElementById('workspace').style.display='block';renderAutoProfilerGrid();renderManualChart();
     };
-    reader.readAsText(file);
+    worker.onerror=function(error){if(operation===dataOperation){if(window.TangentLoader)TangentLoader.hide();alert(error.message);}};
+    worker.postMessage({type:'load',requestId:++datasetRequest,file:file});
   }
 
     var manualWrapper = document.getElementById('chartScrollWrapper');
@@ -1462,12 +1465,12 @@
                   var strVal = (rowVal === undefined || rowVal === null || String(rowVal).trim() === '') ? 'Unknown' : String(rowVal).trim();
 
                   if (isDate && binMode !== 'none' && strVal !== 'Unknown') {
-                     var d = new Date(strVal);
+                     var timestamp = TangentData.dateToken(strVal); var d = new Date(timestamp === null ? NaN : timestamp);
                      if (!isNaN(d.getTime())) {
-                       var yyyy = d.getFullYear();
-                       var mm = String(d.getMonth() + 1).padStart(2, '0');
+                       var yyyy = d.getUTCFullYear();
+                       var mm = String(d.getUTCMonth() + 1).padStart(2, '0');
                        if (binMode === 'month') strVal = yyyy + '-' + mm;
-                       else if (binMode === 'quarter') strVal = yyyy + '-Q' + Math.ceil((d.getMonth() + 1) / 3);
+                       else if (binMode === 'quarter') strVal = yyyy + '-Q' + Math.ceil((d.getUTCMonth() + 1) / 3);
                        else if (binMode === 'year') strVal = String(yyyy);
                      }
                   }
@@ -1478,7 +1481,7 @@
               document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
               document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
               var rawBtn = document.querySelector('.tab-btn[data-tab="tab-raw"]');
-              if(rawBtn) rawBtn.classList.add('active');
+              if(rawBtn){rawBtn.classList.add('active');rawBtn.focus();}syncTabState();
               document.getElementById('tab-raw').classList.add('active');
               document.getElementById('manualControls').style.display = 'none';
 
@@ -1500,64 +1503,18 @@
       });
   }
 
-    var modalCanvas = document.getElementById('fullChartModalCanvas');
-  if(modalCanvas) {
-      modalCanvas.addEventListener('click', function(e) {
-          if (!_lastModalArgs) return;
-          var header = _lastModalArgs[0];
-          var stat = _lastModalArgs[1];
-          var rect = modalCanvas.getBoundingClientRect();
-          var x = e.clientX - rect.left;
-          var meta = modalCanvas._chartMeta;
-          if(!meta) return;
-
-          var innerX = x - meta.marginLeft;
-          if(innerX < 0 || innerX > meta.plotW) return;
-
-          var index = Math.floor(innerX / meta.barSlot);
-          if(index >= 0 && index < meta.labels.length) {
+    function selectModalBin(index){var header=_lastModalArgs[0],stat=_lastModalArgs[1],meta=modalCanvas._chartMeta;if(index<0||index>=meta.labels.length)return;
               var clickedLabel = String(meta.labels[index]);
-              var isDate = (stat.type === 'date');
-              var isNumeric = (stat.type === 'numeric');
-
-              // We need to figure out exactly what value this bin corresponds to, but for Auto-Profiler,
-              // the label might be a formatted range "100 - 200". Cross-filtering by exactly matching
-              // the string might not work for numeric bins! But it works perfectly for categorical!
-              // For now, let's just do exact string match filtering. It will work for categorical.
-              populateRawGrid(function(row) {
-                  var rowVal = row[header];
-                  var strVal = (rowVal === undefined || rowVal === null || String(rowVal).trim() === '') ? 'Unknown' : String(rowVal).trim();
-
-                  // In auto-profiler, dates are grouped by 'YYYY-MM'.
-                  // If stat.type is date, we might need to match YYYY-MM.
-                  if (isDate && strVal !== 'Unknown') {
-                      var d = new Date(strVal);
-                      if (!isNaN(d.getTime())) {
-                          var yyyy = d.getFullYear();
-                          var mm = String(d.getMonth() + 1).padStart(2, '0');
-                          strVal = yyyy + '-' + mm;
-                      }
-                  }
-
-                  // Numeric bins are trickier. They are '100-200'.
-                  // For categorical, it's exact match.
-                  if(isNumeric) {
-                      // We don't have the original value easily, so we might just check if the label matches the generated label.
-                      // Actually, if it's numeric, we probably shouldn't cross-filter right now, or just do our best.
-                      // Let's just string match.
-                      // Wait! The user's screenshot was "Industry" which is Categorical! So exact match works.
-                  }
-                  return strVal === clickedLabel;
-              });
+              populateRawGrid(function(row) { return profileBinMatches(stat,row[header],index,true); });
 
               // Close modal
-              document.getElementById('fullChartModal').style.display = 'none';
+              closeFullChartModal();
 
               // Switch tab
               document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
               document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
               var rawBtn = document.querySelector('.tab-btn[data-tab="tab-raw"]');
-              if(rawBtn) rawBtn.classList.add('active');
+              if(rawBtn){rawBtn.classList.add('active');rawBtn.focus();}syncTabState();
               document.getElementById('tab-raw').classList.add('active');
               document.getElementById('manualControls').style.display = 'none';
 
@@ -1575,42 +1532,41 @@
                   filterMsg.remove();
                   populateRawGrid(null);
               });
+    }
+    var modalCanvas = document.getElementById('fullChartModalCanvas');
+  if(modalCanvas) {
+      modalCanvas.addEventListener('click', function(e) {
+          if (!_lastModalArgs) return;
+          var header = _lastModalArgs[0];
+          var stat = _lastModalArgs[1];
+          var rect = modalCanvas.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var meta = modalCanvas._chartMeta;
+          if(!meta) return;
+
+          var innerX = x - meta.marginLeft;
+          if(innerX < 0 || innerX > meta.plotW) return;
+
+          var index = Math.floor(innerX / meta.barSlot);
+          if(index >= 0 && index < meta.labels.length) {
+              selectModalBin(index);
           }
       });
   }
 
   window.addEventListener('resize', function () {
-    chartRegistry.forEach(function (entry) { drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
+    chartRegistry.forEach(function (entry) { if(!document.getElementById('tab-auto').classList.contains('active') || entry.canvas.closest('[hidden]') || !entry.canvas.getBoundingClientRect().width)return; drawBarChart(entry.canvas, { labels: entry.stat.labels, values: entry.stat.dist, color: entry.getColor(), yTitle: 'Count' }); });
     if (document.getElementById('tab-manual').classList.contains('active') && manualChartMeta) renderManualChart();
     if (modalEl.style.display === 'flex' && _lastModalArgs) openFullChartModal.apply(null, _lastModalArgs);
   });
 
+  var themeDrawFrame;function redrawTheme(){cancelAnimationFrame(themeDrawFrame);themeDrawFrame=requestAnimationFrame(function(){chartRegistry.forEach(function(entry){if(entry.canvas.getBoundingClientRect().width&&!entry.canvas.closest('[hidden]'))drawBarChart(entry.canvas,{labels:entry.stat.labels,values:entry.stat.dist,color:entry.getColor(),yTitle:'Count'});});if(document.getElementById('tab-manual').classList.contains('active')&&manualChartMeta)renderManualChart();if(modalEl.style.display==='flex'&&_lastModalArgs)openFullChartModal.apply(null,_lastModalArgs);});}new MutationObserver(redrawTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});window.addEventListener('themechange',redrawTheme);
     document.getElementById('btnApplyGlobalFilter').addEventListener('click', function() {
         window.lastAppliedFilterQuery = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
-      if (!originalData) return;
+      if (!hasDataset) return;
       var query = document.getElementById('txtGlobalFilter').value.trim().toLowerCase();
 
-      var filtered = originalData;
-      if (query) {
-         filtered = originalData.filter(function(row) {
-             for (var i=0; i<currentHeaders.length; i++) {
-                 var val = String(row[currentHeaders[i]] || '').toLowerCase();
-                 if (query.indexOf(':') !== -1) {
-                    var parts = query.split(':');
-                    var k = parts[0].trim();
-                    var v = parts[1].trim();
-                    if (currentHeaders[i].toLowerCase() === k && val.includes(v)) return true;
-                 } else {
-                    if (val.includes(query)) return true;
-                 }
-             }
-             return false;
-         });
-      }
-
-      if (window.TangentLoader) { document.getElementById('tangentLoaderMsg').innerHTML = 'Slicing Dataset...<br><span style="font-size: 0.95rem; opacity: 0.8; font-weight: 400; text-shadow: none;">Recalculating distributions</span>'; window.TangentLoader.show(''); }
-
-      filtered=filtered.filter(matchesRowRules);
+      showInsightsProgress('Updating filtered profiles…');
       var oldDrill=document.getElementById("filterMsg");if(oldDrill)oldDrill.remove();
       // --- UX BANNER LOGIC ---
         var globalMsg = document.getElementById('globalFilterBanner');
@@ -1633,7 +1589,7 @@
             if (globalMsg) globalMsg.remove();
         }
         // -----------------------
-        worker.postMessage({ headers: currentHeaders, data: filtered });
+        worker.postMessage({type:'filter',requestId:++datasetRequest,query:query,rules:rowRules});
     });
 
     var filterInput = document.getElementById('txtGlobalFilter');

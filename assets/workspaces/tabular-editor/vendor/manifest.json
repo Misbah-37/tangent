@@ -1,0 +1,37 @@
+{
+  "versions": {
+    "PapaParse": "5.4.1",
+    "SheetJS": "0.20.3"
+  },
+  "papaparse": {
+    "tarball": "https://registry.npmjs.org/papaparse/-/papaparse-5.4.1.tgz",
+    "integrity": "sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==",
+    "verifiedPackageIntegrity": true,
+    "license": "MIT"
+  },
+  "sheetjs": {
+    "source": "existing repository bundle, byte-preserved",
+    "upstreamVersionUrl": "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+    "licenseSource": "https://raw.githubusercontent.com/SheetJS/sheetjs/master/LICENSE",
+    "license": "Apache-2.0",
+    "upstreamBundleReverified": false
+  },
+  "files": {
+    "papaparse-5.4.1.min.js": {
+      "bytes": 19469,
+      "sha256": "b8e870c5d2b29772f10c9fa9a693c8b896aac8540ed6701e3cc6304c683febdb"
+    },
+    "papaparse-5.4.1-LICENSE": {
+      "bytes": 1079,
+      "sha256": "99aa68e4b42758b09828a46515f70369e5463458ab7a990189f641af2b8d9b4e"
+    },
+    "xlsx-0.20.3.min.js": {
+      "bytes": 951928,
+      "sha256": "ac8d774d39bb05a527f87912e2c283e237e3633120b31acf20bc6eef0e19eede"
+    },
+    "SheetJS-LICENSE.txt": {
+      "bytes": 11355,
+      "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64"
+    }
+  }
+}

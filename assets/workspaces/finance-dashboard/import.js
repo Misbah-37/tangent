@@ -36,6 +36,7 @@
     cancel();
     try { return {...TangentData.parseCsv(text), headerRecord: 1, skippedRecords: 0}; }
     catch (initialError) {
+      if(typeof window.Papa?.parse!=='function')throw Error('CSV preview library could not load. Reload the page before choosing an introductory header.');
       const result = Papa.parse(String(text).replace(/^\uFEFF/, ''), {header: false, delimiter: ',', skipEmptyLines: false});
       if (result.errors.length) throw Error(result.errors[0].message);
       records = result.data;

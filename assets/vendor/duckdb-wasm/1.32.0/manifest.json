@@ -1,0 +1,153 @@
+{
+  "duckdbWasm": "1.32.0",
+  "packages": {
+    "@duckdb/duckdb-wasm@1.32.0": {
+      "integrity": "sha512-IewXTNYEjsZCPE9weUWgtjGxUlMRo7qhX0GF6tq/KjK8bnY+RAl4cyUdYUfcdzbyb4b9ZxPC+FOsCcxgaKFWMg==",
+      "tarball": "https://registry.npmjs.org/@duckdb/duckdb-wasm/-/duckdb-wasm-1.32.0.tgz",
+      "license": "MIT"
+    },
+    "apache-arrow@17.0.0": {
+      "integrity": "sha512-X0p7auzdnGuhYMVKYINdQssS4EcKec9TCXyez/qtJt32DrIMGbzqiaMiQ0X6fQlQpw8Fl0Qygcv4dfRAr5Gu9Q==",
+      "tarball": "https://registry.npmjs.org/apache-arrow/-/apache-arrow-17.0.0.tgz",
+      "license": "Apache-2.0"
+    },
+    "flatbuffers@24.3.25": {
+      "integrity": "sha512-3HDgPbgiwWMI9zVB7VYBHaMrbOO7Gm0v+yD2FV/sCKj+9NDeVL7BOBYUuhWAQGKWOzBo8S9WdMvV0eixO233XQ==",
+      "tarball": "https://registry.npmjs.org/flatbuffers/-/flatbuffers-24.3.25.tgz",
+      "license": "Apache-2.0"
+    },
+    "tslib@2.6.3": {
+      "integrity": "sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==",
+      "tarball": "https://registry.npmjs.org/tslib/-/tslib-2.6.3.tgz",
+      "license": "0BSD"
+    }
+  },
+  "modules": {
+    "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.32.0/+esm": {
+      "filename": "duckdb.mjs",
+      "upstreamSha256": "91e95e8f527511820c4f8a6f1c4628dfde4c29b99df26e05e13be2734f47a868"
+    },
+    "https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm": {
+      "filename": "apache-arrow_17.0.0.mjs",
+      "upstreamSha256": "2df175d5ca788380f3794ad2afcf86d84eb188c902e90f9cf90f2b3e33913ffc"
+    },
+    "https://cdn.jsdelivr.net/npm/flatbuffers@24.3.25/+esm": {
+      "filename": "flatbuffers_24.3.25.mjs",
+      "upstreamSha256": "e2e255fa750cc1ba9c2dbae40290cc8cb00a39546c926f86a49164ad1dea308f"
+    },
+    "https://cdn.jsdelivr.net/npm/tslib@2.6.3/+esm": {
+      "filename": "tslib_2.6.3.mjs",
+      "upstreamSha256": "4f4982b6423bc56309d1d97cc76b26a4dc0e36c6cec7fee540a2ff8e0f408115"
+    }
+  },
+  "files": {
+    "duckdb-browser-mvp.worker.js": {
+      "package": "@duckdb/duckdb-wasm@1.32.0",
+      "source": "package/dist/duckdb-browser-mvp.worker.js",
+      "bytes": 844644,
+      "sha256": "b0387027f174e2b60c2d5cfa31cecca9b89d8a9762346b6449a784cd1c4dde3c"
+    },
+    "duckdb-browser-eh.worker.js": {
+      "package": "@duckdb/duckdb-wasm@1.32.0",
+      "source": "package/dist/duckdb-browser-eh.worker.js",
+      "bytes": 772759,
+      "sha256": "f8ab72b6b90b3ad83077d47426d4a99d5d9a4c7e07cba1a2be37d655adc7c1ab"
+    },
+    "duckdb-mvp.wasm": {
+      "package": "@duckdb/duckdb-wasm@1.32.0",
+      "source": "package/dist/duckdb-mvp.wasm",
+      "bytes": 39362651,
+      "sha256": "45d72a81fba8e57693d890da837c7041310e385e75619a8559839b15388dfe97"
+    },
+    "duckdb-eh.wasm": {
+      "package": "@duckdb/duckdb-wasm@1.32.0",
+      "source": "package/dist/duckdb-eh.wasm",
+      "bytes": 34242586,
+      "sha256": "4c221bfa59c11f24dbd750e70c90b9252eca6eec5633936e6a2ec766e55fd879"
+    },
+    "flatbuffers_24.3.25.mjs": {
+      "upstream": "https://cdn.jsdelivr.net/npm/flatbuffers@24.3.25/+esm",
+      "upstreamSha256": "e2e255fa750cc1ba9c2dbae40290cc8cb00a39546c926f86a49164ad1dea308f",
+      "bytes": 9175,
+      "sha256": "92b055f880dab40323bbafd4c1eb269aefcc9260271e6068e90dd38f87b60ffd"
+    },
+    "tslib_2.6.3.mjs": {
+      "upstream": "https://cdn.jsdelivr.net/npm/tslib@2.6.3/+esm",
+      "upstreamSha256": "4f4982b6423bc56309d1d97cc76b26a4dc0e36c6cec7fee540a2ff8e0f408115",
+      "bytes": 10614,
+      "sha256": "1ad6d8c17718d3e45a267e2b1541872352728c4b5b9bf80b6c0174582483fb73"
+    },
+    "apache-arrow_17.0.0.mjs": {
+      "upstream": "https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm",
+      "upstreamSha256": "2df175d5ca788380f3794ad2afcf86d84eb188c902e90f9cf90f2b3e33913ffc",
+      "bytes": 199928,
+      "sha256": "a7ed6ea9d69ebf3d080f136049fe90eef89a5cb2c3b5d8496a7ce02423c66f68"
+    },
+    "duckdb.mjs": {
+      "upstream": "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.32.0/+esm",
+      "upstreamSha256": "91e95e8f527511820c4f8a6f1c4628dfde4c29b99df26e05e13be2734f47a868",
+      "bytes": 27921,
+      "sha256": "678ad99beabaef536dad574dbf91ab72a5b399c3b8fc27605ea0d0819b24c0fb"
+    },
+    "licenses/apache-arrow-17.0.0-LICENSE.txt": {
+      "package": "apache-arrow@17.0.0",
+      "source": "package/LICENSE.txt",
+      "bytes": 110423,
+      "sha256": "229dbe29e4e1344e95172f6f3a4277ec0da5c7850cb03897c47f3a24b7afce08"
+    },
+    "licenses/apache-arrow-17.0.0-NOTICE.txt": {
+      "package": "apache-arrow@17.0.0",
+      "source": "package/NOTICE.txt",
+      "bytes": 3032,
+      "sha256": "b62ea242642d3a18f1e29b0c1fe082415a6943fe158ee22b48cff3762f354009"
+    },
+    "licenses/flatbuffers-24.3.25-LICENSE": {
+      "package": "flatbuffers@24.3.25",
+      "source": "package/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "licenses/tslib-2.6.3-CopyrightNotice.txt": {
+      "package": "tslib@2.6.3",
+      "source": "package/CopyrightNotice.txt",
+      "bytes": 822,
+      "sha256": "da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b"
+    },
+    "licenses/tslib-2.6.3-LICENSE.txt": {
+      "package": "tslib@2.6.3",
+      "source": "package/LICENSE.txt",
+      "bytes": 655,
+      "sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+    },
+    "licenses/duckdb-wasm-1.32.0-LICENSE": {
+      "upstream": "https://raw.githubusercontent.com/duckdb/duckdb-wasm/v1.32.0/LICENSE",
+      "bytes": 1072,
+      "sha256": "7e17fd31249fa875cb3b1c5e05c6c3e99b75509f6a2804ca176c217834de1dcb"
+    },
+    "extensions/v1.4.3/wasm_eh/json.duckdb_extension.wasm": {
+      "upstream": "https://extensions.duckdb.org/v1.4.3/wasm_eh/json.duckdb_extension.wasm",
+      "bytes": 820646,
+      "sha256": "b997276c8e15cc3ebdeda340d73d15dc1c4f4755ad281280451cb0a2f79302e9"
+    },
+    "extensions/v1.4.3/wasm_eh/parquet.duckdb_extension.wasm": {
+      "upstream": "https://extensions.duckdb.org/v1.4.3/wasm_eh/parquet.duckdb_extension.wasm",
+      "bytes": 3045039,
+      "sha256": "22765c8f7dc741cda2b571a66ac7bb355295d7d69a6c37e5315b265672984f55"
+    },
+    "extensions/v1.4.3/wasm_mvp/json.duckdb_extension.wasm": {
+      "upstream": "https://extensions.duckdb.org/v1.4.3/wasm_mvp/json.duckdb_extension.wasm",
+      "bytes": 722006,
+      "sha256": "5771b6d57335eca8e2ba4fdaacb491a53b49577bd7f1b0c39e2cd7a39b4e9313"
+    },
+    "extensions/v1.4.3/wasm_mvp/parquet.duckdb_extension.wasm": {
+      "upstream": "https://extensions.duckdb.org/v1.4.3/wasm_mvp/parquet.duckdb_extension.wasm",
+      "bytes": 2867304,
+      "sha256": "0785c6c95d003eff4faa7b3b4b660f02c9c92f6d68d135ddf330d42e3a650600"
+    },
+    "licenses/duckdb-1.4.3-LICENSE": {
+      "upstream": "https://raw.githubusercontent.com/duckdb/duckdb/v1.4.3/LICENSE",
+      "bytes": 1072,
+      "sha256": "7e17fd31249fa875cb3b1c5e05c6c3e99b75509f6a2804ca176c217834de1dcb"
+    }
+  }
+}

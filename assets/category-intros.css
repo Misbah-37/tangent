@@ -1,0 +1,34 @@
+/* Shared category introductions. Tool workspaces retain their existing styles. */
+[data-tool-category="data"]{--category-color:#00ddec;--category-dark:#00434b}
+[data-tool-category="images"]{--category-color:#00ddb2;--category-dark:#00483d}
+[data-tool-category="documents"]{--category-color:#00b9ff;--category-dark:#003a59}
+[data-tool-category="audio"]{--category-color:#b5a0ff;--category-dark:#393052}
+[data-tool-category="design"]{--category-color:#eea6e2;--category-dark:#4e2e49}
+[data-tool-category="security"]{--category-color:#98d8a2;--category-dark:#284b34}
+[data-tool-category="business"]{--category-color:#ffc78a;--category-dark:#513c29}
+[data-tool-category="utilities"]{--category-color:#e9de85;--category-dark:#494527}
+[data-tool-category] .category-intro{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:center;gap:65px;color:#101314}
+[data-tool-category] .category-intro::before{content:"";position:absolute;left:calc((min(1320px,100vw) - 100vw)/2 - 48px);right:-20px;top:0;bottom:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,var(--category-color) 0%,color-mix(in srgb,var(--category-color) 65%,transparent) 35%,transparent 90%)!important;opacity:1!important;mask-image:none!important;mix-blend-mode:normal!important}
+[data-theme="dark"] [data-tool-category] .category-intro::before{background:linear-gradient(90deg,var(--category-dark) 0%,color-mix(in srgb,var(--category-color) 28%,transparent) 30%,transparent 90%)!important}
+[data-tool-category] .category-intro :is(h1,.eyebrow,.tool-eyebrow,.tool-description){color:#101314!important}
+[data-tool-category] .category-intro .tool-tagline{color:#294a50!important}
+[data-theme="dark"] [data-tool-category] .category-intro :is(h1,.eyebrow,.tool-eyebrow,.tool-description){color:#fff!important}
+[data-theme="dark"] [data-tool-category] .category-intro .tool-tagline{color:#d0e6e8!important}
+.category-intro-copy{min-width:0}.category-intro-copy>.eyebrow{display:block}
+[data-tool-category] .category-intro-info{padding:18px 0 18px 25px;border-left:1px solid #617b7b66;color:#101314;text-align:left;min-width:0}
+[data-tool-category] .category-intro-info .info-label{font-size:10px;letter-spacing:1.7px;font-weight:600}
+[data-tool-category] .category-intro-info h2{font-size:24px;line-height:1.2;letter-spacing:-.7px;margin:12px 0 20px;max-width:320px;color:inherit}
+[data-tool-category] .category-intro-info dl{margin:0;display:grid;gap:12px}
+[data-tool-category] .category-intro-info dl>div{display:grid;grid-template-columns:60px minmax(0,1fr);gap:12px;font-size:12px;line-height:1.5}
+[data-tool-category] .category-intro-info dt{font-weight:600}
+[data-tool-category] .category-intro-info dd{margin:0}
+[data-tool-category] .category-intro-info>p{font-size:11px;line-height:1.6;margin:18px 0 0;max-width:none;padding:0;color:inherit}
+[data-tool-category] .category-intro-info :is(.info-label,h2,dl,dt,dd,p){text-align:left;margin-left:0;margin-right:0;overflow-wrap:anywhere}
+[data-theme="dark"] [data-tool-category] .category-intro-info{color:#edf4f4}
+/* Data Hygiene's file control remains a separate row, outside the quick guide. */
+[data-tool-category] .category-intro>.file-context{grid-column:1/-1;justify-self:end}
+
+@media(max-width:1000px){[data-tool-category] .category-intro{gap:28px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}}
+@media(max-width:900px){[data-tool-category] .category-intro::before{left:-26px}}
+@media(max-width:760px){[data-tool-category] .category-intro{grid-template-columns:1fr;gap:20px}[data-tool-category] .category-intro-info{padding:20px 0 10px;border-left:0;border-top:1px solid #617b7b66}[data-tool-category] .category-intro-info h2{font-size:22px}[data-tool-category] .category-intro-info dl{gap:8px}[data-tool-category] .category-intro::before{right:-10px}[data-tool-category].tool-main .category-intro::before{left:-20px}}
+@media(max-width:650px){[data-tool-category] .category-intro::before{left:-20px}}

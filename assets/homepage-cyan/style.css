@@ -69,3 +69,19 @@
 .analyst-brand{color:#101314}[data-theme="dark"] .analyst-brand{color:#edf4f4}.analyst-wordmark{white-space:nowrap}.analyst-layout h2 .brand-tangent{color:#00d2ff}
 
 :root:not([data-theme="dark"]) .analyst-brand{color:#101314}
+.hero-guide{position:absolute;right:0;top:50%;transform:translateY(-50%);width:31%;padding:18px 0 18px 28px;border-left:1px solid #10131445;text-align:left;color:#101314}
+.hero-guide .info-label{font-size:10px;font-weight:600;letter-spacing:1.7px}
+.hero-guide h2{font-size:28px;line-height:1.2;letter-spacing:-.7px;margin:12px 0 24px}
+.hero-guide dl{display:grid;gap:17px;margin:0}
+.hero-guide dl>div{display:grid;grid-template-columns:60px minmax(0,1fr);gap:12px;font-size:13px;line-height:1.6}
+.hero-guide dt{font-weight:600}.hero-guide dd{margin:0}
+.hero-guide p{font-size:12px;line-height:1.6;margin:22px 0 0}
+@media(max-width:1100px) and (min-width:761px){.hero-guide{width:32%;padding-left:20px}.hero-guide h2{font-size:24px}.hero-guide dl>div{grid-template-columns:1fr;gap:3px}}
+@media(max-width:760px){.hero{padding-bottom:75px}.hero-guide{position:relative;right:auto;top:auto;transform:none;width:100%;margin-top:35px;padding:25px 0 15px;border-left:0;border-top:1px solid #10131445}.hero-guide h2{font-size:24px}.hero-guide dl>div{font-size:12px}}
+
+.analyst-layout h2 .analyst-subbrand{font-size:.74em;letter-spacing:-.03em;white-space:nowrap}
+
+/* Gentle variation of the original strong cyan hero. */
+.cyan-canvas{background:linear-gradient(90deg,#2fe3ec 0%,#2fe3ec 18%,#72eaf0 65%,#a3f1f4 100%)}
+
+@media(max-width:760px){.cyan-canvas{background:linear-gradient(180deg,#2fe3ec 0%,#2fe3ec 18%,#72eaf0 65%,#a3f1f4 100%)}}

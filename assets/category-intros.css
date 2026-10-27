@@ -32,3 +32,10 @@
 @media(max-width:900px){[data-tool-category] .category-intro::before{left:-26px}}
 @media(max-width:760px){[data-tool-category] .category-intro{grid-template-columns:1fr;gap:20px}[data-tool-category] .category-intro-info{padding:20px 0 10px;border-left:0;border-top:1px solid #617b7b66}[data-tool-category] .category-intro-info h2{font-size:22px}[data-tool-category] .category-intro-info dl{gap:8px}[data-tool-category] .category-intro::before{right:-10px}[data-tool-category].tool-main .category-intro::before{left:-20px}}
 @media(max-width:650px){[data-tool-category] .category-intro::before{left:-20px}}
+/* Match the stacked mobile introduction with a downward category fade. */
+@media(max-width:760px){
+ [data-tool-category] .category-intro::before{right:-26px;background:linear-gradient(180deg,var(--category-color) 0%,color-mix(in srgb,var(--category-color) 65%,transparent) 35%,transparent 100%)!important}
+ [data-theme="dark"] [data-tool-category] .category-intro::before{background:linear-gradient(180deg,var(--category-dark) 0%,color-mix(in srgb,var(--category-color) 28%,transparent) 30%,transparent 100%)!important}
+}
+@media(max-width:650px){[data-tool-category] .category-intro::before{right:-20px}}
+@media(max-width:760px){[data-tool-category] .category-intro::before{width:100vw;right:auto}}

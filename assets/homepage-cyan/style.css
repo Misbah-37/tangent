@@ -45,3 +45,27 @@
 .brand{font-family:"Segoe UI",Arial,sans-serif;font-weight:700;letter-spacing:-.6px}.brand-tangent,[data-theme="dark"] .brand-tangent{color:#00d2ff}
 
 .legacy-anchor{display:block;height:0;scroll-margin-top:100px}.footer nav{flex-wrap:wrap}.footer{flex-wrap:wrap}
+/* Match tool-page FAQ disclosures without loading workspace/control styles. */
+.faq-section{grid-template-columns:minmax(0,.8fr) minmax(0,1.35fr);gap:64px;--faq-line:var(--line);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.faq-section>div:first-child{align-self:start;position:sticky;top:110px}
+.faq-section h2{font-size:clamp(29px,3.1vw,43px);line-height:1.12;letter-spacing:-1.5px;margin:18px 0 20px}
+.faq-section>div>p:last-child{font-size:15px;line-height:1.8;max-width:310px;margin:0 0 24px}
+.faq-answers details{border-top:0;border-bottom:1px solid var(--faq-line);padding:0}
+.faq-answers details:first-child{border-top:1px solid var(--faq-line)}
+.faq-answers summary{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;gap:14px;list-style:none;font-size:15px;line-height:1.6;padding:22px 0;font-weight:600;cursor:pointer}
+.faq-answers summary::-webkit-details-marker{display:none}
+.faq-answers summary::before{content:"";width:7px;height:7px;border-right:1.5px solid #0087ac;border-bottom:1.5px solid #0087ac;transform:rotate(-45deg);transition:transform .18s}
+.faq-answers details[open] summary::before{transform:rotate(45deg)}
+.faq-answers summary::after{content:none}
+.faq-answers details[open] summary,.faq-answers summary:hover{color:#0087ac}
+.faq-answers p{font-size:14px;line-height:1.85;margin:0 0 24px 32px;color:var(--muted)}
+.faq-answers summary:focus-visible{outline:2px solid #0087ac;outline-offset:5px;border-radius:3px}
+[data-theme="dark"] .faq-section{--faq-line:#3b474a}
+@media(max-width:900px){.faq-section{gap:32px;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}}
+@media(max-width:760px){.faq-section{grid-template-columns:1fr;gap:28px}.faq-section>div:first-child{position:static}.faq-section h2{font-size:34px}.faq-section>div>p:last-child{max-width:none}.faq-answers summary{font-size:14px;gap:10px;padding:19px 0}}
+@media(prefers-reduced-motion:reduce){.faq-answers summary::before{transition:none}}
+
+/* Preserve the two-tone brand mark and wordmark in the Analyst section. */
+.analyst-brand{color:#101314}[data-theme="dark"] .analyst-brand{color:#edf4f4}.analyst-wordmark{white-space:nowrap}.analyst-layout h2 .brand-tangent{color:#00d2ff}
+
+:root:not([data-theme="dark"]) .analyst-brand{color:#101314}

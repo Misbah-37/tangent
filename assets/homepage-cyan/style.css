@@ -85,3 +85,5 @@
 .cyan-canvas{background:linear-gradient(90deg,#2fe3ec 0%,#2fe3ec 18%,#72eaf0 65%,#a3f1f4 100%)}
 
 @media(max-width:760px){.cyan-canvas{background:linear-gradient(180deg,#2fe3ec 0%,#2fe3ec 18%,#72eaf0 65%,#a3f1f4 100%)}}
+
+.analyst-action{display:block}.analyst-store-link{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:14px;line-height:1.5;padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid #71888c}.analyst-store-link:hover{text-decoration:underline;text-underline-offset:4px}

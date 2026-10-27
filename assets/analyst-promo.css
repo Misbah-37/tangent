@@ -1,0 +1,24 @@
+.analyst-promo{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:28px 30px;margin:24px 0 28px;border:1px solid #98bdcc66;border-radius:12px;background:linear-gradient(110deg,#eef9fb,#f5f8fb);color:#101318}
+.analyst-promo[hidden]{display:none}
+.analyst-promo .promo-kicker{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;font-weight:600;margin:0 0 14px}
+.promo-wordmark{white-space:nowrap}.promo-wordmark .promo-tangent{color:#007fa3}.promo-wordmark small{font-size:.78em;font-weight:500}
+.promo-free{font-size:11px;font-weight:500;padding:4px 8px;border:1px solid #0087ac44;border-radius:4px;color:#335966}
+.analyst-promo h2{font-size:28px;line-height:1.2;letter-spacing:-.8px;margin:0 0 10px;font-weight:600}
+.analyst-promo p{font-size:14px;line-height:1.7;margin:0;max-width:640px;color:#506378}
+.analyst-promo .promo-store,.analyst-tool-note .promo-store{display:inline-flex;align-items:center;justify-content:center;gap:12px;flex:none;background:#007fa3;color:#fff;font:600 13px/1.5 "Segoe UI",Arial,sans-serif;text-decoration:none;padding:12px 16px;border-radius:6px;white-space:nowrap}
+.analyst-promo .promo-store:hover,.analyst-tool-note .promo-store:hover{background:#006b8a}
+.analyst-tool-note{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 18px;margin:18px 0;border:1px solid var(--line,#dfe7ee);border-radius:8px;background:var(--wash,#f6f9fd);color:var(--ink,#101318)}
+.analyst-tool-note p{font-size:12px;line-height:1.7;margin:0;color:inherit}
+.analyst-tool-note .promo-store{padding:8px 12px;font-size:12px;background:transparent;color:#007fa3;border:1px solid #0087ac55}
+.analyst-tool-note .promo-store:hover{background:#007fa310}
+.analyst-promo a:focus-visible,.analyst-tool-note a:focus-visible{outline:2px solid #0087ac;outline-offset:4px}
+[data-theme="dark"] .analyst-promo{background:linear-gradient(110deg,#1c3039,#1d2732);color:#edf4f4;border-color:#7897aa44}
+[data-theme="dark"] .analyst-promo p{color:#bdcdd6}
+[data-theme="dark"] .promo-free{color:#c6dce3;border-color:#79d7e055}
+[data-theme="dark"] .promo-wordmark .promo-tangent{color:#00d2ff}
+[data-theme="dark"] .analyst-tool-note{background:#202a34;color:#e6eef7;border-color:#3a4757}
+[data-theme="dark"] .analyst-tool-note .promo-store{color:#86e1ee;border-color:#79d7e055}
+@media(max-width:900px){.analyst-promo{align-items:flex-start;flex-direction:column;gap:20px}}
+@media(max-width:650px){.analyst-promo{padding:22px 20px}.analyst-promo h2{font-size:24px}.analyst-tool-note{align-items:flex-start;flex-direction:column;gap:10px;padding:14px}.analyst-promo .promo-store{white-space:normal}}
+
+#analyst-directory-promo{scroll-margin-top:105px}

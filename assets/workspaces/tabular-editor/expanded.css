@@ -28,7 +28,7 @@
 #expanded .canvas-bar .expanded-panel{position:absolute;top:60px;right:12px;width:min(980px,calc(100% - 24px));max-height:calc(100dvh - 76px)}
 #expanded #workspace{height:auto;flex:1 1 0}
 @media(max-width:760px){#expanded .canvas-bar{padding:8px;gap:6px;flex-wrap:wrap}#expanded .canvas-bar>strong{font-size:12px}#expanded .canvas-bar .theme-choice{width:78px}#expanded .canvas-bar #exit{font-size:11px;padding:7px}#expanded .canvas-bar .expanded-tools>summary{padding:8px 9px;font-size:12px}#expanded .canvas-bar .expanded-panel{top:62px;right:6px;width:calc(100% - 12px)}}
-#expanded>.site-header{position:static;flex:0 0 auto;width:100%;box-sizing:border-box}
+#expanded>.site-header,#expanded>.rt-masthead{position:static;flex:0 0 auto;width:100%;box-sizing:border-box}
 #expanded .canvas-bar{position:relative;z-index:12}
 #expanded .canvas-bar .expanded-panel{top:100%;right:12px;max-height:calc(100dvh - 160px)}
 @media(max-width:760px){#expanded .canvas-bar{flex-wrap:nowrap;min-height:48px}#expanded .canvas-bar .expanded-panel{right:6px;max-height:60dvh}}

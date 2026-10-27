@@ -2,20 +2,6 @@
   const input = document.querySelector('#tool-search');
   const results = document.querySelector('#search-results');
   const status = document.querySelector('#search-status');
-  const menu = document.querySelector('.menu-button');
-  const navigation = document.querySelector('#navigation');
-  menu.addEventListener('click', () => {
-    const open = menu.getAttribute('aria-expanded') !== 'true';
-    menu.setAttribute('aria-expanded', String(open));
-    navigation.classList.toggle('open', open);
-    menu.querySelector('span').textContent = open ? '−' : '+';
-  });
-  navigation.addEventListener('click', e => {
-    if (!e.target.closest('a')) return;
-    navigation.classList.remove('open');
-    menu.setAttribute('aria-expanded', 'false');
-    menu.querySelector('span').textContent = '+';
-  });
   function showMatches() {
     const query = input.value.trim().toLowerCase();
     results.replaceChildren();
@@ -47,7 +33,6 @@
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     results.hidden = true;
-    if (navigation.classList.contains('open')) { menu.click(); menu.focus(); }
   });
   document.addEventListener('click', event => {
     if (!event.target.closest('.search-area')) results.hidden = true;

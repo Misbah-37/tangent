@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Is this a digital signature service?",
+    "answer": "This tool places visual marks on a PDF. It does not verify identity, provide a certificate or create a cryptographic digital signature or audit trail."
+  },
+  {
+    "question": "How can I create my signature?",
+    "answer": "Draw a signature, type your name or upload a signature image. Inspect image cleanup before using it, then drag, resize or rotate the mark on your page."
+  },
+  {
+    "question": "Can I add a date or checkmark?",
+    "answer": "Yes. Add a date or checkmark to the current page, then position it on the document. Use the page controls to move between pages."
+  },
+  {
+    "question": "What happens to PDF form fields?",
+    "answer": "Leave flattening unchecked to preserve supported editable forms; stamps must not overlap their fields. Flattening keeps visible values but removes editable fields. Review the exported copy and keep the original."
+  },
+  {
+    "question": "Where are my documents processed?",
+    "answer": "Selected documents and signature images are processed in browser memory. PDF libraries load from external CDNs, so network access may be needed. Download your result before closing the page; browser memory limits apply."
+  }
+]

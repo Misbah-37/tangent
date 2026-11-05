@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How are the colors selected?",
+    "answer": "Choose 3\u201310 colors to extract. The image is reduced to at most 256 pixels on its longest edge before ColorThief estimates a palette. Duplicate results are removed, so a simple image may return fewer colors. Changing the extraction size replaces edits and picked colors."
+  },
+  {
+    "question": "Which images can I use?",
+    "answer": "Load JPEG, PNG or WebP files under 50 MB. The shared image decoder limits either dimension to 10,000 pixels and the total to 25 million pixels. Transparent or near-white images may not yield a useful palette."
+  },
+  {
+    "question": "Can I copy HEX and RGB values?",
+    "answer": "Choose HEX or RGB, then select a swatch to copy. Use Edit to change a shade, or enable Pick from image and select an opaque point to add its original-image pixel color. Picking is pointer-based; Escape cancels it. Up to 10 colors are supported."
+  },
+  {
+    "question": "What does the CSS download contain?",
+    "answer": "A CSS file containing a :root block with neutral names such as --color-1. Edits and picked colors are included. The design preview lets you assign colors to text, background and button roles and check two text contrast pairs; those role choices do not alter the CSS export."
+  },
+  {
+    "question": "Where is my image processed?",
+    "answer": "Image decoding and color extraction run in your browser. ColorThief loads from an external CDN. Your image is not uploaded by this tool, and clearing the workspace removes the current preview and results."
+  }
+]

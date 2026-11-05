@@ -1,0 +1,548 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Log Analyzer | RunTangent</title>
+<meta name="description" content="Explore recognized Apache, Nginx and Syslog records locally. Filter log entries, inspect unmatched lines and export selected records.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Log Analyzer | RunTangent"><meta property="og:description" content="Explore recognized Apache, Nginx and Syslog records locally. Filter log entries, inspect unmatched lines and export selected records.">
+
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
+  
+  
+  
+  
+
+  /* Workspace */
+  .log-workspace {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    min-height: 600px;
+    padding: 0 32px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) {
+    .log-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 16px; }}
+
+  /* Panels */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+  .dropzone p { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent); color: var(--text-main); border: none; padding: 10px 16px;
+    border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-demo {
+    background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+  }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Dashboard Cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+  .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
+  .data-table th, .data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }
+  .data-table th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .status-200 { color: var(--accent-emerald); }
+  .status-300 { color: var(--accent-amber); }
+  .status-400 { color: var(--accent-danger); }
+  .status-500 { color: #dc2626; font-weight: 700; }
+
+  .tabs { display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+  .tab { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; padding: 4px 8px; }
+  .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
+
+  .log-container {
+    background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;
+    max-height: 400px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+    color: var(--text-muted); white-space: pre-wrap; word-break: break-all;
+  }
+  .log-search { width: 100%; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-family: inherit; }
+
+</style><link rel="stylesheet" href="assets/workspaces/log-analyzer/style.css?v=4">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<link rel="stylesheet" href="/assets/analyst-promo.css?v=2">
+<!-- --- TOOL_STYLES --- -->
+
+<!-- --- CONTENT --- -->
+<main data-tool-category="data" class="page" id="main"><section class="editor-intro log-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DATA &amp; ANALYTICS / LOG ANALYZER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">≋</span>Log Analyzer</h1><p class="tool-description">Parse supported log files, filter records and export matching entries.</p><p class="tool-tagline">Find the signal. Follow the story.</p></div><aside class="category-intro-info" aria-label="Log Analyzer quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Find the signal in your logs.</h2><dl><div><dt>Load</dt><dd>Open a supported log file</dd></div><div><dt>Explore</dt><dd>Inspect traffic and errors</dd></div><div><dt>Keep</dt><dd>Export the results you need</dd></div></dl><p>Pattern flags are signals to investigate, not proof of malicious intent.</p></aside></section><aside class="analyst-tool-note" aria-label="Free Windows app"><p><strong>Prefer working on Windows?</strong> Log Analyzer is also available in the free <span class="promo-wordmark">Run<span class="promo-tangent">Tangent</span> <small>Analyst</small></span> app. Available free on Microsoft Store.</p><a class="promo-store" href="https://apps.microsoft.com/detail/9PL7K4RMVG32" target="_blank" rel="noopener noreferrer">Get it from Microsoft Store <span aria-hidden="true">↗</span></a></aside><div class="log-toolbar"><span>Local log files · access logs &amp; Syslog patterns</span><button type="button" id="loadLogFile">Load log</button><button type="button" id="tryLogSample">Try sample</button><button type="button" id="inspectUnmatched" disabled>Inspect unmatched lines</button></div><div class="log-workspace" id="workspace" tabindex="-1">
+  <!-- Left Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Log Ingestion</span>
+      <button type="button" class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetTool()">Clear</button>
+    </div>
+
+    <div class="panel-body" id="setupArea">
+      <div class="dropzone" id="dropzone">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+          <button type="button" class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+          <button type="button" class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".txt,.log" style="display: none;">
+    </div>
+
+    <div class="panel-body" id="statsArea" style="display: none; padding-top: 0;">
+      <div class="stat-grid" style="margin-top: 16px;">
+        <div class="stat-card">
+          <div class="stat-val" id="statTotal">0</div>
+          <div class="stat-lbl" id="totalStatLabel">Recognized Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statError">0%</div>
+          <div class="stat-lbl" id="errorStatLabel">HTTP Error Rate</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <canvas id="statusChart" width="250" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Log Dashboard & Intelligence</span>
+    </div>
+    <div class="panel-body" style="background: var(--bg-base); display: flex; flex-direction: column;" id="dashboardArea">
+      <div id="emptyState" style="margin: auto; text-align: center; color: var(--text-muted); opacity: 0.5;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <p>Awaiting log data...</p>
+      </div>
+
+      <div id="dashboardContent" style="display: none; flex-grow: 1; flex-direction: column;">
+        <div class="tabs" role="tablist" aria-label="Log views">
+          <button type="button" class="tab active" role="tab" aria-controls="view-sec" aria-selected="true" tabindex="0" onclick="switchTab('sec')" id="tab-sec">Security & IPs</button>
+          <button type="button" class="tab" role="tab" aria-controls="view-err" aria-selected="false" tabindex="-1" onclick="switchTab('err')" id="tab-err">404s & Errors</button>
+          <button type="button" class="tab" role="tab" aria-controls="view-raw" aria-selected="false" tabindex="-1" onclick="switchTab('raw')" id="tab-raw">Raw Explorer</button>
+        </div>
+
+        <!-- Tab: Security & IPs -->
+        <div id="view-sec" role="tabpanel" aria-labelledby="tab-sec" style="display: block;">
+          <h3 id="sec-title" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Top Traffic Sources (IP Addresses)</h3>
+          <table class="data-table">
+            <thead id="tblIpsHead"><tr><th>IP Address</th><th>Requests</th><th>% of Traffic</th></tr></thead>
+            <tbody id="tblIps"></tbody>
+          </table>
+        </div>
+
+        <!-- Tab: 404s & Errors -->
+        <div id="view-err" role="tabpanel" aria-labelledby="tab-err" style="display: none;">
+          <h3 id="err-title1" style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">Most Frequently Missing Paths (404s)</h3>
+          <table class="data-table">
+            <thead id="tbl404Head"><tr><th>Path / URL</th><th>Failures</th></tr></thead>
+            <tbody id="tbl404"></tbody>
+          </table>
+          <h3 id="err-title2" style="font-size: 1rem; color: var(--accent-danger); margin: 24px 0 12px 0;">Server Errors (500s)</h3>
+          <table class="data-table">
+            <thead id="tbl500Head"><tr><th>Path / URL</th><th>Count</th></tr></thead>
+            <tbody id="tbl500"></tbody>
+          </table>
+        </div>
+
+        <!-- Tab: Raw Explorer -->
+        <div id="view-raw" role="tabpanel" aria-labelledby="tab-raw" style="display: none; flex-grow: 1; flex-direction: column; height: 100%;">
+          <div class="raw-filter-controls"><label>Status / severity<select id="rawStatusFilter"><option value="">All</option></select></label><label>IP / host<input id="rawSourceFilter" list="rawSourceSuggestions" placeholder="All sources · or exact IP/host"><datalist id="rawSourceSuggestions"></datalist></label><button type="button" id="clearRawFilters">Clear explorer filters</button><button type="button" id="exportRawText">Export matching lines</button><button type="button" id="exportParsedCsv">Export parsed CSV</button></div><p id="sourceSuggestionNote" role="status"></p><p class="raw-filter-note">Explorer filters affect the lines below and these exports. Dashboard totals and summaries still cover all recognised records. Unmatched lines are not included.</p><input aria-label="Search recognised log records" type="text" class="log-search" id="txtSearch" placeholder="Search paths, IPs, or status codes (e.g. '500')...">
+          <div class="log-container" id="rawLogs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="editor-guide" aria-labelledby="log-guide"><div class="guide-heading"><span class="eyebrow">TRACES BECOME CONTEXT</span><h2 id="log-guide">A little less noise.<br>A clearer trail.</h2><p>Inspect recognised log records, compare recurring sources and paths, and follow the lines behind a summary.</p></div><section><h3>How to explore a log file</h3><ol class="guide-steps"><li><strong>Load a log.</strong> Choose a .log or .txt file, or try the sample. Use one supported format per file.</li><li><strong>Check recognition.</strong> Review recognised and unmatched counts. Inspect unmatched lines by original line number to understand parser coverage.</li><li><strong>Follow a pattern.</strong> Explore sources and errors, then combine Raw Explorer search with status/severity and IP/host filters. Dashboard summaries still cover all recognised records.</li><li><strong>Keep the evidence.</strong> Export all matching recognised lines as text or parsed CSV, and unmatched lines separately as CSV. Keep the original log; summaries do not establish attack intent or incident severity.</li></ol></section><aside class="guide-limits"><h3>Recognition has boundaries</h3><p>The first 50 lines determine parser mode. Unsupported records are counted, not silently treated as valid events. This browser workspace is not a live monitoring system.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear signals.<br>Honest limits.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which log formats are supported?</summary><p>Load .log or .txt files containing Apache/Nginx-style access records or a traditional Syslog pattern. The first 50 lines determine one parser mode. If none match, the file is rejected; custom, JSON and mixed-format logs are not universally supported.</p></details><details><summary>How are recognised and unmatched lines counted?</summary><p>Dashboard summaries cover all recognised records. Nonempty lines that fail the detected pattern are counted separately; blank lines are excluded. Inspect unmatched lines to see their original source line numbers, including intervening blank lines. That inspector is independent of Raw Explorer filters.</p></details><details><summary>What do Explorer filters change?</summary><p>Case-insensitive text search combines with exact status/severity and an exact IP/host value using AND. Suggestions list only the 100 most frequent sources; other sources remain filterable by typing their exact value. They filter Raw Explorer and its exports only, not dashboard totals or summaries. Results display 200 lines per page; Clear explorer filters restores all recognised records.</p></details><details><summary>What can I export, and are summaries security diagnoses?</summary><p>Export all matching recognised records across pages as text lines with line endings normalized to LF, or mode-specific parsed CSV. Export unmatched lines separately with source line numbers. Summaries are investigation clues, not proof of an attack. Syslog severity is inferred from recognised process-text suffixes, not a complete severity decoder.</p></details><details><summary>Are my logs uploaded or saved?</summary><p>Analysis runs in browser memory; chart libraries are served from this site. Work is not automatically saved and device memory limits apply. Logs can contain sensitive IPs and messages; keep original files and review exported content before sharing. This is not a live monitoring service.</p></details></div></section></section><dialog id="unmatchedDialog" aria-labelledby="unmatchedTitle"><div class="unmatched-heading"><h2 id="unmatchedTitle">Unmatched nonempty lines</h2><button type="button" id="closeUnmatched">Close</button></div><p>These lines did not match the detected parser mode. Line numbers refer to the original file, including blank lines. They are excluded from recognised-record summaries and Explorer exports.</p><div class="unmatched-controls"><span id="unmatchedPageStatus" role="status"></span><button type="button" id="unmatchedPrev">Previous</button><button type="button" id="unmatchedNext">Next</button><button type="button" id="exportUnmatched">Export all unmatched CSV</button></div><div id="unmatchedLines"></div></dialog></main>
+<script src="assets/workspaces/log-analyzer/vendor/chart-4.4.8.umd.js"></script>
+<script src="assets/data-utils.js?v=1"></script>
+<script>
+  // FAQ Logic
+  // App State
+  let parsedLogs = [];
+  let statusChartInstance = null;
+  let logMode = 'web'; // 'web' or 'syslog'
+
+  // DOM Elements
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const rawLogsDiv = document.getElementById('rawLogs');
+
+  dropzone.addEventListener('click', (e) => {
+    if(e.target === dropzone || e.target.tagName === 'P' || e.target.tagName === 'path' || e.target.tagName === 'svg') fileInput.click();
+  });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length!==1)return alert('Drop one .log or .txt file at a time.');handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file=e.target.files[0];e.target.value='';if(file)handleFile(file);
+  });
+
+  let fileOperation = 0,activeReader=null;
+  function handleFile(file) {
+    fileInput.value='';if(!/\.(log|txt)$/i.test(file.name))return alert('Choose an uncompressed .log or .txt file. Existing analysis retained.');
+    resetTool();const operation=fileOperation;document.getElementById('btnClear').style.display='block';document.getElementById('btnClear').textContent='Cancel loading';
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing file...</p>`;
+    const reader = new FileReader();activeReader=reader;
+    reader.onload = function(e) {
+      if(operation !== fileOperation) return;
+      activeReader=null;processLogs(e.target.result);
+    };
+    reader.onerror = function() {
+      if(operation !== fileOperation) return;
+      resetTool();
+      alert('Unable to read this log file. Please try again.');
+    };
+    reader.readAsText(file);
+  }
+
+  function loadSample() {
+    resetTool();
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+    const sample = `
+Sep 17 00:03:26 (none) kern.warn kernel:   Beacon lost - AP disabled!!!
+Sep 17 00:03:26 (none) kern.warn kernel: ^[[41mAsicSwitchChannel(): 5G Channel:155, then must be Channel_Band:1 !!^[[m
+Sep 17 00:03:26 (none) kern.warn kernel: scan_ch_restore - End of SCAN(TYPE: 128, BandIdx: 0), restore to BW(2) channel 155, Total BSS[00]
+Sep 17 00:03:26 (none) kern.info dnsmasq: DHCP request received from 192.168.1.5
+Sep 17 00:03:26 (none) kern.err kernel: Fatal error in eth0 link
+    `.trim();
+    processLogs(sample);
+  }
+
+  const escapeHtml = TangentData.escapeHtml;
+  let unrecognized = 0;
+  async function processLogs(text) {
+    const operation = fileOperation;
+    const lines = String(text).replace(/^\uFEFF/,'').split(/\r?\n/);
+    const pendingLogs = [];const pendingUnmatched=[];
+
+    const webRegex = /^([\d\.:a-fA-F]+)\s+\S+\s+\S+\s+\[(.*?)\]\s+"(\S+)\s+(\S+).*?"\s+(\d{3})/d;
+    const syslogRegex = /^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:]+):\s+(.*)/d;
+
+    logMode = 'unknown';
+    for(let i=0; i<Math.min(lines.length, 50); i++) {
+      if(webRegex.test(lines[i])) { logMode = 'web'; break; }
+      if(syslogRegex.test(lines[i])) { logMode = 'syslog'; break; }
+    }
+
+    if (logMode === 'unknown') {
+      alert("No valid log lines found. Please ensure it is a standard Apache, Nginx, or Syslog format.");
+      resetTool();
+      return;
+    }
+
+    let nonempty = 0;
+    for(let index=0;index<lines.length;index++) {
+      if(index>0 && index%1000===0) {
+        await new Promise(resolve=>setTimeout(resolve,0));
+        if(operation !== fileOperation) return;
+        dropzone.textContent = 'Parsing '+index.toLocaleString()+' of '+lines.length.toLocaleString()+' lines…';
+      }
+      const line = lines[index];
+      if(!line.trim()) continue;
+      nonempty++;const beforeCount=pendingLogs.length;
+      if (logMode === 'web') {
+        const match = line.match(webRegex);
+        if (match) pendingLogs.push({ raw: line, ip: match[1], date: match[2], method: match[3], url: match[4], status: match[5],highlight:match.indices[5] });
+      } else if (logMode === 'syslog') {
+        const match = line.match(syslogRegex);
+        if (match) {
+          // Strip ANSI Escape codes
+          let msg = match[4].replace(/\x1b\[[0-9;]*m/gi, '').replace(/\^\[\[[0-9;]*m/gi, '').replace(/\^\[\[m/gi, '');
+
+          let procStr = match[3];
+          let severity = 'info';
+          if (procStr.includes('.warn')) severity = 'warn';
+          if (procStr.match(/\.(err|crit|emerg|alert)/)) severity = 'error';
+          if (procStr.includes('.notice')) severity = 'notice';
+
+          pendingLogs.push({ raw: line, date: match[1], host: match[2], process: procStr, msg: msg, severity: severity,highlight:match.indices[3] });
+        }
+      }
+      if(pendingLogs.length===beforeCount)pendingUnmatched.push({line:index+1,raw:line});
+    }
+
+    if(operation !== fileOperation) return;
+    unmatchedLines=pendingUnmatched;unmatchedPage=0;document.getElementById('inspectUnmatched').disabled=unmatchedLines.length===0;
+    parsedLogs = pendingLogs;
+    unrecognized=nonempty-parsedLogs.length;
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('statsArea').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+
+    const dashboardContent = document.getElementById('dashboardContent');
+    dashboardContent.style.display = 'flex';
+    document.getElementById('view-raw').style.display = 'none';
+    switchTab('sec');
+
+    document.getElementById('btnClear').style.display = 'block';document.getElementById('btnClear').textContent='Clear';
+
+    const total = parsedLogs.length;
+    document.getElementById('statTotal').innerText = total.toLocaleString();document.getElementById('totalStatLabel').textContent=logMode==='web'?'Recognized Requests':'Recognized Events';document.getElementById('errorStatLabel').textContent=logMode==='web'?'HTTP Error Rate':'Warn / Error Rate';
+    let notice=document.getElementById('logParseNotice');
+    if(!notice) {notice=document.createElement('p');notice.id='logParseNotice';notice.setAttribute('role','status');document.getElementById('statTotal').after(notice);}
+    notice.textContent=total.toLocaleString()+' recognized / '+unrecognized.toLocaleString()+' unrecognized nonempty lines';
+
+    let errCount = 0;
+
+    if (logMode === 'web') {
+      document.getElementById('tab-sec').innerText = 'Security & IPs';
+      document.getElementById('tab-err').innerText = '404s & Errors';
+      document.getElementById('sec-title').innerText = 'Top Traffic Sources (IP Addresses)';
+      document.getElementById('tblIpsHead').innerHTML = '<tr><th>IP Address</th><th>Requests</th><th>% of Traffic</th></tr>';
+      document.getElementById('err-title1').innerText = 'Most Frequently Missing Paths (404s)';
+      document.getElementById('tbl404Head').innerHTML = '<tr><th>Path / URL</th><th>Failures</th></tr>';
+      document.getElementById('err-title2').innerText = 'Server Errors (500s)';
+      document.getElementById('tbl500Head').innerHTML = '<tr><th>Path / URL</th><th>Count</th></tr>';
+
+      const statusCounts = Object.create(null);
+      const ipCounts = Object.create(null);
+      const missingPaths = Object.create(null);
+      const serverErrors = Object.create(null);
+
+      parsedLogs.forEach(log => {
+        statusCounts[log.status] = (statusCounts[log.status] || 0) + 1;
+        if (log.status.startsWith('4') || log.status.startsWith('5')) errCount++;
+        ipCounts[log.ip] = (ipCounts[log.ip] || 0) + 1;
+        if (log.status === '404') missingPaths[log.url] = (missingPaths[log.url] || 0) + 1;
+        else if (log.status.startsWith('5')) serverErrors[log.url] = (serverErrors[log.url] || 0) + 1;
+      });
+
+      document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
+      renderChart(statusCounts);
+      renderTable('tblIps', getTop(ipCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(missingPaths, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+      renderTable('tbl500', getTop(serverErrors, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+
+    } else {
+      document.getElementById('tab-sec').innerText = 'Process Activity';
+      document.getElementById('tab-err').innerText = 'Top Messages';
+      document.getElementById('sec-title').innerText = 'Most Active Processes & Facilities';
+      document.getElementById('tblIpsHead').innerHTML = '<tr><th>Process</th><th>Logs</th><th>% of Total</th></tr>';
+      document.getElementById('err-title1').innerText = 'Most Frequent Log Messages';
+      document.getElementById('tbl404Head').innerHTML = '<tr><th>Message</th><th>Count</th></tr>';
+      document.getElementById('err-title2').innerText = 'Last Warnings & Errors (File Order)';
+      document.getElementById('tbl500Head').innerHTML = '<tr><th>Timestamp</th><th>Process</th><th>Message</th></tr>';
+
+      const processCounts = Object.create(null);
+      const msgCounts = Object.create(null);
+      const recentErrors = [];
+      const sevCounts = { 'info': 0, 'notice': 0, 'warn': 0, 'error': 0 };
+
+      parsedLogs.forEach(log => {
+        if (log.severity === 'warn' || log.severity === 'error') errCount++;
+        processCounts[log.process] = (processCounts[log.process] || 0) + 1;
+        msgCounts[log.msg] = (msgCounts[log.msg] || 0) + 1;
+        sevCounts[log.severity] = (sevCounts[log.severity] || 0) + 1;
+
+        if (log.severity === 'warn' || log.severity === 'error') {
+          recentErrors.push(log);if(recentErrors.length>10)recentErrors.shift();
+        }
+      });
+
+      document.getElementById('statError').innerText = ((errCount / total) * 100).toFixed(1) + '%';
+      renderChart(sevCounts);
+      renderTable('tblIps', getTop(processCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td><td>${((v/total)*100).toFixed(1)}%</td></tr>`);
+      renderTable('tbl404', getTop(msgCounts, 10), (k, v) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`);
+
+      const errTbody = document.getElementById('tbl500');
+      if (recentErrors.length === 0) errTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);">No warnings/errors found.</td></tr>';
+      else errTbody.innerHTML = recentErrors.slice().reverse().map(l => `<tr><td>${escapeHtml(l.date)}</td><td>${escapeHtml(l.process)}</td><td style="color:${l.severity==='error'?'var(--accent-danger)':'var(--accent-amber)'}">${escapeHtml(l.msg)}</td></tr>`).join('');
+    }
+
+    document.getElementById('txtSearch').value='';
+    const status=document.getElementById('rawStatusFilter');status.replaceChildren(new Option('All',''));const statusField=logMode==='web'?'status':'severity';Array.from(new Set(parsedLogs.map(row=>row[statusField]))).sort().forEach(value=>status.add(new Option(value,value)));
+    const counts=new Map(),sourceField=logMode==='web'?'ip':'host';for(const row of parsedLogs)counts.set(row[sourceField],(counts.get(row[sourceField])||0)+1);
+    const suggestions=document.getElementById('rawSourceSuggestions');suggestions.replaceChildren();Array.from(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,100).forEach(([value])=>{const option=document.createElement('option');option.value=value;suggestions.append(option);});document.getElementById('rawSourceFilter').value='';document.getElementById('sourceSuggestionNote').textContent='Suggestions show the '+Math.min(100,counts.size)+' most frequent of '+counts.size.toLocaleString()+' sources. Type any exact IP or host, including sources not suggested.';
+    applyRawFilters();
+  }
+
+  let unmatchedLines=[],unmatchedPage=0;
+  function renderUnmatched(){const start=unmatchedPage*200,end=Math.min(start+200,unmatchedLines.length);document.getElementById('unmatchedPageStatus').textContent=unmatchedLines.length?'Showing '+(start+1)+'–'+end+' of '+unmatchedLines.length+' unmatched lines':'No unmatched lines.';document.getElementById('unmatchedPrev').disabled=unmatchedPage===0;document.getElementById('unmatchedNext').disabled=end>=unmatchedLines.length;document.getElementById('exportUnmatched').disabled=!unmatchedLines.length;const container=document.getElementById('unmatchedLines');container.replaceChildren();unmatchedLines.slice(start,end).forEach(record=>{const row=document.createElement('div'),number=document.createElement('strong'),text=document.createElement('pre');number.textContent='Line '+record.line;text.textContent=record.raw;row.append(number,text);container.append(row);});}
+  document.getElementById('inspectUnmatched').addEventListener('click',()=>{unmatchedPage=0;renderUnmatched();document.getElementById('unmatchedDialog').showModal();});document.getElementById('closeUnmatched').addEventListener('click',()=>document.getElementById('unmatchedDialog').close());
+  document.getElementById('unmatchedPrev').addEventListener('click',()=>{if(unmatchedPage>0){unmatchedPage--;renderUnmatched();}});document.getElementById('unmatchedNext').addEventListener('click',()=>{if((unmatchedPage+1)*200<unmatchedLines.length){unmatchedPage++;renderUnmatched();}});
+  document.getElementById('exportUnmatched').addEventListener('click',()=>{const text=[['line_number','raw'],...unmatchedLines.map(record=>[record.line,record.raw])].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='unmatched_log_lines.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+
+  let filterTimer=null;
+  function applyRawFilters(){clearTimeout(filterTimer);filterTimer=null;const query=document.getElementById('txtSearch').value.toLowerCase(),status=document.getElementById('rawStatusFilter').value,source=document.getElementById('rawSourceFilter').value;renderRaw(parsedLogs.filter(row=>row.raw.toLowerCase().includes(query)&&(!status||(logMode==='web'?row.status:row.severity)===status)&&(!source||(logMode==='web'?row.ip:row.host)===source)));}
+  for(const id of ['txtSearch','rawSourceFilter'])document.getElementById(id).addEventListener('input',()=>{clearTimeout(filterTimer);filterTimer=setTimeout(applyRawFilters,150);});document.getElementById('rawStatusFilter').addEventListener('change',applyRawFilters);document.getElementById('rawSourceFilter').addEventListener('change',applyRawFilters);
+  document.getElementById('clearRawFilters').addEventListener('click',()=>{['txtSearch','rawStatusFilter','rawSourceFilter'].forEach(id=>document.getElementById(id).value='');applyRawFilters();});
+  function downloadRawView(csv){if(filterTimer!==null)applyRawFilters();const fields=logMode==='web'?['ip','date','method','url','status','raw']:['date','host','process','severity','msg','raw'];const text=csv?[fields,...rawRows.map(row=>fields.map(field=>row[field]))].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n'):rawRows.map(row=>row.raw).join('\n');const url=URL.createObjectURL(new Blob([text],{type:csv?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=csv?'matching_parsed_logs.csv':'matching_log_lines.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  document.getElementById('exportRawText').addEventListener('click',()=>downloadRawView(false));document.getElementById('exportParsedCsv').addEventListener('click',()=>downloadRawView(true));
+
+  function getTop(dict, limit) {
+    return Object.entries(dict).sort((a,b) => b[1] - a[1]).slice(0, limit);
+  }
+
+  function renderTable(id, data, rowRenderer) {
+    const tbody = document.getElementById(id);
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${document.getElementById(id+'Head').querySelectorAll('th').length}" style="color: var(--text-muted);">No data available</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(([k,v]) => rowRenderer(k, v)).join('');
+  }
+
+  let rawRows = [], rawPage = 0;
+  const rawPager = document.createElement('div');
+  rawPager.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px;';
+  rawPager.innerHTML = '<span id="rawPageStatus" role="status"></span><button type="button" class="btn-primary" id="rawPrev">Previous</button><button type="button" class="btn-primary" id="rawNext">Next</button>';
+  rawLogsDiv.before(rawPager);
+  document.getElementById('rawPrev').addEventListener('click',()=>{if(rawPage>0) {rawPage--;renderRawPage();}});
+  document.getElementById('rawNext').addEventListener('click',()=>{if((rawPage+1)*200<rawRows.length) {rawPage++;renderRawPage();}});
+  function renderRaw(logs) {rawRows = logs;rawPage = 0;renderRawPage();}
+  function highlightRaw(log,colorClass){const [start,end]=log.highlight;return escapeHtml(log.raw.slice(0,start))+'<span class="'+colorClass+'">'+escapeHtml(log.raw.slice(start,end))+'</span>'+escapeHtml(log.raw.slice(end));}
+  function renderRawPage() {
+    const start = rawPage*200;
+    document.getElementById('rawPageStatus').textContent = rawRows.length ? 'Showing '+(start+1).toLocaleString()+'–'+Math.min(start+200,rawRows.length).toLocaleString()+' of '+rawRows.length.toLocaleString()+' matching lines' : 'No matching lines';
+    document.getElementById('rawPrev').disabled = rawPage===0;
+    document.getElementById('rawNext').disabled = start+200>=rawRows.length;
+    const html = rawRows.slice(start,start+200).map(l => {
+      if (logMode === 'web') {
+        let colorClass = 'status-200';
+        if (l.status.startsWith('3')) colorClass = 'status-300';
+        if (l.status.startsWith('4')) colorClass = 'status-400';
+        if (l.status.startsWith('5')) colorClass = 'status-500';
+        const raw=highlightRaw(l,colorClass);
+        return `<div>${raw}</div>`;
+      } else {
+        let colorClass = 'status-200';
+        if (l.severity === 'warn') colorClass = 'status-300';
+        if (l.severity === 'error') colorClass = 'status-400';
+        const raw=highlightRaw(l,colorClass);
+        return `<div>${raw}</div>`;
+      }
+    }).join('');
+    rawLogsDiv.innerHTML = html || 'No matching logs.';
+  }
+
+  function renderChart(data) {
+    if(typeof window.Chart!=='function'){document.getElementById('logParseNotice').textContent+=' Chart library unavailable; raw records and exports remain available.';return;}
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    if (statusChartInstance) statusChartInstance.destroy();
+
+    const labels = Object.keys(data).sort();
+    const values = labels.map(l => data[l]);
+    const colors = labels.map(l => {
+      if (logMode === 'web') {
+        if (l.startsWith('2')) return '#10b981';
+        if (l.startsWith('3')) return '#f59e0b';
+        if (l.startsWith('4')) return '#ef4444';
+        if (l.startsWith('5')) return '#dc2626';
+      } else {
+        if (l === 'info') return '#3a7bd5';
+        if (l === 'notice') return '#10b981';
+        if (l === 'warn') return '#f59e0b';
+        if (l === 'error') return '#ef4444';
+      }
+      return '#94a3b8';
+    });
+
+    statusChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-main').trim() } } } }
+    });
+  }
+
+  document.querySelector('[role="tablist"]').addEventListener('keydown',event=>{const tabs=Array.from(document.querySelectorAll('[role="tab"]'));let i=tabs.indexOf(document.activeElement);if(i<0)return;if(event.key==='ArrowRight')i=(i+1)%tabs.length;else if(event.key==='ArrowLeft')i=(i+tabs.length-1)%tabs.length;else if(event.key==='Home')i=0;else if(event.key==='End')i=tabs.length-1;else return;event.preventDefault();switchTab(tabs[i].id.slice(4));tabs[i].focus();});
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => {t.classList.remove('active');t.setAttribute('aria-selected','false');t.tabIndex=-1;});
+    document.getElementById(`tab-${tabId}`).classList.add('active');document.getElementById(`tab-${tabId}`).setAttribute('aria-selected','true');document.getElementById(`tab-${tabId}`).tabIndex=0;
+
+    document.getElementById('view-sec').style.display = 'none';
+    document.getElementById('view-err').style.display = 'none';
+    document.getElementById('view-raw').style.display = 'none';
+
+    if(tabId === 'raw') document.getElementById(`view-${tabId}`).style.display = 'flex';
+    else document.getElementById(`view-${tabId}`).style.display = 'block';
+  }
+
+  function resetTool() {
+    fileOperation++;clearTimeout(filterTimer);filterTimer=null;if(activeReader?.readyState===1)activeReader.abort();activeReader=null;if(statusChartInstance)statusChartInstance.destroy();statusChartInstance=null;const dialog=document.getElementById('unmatchedDialog');if(dialog.open)dialog.close();document.getElementById('rawSourceSuggestions').replaceChildren();document.getElementById('sourceSuggestionNote').textContent='';
+    rawRows = [];rawPage = 0;rawLogsDiv.innerHTML = '';
+    unmatchedLines=[];unmatchedPage=0;document.getElementById('inspectUnmatched').disabled=true;document.getElementById('unmatchedLines').replaceChildren();
+    parsedLogs = [];['txtSearch','rawStatusFilter','rawSourceFilter'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('statsArea').style.display = 'none';
+    document.getElementById('btnClear').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+
+    document.getElementById('dropzone').innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop .log or .txt here</p>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+        <button type="button" class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse File</button>
+        <button type="button" class="btn-demo" onclick="event.stopPropagation(); loadSample();">Load Sample</button>
+      </div>
+    `;
+  }
+
+  new MutationObserver(()=>{if(statusChartInstance){statusChartInstance.options.plugins.legend.labels.color=getComputedStyle(document.body).getPropertyValue('--text-main').trim();statusChartInstance.update('none');}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+</script>
+<script>document.getElementById('loadLogFile').addEventListener('click',()=>document.getElementById('fileInput').click());document.getElementById('tryLogSample').addEventListener('click',loadSample);document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<!-- --- SCRIPTS --- -->

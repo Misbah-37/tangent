@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What can I do in PDF Studio?",
+    "answer": "Create a PDF from JPG, PNG or WebP images, merge PDFs in queue order, extract selected pages, rewrite a PDF with object streams, or extract embedded text. Password encryption is unavailable. Signing, redaction and OCR are separate tools."
+  },
+  {
+    "question": "Will optimization always make my PDF smaller?",
+    "answer": "No. Optimization rewrites the pages using object streams; it does not downsample or recompress images. The result can be larger. Compare sizes and inspect the downloaded document before replacing an original."
+  },
+  {
+    "question": "Can I extract text from a scanned PDF?",
+    "answer": "This tool extracts embedded text using PDF.js. A scanned page may contain no embedded text; use Document OCR for image-based recognition. Text order and spacing can differ from the visual page layout."
+  },
+  {
+    "question": "What happens to forms, signatures and protected files?",
+    "answer": "Page-copy operations create a new document and may not preserve interactive forms, bookmarks, attachments or digital signatures. Password-protected input can fail to load; unlock a copy with an appropriate tool first. Keep the original and inspect every output."
+  },
+  {
+    "question": "Where does processing happen, and are there limits?",
+    "answer": "These operations run in browser memory; selected file contents are not uploaded to a processing server. PDF libraries and assets load from external CDNs, so network access may be needed. Browser/device memory limits apply. Download your result before closing the page; no automatic file backup is provided."
+  }
+]

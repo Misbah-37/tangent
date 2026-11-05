@@ -1,0 +1,46 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which formats can I edit, and what does Excel preserve?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Open CSV, TSV, XLSX or a nonempty JSON array of records. For CSV/TSV, choose the header record and skip introductory records; blank records are excluded from numbering. For Excel, select one worksheet. Formula cells use stored results, not recalculation; missing results are blank. Dates become ISO text. XLSX exports create a values-only sheet without original formulas or styling. Unchanged JSON/Excel types are retained where supported; edited cells become strings. Keep large identifiers as text."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do editing, undo and keyboard navigation work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Click a cell to place the cursor without selecting all its text. Enter commits, Escape cancels, and Shift+Enter adds a line break. Optional Spreadsheet navigation uses arrows between cells and Enter/F2 to edit; editing keys then operate on text normally. Undo/Redo retains up to 1,000 committed edits. Drag a header edge or focus its resize handle and use Left/Right to adjust column width. Escape cancels a cell edit without closing expanded view."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do filters or sorting change the dataset, and what gets exported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Filters only change the view. Column filters combine with AND, and empty means blank or whitespace-only; N/A remains a value. Choose text or numeric sorting, with blank/nonnumeric values last in numeric mode. Refresh the view after edits to reapply its rules. Find matches and jump by view row across pages. All rows exports the dataset in imported order; Filtered / sorted view exports every matching row across all pages, not just the visible page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is my data processed, and are there size limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Parsing and editing happen in browser memory; uploaded file contents are not sent to a processing server. Website assets and libraries may require network requests, so offline availability is not guaranteed. Capacity depends on browser/device memory. The grid displays 100 rows per page but keeps the dataset in memory. Excel extraction limits used ranges to 2,000,000 cells; parsing still uses memory. No unlimited-size or fixed-speed guarantee is made."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I keep edits before closing or replacing a file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Download data creates a separate file; it does not modify the original. A full-dataset download records a checkpoint but cannot confirm the browser saved it, so check your downloads. Filtered-view exports do not checkpoint the whole dataset. Edits since the checkpoint trigger a discard confirmation on close or replacement. Cancelling preserves the dataset. Highlights still compare against the imported original, and undo history is not a persistent backup."
+      }
+    }
+  ]
+}

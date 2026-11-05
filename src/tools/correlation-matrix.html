@@ -1,0 +1,525 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Correlation Matrix | RunTangent</title>
+<meta name="description" content="Explore Pearson and Spearman correlations, inspect paired observations and export matrix and pair results from CSV data.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Correlation Matrix | RunTangent"><meta property="og:description" content="Explore Pearson and Spearman correlations, inspect paired observations and export matrix and pair results from CSV data.">
+
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
+  
+  
+  
+  
+
+  /* Workspace */
+  .matrix-workspace {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    min-height: 600px;
+    padding: 0 32px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) {
+    .matrix-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 16px; }}
+
+  /* Panels */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(58, 123, 213, 0.05); }
+  .dropzone p { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent); color: var(--text-main); border: none; padding: 10px 16px;
+    border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-demo {
+    background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+  }
+  .btn-demo:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Variable List */
+  .var-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .var-item label { flex-grow: 1; font-size: 0.9rem; cursor: pointer; color: var(--text-main); }
+  .var-item input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Heatmap Table */
+  .heatmap-container {
+    width: 100%;
+    overflow: auto;
+    background: var(--bg-base);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  .heatmap-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 500px;
+  }
+  .heatmap-table th, .heatmap-table td {
+    border: 1px solid var(--border-color);
+    text-align: center;
+    min-width: 80px;
+    height: 60px;
+    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .heatmap-table th {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 8px;
+    position: sticky;
+    z-index: 10;
+  }
+  .heatmap-table thead th { top:0;left:auto; }
+  .heatmap-table tbody th { left:0;top:auto; }
+  .heatmap-table thead th:first-child { left:0;z-index:15; }
+  .heatmap-table td:hover {
+    filter: brightness(1.2);
+    z-index: 20;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  /* Heatmap Legend */
+  .legend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .legend-bar {
+    width: 200px;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ef4444 0%, #151821 50%, #10b981 100%);
+  }
+
+</style><link rel="stylesheet" href="assets/workspaces/correlation-matrix/style.css?v=3">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<link rel="stylesheet" href="/assets/analyst-promo.css?v=2">
+<!-- --- TOOL_STYLES --- -->
+
+<!-- --- CONTENT --- -->
+<main data-tool-category="data" class="page" id="main"><section class="editor-intro correlation-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DATA &amp; ANALYTICS / CORRELATION MATRIX</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">⋈</span>Correlation Matrix Studio</h1><p class="tool-description">Calculate correlations between numeric columns and inspect variable pairs.</p><p class="tool-tagline">Different variables. Shared patterns.</p></div><aside class="category-intro-info" aria-label="Correlation Matrix Studio quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>See how your variables relate.</h2><dl><div><dt>Load</dt><dd>Choose a dataset</dd></div><div><dt>Compare</dt><dd>Select numeric columns</dd></div><div><dt>Inspect</dt><dd>Review correlations and pairs</dd></div></dl><p>Correlation describes association, not cause.</p></aside></section><aside class="analyst-tool-note" aria-label="Free Windows app"><p><strong>Prefer working on Windows?</strong> Correlation Matrix is also available in the free <span class="promo-wordmark">Run<span class="promo-tangent">Tangent</span> <small>Analyst</small></span> app. Available free on Microsoft Store.</p><a class="promo-store" href="https://apps.microsoft.com/detail/9PL7K4RMVG32" target="_blank" rel="noopener noreferrer">Get it from Microsoft Store <span aria-hidden="true">↗</span></a></aside><div class="correlation-toolbar"><span>Local CSV observations · Pearson &amp; Spearman</span><button id="loadCorrelationCsv">Load CSV</button><button id="loadCorrelationSample">Try sample</button><div id="correlationActions"><button id="exportPairResults" disabled>Export pair results</button></div></div><details class="correlation-row-filters"><summary>Row filters &amp; observation export</summary><div class="correlation-filter-controls"><label>Column<select id="corrFilterColumn"></select></label><label>Condition<select id="corrFilterKind"><option value="equals">Text equals (exact)</option><option value="gte">Number ≥</option><option value="lte">Number ≤</option></select></label><label>Value<input id="corrFilterValue"></label><button id="corrFilterAdd">Add rule</button><button id="corrFilterClear">Clear rules</button><button id="corrExportRows" disabled>Export filtered observations</button></div><p>Rules combine with AND. Numeric bounds are inclusive and exclude missing or invalid numbers. Variables remain eligible based on the imported dataset; a slice may have too few pairs or no variation.</p><p id="corrFilterStatus" role="status">Load observations to add filters.</p><div id="corrFilterRules"></div></details><div class="matrix-workspace" id="workspace" tabindex="-1">
+  <!-- Left Panel: Data Source & Variables -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>Data Source & Variables</span>
+      <button class="btn-primary" id="btnClear" style="display: none; padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--border-color);" onclick="resetStudio()">
+        ✕ Clear
+      </button>
+    </div>
+    <div class="panel-body" id="setupArea">
+            <div class="dropzone" id="dropzone">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <p style="color: var(--text-main); font-weight: 600; margin-bottom: 4px;">Drop CSV file here</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+          <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+          <button class="btn-demo" onclick="event.stopPropagation(); loadSampleData();">Load Sample Dataset</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".csv" style="display: none;">
+      <div style="margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+        Note: Only numerical columns will be parsed for correlation.
+      </div>
+    </div>
+
+    <div class="panel-body" id="varsArea" style="display: none; padding: 0;">
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1); font-size: 0.85rem; color: var(--text-muted);">
+        Select variables to include in the matrix:
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px"><button type="button" onclick="selectAllVariables(true)">Select all</button><button type="button" onclick="selectAllVariables(false)">Select none</button><span id="selectionCount" role="status"></span></div>
+      <label style="display:block;padding:0 16px 12px">Method <select id="correlationMethod" onchange="setCorrelationMethod(this.value)"><option value="pearson">Pearson (linear)</option><option value="spearman">Spearman (rank)</option></select></label>
+      <p id="methodNotice" style="padding:0 16px;color:var(--text-muted);font-size:.85rem" role="status">Pearson measures linear relationships. Missing values are excluded pairwise; coefficients are not significance tests.</p>
+      <div id="varList" style="padding: 8px;"></div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Heatmap -->
+  <div class="panel" style="position: relative;">
+    <div class="panel-header">
+      <span id="matrixHeading">Pearson Correlation Matrix</span>
+      <button type="button" id="btnMatrixCsv" style="display:none" onclick="exportMatrixCsv()">Export matrix CSV</button>
+      <button class="btn-primary" id="btnDownload" style="display: none; padding: 4px 10px; font-size: 0.8rem;" onclick="downloadHeatmap()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download image
+      </button>
+    </div>
+    <div class="panel-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-base);" id="heatmapContainer">
+      <div style="color: var(--text-muted); text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; opacity: 0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <h3>A place for connections to emerge.</h3><p>Load observations to explore how your variables move together.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="editor-guide" aria-labelledby="correlation-guide"><div class="guide-heading"><span class="eyebrow">RELATIONSHIPS WORTH EXPLORING</span><h2 id="correlation-guide">See what moves<br>together.</h2><p>Build a correlation heatmap from numeric observations. Compare linear and rank relationships while keeping paired counts and data quality in view.</p></div><section><h3>How to explore relationships</h3><ol class="guide-steps"><li><strong>Load observations.</strong> Open a CSV with named columns and one record per observation, or try the sample dataset.</li><li><strong>Choose your variables.</strong> Select eligible numeric columns and optionally add row rules. Rules combine with AND; Clear rules restores all imported observations. Select all restores the variable selection.</li><li><strong>Choose your perspective.</strong> Compare Pearson and Spearman. Click a cell or press Enter to inspect its scatter plot, coefficient and paired/excluded counts. A constant or sparse slice can produce an unavailable result.</li><li><strong>Keep the context.</strong> Download the coefficient matrix, detailed pair results, image or filtered observations. Keep the original dataset and method context. Correlation alone does not establish causation.</li></ol></section><aside class="guide-limits"><h3>A relationship is a starting point</h3><p>Missing pairs, limited variation and sampling affect interpretation. This workspace does not perform significance tests. Compare the underlying data before drawing conclusions.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>More context.<br>Better interpretation.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Should I choose Pearson or Spearman?</summary><p>Pearson measures linear relationships between numeric values. Spearman measures monotonic relationships using ranks, with average ranks for ties. Both range from −1 to +1. The pair inspector plots original numeric values for either method, so its Spearman scatter is not a rank plot.</p></details><details><summary>Which columns and rows are analysed?</summary><p>Import raw CSV observations with named columns. At least 80% of nonblank values in the first 500 rows must parse as numbers for a column to qualify. Eligibility stays based on the imported dataset. Row rules combine exact case-sensitive text matches and inclusive numeric bounds with AND; invalid or missing numbers do not match numeric bounds. Clearing rules restores the source population.</p></details><details><summary>How do missing values and the pair inspector work?</summary><p>Each pair uses its finite paired observations. Click a matrix cell or activate it with Enter or Space to see the coefficient, paired/excluded counts and scatter plot. Too few pairs or no variation makes the coefficient unavailable, not zero. Plots above 1,000 valid pairs show a disclosed, evenly spaced source-order sample; the coefficient still uses every valid pair.</p></details><details><summary>Does a strong correlation prove causation or significance?</summary><p>No. Coefficients alone do not establish causation, statistical significance or practical importance. This version has no p-values, hypothesis tests or clustering. Inspect observations, paired counts and the sampling context before drawing conclusions.</p></details><details><summary>Which results can I save, and is my data uploaded?</summary><p>Matrix CSV preserves full available numeric precision. Pair-results CSV includes the method, unique variable pairs, coefficients and paired/excluded counts; it omits self-pairs and mirrors. Unavailable coefficients are blank and marked unavailable. Filtered-observation CSV preserves all original columns and matching source values. Image labels are rounded to two decimals. Analysis runs in the browser using libraries served from this site, and work is not automatically saved; browser memory limits apply.</p></details></div></section></section><dialog id="pairInspector" aria-labelledby="pairTitle"><div class="pair-heading"><h2 id="pairTitle">Paired observations</h2><button id="closePairInspector">Close</button></div><p id="pairSummary"></p><div id="pairPlot"></div><p id="pairPlotNote"></p><p>The plot shows original numeric values for both methods. Spearman’s coefficient uses ranks. Overlapping points may hide repeated observations; correlation does not establish causation.</p></dialog></main>
+
+<script src="assets/workspaces/correlation-matrix/vendor/html2canvas-1.4.1.min.js"></script>
+<script src="assets/data-utils.js?v=1"></script>
+<script>
+  // FAQ Logic
+  // App State
+  let fileOperation = 0;
+  const escapeHtml = TangentData.escapeHtml;
+  let rawData = [];
+  let observationSource=[],numericSource=[],observationHeaders=[],observationRules=[],matchingObservations=[];
+  let numericalCols = [];
+  let selectedCols = [];
+  let correlationMethod="pearson";
+  let populationRevision=0,matrixGeneration=0,matrixReady=false,correlationWorker=null,workerRevision=-1,requestId=0;
+  const pairCache=new Map(),pendingCalculations=new Map();
+  const pairKey=(method,a,b)=>JSON.stringify([method,...[a,b].sort()]);
+  function currentCorrelation(a,b){return pairCache.get(pairKey(correlationMethod,a,b))||{r:null,n:0};}
+  function invalidatePopulation(){populationRevision++;pairCache.clear();matrixReady=false;}
+  function stopCorrelationWorker(){if(correlationWorker)correlationWorker.terminate();correlationWorker=null;workerRevision=-1;for(const pending of pendingCalculations.values())pending.reject(new Error('Calculation cancelled.'));pendingCalculations.clear();}
+  function computePairs(columns,method){
+    try{
+    if(!correlationWorker){
+      correlationWorker=new Worker(new URL('assets/workspaces/correlation-matrix/worker.js',document.baseURI));
+      correlationWorker.onmessage=event=>{const message=event.data,pending=pendingCalculations.get(message.id);if(!pending)return;pendingCalculations.delete(message.id);if(message.error)pending.reject(new Error(message.error));else pending.resolve(message);};
+      correlationWorker.onerror=event=>{event.preventDefault();stopCorrelationWorker();};
+    }
+    if(workerRevision!==populationRevision){correlationWorker.postMessage({type:'data',revision:populationRevision,rows:rawData});workerRevision=populationRevision;}
+    const id=++requestId;return new Promise((resolve,reject)=>{pendingCalculations.set(id,{resolve,reject});try{correlationWorker.postMessage({type:'compute',id,revision:populationRevision,columns,method});}catch(error){pendingCalculations.delete(id);reject(error);}});
+    }catch(error){stopCorrelationWorker();return Promise.reject(error);}
+  }
+  function generateMatrix(){
+    const generation=++matrixGeneration,revision=populationRevision,columns=[...selectedCols],method=correlationMethod;
+    matrixReady=false;
+    const allCached=columns.every((a,i)=>columns.slice(i).every(b=>pairCache.has(pairKey(method,a,b))));
+    if(columns.length<2||allCached){matrixReady=columns.length>=2;renderMatrix();return;}
+    document.getElementById('exportPairResults').disabled=true;document.getElementById('btnMatrixCsv').style.display='none';document.getElementById('btnDownload').style.display='none';
+    document.getElementById('heatmapContainer').textContent='Calculating '+(method==='spearman'?'Spearman':'Pearson')+' correlations…';
+    computePairs(columns,method).then(message=>{
+      if(message.revision!==populationRevision)return;
+      message.pairs.forEach(pair=>pairCache.set(pair.key,pair.result));
+      if(generation!==matrixGeneration||revision!==populationRevision)return;
+      matrixReady=true;renderMatrix();
+    }).catch(error=>{if(generation===matrixGeneration){document.getElementById('heatmapContainer').textContent='Correlation calculation failed. Try selecting variables again or reload. '+error.message;}});
+  }
+  function setCorrelationMethod(method){if(!["pearson","spearman"].includes(method))return;correlationMethod=method;generateMatrix();}
+
+  // Dropzone Setup
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const initialDropzone=dropzone.innerHTML,initialHeatmap=document.getElementById('heatmapContainer').innerHTML;
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file=e.target.files[0];e.target.value='';if(file)handleFile(file);
+  });
+
+  function loadSampleData() {
+    ++fileOperation;
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+    const sampleCSV = `Day,Celsius,Fahrenheit,Ice_Cream_Sales,Soup_Sales,Shoe_Size,IQ
+1,10,50.0,150,500,10.0,105
+2,12,53.6,180,480,9.0,110
+3,15,59.0,220,420,11.0,98
+4,18,64.4,300,380,8.0,115
+5,20,68.0,350,310,10.5,102
+6,22,71.6,400,280,9.5,108
+7,25,77.0,520,200,12.0,95
+8,28,82.4,610,150,8.5,120
+9,30,86.0,700,100,10.0,100
+10,32,89.6,780,80,11.0,104
+11,35,95.0,900,50,9.0,112
+12,24,75.2,480,220,10.5,99
+13,19,66.2,320,350,9.5,107
+14,14,57.2,200,450,11.5,101
+15,8,46.4,120,550,8.0,118`;
+
+    try{processData(TangentData.parseCsv(sampleCSV).data);}catch(error){resetStudio();alert(error.message);}
+  }
+
+  function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      alert("Please upload a valid CSV file.");
+      return;
+    }
+    dropzone.innerHTML = `<p style="color: var(--accent);">Parsing data...</p>`;
+
+    const operation = ++fileOperation;
+    file.text().then(text => {
+      if(operation !== fileOperation) return;
+      let parsed;try{parsed=TangentData.parseCsv(text);}catch(error){if(error.message.includes('column names cannot be empty')&&text.replace(/^\uFEFF/,'').startsWith(','))throw new Error('The first CSV header is blank. This may be an exported correlation matrix. Upload raw observations with named columns; this tool recalculates correlations, not existing matrix values.');throw error;}processData(parsed.data);
+    }).catch(error => {if(operation === fileOperation) {resetStudio(); alert(error.message);}});
+  }
+
+        function processData(data) {
+    if (!data.length) throw new Error('CSV must contain at least one observation row.');
+    const matrixWarning=looksLikeMatrix(data);
+    observationSource=data.map(row=>({...row}));observationHeaders=Object.keys(data[0]);observationRules=[];
+    rawData = data;invalidatePopulation();
+
+    const keys = Object.keys(data[0]);
+    numericalCols = [];
+
+    let rejected = 0;
+    keys.forEach(key => {
+      let count = 0, checked = 0;
+      for (const row of data.slice(0,500)) {
+        const value = row[key];
+        if (value == null || String(value).trim() === '') continue;
+        checked++; if(TangentData.parseNumber(value) !== null) count++;
+      }
+      if (checked && count / checked >= 0.8) {
+        numericalCols.push(key);
+        for (const row of data) {
+          const old = row[key]; row[key] = TangentData.parseNumber(old);
+          if (row[key] === null && old != null && String(old).trim() !== '') rejected++;
+        }
+      }
+    });
+    let notice=document.getElementById('correlationNotice');
+    if(!notice) {notice=document.createElement('p');notice.id='correlationNotice';notice.setAttribute('role','status');document.getElementById('varsArea').prepend(notice);}
+    notice.style.cssText='padding:12px 16px;margin:0;color:var(--text-muted);font-size:.85rem;line-height:1.5';
+    notice.textContent=(matrixWarning?'Warning: This resembles a precomputed correlation matrix. Results below are correlations of its coefficients, not the original observations. Upload raw observations instead. ':'')+rejected.toLocaleString()+' invalid numeric cells excluded; correlations use finite paired observations. Columns below 80% numeric in the first 500 rows are omitted.';
+
+    if (numericalCols.length < 2) {
+      alert("Dataset must contain at least 2 numerical columns to calculate correlation.");
+      resetStudio();
+      return;
+    }
+
+    numericSource=rawData;matchingObservations=observationSource;
+    const filterSelect=document.getElementById('corrFilterColumn');filterSelect.replaceChildren();observationHeaders.forEach(h=>{const option=document.createElement('option');option.value=option.textContent=h;filterSelect.append(option);});renderObservationRules();document.getElementById('corrExportRows').disabled=false;document.getElementById('corrFilterStatus').textContent='Showing '+rawData.length+' of '+observationSource.length+' observations';
+    selectedCols = [...numericalCols];
+
+    // Update UI
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('varsArea').style.display = 'block';
+    document.getElementById('btnClear').style.display = 'block';
+
+    renderVariableList();
+    generateMatrix();
+  }
+
+  function renderVariableList() {
+    const list = document.getElementById('varList');
+    list.innerHTML = '';
+    numericalCols.forEach((col,idx) => {
+      const div = document.createElement('div');
+      div.className = 'var-item';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb.id = 'var_' + idx;
+      cb.onchange = (e) => {
+        selectedCols=numericalCols.filter((_,index)=>document.getElementById('var_'+index).checked);
+        generateMatrix();
+      };
+
+      const lbl = document.createElement('label');
+      lbl.htmlFor = cb.id;
+      lbl.innerText = col;
+
+      div.appendChild(cb);
+      div.appendChild(lbl);
+      list.appendChild(div);
+    });
+  }
+
+  function getColorForCorrelation(r) {
+    const light=document.documentElement.getAttribute('data-theme')==='light';
+    const neutral=light?[248,250,252]:[21,24,33];
+    const endpoint=r<0?[239,68,68]:[16,185,129];
+    return `rgb(${neutral.map((v,i)=>Math.round(v+(endpoint[i]-v)*Math.min(1,Math.abs(r)))).join(', ')})`;
+  }
+  function getCorrelationTextColor(background) {
+    const rgb=background.match(/\d+/g).map(Number);
+    const linear=rgb.map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;});
+    const luminance=linear[0]*0.2126+linear[1]*0.7152+linear[2]*0.0722;
+    return (luminance+0.05)/0.05 >= 1.05/(luminance+0.05)?'#000000':'#ffffff';
+  }
+
+  function looksLikeMatrix(data){
+    if(!data.length)return false;const keys=Object.keys(data[0]);
+    const numeric=keys.filter(k=>data.every(row=>TangentData.parseNumber(row[k])!==null));
+    if(numeric.length<2||numeric.length!==data.length)return false;
+    const labels=keys.filter(k=>!numeric.includes(k));
+    if(labels.length!==1||!data.every((row,i)=>String(row[labels[0]])===numeric[i]))return false;
+    return data.every((row,i)=>numeric.every((k,j)=>{const v=TangentData.parseNumber(row[k]);return Math.abs(v)<=1.000001&&Math.abs(v-TangentData.parseNumber(data[j][numeric[i]]))<0.00001&&(i!==j||Math.abs(v-1)<0.00001);}));
+  }
+  function selectAllVariables(all){selectedCols=all?[...numericalCols]:[];document.querySelectorAll('#varList input').forEach(cb=>cb.checked=all);generateMatrix();}
+  function exportMatrixCsv(){
+    if(!matrixReady||selectedCols.length<2)return;
+    const rows=[['Variable',...selectedCols],...selectedCols.map(a=>[a,...selectedCols.map(b=>{const r=currentCorrelation(a,b).r;return r===null?'':String(r);})])];
+    const blob=new Blob([rows.map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`tangent_${correlationMethod}_correlation_matrix.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  function renderObservationRules(){const list=document.getElementById('corrFilterRules');list.replaceChildren();observationRules.forEach((rule,i)=>{const button=document.createElement('button');button.textContent=rule.column+' '+rule.kind+' '+rule.text+' ×';button.setAttribute('aria-label','Remove rule '+button.textContent);button.addEventListener('click',()=>{observationRules.splice(i,1);applyObservationRules();});list.append(button);});}
+  function applyObservationRules(){const indexes=[];observationSource.forEach((row,i)=>{if(observationRules.every(rule=>{if(rule.kind==='equals')return String(row[rule.column]??'')===rule.text;const value=TangentData.parseNumber(row[rule.column]);return value!==null&&(rule.kind==='gte'?value>=rule.value:value<=rule.value);}))indexes.push(i);});rawData=indexes.map(i=>numericSource[i]);invalidatePopulation();matchingObservations=indexes.map(i=>observationSource[i]);renderObservationRules();document.getElementById('corrFilterStatus').textContent='Showing '+rawData.length+' of '+observationSource.length+' observations';generateMatrix();}
+  document.getElementById('corrFilterAdd').addEventListener('click',()=>{if(!observationSource.length)return;const column=document.getElementById('corrFilterColumn').value,kind=document.getElementById('corrFilterKind').value,text=document.getElementById('corrFilterValue').value,value=kind==='equals'?text:TangentData.parseNumber(text);if(value===null){document.getElementById('corrFilterStatus').textContent='Enter a valid numeric bound. Existing rules are unchanged.';return;}observationRules.push({column,kind,text,value});applyObservationRules();});
+  document.getElementById('corrFilterClear').addEventListener('click',()=>{observationRules=[];applyObservationRules();});
+  document.getElementById('corrExportRows').addEventListener('click',()=>{const csv=[observationHeaders,...matchingObservations.map(row=>observationHeaders.map(h=>row[h]))].map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='filtered_observations.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+
+  function openPairInspector(x,y){
+    if(!matrixReady)return;
+    const result=currentCorrelation(x,y),pairs=rawData.map(row=>[row[x],row[y]]).filter(pair=>pair.every(Number.isFinite)),dialog=document.getElementById('pairInspector');
+    document.getElementById('pairTitle').textContent=x+' × '+y;
+    document.getElementById('pairSummary').textContent=(correlationMethod==='spearman'?'Spearman ρ':'Pearson r')+' = '+(result.r===null?'N/A':result.r.toPrecision(6))+' · '+result.n+' paired observations · '+(rawData.length-result.n)+' excluded rows';
+    const plot=document.getElementById('pairPlot');plot.replaceChildren();
+    if(!pairs.length){plot.textContent='No finite paired observations are available.';document.getElementById('pairPlotNote').textContent='';dialog.showModal();return;}
+    let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;for(const [a,b]of pairs){xmin=Math.min(xmin,a);xmax=Math.max(xmax,a);ymin=Math.min(ymin,b);ymax=Math.max(ymax,b);}
+    const dx=xmax-xmin||1,dy=ymax-ymin||1;
+    const chosen=pairs.length<=1000?pairs:Array.from({length:1000},(_,i)=>pairs[Math.floor(i*(pairs.length-1)/999)]);
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 720 380');svg.setAttribute('role','img');svg.setAttribute('aria-label','Scatter plot of '+x+' versus '+y);
+    const add=(tag,attrs,text)=>{const n=document.createElementNS(svg.namespaceURI,tag);for(const key in attrs)n.setAttribute(key,attrs[key]);if(text!==undefined)n.textContent=text;svg.append(n);};
+    add('path',{d:'M75 25 V310 H685',fill:'none',stroke:'currentColor','stroke-opacity':'.35'});
+    for(const [a,b]of chosen)add('circle',{cx:xmin===xmax?380:75+((a-xmin)/dx)*610,cy:ymin===ymax?167:310-((b-ymin)/dy)*285,r:3,fill:'#0087ac','fill-opacity':'.55'});
+    add('text',{x:380,y:365,'text-anchor':'middle',fill:'currentColor'},x);add('text',{x:18,y:168,transform:'rotate(-90 18 168)','text-anchor':'middle',fill:'currentColor'},y);
+    add('text',{x:75,y:332,fill:'currentColor','font-size':11},String(xmin));add('text',{x:685,y:332,'text-anchor':'end',fill:'currentColor','font-size':11},String(xmax));add('text',{x:65,y:310,'text-anchor':'end',fill:'currentColor','font-size':11},String(ymin));add('text',{x:65,y:30,'text-anchor':'end',fill:'currentColor','font-size':11},String(ymax));plot.append(svg);
+    document.getElementById('pairPlotNote').textContent=pairs.length>1000?'Showing 1,000 evenly spaced observations in source order from '+pairs.length+' valid pairs. The coefficient uses every valid pair.':'Showing all '+pairs.length+' valid pairs.';
+    dialog.showModal();
+  }
+  document.getElementById('closePairInspector').addEventListener('click',()=>document.getElementById('pairInspector').close());
+  function inspectCell(target){const cell=target.closest('[data-pair-x]');if(cell)openPairInspector(selectedCols[Number(cell.dataset.pairX)],selectedCols[Number(cell.dataset.pairY)]);}
+  document.getElementById('heatmapContainer').addEventListener('click',event=>inspectCell(event.target));
+  document.getElementById('heatmapContainer').addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('[data-pair-x]')){event.preventDefault();inspectCell(event.target);}});
+
+  document.getElementById('exportPairResults').addEventListener('click',()=>{
+    if(!matrixReady||selectedCols.length<2)return;
+    const output=[['method','variable_x','variable_y','coefficient','paired_observations','excluded_observations','filtered_observations','status']];
+    selectedCols.forEach((x,i)=>selectedCols.slice(i+1).forEach(y=>{const result=currentCorrelation(x,y);output.push([correlationMethod,x,y,result.r===null?'':String(result.r),result.n,rawData.length-result.n,rawData.length,result.r===null?'unavailable':'defined']);}));
+    const csv=output.map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='tangent_'+correlationMethod+'_pair_results.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+
+  function renderMatrix() {
+    document.getElementById('exportPairResults').disabled=selectedCols.length<2;
+    const container = document.getElementById('heatmapContainer');
+    const methodLabel=correlationMethod==='spearman'?'Spearman':'Pearson';
+    document.getElementById('matrixHeading').textContent=methodLabel+' Correlation Matrix';
+    document.getElementById('methodNotice').textContent=(correlationMethod==='spearman'?'Spearman measures monotonic relationships using average ranks for ties.':'Pearson measures linear relationships.')+' Missing values are excluded pairwise before calculation; coefficients are not significance tests.';
+    document.getElementById('selectionCount').textContent=`${selectedCols.length} of ${numericalCols.length} selected`;
+    document.getElementById('btnMatrixCsv').style.display=selectedCols.length>=2?'inline-flex':'none';
+    if (selectedCols.length < 2) {
+      container.innerHTML = `<div style="color: var(--text-muted);">Please select at least 2 variables.</div>`;
+      document.getElementById('btnDownload').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('btnDownload').style.display = 'inline-flex';
+
+    let html = `<div class="heatmap-container"><table class="heatmap-table"><thead><tr><th></th>`;
+    selectedCols.forEach(c => {
+      html += `<th title="${escapeHtml(c)}">${escapeHtml(c.substring(0,12))}${c.length>12?'...':''}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    selectedCols.forEach((rowCol, i) => {
+      html += `<tr><th title="${escapeHtml(rowCol)}" style="text-align: right; padding-right: 12px;">${escapeHtml(rowCol.substring(0,12))}${rowCol.length>12?'...':''}</th>`;
+      selectedCols.forEach((colCol, j) => {
+        const result = currentCorrelation(rowCol,colCol);
+        const r=result.r, val=r === null ? 'N/A' : r.toFixed(2);
+        const color=r === null ? 'var(--bg-card)' : getColorForCorrelation(r);
+        html += `<td tabindex="0" role="button" data-pair-x="${i}" data-pair-y="${j}" aria-label="Inspect ${escapeHtml(rowCol)} versus ${escapeHtml(colCol)}" style="background: ${color}; color: ${r === null ? 'var(--text-main)' : getCorrelationTextColor(color)}; font-weight: ${r !== null && Math.abs(r)>0.5?'bold':'normal'};" title="${escapeHtml(rowCol)} vs ${escapeHtml(colCol)}; ${result.n.toLocaleString()} paired rows; ${correlationMethod==='spearman'?'rho':'r'} = ${val}">${val}</td>`;
+      });
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+
+    html += `
+      <div class="legend-container">
+        <span>-1.0 (Negative)</span>
+        <div class="legend-bar"></div>
+        <span>+1.0 (Positive)</span>
+      </div>
+    `;
+
+    container.innerHTML = html;
+    container.querySelector('.legend-bar').style.background=`linear-gradient(90deg, ${getColorForCorrelation(-1)}, ${getColorForCorrelation(0)}, ${getColorForCorrelation(1)})`;
+  }
+
+  new MutationObserver(()=>{if(selectedCols.length>=2)generateMatrix();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+  function resetStudio() {
+    fileOperation++;matrixGeneration++;invalidatePopulation();stopCorrelationWorker();
+    rawData = []; numericalCols = []; selectedCols = [];document.getElementById('exportPairResults').disabled=true;document.getElementById('btnMatrixCsv').style.display='none';
+    observationSource=[];numericSource=[];matchingObservations=[];observationHeaders=[];observationRules=[];renderObservationRules();document.getElementById('corrFilterColumn').replaceChildren();document.getElementById('corrFilterValue').value='';document.getElementById('corrFilterStatus').textContent='Load observations to add filters.';document.getElementById('corrExportRows').disabled=true;
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('varsArea').style.display = 'none';
+    document.getElementById('btnClear').style.display = 'none';
+    document.getElementById('btnDownload').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+
+    dropzone.innerHTML=initialDropzone;document.getElementById('heatmapContainer').innerHTML=initialHeatmap;
+
+  }
+
+  let imageExportBusy=false;
+  async function downloadHeatmap() {
+    if(imageExportBusy||!matrixReady||selectedCols.length<2)return;
+    const generation=matrixGeneration;
+    imageExportBusy=true;const button=document.getElementById('btnDownload');button.disabled=true;
+    const container=document.getElementById('heatmapContainer');
+    const table=container.querySelector('table'),width=Math.max(Math.ceil(table.scrollWidth+48),container.clientWidth),height=Math.ceil(table.scrollHeight+120),scale=2;
+    try{
+      if(width*height*scale*scale*4>32000000)throw new Error('Matrix image is too large. Select fewer variables or export CSV.');
+      const canvas=await html2canvas(container,{backgroundColor:getComputedStyle(container).backgroundColor,scale,width,height,onclone:doc=>{
+        const clone=doc.getElementById('heatmapContainer');clone.style.width=Math.max(width,container.clientWidth)+'px';clone.style.overflow='visible';clone.style.height=height+'px';clone.style.maxHeight='none';
+        const inner=clone.querySelector('.heatmap-container');inner.style.overflow='visible';inner.style.width='100%';inner.style.maxWidth='none';inner.style.height='auto';inner.style.maxHeight='none';inner.scrollTop=inner.scrollLeft=0;clone.scrollTop=clone.scrollLeft=0;clone.querySelectorAll('th').forEach(th=>{th.style.position='static';});
+      }});
+      if(generation!==matrixGeneration)return;
+      const link=document.createElement('a');link.download=`tangent_${correlationMethod}_correlation_matrix.png`;link.href=canvas.toDataURL('image/png');link.click();
+    }catch(error){alert('Image export failed: '+error.message);}
+    finally{imageExportBusy=false;button.disabled=false;}
+  }
+</script>
+<script>document.getElementById('loadCorrelationCsv').addEventListener('click',()=>document.getElementById('fileInput').click());document.getElementById('loadCorrelationSample').addEventListener('click',loadSampleData);['btnClear','btnMatrixCsv','btnDownload'].forEach(id=>document.getElementById('correlationActions').append(document.getElementById(id)));document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<!-- --- SCRIPTS --- -->

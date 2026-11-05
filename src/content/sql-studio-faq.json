@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Which SQL does SQL Studio use?",
+    "answer": "SQL Studio uses DuckDB SQL. Common SELECT queries, joins, grouping and window functions are available, but database dialects differ. MySQL or SQL Server syntax may need adjustment. The SQL guide provides examples using your mounted tables; inserting an example never runs it automatically."
+  },
+  {
+    "question": "Which files can I query?",
+    "answer": "Mount CSV, JSON or Parquet files as temporary tables and join them in a query. Inspect detected names and types in the schema. Double quotes identify tables or columns, including names with spaces; single quotes represent text values."
+  },
+  {
+    "question": "How do I add a derived column or parse dates?",
+    "answer": "Use a SELECT expression to add a result column without changing the imported table. The guide includes YEAR(TRY_CAST(column AS DATE)) for date or ISO text values, and TRY_STRPTIME for explicit text date formats. Failed try-conversions become NULL. Adding generated columns after table creation is not supported by this engine."
+  },
+  {
+    "question": "What is saved, and does my data leave the browser?",
+    "answer": "Files are processed by browser DuckDB; engine assets load from a CDN. Query text, up to 30 recent successful queries and 50 named queries can be stored in this browser. SQL can contain sensitive literal values. Storage may be unavailable, cleared or full; tables and query results are not persisted. Remount files after refresh and download useful results."
+  },
+  {
+    "question": "Does exporting include every page, and what are the limits?",
+    "answer": "Results display 100 rows per page; CSV export includes the complete most recent successful query result, regardless of the page shown. Empty results have no CSV export. All result rows still occupy browser memory: pagination limits display size, not engine memory use. This is a temporary analytical workspace, not a persistent database server."
+  }
+]

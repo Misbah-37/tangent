@@ -1,0 +1,303 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Invoice &amp; Receipt Studio | RunTangent</title>
+<meta name="description" content="Prepare invoices, receipts and estimates with live preview, document tax and discounts, manual payment balances and optional local documents and clients. Save PDFs through your browser print dialog.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Invoice &amp; Receipt Studio | RunTangent"><meta property="og:description" content="Work delivered. Details in balance. Prepare and reuse billing documents with care.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/invoice-generator/invoice-layout.css?v=1"><link rel="stylesheet" href="assets/workspaces/invoice-generator/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="business" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">BUSINESS &amp; CAREER / INVOICE &amp; RECEIPT STUDIO</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">↗</span>Invoice &amp; Receipt Studio</h1><p class="tool-description">Create invoices, receipts and estimates with reusable clients and payment balances.</p><p class="tool-tagline">Work delivered. Details in balance.</p></div><aside class="category-intro-info" aria-label="Invoice &amp; Receipt Studio quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Make the details clear.</h2><dl><div><dt>Choose</dt><dd>Invoice, receipt or estimate</dd></div><div><dt>Fill</dt><dd>Add clients, items and amounts</dd></div><div><dt>Review</dt><dd>Check totals and export</dd></div></dl><p>Verify your business details and amounts before sending.</p></aside></section><p class="context">Invoices, receipts and estimates · Local editing · Synthetic sample content</p><section id="workspace" tabindex="-1" class="billing-desk"><div class="desk-heading"><span class="eyebrow">THE BILLING DESK</span><span>Prepare. Review. Send with care.</span></div><div class="invoice-container"><aside class="editor-panel">
+
+    <!-- Document Settings -->
+    <div class="editor-section">
+      <div class="section-label">Document Settings</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Doc Type</label>
+          <select id="docTypeSelect" class="select-input">
+            <option value="INVOICE">Tax Invoice</option>
+            <option value="RECEIPT">Payment Receipt</option>
+            <option value="ESTIMATE">Quote / Estimate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="input-label">Currency</label>
+          <select id="currencySelect" class="select-input">
+            <option value="$">USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="¥">JPY (¥)</option>
+            <option value="CA$">CAD (CA$)</option>
+            <option value="AU$">AUD (AU$)</option>
+            <option value="₹">INR (₹)</option>
+            <option value="CHF">CHF</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Document #</label>
+          <input type="text" id="docNumber" class="text-input" value="INV-2026-001">
+        </div>
+        <div class="form-group">
+          <label class="input-label">Payment Status</label>
+          <input type="text" id="docStatus" class="text-input" value="Due Upon Receipt">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Issue Date</label>
+          <input type="text" id="docDate" class="text-input" value="Sep 15, 2026">
+        </div>
+        <div class="form-group">
+          <label class="input-label">Due Date</label>
+          <input type="text" id="docDueDate" class="text-input" value="Oct 15, 2026">
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Branding / Logo -->
+    <div class="editor-section">
+      <div class="section-label">Business Logo</div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp" style="display: none;">
+        <button type="button" class="btn-add-item" id="btnUploadLogo" style="flex: 1;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Upload Company Logo
+        </button>
+        <button type="button" class="btn-remove-item" id="btnRemoveLogo" title="Remove Logo" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+        <div id="logoControls" style="display: none; flex-direction: column; gap: 10px; margin-top: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 11px; color: var(--accent); background: rgba(0, 210, 255, 0.1); padding: 8px; border-radius: 6px; margin-bottom: 8px; text-align: center; border: 1px solid rgba(0, 210, 255, 0.2);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M19 9l3 3-3 3M9 19l3 3 3-3M2 12h20M12 2v20"/></svg>
+            Tip: You can drag the logo anywhere on the invoice.
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <label class="input-label" style="margin: 0; font-size: 11px;">Logo Scale</label>
+            <span id="logoSizeVal" style="font-size: 11px; color: var(--text-muted); font-weight: 600;">100%</span>
+          </div>
+          <input type="range" id="logoSize" min="20" max="250" value="100" style="width: 100%; cursor: pointer;">
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+            <label class="input-label" style="margin: 0; font-size: 11px;">Logo Opacity</label>
+            <span id="logoOpacityVal" style="font-size: 11px; color: var(--text-muted); font-weight: 600;">100%</span>
+          </div>
+          <input type="range" id="logoOpacity" min="10" max="100" value="100" style="width: 100%; cursor: pointer;">
+        </div>
+    </div>
+
+    <!-- Sender & Client -->
+    <div class="editor-section">
+      <div class="section-label">Your Business (From)</div>
+      <div class="form-group">
+        <label class="input-label">Business / Sender Name</label>
+        <input type="text" id="senderName" class="text-input" value="Example Design Studio">
+      </div>
+      <div class="form-group">
+        <label class="input-label">Address & Contact Details</label>
+        <textarea id="senderDetails" class="textarea-input">[Business street address]
+[Business city and postal code]
+billing@example.com
+VAT / Tax ID: [ENTER TAX ID]</textarea>
+      </div>
+    </div>
+
+    <div class="editor-section">
+      <div class="section-label">Client (Bill To)</div>
+      <div class="form-group">
+        <label class="input-label">Client / Customer Name</label>
+        <input type="text" id="clientName" class="text-input" value="Example Client Company">
+      </div>
+      <div class="form-group">
+        <label class="input-label">Client Address & Contact</label>
+        <textarea id="clientDetails" class="textarea-input">[Client street address]
+[Client city and postal code]
+accounts@example.com</textarea>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="editor-section">
+      <div class="section-label">Line Items</div>
+      <div id="itemsListContainer"></div>
+      <button type="button" class="btn-add-item" id="btnAddItem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Line Item
+      </button>
+    </div>
+
+    <!-- Financial Adjustments -->
+    <div class="editor-section">
+      <div class="section-label">Tax & Discount</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Tax / VAT Rate (%)</label>
+          <input type="number" id="taxRate" class="text-input" value="8" step="any" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="input-label">Discount (%)</label>
+          <input type="number" id="discountRate" class="text-input" value="0" step="any" min="0" max="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Terms & Notes -->
+    <div class="editor-section">
+      <div class="section-label">Payment Instructions & Notes</div>
+      <div class="form-group">
+        <label class="input-label">Payment Methods / Wire Details</label>
+        <textarea id="paymentNotes" class="textarea-input">Bank: [ENTER BANK NAME]
+Routing: [ENTER ROUTING NUMBER]
+Account: [ENTER ACCOUNT NUMBER]
+Swift: SVBKUS6S</textarea>
+      </div>
+      <div class="form-group">
+        <label class="input-label">Terms / Thank You Message</label>
+        <textarea id="termsNotes" class="textarea-input">Thank you for your business! Please remit payment within 30 days of invoice date.</textarea>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 10px; margin-top: 18px;">
+      <button type="button" class="btn-add-item" id="btnResetSample" style="background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-muted);">Replace with sample</button>
+      <button type="button" class="btn-add-item" id="btnClearAll" style="background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-muted);">Clear document</button>
+    </div>
+
+  <button type="button" id="undoInvoice" hidden>Undo replacement</button><div class="editor-section"><h3>Payments</h3><label for="paidAmount">Payments received</label><input id="paidAmount" type="number" min="0" step="any" value="0"><label for="paymentLink">Your payment link (optional)</label><input id="paymentLink" type="url" placeholder="https://…"><p>Records amounts you enter. RunTangent does not process or verify payments.</p></div></aside>  <div class="preview-wrapper">
+    <div class="preview-bar">
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Theme:</label>
+          <div class="color-dots" style="display: flex; gap: 6px;">
+            <button type="button" class="color-dot active" style="background: #0284c7; width: 18px; height: 18px;" data-inv-color="#0284c7" title="Navy Sky" aria-label="Navy Sky"></button>
+            <button type="button" class="color-dot" style="background: #059669; width: 18px; height: 18px;" data-inv-color="#059669" title="Forest Emerald" aria-label="Forest Emerald"></button>
+            <button type="button" class="color-dot" style="background: #e11d48; width: 18px; height: 18px;" data-inv-color="#e11d48" title="Burgundy Wine" aria-label="Burgundy Wine"></button>
+            <button type="button" class="color-dot" style="background: #475569; width: 18px; height: 18px;" data-inv-color="#475569" title="Slate Neutral" aria-label="Slate Neutral"></button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-print-invoice" id="btnPrintInvoice">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print / Save PDF
+      </button>
+    </div>
+
+    <!-- Paper Sheet -->
+    <div class="paper-container">
+      <div class="invoice-paper" id="invoicePaper">
+
+        <div>
+          <!-- Header -->
+          <div class="inv-head">
+            <div class="inv-brand-left">
+              <img id="paperLogo" class="inv-logo-img" style="display: none;" alt="Company Logo">
+              <div class="inv-sender-name" id="paperSenderName">Example Design Studio</div>
+              <div class="inv-sender-info" id="paperSenderDetails">[Business street address]
+[Business city and postal code]
+billing@example.com</div>
+            </div>
+
+            <div class="inv-brand-right">
+              <div class="inv-doc-badge" id="paperDocType">INVOICE</div>
+              <table class="inv-meta-table">
+                <tr>
+                  <td class="inv-meta-label">Number:</td>
+                  <td class="inv-meta-val" id="paperDocNumber">INV-2026-001</td>
+                </tr>
+                <tr>
+                  <td class="inv-meta-label">Date:</td>
+                  <td class="inv-meta-val" id="paperDocDate">Sep 15, 2026</td>
+                </tr>
+                <tr>
+                  <td class="inv-meta-label">Due Date:</td>
+                  <td class="inv-meta-val" id="paperDocDueDate">Oct 15, 2026</td>
+                </tr>
+                <tr>
+                  <td class="inv-meta-label">Status:</td>
+                  <td class="inv-meta-val" id="paperDocStatus">Due Upon Receipt</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Parties -->
+          <div class="inv-parties">
+            <div class="inv-bill-box">
+              <h4>Billed To:</h4>
+              <div class="inv-bill-name" id="paperClientName">Example Client Company</div>
+              <div class="inv-bill-info" id="paperClientDetails">[Client street address]
+[Client city and postal code]</div>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Description</th>
+                <th class="num-col" style="width: 15%;">Qty / Hrs</th>
+                <th class="num-col" style="width: 15%;">Unit Rate</th>
+                <th class="num-col" style="width: 20%;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="paperItemsBody">
+              <!-- Dynamically rendered rows -->
+            </tbody>
+          </table>
+
+          <!-- Financials & Notes -->
+          <div class="inv-bottom-grid">
+            <div class="inv-notes-box">
+              <h4>Payment Details</h4>
+              <div id="paperPaymentLink"></div><div class="inv-notes-text" id="paperPaymentNotes">Bank: [ENTER BANK NAME]
+Routing: [ENTER ROUTING NUMBER]
+Account: [ENTER ACCOUNT NUMBER]</div>
+
+              <h4 style="margin-top: 14px;">Terms & Notes</h4>
+              <div class="inv-notes-text" id="paperTermsNotes">Thank you for your business! Please remit payment within 30 days of invoice date.</div>
+            </div>
+
+            <div>
+              <table class="inv-totals-table">
+                <tr>
+                  <td class="inv-tot-label">Subtotal:</td>
+                  <td class="inv-tot-val" id="paperSubtotal">$0.00</td>
+                </tr>
+                <tr id="paperDiscountRow" style="display: none;">
+                  <td class="inv-tot-label">Discount:</td>
+                  <td class="inv-tot-val" id="paperDiscount">-$0.00</td>
+                </tr>
+                <tr>
+                  <td class="inv-tot-label" id="paperTaxLabel">Tax (8%):</td>
+                  <td class="inv-tot-val" id="paperTax">$0.00</td>
+                </tr>
+                <tr class="inv-grand-total">
+                  <td>Document total:</td>
+                  <td class="inv-tot-val" id="paperGrandTotal">$0.00</td>
+                </tr>
+              <tr><td class="inv-tot-label">Payments received:</td><td class="inv-tot-val" id="paperPaid">$0.00</td></tr><tr><td class="inv-tot-label" id="balanceLabel">Balance due:</td><td class="inv-tot-val" id="paperBalance">$0.00</td></tr></table>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+
+  </div></div></section><details class="library-drawer"><summary>Saved documents &amp; clients <span>Optional local library</span></summary><section class="library"><div><span class="eyebrow">KEEP THE USEFUL DETAILS</span><h2>Your billing shelf.</h2><p>Save only when you choose. Documents and clients stay in this browser.</p><label><input type="checkbox" id="libraryConsent"> Enable local document & client library</label><p id="libraryStatus" role="status">Local library is off.</p></div><div class="library-controls"><label for="recordName">Document name</label><input id="recordName" placeholder="October · Example client"><div class="actions"><button id="saveRecord">Save named document</button><button id="duplicateRecord">Duplicate current</button></div><label for="recordSelect">Saved documents</label><select id="recordSelect"><option value="">Choose document</option></select><div class="actions"><button id="loadRecord">Load document</button><button id="deleteRecord">Delete saved document</button></div><label for="clientSelect">Saved clients</label><select id="clientSelect"><option value="">Choose client</option></select><div class="actions"><button id="saveClient">Save current client</button><button id="loadClient">Use client</button><button id="deleteClient">Delete client</button></div></div></section></details><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">A FAIR EXCHANGE</span><h2>Clear work.<br>A clear record.</h2><p>Make the work, the amount and the next step easy to understand.</p></div><h3>From details to document</h3><ol class="guide-steps"><li><strong>Identify the work.</strong>Add your business, client, document number and dates.</li><li><strong>Set out the amounts.</strong>Review quantities, rates, discounts, tax and payments received.</li><li><strong>Keep what you reuse.</strong>Optionally save named documents and clients in this browser.</li><li><strong>Review before sharing.</strong>Print / Save PDF and inspect the final pages.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE YOU SEND</span><h3>The useful details.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Is my invoice saved automatically?</summary><p>Saving is optional and off by default. Enable Save draft on this browser for the current document. Enable the local library to explicitly save named documents and clients. Browser storage can be cleared or unavailable; it is not a backup or an encrypted vault.</p></details><details><summary>How do I save a PDF?</summary><p>Print / Save PDF opens the browser print dialog. Choose Save as PDF and inspect margins, page breaks and text. The browser controls the filename and destination. Direct PDF download is not included in this prototype.</p></details><details><summary>How are totals and balances calculated?</summary><p>Unit rates and line amounts use half-up rounding to the currency precision. Percentage discount applies before document-level tax. Payments received are subtracted from the total; excess payment is shown as a credit. Check figures and applicable tax rules before issuing.</p></details><details><summary>Can I reuse an invoice or client?</summary><p>Opt in to the local library, name and save a document or client, then load it when needed. Duplicate keeps its contents and suggests the next matching number from saved documents. You must check numbering yourself; this is not an issued-invoice ledger or scheduled billing.</p></details><details><summary>Does RunTangent collect or verify payments?</summary><p>No. A payment link you supply is included as a clickable link in the document; following it opens that provider. Payments received are manual records only. No automatic payment status, bank connection or accounting-software integration is provided.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script>
+<script src="assets/studio-utils.js"></script>
+<script src="assets/invoice-math.js"></script>
+<script src="assets/workspaces/invoice-generator/engine.js"></script>
+<script src="assets/workspaces/invoice-generator/ui.js"></script>

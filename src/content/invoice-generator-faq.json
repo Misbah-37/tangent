@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Is my invoice saved automatically?",
+    "answer": "Saving is optional and off by default. Enable Save draft on this browser for the current document. Enable the local library to explicitly save named documents and clients. Browser storage can be cleared or unavailable; it is not a backup or an encrypted vault."
+  },
+  {
+    "question": "How do I save a PDF?",
+    "answer": "Print / Save PDF opens the browser print dialog. Choose Save as PDF and inspect margins, page breaks and text. The browser controls the filename and destination. Direct PDF download is not included in this prototype."
+  },
+  {
+    "question": "How are totals and balances calculated?",
+    "answer": "Unit rates and line amounts use half-up rounding to the currency precision. Percentage discount applies before document-level tax. Payments received are subtracted from the total; excess payment is shown as a credit. Check figures and applicable tax rules before issuing."
+  },
+  {
+    "question": "Can I reuse an invoice or client?",
+    "answer": "Opt in to the local library, name and save a document or client, then load it when needed. Duplicate keeps its contents and suggests the next matching number from saved documents. You must check numbering yourself; this is not an issued-invoice ledger or scheduled billing."
+  },
+  {
+    "question": "Does RunTangent collect or verify payments?",
+    "answer": "No. A payment link you supply is included as a clickable link in the document; following it opens that provider. Payments received are manual records only. No automatic payment status, bank connection or accounting-software integration is provided."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Does my audio leave this browser?",
+    "answer": "This tool decodes and transcribes your file in the browser; it does not upload the recording. After your consent, it loads a speech library, runtime and model files from external hosts. Browser caching may reduce downloads but is not guaranteed, so an internet connection may still be needed."
+  },
+  {
+    "question": "Which recordings can I use?",
+    "answer": "Choose an audio file your browser can decode, such as supported MP3, WAV or M4A recordings. Codec support varies. Files must be no larger than 100 MB and no longer than 30 minutes; the decoded sample limit can require shorter clips."
+  },
+  {
+    "question": "Which language is supported?",
+    "answer": "The current model is Whisper Tiny English. Use clear English speech. Recognition can make mistakes, especially with noise, accents, names and overlapping speakers. Review every transcript before relying on it."
+  },
+  {
+    "question": "Why do I need to load a model?",
+    "answer": "Recognition runs on your device using model files that may total roughly 70 MB, plus runtime assets. Loading and processing time depend on your network, browser and hardware. The tool asks for consent before requesting the speech engine."
+  },
+  {
+    "question": "Can I edit and save the transcript?",
+    "answer": "Yes. Review and edit the completed transcript, then copy it or download a plain-text file. There are no speaker labels, timestamps or subtitle exports in this version. Clear / Cancel stops applying pending results; model loading or inference already underway may continue until it settles."
+  }
+]

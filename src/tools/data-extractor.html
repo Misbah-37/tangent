@@ -1,0 +1,338 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Data Extractor | RunTangent</title>
+<meta name="description" content="Extract tables or selected fields from saved HTML and pasted HTML source. Preview every extracted row and download CSV in your browser.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Data Extractor | RunTangent"><meta property="og:description" content="Extract tables or selected fields from saved HTML and pasted HTML source. Preview every extracted row and download CSV in your browser.">
+
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><style>
+  .extractor-studio { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; }
+  .grid-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
+
+  .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
+
+  textarea.code-input { width: 100%; background: var(--bg-base); color: #a5b4fc; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; resize: vertical; min-height: 150px; outline: none; margin-bottom: 16px; }
+  textarea.code-input:focus { border-color: var(--accent); }
+
+  .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.2); font-size: 0.9rem; color: var(--text-muted); }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(255,255,255,0.02); color: var(--text-main); }
+
+  .control-group { margin-bottom: 20px; }
+  .control-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+  .control-group input[type="text"], .control-group select { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); font-size: 0.95rem; }
+
+  .btn-accent { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.05rem; transition: transform 0.1s ease; }
+  .btn-accent:active { transform: scale(0.97); }
+
+  .table-responsive { width: 100%; overflow-x: auto; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; max-height: 400px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+  th { color: var(--text-muted); font-weight: 600; position: sticky; top: 0; background: rgba(19, 23, 36, 0.95); backdrop-filter: blur(8px); z-index: 10; }
+  tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+  .stats-text { color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; }
+  .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }.btn-clear-ghost { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+        .btn-clear-ghost:hover { color: #f87171; background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); }</style><link rel="stylesheet" href="assets/workspaces/data-extractor/style.css?v=4">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<link rel="stylesheet" href="/assets/analyst-promo.css?v=2">
+<!-- --- TOOL_STYLES --- -->
+
+<!-- --- CONTENT --- -->
+<main data-tool-category="data" class="page" id="main"><section class="editor-intro extractor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DATA &amp; ANALYTICS / DATA EXTRACTOR</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">↗</span>Data Extractor</h1><p class="tool-description">Extract tables or selected text from HTML source into structured rows.</p><p class="tool-tagline">Useful details. Out in the open.</p></div><aside class="category-intro-info" aria-label="Data Extractor quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Turn useful details into rows.</h2><dl><div><dt>Add</dt><dd>Paste your HTML source</dd></div><div><dt>Choose</dt><dd>Tables or selected text</dd></div><div><dt>Keep</dt><dd>Preview and export the result</dd></div></dl><p>Check extracted headings and rows before exporting.</p></aside></section><aside class="analyst-tool-note" aria-label="Free Windows app"><p><strong>Prefer working on Windows?</strong> Data Extractor is also available in the free <span class="promo-wordmark">Run<span class="promo-tangent">Tangent</span> <small>Analyst</small></span> app. Available free on Microsoft Store.</p><a class="promo-store" href="https://apps.microsoft.com/detail/9PL7K4RMVG32" target="_blank" rel="noopener noreferrer">Get it from Microsoft Store <span aria-hidden="true">↗</span></a></aside><div class="extractor-toolbar"><span>Local HTML source · tables &amp; CSS selectors</span><button type="button" id="extractorLoad">Load HTML</button></div><div class="extractor-studio" id="workspace" tabindex="-1">
+  <div class="grid-layout">
+
+    <!-- Step 1: Input -->
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">1. Provide HTML Source</h3>
+        <button type="button" id="btnClear" class="btn-clear-ghost" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          Clear File
+        </button>
+      </div>
+      <p id="htmlSourceHelp" class="source-input-help">Paste the page’s HTML source, not its web address. To copy source, open the page, press Ctrl+U, then Ctrl+A and Ctrl+C. Or save it as HTML and use Load HTML. Live URLs are not fetched. Load one .html, .htm or .txt file up to 10 MiB.</p><textarea id="htmlInput" aria-label="HTML source" aria-describedby="htmlSourceHelp" class="code-input" placeholder="Paste HTML markup here, for example: &lt;table&gt;…&lt;/table&gt; (not a URL)"></textarea>
+      <div class="drop-zone" id="dropZone">
+        Or drag and drop an .html file here
+        <input type="file" id="fileInput" accept=".html,.htm,.txt" style="display:none;">
+      </div>
+    </div>
+
+    <!-- Step 2: Extraction Rules -->
+    <div class="panel">
+      <h3 style="margin-top:0; margin-bottom:16px;">2. Extraction Rules</h3>
+      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+        <div class="control-group">
+          <label for="extractMode">Extraction Mode</label>
+          <select id="extractMode">
+            <option value="tables">Auto-Detect HTML Tables</option>
+            <option value="selector">Custom CSS Selector</option><option value="structured">Structured records</option>
+          </select>
+        </div>
+        <div class="control-group" id="selectorGroup" hidden>
+          <label for="cssSelector">CSS Selector</label>
+          <input type="text" id="cssSelector" disabled placeholder="e.g. .product-title, ul > li" value=".item">
+
+          <div style="margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.5;">
+            <strong style="color: var(--text-main); display:block; margin-bottom:8px;">How to find your target selector:</strong>
+            <ol style="margin: 0 0 12px 0; padding-left: 22px;">
+              <li style="margin-bottom:4px;">Right-click the specific data you want on any website and click <strong>Inspect</strong>.</li>
+              <li style="margin-bottom:4px;">Look for its class name (e.g., <code>&lt;span class="product-price"&gt;</code>).</li>
+              <li>Type a dot followed by that name into the box above: <strong>.product-price</strong></li>
+            </ol>
+            <div style="background: var(--bg-base); padding: 10px; border-radius: 6px; font-family: monospace; border: 1px solid rgba(255,255,255,0.05);">
+              <strong style="color: var(--text-main); font-family: sans-serif; display:block; margin-bottom:6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Quick Cheat Sheet</strong>
+              <span style="color: var(--accent);">.class-name</span> (Targets specific classes)<br>
+              <span style="color: var(--accent);">li</span> or <span style="color: var(--accent);">h2</span> (Targets HTML tags)<br>
+              <span style="color: var(--accent);">#main-id</span> (Targets exact IDs)
+            </div>
+          </div>
+        </div>
+      </div>
+      <section id="structuredRules" hidden><label>Record parent selector<input id="parentSelector" value=".item" placeholder="e.g. .product"></label><p>Each parent match becomes one row. Each field uses the first matching descendant; leave its selector empty to use the parent. Missing elements or attributes export blank. Attributes stay as literal text and are not opened or fetched.</p><div id="structuredFields"></div><button type="button" id="addStructuredField">Add field</button></section><button type="button" id="btnExtract" class="btn-accent" style="width:100%;">Extract Data</button>
+
+    </div>
+
+    <!-- Step 3: Results -->
+    <div class="panel" id="resultsPanel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">3. Preview & Export <span class="badge" id="rowBadge">0 rows</span></h3>
+        <button type="button" id="btnExportCsv" class="btn-accent" style="padding:10px 20px;">Export to CSV</button>
+      </div>
+
+      <label id="tableChoiceGroup" hidden>Result table <select id="tableChoice"></select></label><p id="tableGroupingNote" role="status"></p><div class="table-responsive">
+        <table id="previewTable">
+          <thead id="previewThead"></thead>
+          <tbody id="previewTbody"></tbody>
+        </table>
+      </div>
+      <div class="preview-pagination"><span class="stats-text" id="extractionStats" role="status">No extracted rows.</span><button type="button" id="previewPrev" disabled>Previous</button><button type="button" id="previewNext" disabled>Next</button></div>
+    </div>
+
+  </div>
+</div>
+
+
+<section class="editor-guide" aria-labelledby="extractor-guide"><div class="guide-heading"><span class="eyebrow">STRUCTURE HIDING IN PLAIN SIGHT</span><h2 id="extractor-guide">Keep the detail.<br>Find the structure.</h2><p>Convert saved HTML into rows you can inspect and export. Choose tables, a single text selector, or structured parent records with named text and attribute fields.</p></div><section><h3>How to extract your data</h3><ol class="guide-steps"><li><strong>Provide the source.</strong> Load a local HTML/text file or paste its markup. A live website URL is not fetched.</li><li><strong>Choose an approach.</strong> Detect tables, use a text selector, or choose Structured records and define a parent selector plus named fields. Attribute fields return literal values such as href.</li><li><strong>Inspect the result.</strong> Run extraction and browse 50-row pages. Check headers, merged cells and missing field values; edits to the source or rules invalidate the old result.</li><li><strong>Save the rows.</strong> Export the full extraction as CSV. Keep your source document for context and future corrections.</li></ol></section><aside class="guide-limits"><h3>Source markup matters</h3><p>Only content present in supplied HTML can be extracted. Website scripts are not run to populate missing content; this tool is not a browser crawler or OCR engine.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3>Clear inputs.<br>Useful outputs.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which sources and extraction modes are supported?</summary><p>Load one local .html, .htm or .txt source file up to 10 MiB, or paste HTML. Choose automatic tables, a single CSS text selector, or structured records with named fields. This tool does not fetch live URLs, execute website scripts, read PDFs or perform OCR.</p></details><details><summary>How does structured extraction work?</summary><p>Each parent-selector match becomes one record. Define up to 30 uniquely named fields using cleaned text or a literal attribute value. A field selector uses its first matching descendant (including direct-child selectors such as &gt; .price; sibling selectors are unsupported); leave it blank to use the parent itself. Missing elements or attributes become blank cells. Links and other attributes are not opened, resolved or fetched.</p></details><details><summary>How are table spans and multiple tables handled?</summary><p>Rowspan and colspan repeat cell text across covered positions; rowspan zero is bounded to the current row group. Nested tables are extracted separately and removed from the containing cell text. Tables with identical, unambiguous explicit headers in the same order are combined, with a table identifier column for multiple sources. Different headers stay separately selectable and exportable. Headerless tables remain separate and receive generated column names, preserving their first data row. Leading header rows are combined into column labels; shorter rows are padded.</p></details><details><summary>Does CSV export include every preview page?</summary><p>Yes. Preview pages contain 50 data rows, excluding the first extracted header row from the data-row count. CSV includes the full extraction and header regardless of the page shown. Source or rule edits hide stale results until you extract again. Cleaned text and span expansion mean this is not a lossless markup copy.</p></details><details><summary>Is supplied HTML executed, uploaded or saved?</summary><p>Extraction parses a detached document and displays results as text rather than running supplied scripts or activating extracted attributes. Analysis is local; this page loads its CSV helper from this site. Work is not automatically saved and browser memory limits apply. Attribute values and source content remain untrusted data; review exports before sharing or using elsewhere.</p></details></div></section></section></main>
+<script src="assets/data-utils.js"></script>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const htmlInput = document.getElementById('htmlInput');
+  const btnClear = document.getElementById('btnClear');
+
+  const extractMode = document.getElementById('extractMode');
+  const selectorGroup = document.getElementById('selectorGroup');
+  const cssSelector = document.getElementById('cssSelector');
+  const btnExtract = document.getElementById('btnExtract');
+
+  const resultsPanel = document.getElementById('resultsPanel');
+  const previewThead = document.getElementById('previewThead');
+  const previewTbody = document.getElementById('previewTbody');
+  const btnExportCsv = document.getElementById('btnExportCsv');
+  const rowBadge = document.getElementById('rowBadge');
+
+  let extractedData = [],previewPage=0;
+  document.getElementById('previewPrev').addEventListener('click',()=>{if(previewPage>0){previewPage--;renderPreview(true);}});
+  document.getElementById('previewNext').addEventListener('click',()=>{if((previewPage+1)*50<extractedData.length-1){previewPage++;renderPreview(true);}});
+
+
+  // DOM Events for Input
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if(e.dataTransfer.files.length!==1)return alert('Drop one HTML or text file at a time.');handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file=e.target.files[0];e.target.value='';if(file)handleFile(file);
+  });
+
+  let fileOperation = 0, tableResults=[];
+  const tableChoice=document.getElementById('tableChoice');
+  tableChoice.addEventListener('change',()=>{extractedData=tableResults[Number(tableChoice.value)].data;previewPage=0;renderPreview();});
+  function clearResults() {tableResults=[];tableChoice.replaceChildren();document.getElementById('tableChoiceGroup').hidden=true;document.getElementById('tableGroupingNote').textContent='';previewPage=0;document.getElementById('previewPrev').disabled=true;document.getElementById('previewNext').disabled=true;document.getElementById('extractionStats').textContent='No extracted rows.';extractedData=[];resultsPanel.style.display='none';previewThead.innerHTML='';previewTbody.innerHTML='';}
+  function handleFile(file) {
+    const operation = ++fileOperation;
+    fileInput.value='';
+    if(!/\.(html?|txt)$/i.test(file.name))return alert('Choose an .html, .htm or .txt source file.');
+    if(file.size>10*1024*1024)return alert('Source files must be 10 MiB or smaller. Existing source retained.');
+    const reader = new FileReader();
+    reader.onload = e => {
+      if(operation !== fileOperation) return;
+      clearResults();htmlInput.value=e.target.result;btnClear.style.display=htmlInput.value.trim()?'block':'none';
+    };
+    reader.onerror = () => {if(operation === fileOperation) alert('Unable to read the HTML file.');};
+    reader.readAsText(file);
+  }
+  htmlInput.addEventListener('input',()=>{fileOperation++;clearResults();btnClear.style.display=htmlInput.value.trim()?'block':'none';});
+  btnClear.addEventListener('click',()=>{fileOperation++;htmlInput.value='';clearResults();btnClear.style.display='none';fileInput.value='';});
+
+  function syncFieldRemoval(){const buttons=document.querySelectorAll('.field-remove');buttons.forEach(button=>button.disabled=buttons.length===1);}
+  function addStructuredField(){if(document.querySelectorAll('.structured-field').length>=30){alert('Use up to 30 fields per extraction.');return;}const row=document.createElement('div');row.className='structured-field';row.innerHTML='<label>Field name<input class="field-name" placeholder="e.g. Title"></label><label>Within record<input class="field-selector" placeholder="e.g. .title (blank = parent)"></label><label>Extract<select class="field-kind"><option value="text">Text</option><option value="attribute">Attribute</option></select></label><label>Attribute name<input class="field-attribute" placeholder="e.g. href" disabled></label><button type="button" class="field-remove">Remove</button>';row.querySelector('.field-kind').addEventListener('change',()=>{row.querySelector('.field-attribute').disabled=row.querySelector('.field-kind').value!=='attribute';clearResults();});row.addEventListener('input',clearResults);row.querySelector('.field-remove').addEventListener('click',()=>{row.remove();syncFieldRemoval();clearResults();});document.getElementById('structuredFields').append(row);syncFieldRemoval();clearResults();}
+  document.getElementById('addStructuredField').addEventListener('click',addStructuredField);document.getElementById('parentSelector').addEventListener('input',clearResults);addStructuredField();
+  function syncMode(){const selector=extractMode.value==='selector';selectorGroup.hidden=!selector;cssSelector.disabled=!selector;document.getElementById('structuredRules').hidden=extractMode.value!=='structured';clearResults();}
+  extractMode.addEventListener('change',syncMode);syncMode();
+
+  // Clean text utility
+  function cleanText(str) {
+    if(!str) return "";
+    return str.replace(/\s+/g, ' ').trim();
+  }
+
+  // Extraction Logic
+  btnExtract.addEventListener('click', () => {
+    const rawHtml = htmlInput.value.trim();
+    if(!rawHtml) return alert("Please provide HTML source code.");
+
+    clearResults(); // invalidate the previous extraction before validating the new one
+
+    // Parse virtually
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, 'text/html');
+
+    if(extractMode.value === 'tables') {
+      const tables = doc.querySelectorAll('table');
+      if(tables.length === 0) return alert("No HTML tables found in the source code.");
+
+      const groups=new Map();
+      tables.forEach((table,tIdx)=>{
+        const rows = Array.from(table.rows).filter(row=>row.closest('table')===table);
+        const grid = rows.map(()=>[]);
+        rows.forEach((row,r)=>{
+          let column=0;
+          Array.from(row.cells).forEach(cell=>{
+            while(grid[r][column]!==undefined) column++;
+            const clone=cell.cloneNode(true);clone.querySelectorAll('table').forEach(nested=>nested.remove());
+            const value=cleanText(clone.textContent);
+            const groupRemaining=rows.slice(r).filter(next=>next.parentElement===row.parentElement).length;
+            const height=Math.min(cell.rowSpan===0?groupRemaining:cell.rowSpan,groupRemaining);
+            const width=cell.colSpan;
+            for(let y=r;y<r+height;y++) for(let x=column;x<column+width;x++) grid[y][x]=value;
+            column+=width;
+          });
+        });
+        const width=grid.reduce((n,row)=>Math.max(n,row.length),0);
+        const matrix=grid.map(row=>Array.from({length:width},(_,i)=>row[i]??''));
+        if(!width||!matrix.some(row=>row.some(value=>value!=='')))return;
+        let headerCount=0;
+        while(headerCount<rows.length&&(rows[headerCount].parentElement.tagName==='THEAD'||(rows[headerCount].cells.length&&Array.from(rows[headerCount].cells).every(cell=>cell.tagName==='TH'))))headerCount++;
+        const explicit=headerCount>0;
+        const headings=explicit?Array.from({length:width},(_,column)=>[...new Set(matrix.slice(0,headerCount).map(row=>row[column]).filter(Boolean))].join(' / ')||'Col '+(column+1)):Array.from({length:width},(_,i)=>'Col '+(i+1));
+        // Only exact explicit schemas merge. Headerless tables stay separate.
+        const unambiguous=explicit&&new Set(headings).size===headings.length&&Array.from({length:width},(_,column)=>matrix.slice(0,headerCount).some(row=>row[column]!=='')).every(Boolean);
+        const key=unambiguous?JSON.stringify(headings):'separate:'+tIdx;
+        if(!groups.has(key))groups.set(key,{headings,records:[],sources:[]});
+        const group=groups.get(key);group.sources.push(tIdx+1);
+        matrix.slice(headerCount).forEach(row=>group.records.push({source:'Table '+(tIdx+1),values:row}));
+      });
+      if(!groups.size)return alert('No nonempty table rows could be extracted.');
+      const multiple=tables.length>1;
+      tableResults=Array.from(groups.values()).map(group=>{
+        let sourceHeading='Table';while(group.headings.includes(sourceHeading))sourceHeading='Source '+sourceHeading;
+        return {label:group.sources.map(n=>'Table '+n).join(', '),data:[multiple?[sourceHeading,...group.headings]:group.headings,...group.records.map(row=>multiple?[row.source,...row.values]:row.values)]};
+      });
+      tableResults.forEach((group,index)=>tableChoice.add(new Option(group.label,String(index))));
+      document.getElementById('tableChoiceGroup').hidden=tableResults.length<2;
+      document.getElementById('tableGroupingNote').textContent=tableResults.length>1?'Tables with different headers are separate results. Select a result to preview and export.':'Tables with identical explicit headers are combined; headerless tables use generated column names.';
+      extractedData=tableResults[0].data;
+
+    } else if(extractMode.value === 'structured') {
+      const parent=document.getElementById('parentSelector').value.trim(),fields=Array.from(document.querySelectorAll('.structured-field')).map(row=>({name:row.querySelector('.field-name').value.trim(),selector:row.querySelector('.field-selector').value.trim(),kind:row.querySelector('.field-kind').value,attribute:row.querySelector('.field-attribute').value.trim()}));
+      if(!parent||!fields.length||fields.some(field=>!field.name||(field.kind==='attribute'&&!field.attribute)))return alert('Provide a parent selector, named fields and an attribute name for each attribute field.');
+      if(new Set(fields.map(field=>field.name.toLowerCase())).size!==fields.length)return alert('Field names must be unique (ignoring case).');
+      let parents;try{parents=Array.from(doc.querySelectorAll(parent));fields.forEach(field=>{if(/^[+~]/.test(field.selector))throw Error('Sibling field selectors are not supported.');if(field.selector)doc.querySelector(field.selector.startsWith('>')?':scope '+field.selector:field.selector);});}catch(error){return alert('Invalid parent or field CSS selector.');}
+      if(!parents.length)return alert('No records match the parent selector.');
+      const records=parents.map(record=>fields.map(field=>{const element=field.selector?record.querySelector(field.selector.startsWith('>')?':scope '+field.selector:field.selector):record;if(!element)return '';return field.kind==='attribute'?(element.getAttribute(field.attribute)??''):cleanText(element.textContent);}));
+      extractedData=[fields.map(field=>field.name),...records];
+    } else if(extractMode.value === 'selector') {
+      const query = cssSelector.value.trim();
+      if(!query) return alert("Please provide a valid CSS selector.");
+
+      try {
+        const elements = doc.querySelectorAll(query);
+        if(elements.length === 0) return alert("No elements found matching that selector.");
+
+        extractedData.push(["Extracted Value"]); // Header
+        elements.forEach(el => {
+          extractedData.push([cleanText(el.textContent)]);
+        });
+      } catch(err) {
+        return alert("Invalid CSS Selector syntax.");
+      }
+    }
+
+    if(extractedData.length > 0) {
+      renderPreview();
+    }
+  });
+
+  function renderPreview(pageNavigation=false) {
+    resultsPanel.style.display = 'block';
+    const count=Math.max(0,extractedData.length-1);rowBadge.textContent=count+' data rows';
+
+    previewThead.innerHTML = '';
+    previewTbody.innerHTML = '';
+
+    // Render Header (assume first row is header, or at least structure the table columns)
+    // To make it look clean, we'll just treat the first row as the table header
+    // if we are in 'tables' mode and the source actually had <th>.
+    // For simplicity, we just use the first row of extractedData.
+
+    const maxPreviewRows = 50,start=1+previewPage*50;
+    document.getElementById('previewPrev').disabled=previewPage===0;
+    document.getElementById('previewNext').disabled=(previewPage+1)*50>=count;
+    document.getElementById('extractionStats').textContent=count?'Showing '+(previewPage*50+1)+'–'+Math.min((previewPage+1)*50,count)+' of '+count+' data rows · Page '+(previewPage+1)+' of '+Math.ceil(count/50):'Header only · 0 data rows';
+
+    if(extractedData.length > 0) {
+      const headerRow = document.createElement('tr');
+      extractedData[0].forEach((colText, idx) => {
+        const th = document.createElement('th');
+        th.textContent = colText || `Col ${idx + 1}`;
+        headerRow.appendChild(th);
+      });
+      previewThead.appendChild(headerRow);
+    }
+
+    // Render Body (up to 50 rows)
+    const previewLimit = Math.min(extractedData.length, start+maxPreviewRows);
+    for(let i = start; i < previewLimit; i++) {
+      const tr = document.createElement('tr');
+      // Ensure we fill the right number of columns based on the header
+      const targetCols = extractedData[0].length;
+
+      for(let j = 0; j < targetCols; j++) {
+        const td = document.createElement('td');
+        td.textContent = extractedData[i][j] ?? "";
+        tr.appendChild(td);
+      }
+      previewTbody.appendChild(tr);
+    }
+
+    // Scroll to results
+    document.querySelector('.table-responsive').scrollTop=0;
+    if(!pageNavigation)resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  btnExportCsv.addEventListener('click', () => {
+    if(extractedData.length === 0) return;
+    if(typeof window.TangentData?.csvCell!=='function')return alert('CSV export helper could not load. Reload this page before exporting.');
+    const csvContent = extractedData.map(row=>row.map(TangentData.csvCell).join(',')).join('\r\n')+'\r\n';
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "extracted_data.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+  });
+</script>
+<script>document.getElementById('extractorLoad').addEventListener('click',()=>document.getElementById('fileInput').click());document.querySelector('[data-workspace-return]').addEventListener('click',e=>{e.preventDefault();const w=document.getElementById('workspace');w.scrollIntoView({block:'start'});w.focus({preventScroll:true});});</script>
+<!-- --- SCRIPTS --- -->

@@ -1,0 +1,73 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>SVG Optimizer | RunTangent</title>
+<meta name="description" content="Inspect and clean static SVG files, adjust numeric precision, review editable XML and file-size changes, then download SVG or PNG.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="SVG Optimizer | RunTangent"><meta property="og:description" content="Keep the character. Refine the details. A considered finish for static SVG files.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/svg-optimizer/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="design" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DESIGN &amp; DEV GRAPHICS / SVG OPTIMIZER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 18C4 6 20 18 20 6M4 18h4M16 6h4"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="6" r="2"/></svg></span>SVG Optimizer</h1><p class="tool-description">Optimize SVG markup and download a smaller SVG file.</p><p class="tool-tagline">Keep the character. Refine the details.</p></div><aside class="category-intro-info" aria-label="SVG Optimizer quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Refine the file. Keep the shape.</h2><dl><div><dt>Open</dt><dd>Load SVG markup</dd></div><div><dt>Optimize</dt><dd>Choose the available options</dd></div><div><dt>Keep</dt><dd>Review and download the SVG</dd></div></dl><p>Compare the result with your original artwork.</p></aside></section><div class="editor-toolbar"><span id="dropTitle">Illustrative sample</span><button id="loadSvg">Load SVG</button><button id="copySvgBtn"><span id="copySvgText">Copy SVG</span></button><button id="exportPngBtn">Download PNG</button><button id="downloadSvgBtn" class="primary-action">Download SVG</button></div><p class="prototype-note">Static SVG cleanup · Editable XML · SVG &amp; 2× PNG export.</p><section id="workspace" tabindex="-1" class="svg-workspace"><div class="vector-pane"><div class="pane-heading"><span>Consider the result</span><div class="view-controls"><button id="zoomOutBtn" aria-label="Zoom out">−</button><button id="zoomResetBtn" aria-label="Reset zoom">100%</button><button id="zoomInBtn" aria-label="Zoom in">+</button><button class="bg-btn" data-bg="bg-checker" aria-label="Checkerboard background">Grid</button><button class="bg-btn" data-bg="bg-dark" aria-label="Dark preview background">Dark</button><button class="bg-btn" data-bg="bg-light" aria-label="White preview background">White</button><button class="bg-btn" data-bg="bg-accent" aria-label="Accent preview background">Tint</button></div></div><div class="stage-display bg-checker" id="stageDisplay"></div><div id="dropZone" role="button" tabindex="0" aria-label="Load SVG file"><span id="dropSubtitle">Drop another SVG here, or load a file above.</span><input id="fileInput" type="file" accept=".svg,image/svg+xml" hidden></div><div class="code-heading"><label for="svgOutputArea">Your SVG code</label><small>Changing cleanup options replaces manual edits.</small></div><textarea id="svgOutputArea" spellcheck="false" aria-label="Editable output SVG XML"></textarea></div><aside class="settings-pane"><div class="pane-heading">Refine with care</div><div class="controls-content">
+      <div class="panel-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Optimization Passes
+      </div>
+
+      <div class="toggle-list">
+        <label class="toggle-row">
+          <span>Remove Comments & DOCTYPE</span>
+          <input type="checkbox" id="optComments" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Strip Editor Metadata (AI, Inkscape)</span>
+          <input type="checkbox" id="optEditor" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Remove Empty &lt;g&gt; and &lt;defs&gt;</span>
+          <input type="checkbox" id="optEmpty" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Remove hidden nodes (review result)</span>
+          <input type="checkbox" id="optHidden" checked>
+        </label>
+        <label class="toggle-row">
+          <span>Minify Path Whitespace</span>
+          <input type="checkbox" id="optPaths" checked>
+        </label>
+      </div>
+
+      <div class="select-group">
+        <label class="select-label" for="precisionSelect">Numeric Attribute Precision</label>
+        <select id="precisionSelect" class="custom-select">
+          <option value="2">2 decimal places</option>
+          <option value="1">1 Decimal Place (Aggressive)</option>
+          <option value="3">3 Decimal Places (High Precision)</option>
+          <option value="none">Original (No Rounding)</option>
+        </select>
+      </div>
+
+      <!-- Real-time Metrics Card -->
+      <div class="metrics-card">
+        <div class="metrics-header">
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">File size</span>
+          <span class="savings-badge" id="savingsBadge">Unchanged</span>
+        </div>
+        <div class="metrics-row">
+          <span>Original Size:</span>
+          <strong id="origSizeText">0 B</strong>
+        </div>
+        <div class="metrics-row">
+          <span>Optimized Size:</span>
+          <strong id="optSizeText" style="color: var(--accent);">0 B</strong>
+        </div>
+        <div class="metrics-row">
+          <span>Size change:</span>
+          <strong id="savedBytesText">0 B · unchanged</strong>
+        </div>
+      </div>
+
+      <p class="control-note">Compare the output before use. Precision and removal passes can change appearance. Keep the original.</p></div></aside></section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">A LIGHTER TOUCH. A CLEARER LINE.</span><h2>Let the form<br>do the talking.</h2><p>Inspect a vector, remove what it no longer needs and review the result. Keep the editable SVG, or export a PNG for a different destination.</p></div><h3>How to refine an SVG</h3><ol class="guide-steps"><li><strong>Bring your vector.</strong>Load a self-contained static SVG. The starting sample is illustrative.</li><li><strong>Choose the passes.</strong>Review cleanup options and numeric precision.</li><li><strong>Inspect the result.</strong>Check the preview and byte sizes. Edit output XML if needed.</li><li><strong>Keep a considered copy.</strong>Download SVG or PNG, and retain the original file.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">AROUND THE EDGES</span><h3>A cleaner file.<br>A familiar form.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What does optimization change?</summary><p>Choose passes for comments, editor metadata, empty groups/definitions, hidden nodes and path whitespace. Numeric precision applies to supported numeric attributes and viewBox values. Review the result: cleanup and rounding may alter some SVGs, and smaller files are not guaranteed.</p></details><details><summary>Which SVGs can I load?</summary><p>Use self-contained static SVG files. The validator rejects scripts, HTML foreignObject content, animation, event handlers and unsupported references or CSS. This is a supported-content check, not a general-purpose SVG security certification.</p></details><details><summary>Can I edit the SVG code?</summary><p>Yes. Edit the output XML to update the preview and exported SVG after validation. Changing an optimization setting reprocesses the originally loaded SVG, replacing manual output edits. Save a copy before switching settings.</p></details><details><summary>What can I download?</summary><p>Download the current SVG or copy its XML. PNG export rasterizes the current SVG at twice its decoded dimensions, subject to 10,000 pixels per side and 25 million pixels total. Preview zoom and backdrop are viewing aids; they are not added to exported files.</p></details><details><summary>Where are my files processed?</summary><p>Parsing, cleanup and rendering happen in your browser. This tool does not upload your SVG. Keep your original and compare the output before using it. The initial sample is illustrative; your browser can render only the features and fonts it supports.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script><script src="assets/workspaces/svg-optimizer/engine.js?v=2"></script><script src="assets/workspaces/svg-optimizer/ui.js"></script>

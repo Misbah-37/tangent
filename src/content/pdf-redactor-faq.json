@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Does this only cover the original text?",
+    "answer": "The exporter renders every page, paints the marked areas into that image and creates a new image-based PDF. Original text objects are not copied into that result. Inspect your downloaded copy before sharing."
+  },
+  {
+    "question": "What changes in the exported PDF?",
+    "answer": "Every page becomes an image. Selectable text, editable forms, links, annotations and existing digital signatures are not preserved as interactive document features. Rasterization can affect quality and file size."
+  },
+  {
+    "question": "Can I change a selection before downloading?",
+    "answer": "Yes. Draw boxes, select them to move or resize them, and use Undo, Redo or Delete before applying. Your source PDF is unchanged; the download is a separate copy."
+  },
+  {
+    "question": "What does the document information option do?",
+    "answer": "The exporter creates a new PDF rather than copying the source document structure. With this option enabled it also omits the output Info dictionary and XMP metadata. This is not a certification that all sensitive visible information has been found."
+  },
+  {
+    "question": "Where does processing happen?",
+    "answer": "Selected document contents are processed in browser memory. PDF libraries load from external CDNs, so network access may be required. Large documents depend on your device memory. Keep the original and review every output page."
+  }
+]

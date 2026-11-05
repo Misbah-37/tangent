@@ -1,0 +1,305 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>PDF Studio | RunTangent</title>
+<meta name="description" content="Create PDFs from images, merge documents, extract pages, optimize PDF structure and read embedded text locally in your browser.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="PDF Studio | RunTangent"><meta property="og:description" content="Create PDFs from images, merge documents, extract pages, optimize PDF structure and read embedded text locally in your browser.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/pdf-studio/legacy-workspace.css?v=1"><link rel="stylesheet" href="assets/workspaces/pdf-studio/style.css?v=1"><link rel="stylesheet" href="assets/workspaces/pdf-studio/canvas.css?v=3">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="documents" class="page" id="main"><section class="editor-intro pdf-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DOCUMENTS &amp; PDF / PDF STUDIO</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h8l4 4v14H7zM15 3v5h4M4 6v13M10 12h6M10 16h6"/></svg></span>PDF Studio</h1><p class="tool-description">Merge, split, convert and refine PDF documents.</p><p class="tool-tagline">Your pages. A considered whole.</p></div><aside class="category-intro-info" aria-label="PDF Studio quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Put your pages in order.</h2><dl><div><dt>Choose</dt><dd>Merge, split or convert</dd></div><div><dt>Prepare</dt><dd>Add the files for your task</dd></div><div><dt>Finish</dt><dd>Review and download the result</dd></div></dl><p>Choose a task below to get started.</p></aside></section><div class="pdf-toolbar"><span id="pdfContext" role="status">Images to PDF · No images loaded</span><button id="pdfLoadFiles">Load images</button><button id="pdfClear">Clear queue</button><button id="pdfDownload" class="primary-action" disabled>Download result</button></div><p class="pdf-note">Browser-based PDF work · Download a separate result and keep the original. Password encryption is currently unavailable.</p><section id="workspace" tabindex="-1" aria-label="PDF workspace"><div class="workspace-heading"><span class="eyebrow">THE WORKSPACE</span><span>Separate pages. A shared purpose.</span></div><!-- Tab Navigation -->
+<div class="tabs-wrapper">
+  <div class="tabs-container">
+    <button type="button" class="tab-btn active" onclick="switchTab(event, 'tab-img2pdf')">
+      <span>Images to PDF</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-merge')">
+      <span>Merge PDFs</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-split')">
+      <span>Split / Extract</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-compress')">
+      <span>Optimize PDF</span>
+    </button>
+    <button type="button" class="tab-btn" onclick="switchTab(event, 'tab-extract')">
+      <span>Extract Text</span>
+    </button>
+      
+  </div>
+</div>
+
+<div class="tool-wrapper">
+
+  <!-- TAB 1: IMAGES TO PDF -->
+  <div id="tab-img2pdf" class="tab-content active">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>Images to PDF</span>
+        </h3>
+        <p class="tool-desc">Convert JPG, PNG, and WebP images into a PDF document. Reorder the images before creating your file.</p>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="img-drop-zone" onclick="document.getElementById('imgInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your images here or click to browse</div>
+          <div class="upload-box-sub">Supports PNG, JPG, WebP • Processed in browser memory</div>
+          <div class="upload-btn-pill">Select Images</div>
+          <input type="file" id="imgInput" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;">
+        </div>
+
+        <!-- Queue Header & Sortable List -->
+        <div class="queue-header" id="img-queue-header" style="display:none;">
+          <span class="queue-count" id="img-queue-count">0 images in queue</span>
+          <button type="button" class="btn-clear-queue" onclick="clearImgQueue()" title="Clear all images">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear Queue</span>
+          </button>
+        </div>
+        <ul id="sortable-image-list" class="sortable-list"></ul>
+
+        <div class="options-row">
+            <div class="options-col">
+                <label>Page Size</label>
+                <select id="pageSize">
+                    <option value="a4">A4 (Standard)</option>
+                    <option value="letter">US Letter</option>
+                    <option value="fit">Fit to Image</option>
+                </select>
+            </div>
+            <div class="options-col">
+                <label>Orientation</label>
+                <select id="orientation">
+                    <option value="auto">Auto Detect</option>
+                    <option value="p">Portrait</option>
+                    <option value="l">Landscape</option>
+                </select>
+            </div>
+            <div class="options-col">
+                <label>Margins</label>
+                <select id="margins">
+                    <option value="28">Small (10mm)</option>
+                    <option value="0">None (Bleed)</option>
+                    <option value="56">Medium (20mm)</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="button" class="btn-accent" onclick="convertImages()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          <span>Compile PDF</span>
+        </button>
+        <div id="status1" class="status-text"></div>
+        <a id="downloadBtn1" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Compiled PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 2: MERGE PDFS -->
+  <div id="tab-merge" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg>
+          <span>Merge Multiple PDFs</span>
+        </h3>
+        <p class="tool-desc">Combine 2 or more PDF documents into a single consolidated file in the exact order you choose.</p>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="merge-drop-zone" onclick="document.getElementById('mergeInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF files here or click to browse</div>
+          <div class="upload-box-sub">Select 2 or more PDFs to combine • Processed in browser memory</div>
+          <div class="upload-btn-pill">Select PDF Files</div>
+          <input type="file" id="mergeInput" accept=".pdf" multiple style="display:none;">
+        </div>
+
+        <!-- Queue Header & Sortable List -->
+        <div class="queue-header" id="merge-queue-header" style="display:none;">
+          <span class="queue-count" id="merge-queue-count">0 files in queue</span>
+          <button type="button" class="btn-clear-queue" onclick="clearMergeQueue()" title="Clear all files">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear Queue</span>
+          </button>
+        </div>
+        <ul id="sortable-file-list" class="sortable-list"></ul>
+
+          <button type="button" class="btn-accent" onclick="mergePdfs()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          <span>Merge Documents</span>
+        </button>
+        <div id="status2" class="status-text"></div>
+        <a id="downloadBtn2" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Merged PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 3: SPLIT PDF -->
+  <div id="tab-split" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+          <span>Extract Pages</span>
+        </h3>
+        <p class="tool-desc">Extract specific sheets or custom page ranges into a brand new standalone document.</p>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="split-drop-zone" onclick="document.getElementById('splitInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Processed in browser memory; libraries require network access</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="splitInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="split-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="split-file-name">document.pdf</div>
+              <div class="active-file-meta" id="split-file-meta">Detecting pages...</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetSplitFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+
+        <label for="rangeInput">Pages to extract (e.g., 1, 3-5, 8):</label>
+        <input type="text" id="rangeInput" placeholder="e.g. 1-3">
+
+        <button type="button" class="btn-accent" onclick="splitPdf()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg>
+          <span>Extract Pages</span>
+        </button>
+        <div id="status3" class="status-text"></div>
+        <a id="downloadBtn3" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Extracted PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 4: COMPRESS PDF -->
+  <div id="tab-compress" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span>Optimize PDF structure</span>
+        </h3>
+        <p class="tool-desc">Rewrites pages with object streams. It does not recompress images, and the output may be larger.</p>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="compress-drop-zone" onclick="document.getElementById('compressInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Rewrites PDF objects; file size can increase • Processed in browser memory</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="compressInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="compress-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="compress-file-name">document.pdf</div>
+              <div class="active-file-meta" id="compress-file-meta">Detecting size...</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetCompressFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+
+        <button type="button" class="btn-accent" onclick="compressPdf()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span>Optimize PDF</span>
+        </button>
+        <div id="status5" class="status-text"></div>
+        <a id="downloadBtn5" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Compressed PDF</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- TAB 5: EXTRACT TEXT -->
+  <div id="tab-extract" class="tab-content">
+    <div class="tool-container">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Extract Raw Text</span>
+        </h3>
+        <p class="tool-desc">Extract all textual contents from your PDF document without formatting artifacts.</p>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="upload-box" id="extract-drop-zone" onclick="document.getElementById('textInput').click()">
+          <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+          </svg>
+          <div class="upload-box-title">Drop your PDF here or click to browse</div>
+          <div class="upload-box-sub">Parses entire document into plain text • Processed in browser memory</div>
+          <div class="upload-btn-pill">Select PDF File</div>
+          <input type="file" id="textInput" accept=".pdf" style="display:none;">
+        </div>
+
+        <!-- Active File Card -->
+        <div class="active-file-card" id="extract-file-card" style="display:none;">
+          <div class="active-file-info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <div style="min-width:0;">
+              <div class="active-file-name" id="extract-file-name">document.pdf</div>
+              <div class="active-file-meta" id="extract-file-meta">Ready to read</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="resetExtractFile()" title="Remove file and select another">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Change File</span>
+          </button>
+        </div>
+
+        <button type="button" class="btn-accent" onclick="extractText()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          <span>Read Text</span>
+        </button>
+        <div id="status4" class="status-text"></div>
+        <textarea id="outputArea" style="display:none; width:100%; height:220px; background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); border-radius:10px; margin-top:1.5rem; padding:16px; font-family:ui-monospace, monospace; box-sizing:border-box; line-height: 1.6;" readonly></textarea>
+        <a id="downloadBtn4" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Text File (.txt)</span>
+        </a>
+    </div>
+  </div>
+
+  <!-- SEO & Educational Content -->
+</div></section><section class="editor-guide" aria-labelledby="pdf-guide-title"><div class="guide-heading"><span class="eyebrow">A LITTLE ORDER. A BETTER DOCUMENT.</span><h2 id="pdf-guide-title">Bring the pages<br>into place.</h2><p>PDF Studio brings everyday PDF assembly and conversion into one browser workspace. Choose the operation that suits your document, then inspect the result before sharing.</p></div><section><h3>How to prepare your PDF</h3><ol class="guide-steps"><li><strong>Choose your task.</strong> Make a PDF from images, merge documents, extract pages, optimize a PDF or read embedded text.</li><li><strong>Add your files.</strong> Load the files for that task. For images and merging, use the queue controls to set their order.</li><li><strong>Make the details yours.</strong> Choose image page size and orientation, or enter a page range such as 1-3, 5. Run the selected operation.</li><li><strong>Review and download.</strong> Save a separate result. Check its pages, formatting and size; keep the original document.</li></ol></section><div class="guide-capabilities"><article><h4>Assemble with intent</h4><p>Turn a set of images or separate PDFs into a single document, using an explicit queue order.</p></article><article><h4>Keep the useful pages</h4><p>Extract selected pages into a new PDF. Ranges are deduplicated and returned in source-page order.</p></article><article><h4>Understand the result</h4><p>Structural optimization has size limits. Embedded-text extraction is a different task from OCR.</p></article></div><aside class="guide-limits"><h3>A new file needs a fresh look</h3><p>Page-copy operations can lose document-level features such as forms, outlines and signatures. Optimization does not guarantee a smaller file. Password encryption is unavailable. Keep the original and check your output.</p></aside><section class="guide-faq" aria-labelledby="pdf-faq-title"><div class="faq-intro"><span class="eyebrow">A FEW THINGS WORTH KNOWING</span><h3 id="pdf-faq-title">A clearer document.<br>A considered choice.</h3><p>What this workspace can do, and what to check before sharing.</p><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What can I do in PDF Studio?</summary><p>Create a PDF from JPG, PNG or WebP images, merge PDFs in queue order, extract selected pages, rewrite a PDF with object streams, or extract embedded text. Password encryption is unavailable. Signing, redaction and OCR are separate tools.</p></details><details><summary>Will optimization always make my PDF smaller?</summary><p>No. Optimization rewrites the pages using object streams; it does not downsample or recompress images. The result can be larger. Compare sizes and inspect the downloaded document before replacing an original.</p></details><details><summary>Can I extract text from a scanned PDF?</summary><p>This tool extracts embedded text using PDF.js. A scanned page may contain no embedded text; use Document OCR for image-based recognition. Text order and spacing can differ from the visual page layout.</p></details><details><summary>What happens to forms, signatures and protected files?</summary><p>Page-copy operations create a new document and may not preserve interactive forms, bookmarks, attachments or digital signatures. Password-protected input can fail to load; unlock a copy with an appropriate tool first. Keep the original and inspect every output.</p></details><details><summary>Where does processing happen, and are there limits?</summary><p>These operations run in browser memory; selected file contents are not uploaded to a processing server. PDF libraries and assets load from external CDNs, so network access may be needed. Browser/device memory limits apply. Download your result before closing the page; no automatic file backup is provided.</p></details></div></section><nav class="guide-related" aria-label="Related tools"><span>Continue exploring</span><a href="document-signer.html">Visual e-Signer →</a><a href="pdf-redactor.html">PDF Redactor →</a><a href="document-ocr.html">Document OCR →</a></nav></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script><script src="assets/workspaces/pdf-studio/engine.js?v=3"></script><script src="assets/workspaces/pdf-studio/ui.js?v=4"></script>

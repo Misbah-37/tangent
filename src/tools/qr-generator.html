@@ -1,0 +1,104 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>QR Generator | RunTangent</title>
+<meta name="description" content="Create static QR images for links, Wi-Fi details, contact cards and text in your browser. Customize colours and size, then download a PNG or copy the image.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="QR Generator | RunTangent"><meta property="og:description" content="A small mark. A way forward. Compose and preview static QR images, then test the final download before sharing.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/qr-generator/style.css?v=3">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="utilities" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">UTILITIES / QR GENERATOR</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h3v3h3v3h-6zM12 3v3m0 6h3m6 0v3M3 12h6m3 3v6"/></svg></span>QR Generator</h1><p class="tool-description">Create QR codes with custom colours and an optional centre logo.</p><p class="tool-tagline">A small mark. A way forward.</p></div><aside class="category-intro-info" aria-label="QR Generator quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>A link, ready to share.</h2><dl><div><dt>Enter</dt><dd>Add your QR content</dd></div><div><dt>Style</dt><dd>Adjust colours and optional logo</dd></div><div><dt>Test</dt><dd>Download and scan the result</dd></div></dl><p>Test the code on your intended device before sharing.</p></aside></section><div class="qr-toolbar"><span>Your code, composed here.</span><div><button id="downloadPngBtn" class="primary-action" onclick="downloadPNG()">Download PNG</button><button id="copyImgBtn" onclick="copyQRImage()"><span id="copyBtnText">Copy image</span></button></div></div><p class="context-note">Static codes · Live preview · Test the final image before sharing</p><section id="workspace" tabindex="-1" class="qr-workspace"><div class="workspace-heading"><span class="eyebrow">THE CONNECTION</span><span>A little space between here and there.</span></div><div class="qr-grid"><div class="compose-side"><div class="mode-bar" role="group" aria-label="Code content"><button class="mode-btn active" id="mode-url" onclick="setMode('url')">Link</button><button class="mode-btn" id="mode-wifi" onclick="setMode('wifi')">Wi-Fi</button><button class="mode-btn" id="mode-vcard" onclick="setMode('vcard')">Contact</button><button class="mode-btn" id="mode-text" onclick="setMode('text')">Text</button></div><span class="eyebrow">WHAT IT CARRIES</span><h2>Start with<br>the destination.</h2>        <div id="fields-url" class="mode-fields">
+          <div class="input-group">
+            <label for="urlInput">Target URL</label>
+            <input type="text" id="urlInput" placeholder="https://example.com" value="https://runtangent.com/">
+          </div>
+        </div>
+
+        <!-- Wi-Fi Mode -->
+        <div id="fields-wifi" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="wifiSsid">Network Name (SSID)</label>
+            <input type="text" id="wifiSsid" placeholder="Home or Office Wi-Fi">
+          </div>
+          <div class="input-group">
+            <label for="wifiPassword">Password</label>
+            <input type="password" autocomplete="off" id="wifiPassword" placeholder="Network password">
+          </div>
+          <div class="input-group">
+            <label for="wifiEncryption">Security Type</label>
+            <select id="wifiEncryption">
+              <option value="WPA">WPA / WPA2 (scanner support varies)</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">None (Open Network)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- vCard Mode -->
+        <div id="fields-vcard" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="vcardName">Full Name</label>
+            <input type="text" id="vcardName" placeholder="Alex Rivera">
+          </div>
+          <div class="input-group">
+            <label for="vcardPhone">Phone Number</label>
+            <input type="text" id="vcardPhone" placeholder="+1 (555) 019-2834">
+          </div>
+          <div class="input-group">
+            <label for="vcardEmail">Email Address</label>
+            <input type="text" id="vcardEmail" placeholder="alex@example.com">
+          </div>
+        </div>
+
+        <!-- Plain Text Mode -->
+        <div id="fields-text" class="mode-fields" style="display:none;">
+          <div class="input-group">
+            <label for="rawTextInput">Plain Text or Note</label>
+            <textarea id="rawTextInput" placeholder="Enter any text, instructions, or keys to encode..."></textarea>
+          </div>
+        </div>
+
+<p class="input-note">Details are encoded directly into the image. Share only what you intend others to read.</p><details class="appearance"><summary>Colour &amp; image size</summary>        <!-- Colors & Palettes -->
+        <div class="color-controls">
+          <div class="color-group">
+            <label for="fgColor">Code colour</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="fgColor" value="#000000">
+              <span class="color-hex" id="fgHex">#000000</span>
+            </div>
+          </div>
+          <div class="color-group">
+            <label for="bgColor">Background</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="bgColor" value="#FFFFFF">
+              <span class="color-hex" id="bgHex">#FFFFFF</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color Palette Quick Chips -->
+        <div class="palette-chips">
+          <button type="button" class="palette-chip" onclick="applyPalette('#000000', '#FFFFFF')">Monochrome</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#08090d', '#00d2ff')">RunTangent Cyan</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#0f172a', '#f1f5f9')">Midnight</button>
+          <button type="button" class="palette-chip" onclick="applyPalette('#245746', '#FFFFFF')">Emerald</button>
+        </div>
+
+        <!-- Resolution Selector -->
+        <div class="input-group">
+          <label for="sizeSelect">Resolution</label>
+          <select id="sizeSelect" onchange="generateQR()">
+            <option value="300">300 × 300 pixels</option>
+            <option value="600">600 × 600 pixels</option>
+            <option value="1200">1200 × 1200 pixels</option>
+          </select>
+        </div>
+
+      </details><details class="appearance logo-controls"><summary>Centre logo <span class="optional-label">Optional</span></summary><p class="input-note">Add a small brand mark. Covering QR modules can reduce readability; test the final image before sharing.</p><button class="logo-upload" type="button" onclick="document.getElementById('logoInput').click()">Choose logo</button><input id="logoInput" hidden type="file" accept="image/png,image/jpeg,image/webp" onchange="loadQRLogo(this.files[0])"><p class="input-note">PNG, JPEG or WebP · Up to 5 MB / 4,096 pixels per side</p><div class="logo-size-row"><label for="logoSize">Logo badge size</label><output id="logoSizeValue" for="logoSize">15%</output></div><input id="logoSize" type="range" min="10" max="20" value="15" oninput="document.getElementById('logoSizeValue').textContent=this.value+'%';generateQR()"><p class="input-note">A circular white badge, sized as a percentage of the code width. Your logo keeps its proportions.</p><button id="removeLogo" type="button" onclick="removeQRLogo()" disabled>Remove logo</button><p id="logoStatus" role="status" class="input-note">No logo added.</p></details></div><div class="preview-side"><div class="preview-heading"><span class="eyebrow">THE MARK</span><span id="previewMode">Link</span></div><div class="preview-mat"><div class="canvas-wrapper"><div id="qrCanvas"></div></div></div><div id="colourWarning" class="colour-warning" role="status" hidden><strong>These colours may be difficult to scan.</strong><p>Dark code on a light background is usually easier to read. You can export this version; test the final image with your scanner before sharing.</p><button type="button" onclick="applyPalette('#000000','#ffffff')">Use black on white</button></div><div class="preview-foot"><strong>One scan. A new starting point.</strong><p>Keep the white space around your code. Download it and test it on your intended device.</p></div></div></div></section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">A CONNECTION, MADE SIMPLE</span><h2>From a detail.<br>To a destination.</h2><p>Create a static QR image for a website, a network, a contact or a short note. Review what it contains, choose a clear appearance, then test the image where you plan to use it.</p></div><h3>How to create a QR code</h3><ol class="guide-steps"><li><strong>Choose what to share.</strong>Select a link, Wi-Fi details, contact information or text.</li><li><strong>Compose the content.</strong>Enter your details. The preview updates as you work.</li><li><strong>Keep it clear.</strong>Choose contrasting colours and an image size that suits your layout.</li><li><strong>Test and share.</strong>Download the PNG or copy the image, then check the final code with your scanner.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE YOU SHARE</span><h3>A few details.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Do these QR codes expire?</summary><p>The image contains your supplied text directly; this tool does not create an expiring redirect. A linked website can still change, disappear or require access. You cannot change the content encoded in an existing image without generating a new code.</p></details><details><summary>Does the tool send my details to a server?</summary><p>QR creation and image export run in your browser. The QR library is fetched from a CDN when the page loads. Scanning a link can contact the linked website. Wi-Fi codes contain the network credentials you enter; anyone who can read the code may recover them.</p></details><details><summary>What can I put in a code?</summary><p>Choose a link, Wi-Fi details, a contact card or plain text. Wi-Fi and vCard interpretation depends on the scanning application and device. The tool does not visit or verify entered links. Do not use a generated code as proof that a destination is safe.</p></details><details><summary>How should I prepare a code for print?</summary><p>Choose 300, 600 or 1,200 pixels. The code includes a four-module quiet zone and high error correction. Keep dark modules on a light background and test the final downloaded image at its intended size and on your intended scanners. No colour setting guarantees readability.</p></details><details><summary>Why can’t I generate or copy a code?</summary><p>The tool limits content to 1,200 UTF-8 bytes. Low-contrast or inverted colours show a readability warning but remain available to preview and export. Some content can still exceed the QR library capacity. An optional PNG, JPEG or WebP centre logo covers part of the code and can reduce readability; its circular white badge is limited to 10–20% of the code width. Always test logo codes with your intended scanners. Image copying depends on clipboard permission and browser support; download the PNG if copying fails. Shorter content usually gives a less dense code.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="assets/media-utils.js"></script>
+<script src="assets/workspaces/qr-generator/engine.js?v=7"></script>
+<script src="assets/workspaces/qr-generator/ui.js"></script>

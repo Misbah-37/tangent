@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What can I record?",
+    "answer": "Choose a screen, application window or browser tab in your browser’s sharing picker. Screen capture requires a supported desktop browser and a secure context such as HTTPS or localhost. Mobile screen capture may be unavailable."
+  },
+  {
+    "question": "Can I include microphone and shared audio?",
+    "answer": "Enable the audio options before starting. Microphone access is requested when recording starts. Shared audio depends on the browser, operating system and selected source; enable Share audio in the picker when available. Before recording, a readiness panel shows which audio sources are available. Continue with those sources or choose another source. An available track does not guarantee audible sound; review your clip."
+  },
+  {
+    "question": "Can I pause a recording?",
+    "answer": "Yes. An optional three-second countdown gives you time to prepare. Pause and resume the same clip, then stop to review it. Ending screen sharing also stops the recording. Paused time is excluded from the displayed recording duration."
+  },
+  {
+    "question": "Which format and limits apply?",
+    "answer": "The browser selects a supported WebM or MP4 recording format. Clips stop at 30 minutes of recorded time or approximately 256 MB. Size can exceed the threshold by the last encoded chunk. Keep clips shorter on devices with limited memory."
+  },
+  {
+    "question": "Where is my recording saved?",
+    "answer": "The clip stays in browser memory until you choose Download recording. Nothing is automatically saved when you stop. Download before starting another clip or leaving this page. This tool does not upload your recording and adds no watermark."
+  }
+]

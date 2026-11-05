@@ -1,0 +1,10 @@
+﻿<script>
+function scrollTrack(trackId, direction) {
+  const track = document.getElementById(trackId);
+  if (track) {
+    const cardWidth = 320; // Approx card width + gap
+    const scrollAmount = track.clientWidth > cardWidth * 2 ? track.clientWidth * 0.75 : cardWidth;
+    track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  }
+}
+</script>

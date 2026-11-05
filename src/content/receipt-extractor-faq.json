@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What does Receipt Scanner extract?",
+    "answer": "It recognizes printed English text and suggests one total and one date. These are editable suggestions, not verified financial records. It does not itemize purchases, categorize expenses or convert currencies."
+  },
+  {
+    "question": "Which files can I use?",
+    "answer": "Choose an image or a single-page PDF receipt smaller than 50 MB. Image dimensions and browser memory limits also apply. Multipage PDFs are rejected; use a separate file for each receipt."
+  },
+  {
+    "question": "What if the total or date is wrong?",
+    "answer": "Compare the suggested fields with the receipt and edit them. Multiple plausible totals or dates may leave a field blank. Date strings are not guaranteed to be valid or unambiguous; confirm their meaning yourself."
+  },
+  {
+    "question": "Can I export my corrections?",
+    "answer": "Copy the reviewed text or JSON fields, or download the reviewed total, date and text as JSON. Edits are included in the result. Download or copy before clearing the workspace; there is no automatic receipt archive."
+  },
+  {
+    "question": "Where does recognition happen?",
+    "answer": "Recognition runs in browser memory. OCR engine and language files and PDF libraries may download from external services. The scan prompt allows engine preparation; caching may reduce later downloads. Review every result before use."
+  }
+]

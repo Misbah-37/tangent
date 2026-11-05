@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How do I save my resume as a PDF?",
+    "answer": "Print / Save PDF opens your browser\u2019s print dialog. Choose Save as PDF or a printer, then review page size, margins, page breaks and headers/footers before saving. The browser controls the final output; the preview is not a guarantee of pagination."
+  },
+  {
+    "question": "Will every applicant tracking system read it correctly?",
+    "answer": "No template can guarantee compatibility with every hiring system. A simple single-column layout is often easier to inspect. Check that your exported PDF has selectable text and review the application preview where available. No ATS score or parsing certification is provided."
+  },
+  {
+    "question": "Are my details saved automatically?",
+    "answer": "Draft saving is off by default. You can opt in to save the resume fields, entries, template, accent and optional photo in this browser. Turning draft saving off removes the stored draft. Shared-device users should review browser storage before leaving; clearing a field is not secure erasure."
+  },
+  {
+    "question": "Can I change the layout or add a photo?",
+    "answer": "Choose from 15 existing layouts and five accent colours. Add, edit or remove experience and education entries; update the summary and comma-separated skills. Optional PNG, JPEG or WebP photos must be smaller than 10 MB and are resized for the document. Keep photo and layout choices appropriate for the application."
+  },
+  {
+    "question": "Is the example content part of my resume?",
+    "answer": "The initial resume is synthetic sample content. Replace it with your own information, or use Clear all to start empty. Replace with sample and Clear resume ask for confirmation when the resume contains content. Undo replacement restores the previous resume within this page; that undo snapshot is not retained after reloading. Review every claim, date and contact detail before sharing; the tool does not verify them."
+  }
+]

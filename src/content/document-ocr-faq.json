@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What files can I recognize?",
+    "answer": "Load a PDF, PNG, JPEG, WebP or BMP image, or paste an image from your clipboard. Files must be smaller than 50 MB; PDFs are limited to 20 pages and a combined rendered size of 50 million pixels. Device and individual image limits also apply."
+  },
+  {
+    "question": "Which languages can I choose?",
+    "answer": "English, Spanish, French, German, Italian, Portuguese, Simplified Chinese and Japanese are available. Choose the language before loading your file. Recognition quality depends on language, scan clarity and typography."
+  },
+  {
+    "question": "Can I correct the recognized text?",
+    "answer": "Yes. Review the editable text beside the source preview and make corrections before copying or downloading it. Multipage output includes page separators; preview navigation does not switch the combined text editor."
+  },
+  {
+    "question": "Does this create a searchable PDF?",
+    "answer": "No. The output is editable plain text that you can copy or download as a UTF-8 TXT file. It does not rebuild your document layout or add a searchable text layer to a PDF."
+  },
+  {
+    "question": "Where does recognition happen?",
+    "answer": "Document processing and recognition run in browser memory. OCR engine files, PDF libraries and language models may download from external services. Review results before use; the confidence score is an engine estimate, not a guarantee of accuracy."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Will this change my original files?",
+    "answer": "ZIP mode creates a categorized download and leaves originals unchanged. Direct-folder mode copies files by default. Only enable Move originals if you want source files removed after their destination copies have been verified. A stopped operation can leave completed or partial destination files."
+  },
+  {
+    "question": "What does File Organizer sort?",
+    "answer": "It uses filename extensions to place files in 12 named categories, with unmatched extensions in Other Files. It does not inspect document contents. Direct-folder selection scans top-level files only; subfolders are not scanned."
+  },
+  {
+    "question": "Can I use it in my browser?",
+    "answer": "Choose files for a ZIP download, or use direct-folder access when your browser provides the folder picker. Folder access requires permission and availability varies by browser. The ZIP library is downloaded from a CDN; selected file contents are processed in the browser."
+  },
+  {
+    "question": "How are duplicate names handled?",
+    "answer": "The preview assigns numbered names within each category, ignoring case when checking collisions. Direct-folder mode also checks existing destination names at execution time, so the final name may differ from the preview. It does not provide a transactional rollback or an undo operation."
+  },
+  {
+    "question": "How large a batch can I organize?",
+    "answer": "Choose at most 2,000 files totaling 500 MB. ZIP creation uses browser memory and can still fail on a resource-limited device. Review the destination preview before running; keep the page open until the status reports completion."
+  }
+]

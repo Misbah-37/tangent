@@ -1,0 +1,46 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do source, live preview and completed output differ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Original source shows untouched input. Preview with changes applies the current recipe to the full dataset, with Source / preview comparison available. Execute creates completed output for Download CSV. Later preview edits do not overwrite that export. Export affected rows instead uses the selected review view and issue type, including all matching rows and all columns across pages."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I control missing values and how they are filled?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Toggle blank cells, N/A, NULL, NaN and the dash marker, or add custom markers one per line. Matching ignores case and surrounding spaces. Unchecked markers remain text. Fill with mean, median, mode or custom text; literal replacements such as N/A are preserved. Numeric fills use usable values across the full dataset, excluding configured missing markers and empty numeric strings. A numeric fill cannot run without usable numbers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do deduplication and validation rules work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Exact deduplication compares all fields; key deduplication compares selected columns. The first matching row stays, and comparisons retain source row identities for removed records. Validation flags values without modifying them: required values, inclusive numeric/date ranges and exact allowed categories. Date checks expect valid YYYY-MM-DD values. Optional values classified as missing skip range and category checks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my data leave the device, and how large can it be?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "CSV parsing, cleaning and review run in browser memory; uploaded CSV contents are not sent to a processing server. Website assets and third-party libraries can require network requests, so offline availability is not guaranteed. Practical capacity depends on browser/device memory, data and recipe. Background workers help with cleaning, but large previews and comparisons may take time. Keep the original CSV and download results before closing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I reuse a recipe, and is the Python preview executable?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Named presets are stored in this browser, including column names, replacement text, missing markers and validation settings, not dataset row arrays. Clearing browser storage removes them; export recipe JSON to keep a backup or move settings. The Python preview is an illustrative pipeline outline with helper calls, not a standalone executable. Close preview or press Escape to return without losing your dataset."
+      }
+    }
+  ]
+}

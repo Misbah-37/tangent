@@ -2,16 +2,17 @@
 <html lang="en" ><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="assets/theme.js?v=1"></script>
 <title>Resume Studio | RunTangent</title>
 <meta name="description" content="Build a resume with live preview, 15 layouts, optional browser draft saving and browser Print / Save PDF. Review the final document before submitting.">
-<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Resume Studio | RunTangent"><meta property="og:description" content="Your experience. A clearer introduction. Shape your resume and review the final PDF."><link rel="icon" href="favicon.ico?v=2">
-<link rel="stylesheet" href="assets/editorial.css?v=6"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/resume-builder/resume-layouts.css?v=1"><link rel="stylesheet" href="assets/workspaces/resume-builder/style.css?v=5">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Resume Studio | RunTangent"><meta property="og:description" content="Your experience. A clearer introduction. Shape your resume and review the final PDF.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/resume-builder/resume-layouts.css?v=1"><link rel="stylesheet" href="assets/workspaces/resume-builder/style.css?v=5">
 <link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
 <link rel="canonical" href="https://runtangent.com/resume-builder.html">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebApplication", "name": "Resume Studio", "description": "Shape your resume with 15 layouts, live preview and optional browser drafts. Use browser Print / Save PDF and review the exported document before submitting.", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://runtangent.com/resume-builder.html", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I save my resume as a PDF?", "acceptedAnswer": {"@type": "Answer", "text": "Print / Save PDF opens your browser’s print dialog. Choose Save as PDF or a printer, then review page size, margins, page breaks and headers/footers before saving. The browser controls the final output; the preview is not a guarantee of pagination."}}, {"@type": "Question", "name": "Will every applicant tracking system read it correctly?", "acceptedAnswer": {"@type": "Answer", "text": "No template can guarantee compatibility with every hiring system. A simple single-column layout is often easier to inspect. Check that your exported PDF has selectable text and review the application preview where available. No ATS score or parsing certification is provided."}}, {"@type": "Question", "name": "Are my details saved automatically?", "acceptedAnswer": {"@type": "Answer", "text": "Draft saving is off by default. You can opt in to save the resume fields, entries, template, accent and optional photo in this browser. Turning draft saving off removes the stored draft. Shared-device users should review browser storage before leaving; clearing a field is not secure erasure."}}, {"@type": "Question", "name": "Can I change the layout or add a photo?", "acceptedAnswer": {"@type": "Answer", "text": "Choose from 15 existing layouts and five accent colours. Add, edit or remove experience and education entries; update the summary and comma-separated skills. Optional PNG, JPEG or WebP photos must be smaller than 10 MB and are resized for the document. Keep photo and layout choices appropriate for the application."}}, {"@type": "Question", "name": "Is the example content part of my resume?", "acceptedAnswer": {"@type": "Answer", "text": "The initial resume is synthetic sample content. Replace it with your own information, or use Clear all to start empty. Replace with sample and Clear resume ask for confirmation when the resume contains content. Undo replacement restores the previous resume within this page; that undo snapshot is not retained after reloading. Review every claim, date and contact detail before sharing; the tool does not verify them."}}]}]</script>
-<style></style><link rel="stylesheet" href="assets/category-intros.css?v=3"><link rel="stylesheet" href="/assets/site-header.css?v=2"><script src="/assets/site-header.js?v=1" defer></script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="rt-masthead">
+<style></style><link rel="stylesheet" href="/assets/site-header.css?v=2"><script src="/assets/site-header.js?v=1" defer></script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="rt-masthead">
  <div class="rt-bar">
   <a class="rt-brand" href="/" aria-label="RunTangent home"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M 32 50 C 22.06 50 14 41.94 14 32 C 14 22.06 22.06 14 32 14 L 54 14" stroke="#00d2ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 14v30" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span>Run<span class="rt-tangent">Tangent</span></span></a>
   <button class="rt-menu" type="button" aria-expanded="false" aria-controls="site-navigation">Menu <span aria-hidden="true">+</span></button>
-  <nav class="rt-nav" id="site-navigation" aria-label="Main navigation"><a href="/tools">Tools</a><a href="/#about">About</a><a href="/#analyst">RunTangent Analyst <span aria-hidden="true">↗</span></a></nav>
+  <nav class="rt-nav" id="site-navigation" aria-label="Main navigation"><a href="/tools.html">Tools</a><a href="/#about">About</a><a href="/#analyst">RunTangent Analyst <span aria-hidden="true">↗</span></a></nav>
   <select class="rt-theme" data-theme-choice aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select>
  </div>
 </header>
@@ -30,7 +31,7 @@
       <div class="input-grid">
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input type="text" id="inName" class="form-input" value="Alex Rivera">
+          <input type="text" id="inName" class="form-input" value="Example Applicant">
         </div>
         <div class="form-group">
           <label class="form-label">Professional Title</label>
@@ -40,21 +41,21 @@
       <div class="input-grid">
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input type="email" id="inEmail" class="form-input" value="alex.rivera@example.com">
+          <input type="email" id="inEmail" class="form-input" value="applicant@example.com">
         </div>
         <div class="form-group">
           <label class="form-label">Phone</label>
-          <input type="text" id="inPhone" class="form-input" value="+1 (555) 382-9102">
+          <input type="text" id="inPhone" class="form-input" value="[ENTER PHONE NUMBER]">
         </div>
       </div>
       <div class="input-grid">
         <div class="form-group">
           <label class="form-label">Location</label>
-          <input type="text" id="inLocation" class="form-input" value="Austin, TX">
+          <input type="text" id="inLocation" class="form-input" value="[ENTER LOCATION]">
         </div>
         <div class="form-group">
           <label class="form-label">Website / Portfolio</label>
-          <input type="text" id="inWebsite" class="form-input" value="alexrivera.dev">
+          <input type="text" id="inWebsite" class="form-input" value="https://example.com/portfolio">
         </div>
       </div>
     </div>

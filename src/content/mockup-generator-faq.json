@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What can I create?",
+    "answer": "Place a screenshot or image on a gradient, dark or transparent background. Choose a decorative window frame and aspect ratio, then adjust padding, corners, shadow and image scale. This is a screenshot presentation tool, not a device or perspective mockup editor."
+  },
+  {
+    "question": "Can I paste a screenshot?",
+    "answer": "Yes. Copy an image to your clipboard, then paste it into this page with Ctrl+V or Cmd+V. You can also load or drop a browser-supported image. Clipboard formats and image-copy permissions depend on your browser."
+  },
+  {
+    "question": "What can I export?",
+    "answer": "Download a PNG of the current canvas, or copy the PNG image where your browser allows clipboard writing. Exports are capped at 4096 pixels per side. There is no selectable JPEG or 2\u00d7 export setting. Review the actual output dimensions for your intended use."
+  },
+  {
+    "question": "Are my screenshots uploaded?",
+    "answer": "Image loading, composition and PNG encoding run in your browser. This tool does not upload your screenshot. The initial canvas is an illustrative demo; replace it with your own image before exporting your work."
+  },
+  {
+    "question": "What happens when I replace or clear an image?",
+    "answer": "Loading or pasting another image replaces the current one while retaining composition settings. Clear image removes it. Save the PNG before clearing or leaving the page. Inputs are limited to 10,000 pixels per side and 25 million pixels total; browser memory can impose lower limits."
+  }
+]

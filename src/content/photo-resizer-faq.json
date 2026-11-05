@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Which files can I resize?",
+    "answer": "Open a JPEG, PNG or WebP image. Decoding and export depend on browser support and available memory. Large files and image dimensions have safety limits."
+  },
+  {
+    "question": "How do crop and dimensions work together?",
+    "answer": "Choose the part of the photo you want to keep, then set the output width and height. The crop follows that aspect ratio. Pixel presets are starting points, not certification for passport or upload requirements."
+  },
+  {
+    "question": "Can I guarantee a particular file size?",
+    "answer": "JPEG and WebP use a quality search to approach your size range. Some targets cannot be reached without smaller dimensions. Read the result size and any warning. PNG does not use the size target."
+  },
+  {
+    "question": "What happens to transparency?",
+    "answer": "PNG and WebP can retain transparent areas. JPEG fills transparent areas with white. Review the downloaded image before use."
+  },
+  {
+    "question": "Are photos uploaded or saved automatically?",
+    "answer": "Image processing runs in your browser. Interface libraries may load from external CDNs. There is no automatic photo archive; download your result before clearing or replacing the photo."
+  }
+]

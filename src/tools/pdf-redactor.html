@@ -1,0 +1,156 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>PDF Redactor | RunTangent</title>
+<meta name="description" content="Mark areas on PDF pages and download a separate image-based copy with redactions burned in. Review selections and omit standard document information using browser-based processing.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="PDF Redactor | RunTangent"><meta property="og:description" content="Choose what stays visible. Mark, review and export a separate image-based PDF copy.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/pdf-redactor/legacy.css?v=1"><link rel="stylesheet" href="assets/workspaces/pdf-redactor/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="documents" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DOCUMENTS &amp; PDF / PDF REDACTOR</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">▰</span>PDF Redactor</h1><p class="tool-description">Mark sensitive areas in a PDF and export a redacted copy.</p><p class="tool-tagline">Share the meaning. Keep the private details.</p></div><aside class="category-intro-info" aria-label="PDF Redactor quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Keep private details out of view.</h2><dl><div><dt>Open</dt><dd>Choose your PDF</dd></div><div><dt>Mark</dt><dd>Select areas to redact</dd></div><div><dt>Review</dt><dd>Export and inspect the result</dd></div></dl><p>Check every page of the exported copy before sharing.</p></aside></section><div class="editor-toolbar"><span id="file-context">No PDF loaded</span><button id="load-pdf">Load PDF</button><span id="file-actions"></span></div><p class="redactor-note">Selections are a preview. Applying creates a separate image-based PDF.</p><section id="redaction-workspace" tabindex="-1">    <!-- Upload Zone -->
+    <div class="upload-box" id="drop-zone" onclick="document.getElementById('pdf-input').click()">
+      <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <path d="M12 18s4-2 4-5v-3l-4-1.5L8 10v3c0 3 4 5 4 5z"></path>
+      </svg>
+      <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">A little less revealed. A little more considered.</div>
+      <div style="color: var(--text-subtle); font-size: 0.9rem;">Choose a PDF to mark areas for removal. Processing uses browser memory.</div>
+      <div class="upload-btn">Select PDF Document</div>
+      <input type="file" id="pdf-input" accept="application/pdf" style="display: none;">
+    </div>
+
+    <!-- Redaction Workspace -->
+    <div class="workspace" id="workspace">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <!-- Document / File Actions -->
+        <div class="toolbar-group document-group">
+          <button type="button" class="tool-btn" id="open-doc-btn" onclick="openNewPdf()" title="Open another PDF document">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            <span>Open PDF</span>
+          </button>
+          <button type="button" class="tool-btn tool-btn-secondary" id="close-doc-btn" onclick="closeDocument()" title="Close current document and return to upload area">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Close</span>
+          </button>
+          <span class="current-filename" id="doc-filename-display" title="Current PDF filename">document.pdf</span>
+        </div>
+
+        <!-- Page Controls -->
+        <div class="toolbar-group">
+          <button class="tool-btn" id="prev-btn" onclick="changePage(-1)" title="Previous Page">Prev</button>
+          <select id="page-select" class="page-select" onchange="goToPage(parseInt(this.value))" title="Jump to page">
+            <option value="1">Page 1</option>
+          </select>
+          <span class="page-indicator" id="page-total-display">of 1</span>
+          <button class="tool-btn" id="next-btn" onclick="changePage(1)" title="Next Page">Next</button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="toolbar-group">
+          <button class="tool-btn" onclick="zoomPage(-0.2)" title="Zoom Out (Ctrl + Minus)">−</button>
+          <span class="zoom-indicator" id="zoom-display" onclick="resetZoom()" title="Click to Reset to 100%">150%</span>
+          <button class="tool-btn" onclick="zoomPage(0.2)" title="Zoom In (Ctrl + Plus)">+</button>
+          <button class="tool-btn" onclick="fitPageWidth()" title="Fit to Screen Width">Fit</button>
+        </div>
+
+        <!-- Interaction Tool: Draw Box vs Move/Pan -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="btn-mode-redact" onclick="setActiveTool('redact')" title="Draw or edit redaction boxes">Draw Box</button>
+          <button class="tool-btn" id="btn-mode-pan" onclick="setActiveTool('pan')" title="Drag to move and scroll the page freely">Move / Pan</button>
+        </div>
+
+        <!-- Box Visual Style -->
+        <div class="toolbar-group">
+          <button class="tool-btn active" id="mode-blackout" onclick="setRedactType('blackout')" title="Solid black blackout box">Solid Black</button>
+          <button class="tool-btn" id="mode-stamp" onclick="setRedactType('stamp')" title="Black box with white REDACTED text">"REDACTED" Stamp</button>
+        </div>
+
+        <!-- Edit & History -->
+        <div class="toolbar-group">
+          <button class="tool-btn" id="undo-btn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>Undo</button>
+          <button class="tool-btn" id="redo-btn" onclick="redo()" title="Redo (Ctrl+Y)" disabled>Redo</button>
+          <button class="tool-btn" id="delete-btn" onclick="deleteSelectedBox()" title="Delete Selected Box (Del)" style="display:none; color:#f87171; border-color:rgba(239,68,68,0.4);">Delete</button>
+          <button class="tool-btn" onclick="clearCurrentPageRedactions()" title="Clear all redactions on this page">Clear</button>
+        </div>
+
+        <!-- Export -->
+        <div class="toolbar-group">
+          <button class="export-btn" id="export-btn" onclick="exportRedactedPdf()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Apply & download
+          </button>
+        </div>
+      </div>
+
+      <!-- Hint Bar -->
+      <div class="hint-bar">
+        <span><strong>Draw Box:</strong> Drag to draw, tap box to move/resize • <strong>Move/Pan:</strong> Drag anywhere to scroll page</span>
+        <span id="redaction-count-display">0 redactions on this page</span>
+      </div>
+
+      <!-- Metadata Inspector -->
+      <div class="metadata-panel">
+        <div class="meta-summary" id="meta-summary-text">
+          <span>Scanning document metadata...</span>
+        </div>
+        <label class="meta-toggle">
+          <input type="checkbox" id="purge-meta-checkbox" checked>
+          <span>Omit document information on export</span>
+        </label>
+      </div>
+
+      <!-- Canvas Stage with Pinned Floating History HUD -->
+      <div class="stage-wrapper">
+        <!-- Floating Stage History HUD (Permanently Pinned in Top-Right Corner) -->
+        <div class="stage-floating-hud">
+          <button type="button" class="hud-btn btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
+            Undo
+          </button>
+          <button type="button" class="hud-btn btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>
+            Redo
+          </button>
+        </div>
+
+        <div class="stage-container">
+          <div class="stage-inner">
+            <div class="canvas-wrapper" id="canvas-wrapper">
+              <canvas id="pdf-canvas"></canvas>
+              <canvas id="draw-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Quick-Action Navigation Dock -->
+      <div class="dock-wrapper">
+        <div class="quick-nav-dock" id="quick-nav-dock">
+          <button type="button" class="dock-mode-toggle" id="dock-mode-toggle" onclick="toggleActiveTool()" title="Tap to switch between Draw Box and Move/Pan">
+            <span id="dock-tool-text">Draw Box</span>
+          </button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, -200)" title="Scroll Up">▲</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(0, 200)" title="Scroll Down">▼</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(-200, 0)" title="Scroll Left">◄</button>
+          <button type="button" class="dock-nudge-btn" onclick="nudgeStage(200, 0)" title="Scroll Right">►</button>
+          <div class="dock-divider"></div>
+          <button type="button" class="dock-nudge-btn" onclick="scrollToBottom()" title="Jump straight to Bottom of Page">⤓</button>
+        </div>
+      </div>
+
+    </div>
+
+</section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">KEEP THE MEANING. CHOOSE WHAT TO SHARE.</span><h2>A considered edit.<br>A more private copy.</h2><p>Mark the areas you want to obscure, review each page and create an image-based PDF with those selections burned in.</p></div><h3>How to redact a PDF</h3><ol class="guide-steps"><li><strong>Open your document.</strong> Load a PDF and find the pages you need.</li><li><strong>Mark the areas.</strong> Draw boxes over the complete sensitive area, leaving a small margin.</li><li><strong>Review each page.</strong> Move or resize the selections and undo changes as needed. Check for information outside your boxes.</li><li><strong>Apply and inspect.</strong> Download a separate image-based PDF. Reopen it and review every page before sharing.</li></ol><aside class="guide-limits"><h3>A different kind of PDF</h3><p>Export rebuilds every page as an image. Searchable text and editable forms are lost; image quality and file size can change. Keep your original. Marking a box in this workspace has not yet changed any file.</p></aside><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE YOU SHARE</span><h3>Less exposed.<br>Clearly understood.</h3><a href="#redaction-workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Does this only cover the original text?</summary><p>The exporter renders every page, paints the marked areas into that image and creates a new image-based PDF. Original text objects are not copied into that result. Inspect your downloaded copy before sharing.</p></details><details><summary>What changes in the exported PDF?</summary><p>Every page becomes an image. Selectable text, editable forms, links, annotations and existing digital signatures are not preserved as interactive document features. Rasterization can affect quality and file size.</p></details><details><summary>Can I change a selection before downloading?</summary><p>Yes. Draw boxes, select them to move or resize them, and use Undo, Redo or Delete before applying. Your source PDF is unchanged; the download is a separate copy.</p></details><details><summary>What does the document information option do?</summary><p>The exporter creates a new PDF rather than copying the source document structure. With this option enabled it also omits the output Info dictionary and XMP metadata. This is not a certification that all sensitive visible information has been found.</p></details><details><summary>Where does processing happen?</summary><p>Selected document contents are processed in browser memory. PDF libraries load from external CDNs, so network access may be required. Large documents depend on your device memory. Keep the original and review every output page.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+  <!-- Progress Overlay -->
+  <div class="progress-overlay" id="progress-overlay">
+    <div class="spinner"></div>
+    <div id="progress-text" style="font-weight: 700; font-size: 1.15rem; color: var(--text-main);">Flattening and burning redactions...</div>
+    <div id="progress-sub" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Processing Page 1...</div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script><script src="assets/workspaces/pdf-redactor/engine.js?v=2"></script><script src="assets/workspaces/pdf-redactor/ui.js?v=1"></script>

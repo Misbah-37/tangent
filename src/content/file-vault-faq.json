@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How is the file encrypted?",
+    "answer": "New TGT2 containers use Web Crypto AES-GCM with a 256-bit key, a fresh 16-byte random salt and a 12-byte random IV. PBKDF2-SHA-256 derives the key using 600,000 iterations, and the container header is authenticated. Earlier TGT1 files still unlock using their original 100,000-iteration format. Older versions of the tool cannot open new TGT2 files. The original filename and type are included inside the encrypted contents. The encrypted download uses a random lockbox name; its size remains visible."
+  },
+  {
+    "question": "What happens if I forget the password?",
+    "answer": "There is no password recovery or reset for an encrypted container. RunTangent does not save your password. Keep a reliable record separately. A short PIN or weak password can be guessed; use a long, unique password. The local strength estimate is guidance, not a guarantee; no online breach lookup runs here."
+  },
+  {
+    "question": "Does locking replace my original file?",
+    "answer": "No. Locking prepares a separate .tangent download. Your original stays where it was. Unlock and check the downloaded container before making your own decisions about retaining originals. This tool does not erase files or securely wipe your device."
+  },
+  {
+    "question": "Which files and sizes can I use?",
+    "answer": "Choose one file at a time, or create a ZIP first to include several files. The whole file is processed in browser memory, so practical size depends on the device and browser. Use smaller files if processing fails. Unlock accepts this tool’s TGT1 and TGT2 .tangent containers. Stronger derivation for new files may take a little longer on your device."
+  },
+  {
+    "question": "Where does processing happen?",
+    "answer": "Encryption and decryption run in your browser using Web Crypto; this tool does not upload your file. Use HTTPS or localhost in a browser with Web Crypto support. Access to the page and its dependencies is needed; offline availability is not guaranteed. A compromised device can expose files and passwords."
+  }
+]

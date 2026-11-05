@@ -1,0 +1,92 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Receipt Scanner | RunTangent</title>
+<meta name="description" content="Recognize printed English receipt text, review suggested totals and dates, and download your corrected details as JSON in your browser.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Receipt Scanner | RunTangent"><meta property="og:description" content="Read the receipt. Review the numbers. Keep what matters.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/receipt-extractor/legacy.css?v=1"><link rel="stylesheet" href="assets/workspaces/receipt-extractor/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="documents" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">DOCUMENTS &amp; PDF / RECEIPT SCANNER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">≡</span>Receipt Scanner</h1><p class="tool-description">Read receipt images or a single-page PDF and review the extracted details.</p><p class="tool-tagline">Every small detail. A clearer record.</p></div><aside class="category-intro-info" aria-label="Receipt Scanner quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Bring receipt details into view.</h2><dl><div><dt>Open</dt><dd>An image or single-page PDF</dd></div><div><dt>Read</dt><dd>Extract the receipt details</dd></div><div><dt>Review</dt><dd>Correct values before exporting</dd></div></dl><p>Check dates, amounts and merchant names against the original.</p></aside></section><div class="editor-toolbar"><span id="file-context">No receipt loaded</span><button id="load-receipt">Load receipt</button><span id="file-actions"></span><button id="download-json" class="primary-action" disabled>Download JSON</button></div><p class="receipt-note">English receipt recognition · Totals and dates are suggestions for your review.</p><section id="workspace" tabindex="-1"><div class="split-layout">
+  <!-- Left Panel: Upload -->
+  <div class="editor-panel">
+    <div class="panel-section">
+      <h3>Your receipt</h3>
+      <div class="upload-zone" id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,210,255,0.02);">
+        <svg class="receipt-upload-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l2 1 2-1 2 1 2-1 2 1 2-1v18l-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+        <div style="font-weight: 500; margin-bottom: 8px;">A small record. A clearer picture.</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Supports single-page PDF, JPG, PNG</div>
+        <input type="file" id="fileInput" accept="image/*, application/pdf" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="panel-section" id="previewSection" style="display: none;">
+      <img id="receiptPreview" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); max-height: 200px; object-fit: cover;" />
+    </div>
+
+    <!-- Status & Progress -->
+    <div class="panel-section" id="statusSection" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span id="statusText" style="font-size: 13px; font-weight: 500; color: var(--accent);">Initializing Engine...</span>
+        <span id="statusPercent" style="font-size: 12px; color: var(--text-secondary);">0%</span>
+      </div>
+      <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Output -->
+  <div class="preview-panel" style="border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; background: var(--bg-card); position: relative; overflow: hidden; min-height: 450px;">
+
+    <!-- Empty State -->
+    <div id="emptyState" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-secondary); text-align: center;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 16px; opacity: 0.5;">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      Extracted data will appear here.
+    </div>
+
+    <!-- Consent State (Hidden by default) -->
+    <div id="consentState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--text-main); text-align: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 12px; position: absolute; inset: 0; z-index: 10;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom: 20px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+      <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 20px;">Prepare receipt recognition</h3>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 320px; margin-bottom: 24px; line-height: 1.5;">To scan receipts without uploading them to the cloud, your browser needs to download the Tesseract Optical Character Recognition engine and English language files. Browser caching may reduce later downloads. An internet connection may still be needed.</p>
+      <button class="btn btn-primary" id="btnConsentDownload">Prepare & scan</button>
+      <button class="btn btn-demo" id="btnConsentCancel" style="margin-top: 12px; border: none;">Cancel</button>
+    </div>
+
+    <!-- Active Extracted State -->
+    <div id="activeState" style="display: none; flex: 1; flex-direction: column;">
+      <div class="extracted-data">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="data-field">
+            <label for="outTotal">Review Total</label>
+            <input class="value" id="outTotal" aria-label="Review total" placeholder="Enter total" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg-base);color:var(--text-main);">
+          </div>
+          <div class="data-field">
+            <label for="outDate">Review Date</label>
+            <input class="value" id="outDate" aria-label="Review date" placeholder="Enter date" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg-base);color:var(--text-main);">
+          </div>
+        </div>
+
+        <div class="data-field" style="flex: 1; display: flex; flex-direction: column;">
+          <label>Review recognized text</label>
+          <textarea id="outRawText"></textarea>
+        </div>
+      </div>
+      <div style="padding: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-base);">
+        <button class="btn btn-secondary" id="btnCopyJSON">Copy as JSON</button>
+        <button class="btn btn-secondary" id="btnCopyText">Copy Text</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">THE DETAILS BEHIND THE PURCHASE</span><h2>From a paper trail<br>to a useful record.</h2><p>Read a receipt, compare the suggestions and keep the details you have reviewed.</p></div><h3>How to scan a receipt</h3><ol class="guide-steps"><li><strong>Open your receipt.</strong> Choose an image or single-page PDF with clear printed English text.</li><li><strong>Prepare recognition.</strong> Allow engine preparation when prompted. Downloads may need a network connection.</li><li><strong>Check the details.</strong> Compare the whole receipt with the suggested total, date and recognized text. Correct them before use.</li><li><strong>Keep your reviewed copy.</strong> Copy the text or JSON, or download JSON. Clear the workspace when finished.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE IT BECOMES A RECORD</span><h3>Suggested first.<br>Reviewed by you.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What does Receipt Scanner extract?</summary><p>It recognizes printed English text and suggests one total and one date. These are editable suggestions, not verified financial records. It does not itemize purchases, categorize expenses or convert currencies.</p></details><details><summary>Which files can I use?</summary><p>Choose an image or a single-page PDF receipt smaller than 50 MB. Image dimensions and browser memory limits also apply. Multipage PDFs are rejected; use a separate file for each receipt.</p></details><details><summary>What if the total or date is wrong?</summary><p>Compare the suggested fields with the receipt and edit them. Multiple plausible totals or dates may leave a field blank. Date strings are not guaranteed to be valid or unambiguous; confirm their meaning yourself.</p></details><details><summary>Can I export my corrections?</summary><p>Copy the reviewed text or JSON fields, or download the reviewed total, date and text as JSON. Edits are included in the result. Download or copy before clearing the workspace; there is no automatic receipt archive.</p></details><details><summary>Where does recognition happen?</summary><p>Recognition runs in browser memory. OCR engine and language files and PDF libraries may download from external services. The scan prompt allows engine preparation; caching may reduce later downloads. Review every result before use.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="assets/media-utils.js"></script><script src="assets/processing-utils.js"></script><script src="assets/receipt-parser.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script><script src="assets/workspaces/receipt-extractor/engine.js?v=2"></script><script src="assets/workspaces/receipt-extractor/ui.js?v=2"></script>

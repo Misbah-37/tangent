@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Which sources and extraction modes are supported?",
+    "answer": "Load local .html, .htm or .txt source files, or paste HTML. Choose automatic tables, a single CSS text selector, or structured records with named fields. This tool does not fetch live URLs, execute website scripts, read PDFs or perform OCR."
+  },
+  {
+    "question": "How does structured extraction work?",
+    "answer": "Each parent-selector match becomes one record. Define up to 30 uniquely named fields using cleaned text or a literal attribute value. A field selector uses its first matching descendant; leave it blank to use the parent itself. Missing elements or attributes become blank cells. Links and other attributes are not opened, resolved or fetched."
+  },
+  {
+    "question": "How are table spans and multiple tables handled?",
+    "answer": "Rowspan and colspan repeat cell text across covered positions; rowspan zero is bounded to the current row group. Nested tables are extracted separately and removed from the containing cell text. Multiple tables add a table identifier column and shorter rows are padded. The first extracted row supplies preview headings, including when source tables have no explicit header."
+  },
+  {
+    "question": "Does CSV export include every preview page?",
+    "answer": "Yes. Preview pages contain 50 data rows, excluding the first extracted header row from the data-row count. CSV includes the full extraction and header regardless of the page shown. Source or rule edits hide stale results until you extract again. Cleaned text and span expansion mean this is not a lossless markup copy."
+  },
+  {
+    "question": "Is supplied HTML executed, uploaded or saved?",
+    "answer": "Extraction parses a detached document and displays results as text rather than running supplied scripts or activating extracted attributes. Analysis is local; page libraries may load from CDNs. Work is not automatically saved and browser memory limits apply. Attribute values and source content remain untrusted data; review exports before sharing or using elsewhere."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What does the cleaned copy remove?",
+    "answer": "The tool redraws decoded image pixels into a new file without copying source EXIF or GPS tags. The browser may add its own format or color information. This is not a guarantee that every possible identifier has been removed."
+  },
+  {
+    "question": "Does the inspector show all metadata?",
+    "answer": "No. It displays supported EXIF fields such as camera, date and GPS tags. Missing fields mean the inspector did not find them; other metadata may still exist. The inspector is not a complete metadata inventory."
+  },
+  {
+    "question": "Will my photo look exactly the same?",
+    "answer": "Dimensions are retained, but JPEG and WebP re-encoding can affect detail and color. PNG preserves decoded pixels. JPEG fills transparency with white. Review orientation and appearance in the downloaded file."
+  },
+  {
+    "question": "Can I clean several photos together?",
+    "answer": "Use Batch to queue images and create a ZIP of new copies. Each file is decoded and re-encoded in the browser. Large images and queues depend on available memory; keep the originals and review the exported files."
+  },
+  {
+    "question": "Where are my images processed?",
+    "answer": "Processing runs in your browser. Libraries may load from external CDNs. Opening the optional map link sends coordinates to OpenStreetMap. There is no automatic image archive; download results before clearing the workspace."
+  }
+]

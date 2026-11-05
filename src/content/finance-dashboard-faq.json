@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What kind of CSV can I analyse?",
+    "answer": "Use a transaction CSV with a date, description and one signed amount column. Map those columns before analysing; a category column is optional. Separate debit and credit columns are not combined automatically. Positive amounts are inflow, negative amounts are outflow, and zero amounts affect neither total. If a statement starts with introductory records, choose and confirm its column-header record in the import preview."
+  },
+  {
+    "question": "How do date formats and invalid values affect totals?",
+    "answer": "Choose ISO, month/day/year or day/month/year explicitly. Valid dates normalize to calendar days without timezone conversion. Missing or invalid amounts are excluded entirely. Valid-amount transactions with missing or invalid dates stay in totals and the ledger, but are excluded from the daily chart. Import notices describe the analysed file; view status describes current matches."
+  },
+  {
+    "question": "How do transaction filters work?",
+    "answer": "From and Through dates are inclusive and combine with the exact category selection. Active date bounds exclude transactions without valid dates. Apply filters updates totals, charts, the ledger and export together. Invalid or reversed bounds leave the current view unchanged. Clear filters restores all analysed transactions and the first ledger page."
+  },
+  {
+    "question": "Does selecting a currency convert my transactions?",
+    "answer": "No. The selector changes formatting on totals, ledger amounts and chart labels only. All currencies display two decimal places. No exchange rates are applied and mixed source currencies are not detected or converted. Use one consistent source currency and sign convention."
+  },
+  {
+    "question": "What can I export, and is my work saved?",
+    "answer": "Export current transactions as CSV includes every matching record across pages: source date, normalized calendar day, description, parsed numeric amount and optional category. Display currency does not change exported numbers. This is a normalized analysis view, not an exact source-file copy. Analysis runs in browser memory, dependencies may load from CDNs, and work is not automatically saved. Keep original files; memory limits apply."
+  }
+]

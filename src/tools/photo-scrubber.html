@@ -1,0 +1,242 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Photo Scrubber | RunTangent</title>
+<meta name="description" content="Inspect supported photo EXIF and GPS fields, then create a new image from decoded pixels without copying source tags. Export single photos or a batch ZIP.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Photo Scrubber | RunTangent"><meta property="og:description" content="A clearer view of what travels with your photos.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="assets/workspaces/photo-scrubber/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="images" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">IMAGES &amp; PHOTOS / PHOTO SCRUBBER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">◈</span>Photo Scrubber</h1><p class="tool-description">Remove image metadata and download a separate cleaned copy.</p><p class="tool-tagline">Share the picture. Keep the rest to yourself.</p></div><aside class="category-intro-info" aria-label="Photo Scrubber quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>Share the image, with less attached.</h2><dl><div><dt>Open</dt><dd>Choose an image</dd></div><div><dt>Review</dt><dd>Inspect available metadata</dd></div><div><dt>Keep</dt><dd>Download a cleaned copy</dd></div></dl><p>Keep your original file and check the exported copy.</p></aside></section><div class="editor-toolbar"><span id="scrub-context">No photo loaded</span><button id="load-photo">Load photo</button><button id="clear-photo">Clear</button><span id="export-action"></span></div><p class="scrub-note">Inspect supported EXIF fields · Create a separate copy from image pixels.</p><section id="workspace" tabindex="-1"><!-- Tab Navigation -->
+<div class="tabs-wrapper">
+  <div class="tabs-container">
+    <button type="button" class="tab-btn active" id="tabBtnInspect" onclick="switchTab('tab-inspect')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Inspect & Scrub Photo</span>
+    </button>
+    <button type="button" class="tab-btn" id="tabBtnBatch" onclick="switchTab('tab-batch')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>Batch Scrubber</span>
+    </button>
+  </div>
+</div>
+
+<div class="tool-wrapper">
+
+  <!-- TAB 1: INSPECT & SCRUB (SINGLE PHOTO) -->
+  <div id="tab-inspect" class="tab-content active">
+    <div class="tool-container">
+      <h3>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <span>Source details</span>
+      </h3>
+      <p class="tool-desc">Inspect supported EXIF and location tags, then create a cleaned copy from the image pixels.</p>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-box" id="inspectDropZone" onclick="document.getElementById('inspectInput').click()">
+        <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <div class="upload-box-title">Keep the photograph.<br>Leave the extra details behind.</div>
+        <div class="upload-box-sub">Supports JPG, JPEG, PNG, WebP · Processed in your browser</div>
+        <div class="upload-btn-pill">Select Photo</div>
+        <input type="file" id="inspectInput" accept="image/jpeg, image/png, image/webp" style="display:none;">
+      </div>
+
+      <!-- Active File Card (Initially Hidden) -->
+      <div class="active-file-card" id="inspectFileCard" style="display:none;">
+        <div class="active-file-info">
+          <img id="inspectThumb" class="thumb-preview" alt="Preview">
+          <div style="min-width:0;">
+            <div class="active-file-name" id="inspectFileName">photo.jpg</div>
+            <div class="active-file-meta" id="inspectFileMeta">Detecting metadata...</div>
+          </div>
+        </div>
+        <button type="button" class="btn-remove-file" id="changePhotoBtn" onclick="resetSingleFile()" title="Change photo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>Change Photo</span>
+        </button>
+      </div>
+
+      <!-- GPS Status Alert Banner (Shown after inspection) -->
+      <div id="gpsBanner" style="display:none;"></div>
+
+      <!-- Metadata Breakdown Grid (Shown after inspection) -->
+      <div class="metadata-grid" id="metadataGrid" style="display:none;">
+        <!-- Card 1: Location & Coordinates -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Location & GPS Geotag</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Latitude</span>
+            <span class="meta-value" id="metaLat">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Longitude</span>
+            <span class="meta-value" id="metaLon">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Altitude</span>
+            <span class="meta-value" id="metaAlt">None</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">GPS Timestamp</span>
+            <span class="meta-value" id="metaGpsTime">None</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Camera & Hardware -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            <span>Device & Camera Model</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Manufacturer</span>
+            <span class="meta-value" id="metaMake">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Model</span>
+            <span class="meta-value" id="metaModel">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Lens Info</span>
+            <span class="meta-value" id="metaLens">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Software / OS</span>
+            <span class="meta-value" id="metaSoftware">Unknown</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Date & Capture Times -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Capture Timestamps</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Original Date</span>
+            <span class="meta-value" id="metaDateOrig">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Digitized Date</span>
+            <span class="meta-value" id="metaDateDig">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Orientation</span>
+            <span class="meta-value" id="metaOrientation">Normal (1)</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Shooting Parameters -->
+        <div class="meta-card">
+          <div class="meta-card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Technical Parameters</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Exposure Time</span>
+            <span class="meta-value" id="metaExposure">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">F-Number (Aperture)</span>
+            <span class="meta-value" id="metaFNumber">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">ISO Speed</span>
+            <span class="meta-value" id="metaIso">Unknown</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Focal Length</span>
+            <span class="meta-value" id="metaFocal">Unknown</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrub Options & Action (Shown after photo selected) -->
+      <div id="inspectActionArea" style="display:none;">
+        <div class="options-row">
+          <div class="options-col">
+            <label for="outputFormat">Output Image Format</label>
+            <select id="outputFormat">
+              <option value="keep">Keep JPEG, PNG or WebP (others become PNG)</option>
+              <option value="image/jpeg">JPEG (.jpg)</option>
+              <option value="image/png">PNG (.png)</option>
+              <option value="image/webp">WebP (.webp)</option>
+            </select>
+          </div>
+          <div class="options-col">
+            <label for="outputQuality">Image Quality: <span id="qualityVal">95%</span></label>
+            <input type="range" id="outputQuality" min="70" max="100" value="95" oninput="document.getElementById('qualityVal').innerText = this.value + '%'">
+          </div>
+        </div>
+
+        <button type="button" class="btn-accent" id="btnScrubSingle" onclick="scrubSinglePhoto()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          <span>Create cleaned copy</span>
+        </button>
+        <div id="statusSingle" class="status-text"></div>
+        <a id="downloadBtnSingle" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Cleaned Photo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: BATCH SCRUBBER (MULTIPLE PHOTOS) -->
+  <div id="tab-batch" class="tab-content">
+    <div class="tool-container">
+      <h3>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>A collection, ready to share</span>
+      </h3>
+      <p class="tool-desc">Drop multiple photos at once. Files are sanitized one at a time in browser memory and packaged into a single clean ZIP download.</p>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-box" id="batchDropZone" onclick="document.getElementById('batchInput').click()">
+        <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <div class="upload-box-title">Drop your photos here or click to browse</div>
+        <div class="upload-box-sub">Select multiple JPG, PNG, or WebP files · Processed in your browser</div>
+        <div class="upload-btn-pill">Select Multiple Photos</div>
+        <input type="file" id="batchInput" accept="image/jpeg, image/png, image/webp" multiple style="display:none;">
+      </div>
+
+      <!-- Queue Header & File List -->
+      <div class="queue-header" id="batchQueueHeader" style="display:none;">
+        <span class="queue-count" id="batchQueueCount">0 photos in queue</span>
+        <button type="button" class="btn-clear-queue" id="clearBatchBtn" onclick="clearBatchQueue()" title="Clear all photos">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Clear Queue</span>
+        </button>
+      </div>
+
+      <ul class="batch-list" id="batchFileList"></ul>
+
+      <div id="batchActionArea" style="display:none;">
+        <button type="button" class="btn-accent" id="btnScrubBatch" onclick="scrubBatchPhotos()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Create cleaned ZIP</span>
+        </button>
+        <div id="statusBatch" class="status-text"></div>
+        <a id="downloadBtnBatch" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Cleaned_Photos.zip</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">MORE CHOICE IN WHAT YOU SHARE</span><h2>The image tells a story.<br>The file carries more.</h2><p>Photos can carry camera, capture-time and location tags. Inspect supported fields, then create a new copy from the pixels before sharing.</p></div><h3>How to clean a photo</h3><ol class="guide-steps"><li><strong>Open the original.</strong> Load a JPEG, PNG or WebP, or add photos in Batch.</li><li><strong>Read the details.</strong> Review the supported metadata. An empty field is not a complete privacy assessment.</li><li><strong>Create your copy.</strong> Choose an output format for a single photo, or process the batch.</li><li><strong>Review and save.</strong> Download the new file or ZIP, inspect the image and retain your originals.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE YOU SHARE</span><h3>Keep the picture.<br>Choose the details.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>What does the cleaned copy remove?</summary><p>The tool redraws decoded image pixels into a new file without copying source EXIF or GPS tags. The browser may add its own format or color information. This is not a guarantee that every possible identifier has been removed.</p></details><details><summary>Does the inspector show all metadata?</summary><p>No. It displays supported EXIF fields such as camera, date and GPS tags. Missing fields mean the inspector did not find them; other metadata may still exist. The inspector is not a complete metadata inventory.</p></details><details><summary>Will my photo look exactly the same?</summary><p>Dimensions are retained, but JPEG and WebP re-encoding can affect detail and color. PNG preserves decoded pixels. JPEG fills transparency with white. Review orientation and appearance in the downloaded file.</p></details><details><summary>Can I clean several photos together?</summary><p>Use Batch to queue images and create a ZIP of new copies. Each file is decoded and re-encoded in the browser. Large images and queues depend on available memory; keep the originals and review the exported files.</p></details><details><summary>Where are my images processed?</summary><p>Processing runs in your browser. Libraries may load from external CDNs. Opening the optional map link sends coordinates to OpenStreetMap. There is no automatic image archive; download results before clearing the workspace.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="assets/media-utils.js"></script><script src="assets/workspaces/photo-scrubber/engine.js"></script><script src="assets/workspaces/photo-scrubber/ui.js"></script>

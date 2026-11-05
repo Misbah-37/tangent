@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How is typing speed calculated?",
+    "answer": "WPM uses correctly matched characters remaining in your text, divided by five and by elapsed minutes. Spaces and punctuation count. Accuracy is correct insertion attempts divided by all insertion attempts, so correcting a mistake does not erase it from accuracy. Backspace is not an insertion attempt. Results use at least one second of elapsed time."
+  },
+  {
+    "question": "What is the difference between Test and Practice?",
+    "answer": "Test runs for 15, 30, 60 or 120 seconds from your first inserted character. Practice is untimed and finishes when you complete one passage or choose Finish. Switching away does not pause an active session. Restart discards the current attempt without saving a result."
+  },
+  {
+    "question": "What does Practise my mistakes do?",
+    "answer": "It uses the expected characters you mistyped in the last completed session to assemble a short exercise from matching practice words and character drills. This is session-specific guidance, not a validated assessment of your typing ability. No new difficult level is chosen automatically."
+  },
+  {
+    "question": "Are my results saved?",
+    "answer": "Saving is off by default. Enable Save progress on this device to keep up to 20 result summaries in this browser. The summaries contain mode, content type, duration, WPM and accuracy, not your typed text or mistake characters. Turn it off to stop saving; Clear saved progress removes the history separately."
+  },
+  {
+    "question": "Can I paste text or use an input method?",
+    "answer": "Paste, drag-and-drop text and autofill replacements are blocked to keep attempts based on typing. Composition input is processed after commitment; prompts are English, and results across input methods or keyboards may not be comparable. Test the tool with your own setup. No result is a typing certification."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Does this tool run or highlight my code?",
+    "answer": "No. Code is treated as plain text and is not executed. The editor and PNG use a single text color rather than language-aware syntax highlighting. You can use snippets from any language."
+  },
+  {
+    "question": "What can I customize?",
+    "answer": "Choose a gradient, solid or transparent backdrop; change padding, title, window style, minimum width, font size and line numbers. Edit the code directly in the preview. Title and settings update the composition."
+  },
+  {
+    "question": "What is included in the PNG?",
+    "answer": "The current title, code and composition are rendered at 2\u00d7 resolution. Each complete code line is included; long lines can make the export wider than the selected minimum width. Outputs are limited to 10,000 pixels per side and 25 million pixels total."
+  },
+  {
+    "question": "Can I copy the image instead of downloading?",
+    "answer": "Use Copy image where your browser permits PNG clipboard writing. Browser permissions and clipboard support vary. If copying fails, download the PNG and insert it into your document or presentation."
+  },
+  {
+    "question": "Where is my code processed?",
+    "answer": "Editing and image generation happen in your browser. This tool does not upload or execute your code. Keep a separate text copy: there is no automatic document save, and an exported image is not an editable source file."
+  }
+]

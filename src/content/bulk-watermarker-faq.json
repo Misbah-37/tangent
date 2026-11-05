@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What kind of watermark can I add?",
+    "answer": "Add a text mark of up to 200 characters with your chosen color, opacity, size and one of five positions. Text shrinks to fit down to 20 pixels; images that still cannot fit it stop the export. The same settings apply to the queue. Logo-image watermarks and tiled patterns are not included."
+  },
+  {
+    "question": "Does the preview show every image?",
+    "answer": "The live preview shows the first image in the queue. Text size and placement depend on each image\u2019s dimensions, so review the downloaded images, especially when mixing portrait and landscape photos."
+  },
+  {
+    "question": "What is included in the ZIP?",
+    "answer": "The ZIP contains newly encoded, watermarked copies with distinct filenames. JPEG, PNG and WebP output depends on browser support. Re-encoding can affect quality or metadata; original files are not overwritten."
+  },
+  {
+    "question": "Can I process a large batch?",
+    "answer": "Batch capacity depends on image dimensions and available browser memory. Use smaller batches if processing fails. Images are handled in sequence, and a damaged file may stop the export. Keep your originals."
+  },
+  {
+    "question": "Where are my images processed?",
+    "answer": "Processing runs in your browser. ZIP and download libraries may load from external CDNs. There is no automatic archive. A visible watermark is a mark on the image, not proof of ownership or protection against removal."
+  }
+]

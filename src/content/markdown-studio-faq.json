@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What can I write here?",
+    "answer": "Write Markdown headings, lists, tables and code, with inline or block LaTeX equations rendered using KaTeX. Start from a research paper, engineering RFC, math template or a blank document. Review supported syntax in the preview."
+  },
+  {
+    "question": "How do I export my document?",
+    "answer": "Download raw Markdown or formatted HTML. Print / PDF opens the browser print workflow, where Save as PDF may be available. Pagination and print settings depend on the browser; inspect the result before sharing."
+  },
+  {
+    "question": "Is my draft saved automatically?",
+    "answer": "Draft saving is off by default. Enable Save draft on this browser to store a local draft. Turning it off removes that stored draft. Export important work before clearing browser data or closing the page."
+  },
+  {
+    "question": "Can I include HTML, remote images and citations?",
+    "answer": "Active HTML and automatic remote images are omitted from the preview. This is not a reference manager or citation-style engine. Review links, equations and formatting in the export."
+  },
+  {
+    "question": "Where does processing happen, and are there limits?",
+    "answer": "Editing and rendering run in your browser. Libraries and math fonts may load from external CDNs. Formatted rendering is limited to 500,000 characters. Local draft storage and print layout depend on your browser."
+  }
+]

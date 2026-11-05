@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Which log formats are supported?",
+    "answer": "Load .log or .txt files containing Apache/Nginx-style access records or a traditional Syslog pattern. The first 50 lines determine one parser mode. If none match, the file is rejected; custom, JSON and mixed-format logs are not universally supported."
+  },
+  {
+    "question": "How are recognised and unmatched lines counted?",
+    "answer": "Dashboard summaries cover all recognised records. Nonempty lines that fail the detected pattern are counted separately; blank lines are excluded. Inspect unmatched lines to see their original source line numbers, including intervening blank lines. That inspector is independent of Raw Explorer filters."
+  },
+  {
+    "question": "What do Explorer filters change?",
+    "answer": "Case-insensitive text search combines with exact status/severity and IP/host selections using AND. They filter Raw Explorer and its exports only, not dashboard totals or summaries. Results display 200 lines per page; Clear explorer filters restores all recognised records."
+  },
+  {
+    "question": "What can I export, and are summaries security diagnoses?",
+    "answer": "Export all matching recognised records across pages as original text lines or mode-specific parsed CSV. Export unmatched lines separately with source line numbers. Summaries are investigation clues, not proof of an attack. Syslog severity is inferred from recognised process-text suffixes, not a complete severity decoder."
+  },
+  {
+    "question": "Are my logs uploaded or saved?",
+    "answer": "Analysis runs in browser memory; chart dependencies may load from CDNs. Work is not automatically saved and device memory limits apply. Logs can contain sensitive IPs and messages; keep original files and review exported content before sharing. This is not a live monitoring service."
+  }
+]

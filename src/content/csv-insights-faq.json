@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What can I explore in CSV Insights?",
+    "answer": "Load a CSV to profile columns, build grouped charts in Manual Explorer, or inspect records in Raw Data Grid. Search profile cards by column name or type without filtering rows. This tool explores data; it does not edit or clean source values."
+  },
+  {
+    "question": "Does my dataset leave my browser?",
+    "answer": "CSV parsing and analysis run in this page and its background worker. No dataset upload is needed. Work is held in browser memory, not automatically saved. Download results before closing, reloading or replacing the dataset."
+  },
+  {
+    "question": "How do row filters, search and chart drill-downs work together?",
+    "answer": "Row rules combine with AND and the Slice Data search. Categories match exact text and case; numeric/date bounds are inclusive and exclude missing or invalid values. Date bounds use YYYY-MM-DD; source slash dates use month/day/year. Clear rules and search separately. Chart drill-downs narrow the grid further; clearing a drill-down returns to the underlying slice."
+  },
+  {
+    "question": "What can I download?",
+    "answer": "Save charts as PNG, export grouped pivot results from Manual Explorer as CSV, or export all records matching the current Raw Data Grid view across pages. Row exports preserve source values; pivot exports contain calculated groups. A grid drill-down does not change the underlying Manual Explorer pivot."
+  },
+  {
+    "question": "How should I interpret the statistics and limits?",
+    "answer": "Numeric profiles exclude blanks and nonnumeric values. Quartiles and the 90th percentile use linear interpolation; standard deviation uses the population convention. IQR outliers are review flags, remain included in statistics and are not automatically removed. Device memory limits apply. Automatic types and charts support exploration, not statistical guarantees; use Correlation Matrix for dedicated relationship analysis."
+  }
+]

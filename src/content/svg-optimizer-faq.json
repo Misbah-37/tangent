@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What does optimization change?",
+    "answer": "Choose passes for comments, editor metadata, empty groups/definitions, hidden nodes and path whitespace. Numeric precision applies to supported numeric attributes and viewBox values. Review the result: cleanup and rounding may alter some SVGs, and smaller files are not guaranteed."
+  },
+  {
+    "question": "Which SVGs can I load?",
+    "answer": "Use self-contained static SVG files. The validator rejects scripts, HTML foreignObject content, animation, event handlers and unsupported references or CSS. This is a supported-content check, not a general-purpose SVG security certification."
+  },
+  {
+    "question": "Can I edit the SVG code?",
+    "answer": "Yes. Edit the output XML to update the preview and exported SVG after validation. Changing an optimization setting reprocesses the originally loaded SVG, replacing manual output edits. Save a copy before switching settings."
+  },
+  {
+    "question": "What can I download?",
+    "answer": "Download the current SVG or copy its XML. PNG export rasterizes the current SVG at twice its decoded dimensions, subject to 10,000 pixels per side and 25 million pixels total. Preview zoom and backdrop are viewing aids; they are not added to exported files."
+  },
+  {
+    "question": "Where are my files processed?",
+    "answer": "Parsing, cleanup and rendering happen in your browser. This tool does not upload your SVG. Keep your original and compare the output before using it. The initial sample is illustrative; your browser can render only the features and fonts it supports."
+  }
+]

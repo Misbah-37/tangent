@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Should I choose Pearson or Spearman?",
+    "answer": "Pearson measures linear relationships between numeric values. Spearman measures monotonic relationships using ranks, with average ranks for ties. Both range from −1 to +1. The pair inspector plots original numeric values for either method, so its Spearman scatter is not a rank plot."
+  },
+  {
+    "question": "Which columns and rows are analysed?",
+    "answer": "Import raw CSV observations with named columns. At least 80% of nonblank values in the first 500 rows must parse as numbers for a column to qualify. Eligibility stays based on the imported dataset. Row rules combine exact case-sensitive text matches and inclusive numeric bounds with AND; invalid or missing numbers do not match numeric bounds. Clearing rules restores the source population."
+  },
+  {
+    "question": "How do missing values and the pair inspector work?",
+    "answer": "Each pair uses its finite paired observations. Click a matrix cell or activate it with Enter or Space to see the coefficient, paired/excluded counts and scatter plot. Too few pairs or no variation makes the coefficient unavailable, not zero. Plots above 1,000 valid pairs show a disclosed, evenly spaced source-order sample; the coefficient still uses every valid pair."
+  },
+  {
+    "question": "Does a strong correlation prove causation or significance?",
+    "answer": "No. Coefficients alone do not establish causation, statistical significance or practical importance. This version has no p-values, hypothesis tests or clustering. Inspect observations, paired counts and the sampling context before drawing conclusions."
+  },
+  {
+    "question": "Which results can I save, and is my data uploaded?",
+    "answer": "Matrix CSV preserves full available numeric precision. Pair-results CSV includes the method, unique variable pairs, coefficients and paired/excluded counts; it omits self-pairs and mirrors. Unavailable coefficients are blank and marked unavailable. Filtered-observation CSV preserves all original columns and matching source values. Image labels are rounded to two decimals. Analysis runs in the browser, dependencies may load from CDNs, and work is not automatically saved; browser memory limits apply."
+  }
+]

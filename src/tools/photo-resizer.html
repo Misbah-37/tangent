@@ -1,0 +1,125 @@
+<!-- WORKSPACE_LAYOUT -->
+<!-- --- HEAD_META --- -->
+<title>Photo Resizer &amp; Compressor | RunTangent</title>
+<meta name="description" content="Crop photos, choose pixel dimensions, convert JPEG, PNG or WebP, and approach a target file size in your browser. Review and download the result.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RunTangent"><meta property="og:title" content="Photo Resizer | RunTangent"><meta property="og:description" content="Find your frame. Refine the size. Keep the feeling.">
+<link rel="stylesheet" href="assets/editorial.css?v=5"><link rel="stylesheet" href="assets/workspaces/shared.css?v=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"><link rel="stylesheet" href="assets/workspaces/photo-resizer/style.css?v=1">
+<link rel="stylesheet" href="assets/tool-identities.css?v=1">
+<link rel="stylesheet" href="assets/category-intros.css?v=3">
+<!-- --- TOOL_STYLES --- -->
+<style></style>
+<!-- --- CONTENT --- -->
+<main data-tool-category="images" class="page" id="main"><section class="editor-intro category-intro"><div class="category-intro-copy"><span class="eyebrow">IMAGES &amp; PHOTOS / PHOTO RESIZER</span><h1 data-tool-identity><span class="editor-icon" aria-hidden="true">▧</span>Photo Resizer</h1><p class="tool-description">Resize, crop and convert photos for your next use.</p><p class="tool-tagline">The same picture. A new perspective.</p></div><aside class="category-intro-info" aria-label="Photo Resizer quick guide"><span class="info-label">YOUR NEXT STEP</span><h2>A photo, ready for its next use.</h2><dl><div><dt>Open</dt><dd>JPEG, PNG or WebP</dd></div><div><dt>Adjust</dt><dd>Crop, dimensions and output format</dd></div><div><dt>Finish</dt><dd>Review the size, then download</dd></div></dl><p>Photo processing stays in your browser.</p></aside></section><div class="editor-toolbar"><span id="photo-context">No photo loaded</span><button id="load-photo">Load photo</button><button onclick="resetPhotoResizer()" id="clear-photo">Clear photo</button><span id="export-action"></span></div><p class="photo-note">Crop, resize and convert · Review the output size before uploading elsewhere.</p><section id="workspace" tabindex="-1"><div class="photo-workspace"><div class="photo-canvas"><div class="pane-heading">Your frame <small>Drag the crop to compose your image</small></div>    <!-- Modern Drag & Drop Zone -->
+    <div class="upload-box" id="dropZone">
+      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      <div class="upload-box-title">A little room for a different perspective.</div>
+      <div class="upload-box-sub">Drop a JPEG, PNG or WebP, or load a photo above.</div>
+      <div class="upload-btn-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Select Photo
+      </div>
+      <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp" style="display:none;">
+    </div>
+
+    <!-- Active File Card with Reset -->
+    <div class="active-file-card" id="activeFileCard">
+      <div class="active-file-info">
+        <img id="activeThumb" class="thumb-preview" alt="Thumbnail Preview">
+        <div style="min-width: 0;">
+          <div class="active-file-name" id="activeFileName">photo.jpg</div>
+          <div class="active-file-meta" id="activeFileMeta">1920 × 1080 px · 840 KB</div>
+        </div>
+      </div>
+      <button type="button" class="btn-remove-file" onclick="resetPhotoResizer()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Change Photo
+      </button>
+    </div>
+
+    <!-- Cropper Container -->
+    <div class="img-container" id="cropContainer">
+      <img id="imageToCrop" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Image to crop">
+    </div>
+
+</div><aside class="photo-settings"><div class="pane-heading">Size &amp; finish</div><div class="settings-body">    <!-- Presets -->
+    <div class="input-group">
+      <label>Quick Presets</label>
+      <div class="preset-buttons">
+        <button type="button" class="preset-btn active" onclick="applyPreset(132, 170, this)">Portrait (132 × 170)</button>
+        <button type="button" class="preset-btn" onclick="applyPreset(1080, 1080, this)">Square Avatar (1:1)</button>
+        <button type="button" class="preset-btn" onclick="applyPreset(1200, 630, this)">Social banner (1200 × 630)</button>
+        <button type="button" class="preset-btn" onclick="applyPreset(1240, 1754, this)">Document A4</button>
+        <button type="button" class="preset-btn" onclick="applyPreset(1920, 1080, this)">Full HD (16:9)</button>
+      </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="dimension-row">
+      <div class="input-group">
+        <label>Target Width (px)</label>
+        <input type="number" id="widthInput" value="132" min="10" max="10000" oninput="clearPresetActive(); updateAspectRatio();">
+      </div>
+      <div class="input-group">
+        <label>Target Height (px)</label>
+        <input type="number" id="heightInput" value="170" min="10" max="10000" oninput="clearPresetActive(); updateAspectRatio();">
+      </div>
+    </div>
+
+    <!-- Format -->
+    <div class="input-group">
+      <label>Output Format</label>
+      <select id="formatSelect" onchange="toggleFormat()">
+        <option value="image/jpeg">JPG / JPEG (Best for photos & compression)</option>
+        <option value="image/png">PNG (Lossless sharpness & transparency)</option>
+        <option value="image/webp">WEBP (Modern high-efficiency compression)</option>
+      </select>
+    </div>
+
+    <!-- Target KB Compressor -->
+    <div class="dimension-row" id="kbRowContainer">
+      <div class="input-group">
+        <label>Preferred minimum (KB) <span class="label-desc">(Optional)</span></label>
+        <input type="number" id="minKbInput" value="20" min="1">
+      </div>
+      <div class="input-group">
+        <label>Target maximum (KB) <span class="label-desc">(Target)</span></label>
+        <input type="number" id="maxKbInput" value="50" min="2">
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <button class="btn-accent" onclick="processAndCompress()" id="processBtn" style="display:none;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="3"></circle>
+        <circle cx="6" cy="18" r="3"></circle>
+        <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+        <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+        <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+      </svg>
+      Crop & Resize Photo
+    </button>
+
+    <div class="status-wrapper" id="status"></div>
+
+    <a id="downloadBtn" class="btn-accent download-btn" download="Tangent_Resized.jpg">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download Resized Photo
+    </a>
+</div></aside></div></section><section class="editor-guide"><div class="guide-heading"><span class="eyebrow">THE FRAME MAKES A DIFFERENCE</span><h2>A considered crop.<br>A better fit.</h2><p>Resize a photo for its next destination. Keep the part that matters, choose its dimensions and review the exported file.</p></div><h3>How to resize a photo</h3><ol class="guide-steps"><li><strong>Open your image.</strong> Load a JPEG, PNG or WebP.</li><li><strong>Choose your frame.</strong> Set dimensions and adjust the crop on the photo.</li><li><strong>Balance size and detail.</strong> Choose a format and, for JPEG or WebP, a size target.</li><li><strong>Review and download.</strong> Create the image, check its reported dimensions and size, then save your copy.</li></ol><section class="guide-faq"><div class="faq-intro"><span class="eyebrow">BEFORE THE NEXT FRAME</span><h3>Keep the picture.<br>Consider the details.</h3><a href="#workspace" data-workspace-return>Back to the workspace ↑</a></div><div class="faq-questions"><details><summary>Which files can I resize?</summary><p>Open a JPEG, PNG or WebP image. Decoding and export depend on browser support and available memory. Large files and image dimensions have safety limits.</p></details><details><summary>How do crop and dimensions work together?</summary><p>Choose the part of the photo you want to keep, then set the output width and height. The crop follows that aspect ratio. Pixel presets are starting points, not certification for passport or upload requirements.</p></details><details><summary>Can I guarantee a particular file size?</summary><p>JPEG and WebP use a quality search to approach your size range. Some targets cannot be reached without smaller dimensions. Read the result size and any warning. PNG does not use the size target.</p></details><details><summary>What happens to transparency?</summary><p>PNG and WebP can retain transparent areas. JPEG fills transparent areas with white. Review the downloaded image before use.</p></details><details><summary>Are photos uploaded or saved automatically?</summary><p>Image processing runs in your browser. Interface libraries may load from external CDNs. There is no automatic photo archive; download your result before clearing or replacing the photo.</p></details></div></section></section></main>
+<!-- --- SCRIPTS --- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script><script src="assets/media-utils.js"></script><script src="assets/workspaces/photo-resizer/engine.js"></script><script src="assets/workspaces/photo-resizer/ui.js"></script>

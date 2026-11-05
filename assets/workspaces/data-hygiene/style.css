@@ -73,7 +73,7 @@ html[data-tool-concept="hygiene"] .site-header input{font-size:13px;color:var(--
 @media(max-width:760px){.tool-main{padding:28px 20px}.tool-intro h1{font-size:38px;padding-left:65px;letter-spacing:-1.6px}.hygiene-emblem{width:48px;height:48px;border-radius:13px}.hygiene-emblem svg{width:29px;height:29px}.tool-intro p{padding-left:0;font-size:15px}.file-context>span{width:100%;margin-right:0}html[data-tool-concept="hygiene"] .hygiene-workspace{grid-template-columns:minmax(0,1fr)}html[data-tool-concept="hygiene"] .wf-recipe-panel{border-left:0;border-top:1px solid var(--line);padding:24px 0 0;max-height:none}html[data-tool-concept="hygiene"] .metric-value{font-size:19px}}
 /* Original Data Hygiene painting; confined to the heading and faded at its edges. */
 .tool-intro{position:relative;isolation:isolate}
-.tool-intro:before{content:"";position:absolute;z-index:-1;pointer-events:none;inset:-30px -20px -12px 23%;background:url("hygiene-art-v1.png") center right/cover no-repeat;opacity:.42;mask-image:linear-gradient(90deg,transparent,#000 38%,#000 90%,transparent),linear-gradient(transparent,#000 18%,#000 70%,transparent);mask-composite:intersect}
+.tool-intro:before{content:"";position:absolute;z-index:-1;pointer-events:none;inset:-30px -20px -12px 23%;background:none center right/cover no-repeat;opacity:.42;mask-image:linear-gradient(90deg,transparent,#000 38%,#000 90%,transparent),linear-gradient(transparent,#000 18%,#000 70%,transparent);mask-composite:intersect}
 html[data-tool-concept="hygiene"][data-theme="dark"] .tool-intro:before{mix-blend-mode:screen;opacity:.17}
 @media(max-width:760px){.tool-intro:before{inset:-15px -10px 30px 15%;opacity:.23}}
 

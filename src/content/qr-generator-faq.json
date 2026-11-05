@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Do these QR codes expire?",
+    "answer": "The image contains your supplied text directly; this tool does not create an expiring redirect. A linked website can still change, disappear or require access. You cannot change the content encoded in an existing image without generating a new code."
+  },
+  {
+    "question": "Does the tool send my details to a server?",
+    "answer": "QR creation and image export run in your browser. The QR library is fetched from a CDN when the page loads. Scanning a link can contact the linked website. Wi-Fi codes contain the network credentials you enter; anyone who can read the code may recover them."
+  },
+  {
+    "question": "What can I put in a code?",
+    "answer": "Choose a link, Wi-Fi details, a contact card or plain text. Wi-Fi and vCard interpretation depends on the scanning application and device. The tool does not visit or verify entered links. Do not use a generated code as proof that a destination is safe."
+  },
+  {
+    "question": "How should I prepare a code for print?",
+    "answer": "Choose 300, 600 or 1,200 pixels. The code includes a four-module quiet zone and high error correction. Keep dark modules on a light background and test the final downloaded image at its intended size and on your intended scanners. No colour setting guarantees readability."
+  },
+  {
+    "question": "Why can\u2019t I generate or copy a code?",
+    "answer": "The tool limits content to 1,200 UTF-8 bytes. Low-contrast or inverted colours show a readability warning but remain available to preview and export. Some content can still exceed the QR library capacity. An optional PNG, JPEG or WebP centre logo covers part of the code and can reduce readability; its circular white badge is limited to 10–20% of the code width. Always test logo codes with your intended scanners. Image copying depends on clipboard permission and browser support; download the PNG if copying fails. Shorter content usually gives a less dense code."
+  }
+]
